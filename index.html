@@ -2273,7 +2273,6 @@ setInterval(
   250
 );
 
-
 /* ============================================================
    CLOUD COMMAND SEND
    ============================================================ */
@@ -2300,6 +2299,26 @@ function sendCloudCommand(command) {
   .catch(error => {
     log(`Cloud send error: ${error.message}`, "error");
   });
+}
+
+
+/* ============================================================
+   MANUAL COMMAND SEND
+   ============================================================ */
+
+function sendManualCommand() {
+
+  const input = document.getElementById("commandInput");
+
+  if (!input) return;
+
+  const command = input.value.trim();
+
+  if (!command) return;
+
+  sendCloudCommand(command);
+
+  input.value = "";
 }
 
 
