@@ -2078,27 +2078,47 @@ void processCommand() {
     return;
   }
 
+// ----------------------------------------------------------
+// ARDUINO OFF
+// ----------------------------------------------------------
 
-  // ----------------------------------------------------------
-  // ARDUINO OFF
-  // ----------------------------------------------------------
+if (!strcmp(command, "off") ||
+    !strcmp(command, "ledoff") ||
+    !strcmp(command, "led off") ||
+    !strcmp(command, "arduino off") ||
+    !strcmp(command, "arduino led off")) {
 
-  if (!strcmp(command, "off") ||
-      !strcmp(command, "ledoff") ||
-      !strcmp(command, "led off") ||
-      !strcmp(command, "arduino off") ||
-      !strcmp(command, "arduino led off")) {
+  arduinoOff();
 
+  Serial.println(F("ARDUINO LED OFF"));
+
+  return;
+}
+
+
+// ----------------------------------------------------------
+// ARDUINO TOGGLE
+// ----------------------------------------------------------
+
+if (!strcmp(command, "toggle") ||
+    !strcmp(command, "led toggle") ||
+    !strcmp(command, "arduino toggle") ||
+    !strcmp(command, "arduino led toggle")) {
+
+  if (arduinoState) {
     arduinoOff();
-
     Serial.println(F("ARDUINO LED OFF"));
-
-    return;
+  } else {
+    arduinoOn();
+    Serial.println(F("ARDUINO LED ON"));
   }
 
+  return;
+}
 
-  // ----------------------------------------------------------
-  // TRAINER INDIVIDUAL LED
+
+// ----------------------------------------------------------
+// TRAINER INDIVIDUAL LED
   //
   // TRAINER LED 0 ON
   // TRAINER LED 7 OFF
