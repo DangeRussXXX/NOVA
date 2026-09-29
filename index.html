@@ -2153,7 +2153,6 @@ function updateConnectionUI(connected){
 
 }
 
-
 /* ============================================================
    SERIAL READ
    ============================================================ */
@@ -2233,6 +2232,50 @@ async function readSerial(){
 
 }
 
+
+/* ============================================================
+   CLOUD RESPONSE READ
+   ============================================================ */
+
+async function pollCloudResponses(){
+
+  try{
+
+    const response =
+      await fetch(
+        "https://amomii-server.onrender.com/response"
+      );
+
+    const text =
+      (await response.text()).trim();
+
+    if(text){
+
+      processSerialLine(text);
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Cloud response error:",
+      error
+    );
+
+  }
+
+}
+
+setInterval(
+  pollCloudResponses,
+  250
+);
+
+
+/* ============================================================
+   CLOUD COMMAND SEND
+   ============================================================ */
+
 function sendCloudCommand(command) {
 
   command = String(command).trim();
@@ -2245,7 +2288,6 @@ function sendCloudCommand(command) {
 
   log(`> ${command}`, "command");
 
-  // Send command to Render instead of serial
   fetch("https://amomii-server.onrender.com/command", {
     method: "POST",
     body: command
@@ -2257,36 +2299,6 @@ function sendCloudCommand(command) {
     log(`Cloud send error: ${error.message}`, "error");
   });
 }
-
-
-
-
-function sendManualCommand(){
-
-  const command =
-    commandInput.value.trim();
-
-  if(!command){
-    return;
-  }
-
-  sendCloudCommand(command);
-
-  commandInput.value = "";
-
-}
-
-
-commandInput.addEventListener(
-  "keydown",
-  event => {
-
-    if(event.key === "Enter"){
-      sendManualCommand();
-    }
-
-  }
-);
 
 
 /* ============================================================
