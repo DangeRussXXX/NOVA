@@ -2251,9 +2251,11 @@ async function pollCloudResponses(){
 
     if(text){
 
-      processSerialLine(text);
+  console.log("CLOUD RESPONSE:", text);
 
-    }
+  processSerialLine(text);
+
+}
 
   }catch(error){
 
