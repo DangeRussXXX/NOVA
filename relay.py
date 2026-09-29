@@ -2,10 +2,8 @@ import time
 import serial
 import requests
 
-# Your Arduino
 ser = serial.Serial("COM9", 9600, timeout=0.1)
 
-# AMOMII Cloud Relay endpoints
 COMMAND_URL = "https://amomii-server.onrender.com/command"
 RESPONSE_URL = "https://amomii-server.onrender.com/response"
 
@@ -17,13 +15,18 @@ def send_response_to_server(response):
         return
 
     try:
-        requests.post(
+        result = requests.post(
             RESPONSE_URL,
             data=response,
             timeout=5
         )
 
-        print(">>> POSTED ARDUINO RESPONSE:", repr(response))
+        print(
+            ">>> POSTED ARDUINO RESPONSE:",
+            repr(response),
+            "| HTTP",
+            result.status_code
+        )
 
     except Exception as e:
         print(">>> RESPONSE POST ERROR:", e)
@@ -33,9 +36,9 @@ while True:
 
     try:
 
-        # --------------------------------
-        # 1. Check for commands from server
-        # --------------------------------
+        # -----------------------------
+        # SEND COMMAND TO ARDUINO
+        # -----------------------------
 
         cmd = requests.get(
             COMMAND_URL,
@@ -44,23 +47,30 @@ while True:
 
         if cmd:
 
-            print(">>> RECEIVED FROM SERVER:", repr(cmd))
-            print(">>> SENDING TO ARDUINO:", repr(cmd))
+            print(
+                ">>> RECEIVED FROM SERVER:",
+                repr(cmd)
+            )
 
             ser.write(
                 (cmd + "\n").encode()
             )
 
-            print(">>> SENT TO ARDUINO")
+            print(
+                ">>> SENT TO ARDUINO"
+            )
 
 
-        # --------------------------------
-        # 2. Read Arduino serial output
-        # --------------------------------
+        # -----------------------------
+        # READ EVERYTHING FROM ARDUINO
+        # -----------------------------
 
-        while ser.in_waiting:
+        while ser.in_waiting > 0:
 
-            line = ser.readline().decode(
+            raw = ser.readline()
+
+            line = raw.decode(
+                "utf-8",
                 errors="ignore"
             ).strip()
 
@@ -76,7 +86,10 @@ while True:
 
     except Exception as e:
 
-        print("Error:", e)
+        print(
+            ">>> RELAY ERROR:",
+            repr(e)
+        )
 
 
-    time.sleep(0.1)
+    time.sleep(0.05)
