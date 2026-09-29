@@ -3252,14 +3252,8 @@ function handleVoiceInput(rawText){
   }
 
   // Route the voice command through your existing logic
-  routeVoiceCommand(normalized, text);
-
-  // ⭐ Send ONLY the normalized command to the cloud relay
-  //    (This is the fix — prevents overwriting trainer commands)
-  sendCloudCommand(normalized);
+  routeVoiceCommand(normalized, text);  
 }
-
-
 
 /* ============================================================
    NORMALIZATION
