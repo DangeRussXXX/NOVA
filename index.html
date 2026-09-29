@@ -1045,6 +1045,33 @@ video{
 
 <div class="leftColumn">
 
+  
+  <div class="panel">
+
+    <div class="panelHeader">
+      
+      SERIAL COMMAND CONSOLE
+    </div>
+
+    <div id="console" class="console"></div>
+
+    <div class="commandRow">
+      <input
+        id="commandInput"
+        type="text"
+        placeholder="Enter serial command..."
+        autocomplete="off">
+
+      <button
+        class="control primary"
+        onclick="sendManualCommand()">
+        SEND
+      </button>
+    </div>
+
+  </div>
+
+
   <!-- AMOMII ONE CONTROLLER -->
 
   <div class="panel card">
@@ -1301,31 +1328,6 @@ video{
 
   </div>
 
-
-  <div class="panel">
-
-    <div class="panelHeader">
-      
-      SERIAL COMMAND CONSOLE
-    </div>
-
-    <div id="console" class="console"></div>
-
-    <div class="commandRow">
-      <input
-        id="commandInput"
-        type="text"
-        placeholder="Enter serial command..."
-        autocomplete="off">
-
-      <button
-        class="control primary"
-        onclick="sendManualCommand()">
-        SEND
-      </button>
-    </div>
-
-  </div>
 
 
   <!-- MEDIA CENTER -->
