@@ -5,12 +5,13 @@ import requests
 # Your Arduino
 ser = serial.Serial("COM9", 9600, timeout=1)
 
-# Your Render server URL
-SERVER_URL = "https://amomii-server.onrender.com/command"
+# AMOMII Cloud Relay endpoints
+COMMAND_URL = "https://amomii-server.onrender.com/command"
+RESPONSE_URL = "https://amomii-server.onrender.com/response"
 
 while True:
     try:
-        cmd = requests.get(SERVER_URL, timeout=5).text.strip()
+        cmd = requests.get(COMMAND_URL, timeout=5).text.strip()
 
         if cmd:
             print(">>> RECEIVED FROM SERVER:", repr(cmd))
