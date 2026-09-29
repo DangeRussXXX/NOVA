@@ -220,6 +220,24 @@ button.control.danger{
   min-width:0;
 }
 
+/* =========================================
+   CONTROLLER INTERNAL SECTIONS
+   ========================================= */
+
+.panelSection{
+  margin-top:20px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.panelSubHeader{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1px;
+  margin-bottom:12px;
+  opacity:0.75;
+}
+
 .voiceHero{
   margin-bottom:16px;
   border:1px solid rgba(57,255,136,.22);
@@ -1027,10 +1045,18 @@ video{
 
 <div class="leftColumn">
 
+  <!-- AMOMII ONE CONTROLLER -->
+
   <div class="panel card">
-    <div class="panelHeader">AMOMII ONE CONTROLLER</div>
+
+    <div class="panelHeader">
+      AMOMII ONE CONTROLLER
+    </div>
 
     <div class="panelBody">
+
+      <!-- CONTROLLER BUTTONS -->
+
       <div class="buttonGrid">
 
         <button class="control primary full" onclick="connectSerial()">
@@ -1082,14 +1108,125 @@ video{
         </button>
 
       </div>
+
+
+      <!-- SYSTEM STATUS -->
+
+      <div class="panelSection">
+
+        <div class="panelSubHeader">
+          SYSTEM STATUS
+        </div>
+
+        <div class="statList">
+
+          <div class="stat">
+            <span>Board</span>
+            <span>AMOMII ONE</span>
+          </div>
+
+          <div class="stat">
+            <span>Connection</span>
+            <span id="statusConnection">OFFLINE</span>
+          </div>
+
+          <div class="stat">
+            <span>System</span>
+            <span id="statusSystem">READY</span>
+          </div>
+
+          <div class="stat">
+            <span>LED</span>
+            <span id="statusLed">UNKNOWN</span>
+          </div>
+
+          <div class="stat">
+            <span>Blinking</span>
+            <span id="statusBlinking">NO</span>
+          </div>
+
+          <div class="stat">
+            <span>Blink speed</span>
+            <span id="statusBlinkSpeed">—</span>
+          </div>
+
+          <div class="stat">
+            <span>Commands</span>
+            <span id="statusCommands">0</span>
+          </div>
+
+          <div class="stat">
+            <span>Uptime</span>
+            <span id="uptime">00:00:00</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SYSTEM TEST -->
+
+      <div class="panelSection">
+
+        <div class="panelSubHeader">
+          SYSTEM TEST
+        </div>
+
+        <div class="testGrid">
+
+          <div class="testItem">
+            <span>Serial</span>
+            <span id="testSerial" class="testValue pending">—</span>
+          </div>
+
+          <div class="testItem">
+            <span>LED</span>
+            <span id="testLed" class="testValue pending">—</span>
+          </div>
+
+          <div class="testItem">
+            <span>Timing</span>
+            <span id="testTiming" class="testValue pending">—</span>
+          </div>
+
+          <div class="testItem">
+            <span>Memory</span>
+            <span id="testMemory" class="testValue pending">—</span>
+          </div>
+
+          <div class="testItem">
+            <span>Commands</span>
+            <span id="testCommands" class="testValue pending">—</span>
+          </div>
+
+          <div class="testItem">
+            <span>System</span>
+            <span id="testSystem" class="testValue pending">—</span>
+          </div>
+
+        </div>
+
+        <div id="testResult" class="testResult">
+          NOT RUN
+        </div>
+
+      </div>
+
     </div>
   </div>
 
 
+  <!-- VOICE -->
+
   <div class="panel card">
-    <div class="panelHeader">VOICE</div>
+
+    <div class="panelHeader">
+      VOICE
+    </div>
 
     <div class="panelBody">
+
       <div class="buttonGrid">
 
         <button
@@ -1112,11 +1249,11 @@ video{
         </button>
 
       </div>
+
     </div>
   </div>
 
 </div>
-
 
 <!-- CENTER COLUMN -->
 
@@ -1486,117 +1623,6 @@ video{
 
     </div>
   </div>
-
-
-  <!-- SYSTEM STATUS -->
-
-  <div class="panel card">
-
-    <div class="panelHeader">
-      SYSTEM STATUS
-    </div>
-
-    <div class="panelBody">
-
-      <div class="statList">
-
-        <div class="stat">
-          <span>Board</span>
-          <span>AMOMII ONE</span>
-        </div>
-
-        <div class="stat">
-          <span>Connection</span>
-          <span id="statusConnection">OFFLINE</span>
-        </div>
-
-        <div class="stat">
-          <span>System</span>
-          <span id="statusSystem">READY</span>
-        </div>
-
-        <div class="stat">
-          <span>LED</span>
-          <span id="statusLed">UNKNOWN</span>
-        </div>
-
-        <div class="stat">
-          <span>Blinking</span>
-          <span id="statusBlinking">NO</span>
-        </div>
-
-        <div class="stat">
-          <span>Blink speed</span>
-          <span id="statusBlinkSpeed">—</span>
-        </div>
-
-        <div class="stat">
-          <span>Commands</span>
-          <span id="statusCommands">0</span>
-        </div>
-
-        <div class="stat">
-          <span>Uptime</span>
-          <span id="uptime">00:00:00</span>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- SYSTEM TEST -->
-
-  <div class="panel card">
-
-    <div class="panelHeader">
-      SYSTEM TEST
-    </div>
-
-    <div class="panelBody">
-
-      <div class="testGrid">
-
-        <div class="testItem">
-          <span>Serial</span>
-          <span id="testSerial" class="testValue pending">—</span>
-        </div>
-
-        <div class="testItem">
-          <span>LED</span>
-          <span id="testLed" class="testValue pending">—</span>
-        </div>
-
-        <div class="testItem">
-          <span>Timing</span>
-          <span id="testTiming" class="testValue pending">—</span>
-        </div>
-
-        <div class="testItem">
-          <span>Memory</span>
-          <span id="testMemory" class="testValue pending">—</span>
-        </div>
-
-        <div class="testItem">
-          <span>Commands</span>
-          <span id="testCommands" class="testValue pending">—</span>
-        </div>
-
-        <div class="testItem">
-          <span>System</span>
-          <span id="testSystem" class="testValue pending">—</span>
-        </div>
-
-      </div>
-
-      <div id="testResult" class="testResult">
-        NOT RUN
-      </div>
-
-    </div>
-  </div>
-
 
   <!-- VOICE ENGINE -->
 
