@@ -736,6 +736,87 @@ button.control.danger{
   font-size:12px;
 }
 
+/* =========================================
+   MORSE DISPLAY
+   ========================================= */
+
+.morseCard{
+  overflow:hidden;
+}
+
+.morseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.morseStatus{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  letter-spacing:1px;
+  opacity:.8;
+}
+
+.morseStatus .dot{
+  width:7px;
+  height:7px;
+  flex:none;
+}
+
+.morseDisplay{
+  position:relative;
+  overflow:hidden;
+  padding:18px 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,255,255,.03),
+      rgba(0,255,255,.01)
+    );
+  border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.morseLabel{
+  padding:0 16px 8px;
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.45;
+}
+
+.morseScrollingText{
+  white-space:nowrap;
+  display:inline-block;
+  padding-left:100%;
+  font-family:
+    "Cascadia Code",
+    "SFMono-Regular",
+    Consolas,
+    monospace;
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:6px;
+  color:var(--cyan);
+  text-shadow:
+    0 0 6px rgba(0,255,255,.7),
+    0 0 18px rgba(0,255,255,.35);
+  animation:morseScroll 12s linear infinite;
+}
+
+@keyframes morseScroll{
+
+  from{
+    transform:translateX(0);
+  }
+
+  to{
+    transform:translateX(-100%);
+  }
+
+}
+
 /* RIGHT */
 
 .statList{
@@ -1886,24 +1967,32 @@ video{
 
   <!-- MORSE -->
 
-  <div class="panel card">
+<div class="panel card morseCard">
 
-    <div class="panelHeader">
-      MORSE
+  <div class="panelHeader morseHeader">
+    <span>MORSE</span>
+
+    <div class="morseStatus">
+      <span id="morseDot" class="dot green"></span>
+      <span id="morseStatus">READY</span>
+    </div>
+  </div>
+
+  <div class="morseDisplay">
+
+    <div class="morseLabel">
+      MORSE TRANSMISSION
     </div>
 
-    <div class="panelBody">
-
-      <div class="statList">
-
-        <div class="stat">
-          <span>Status</span>
-          <span id="morseStatus">READY</span>
-        </div>
-
-      </div>
-
+    <div
+      id="morseText"
+      class="morseScrollingText">
+      · · ·   ---   · · ·
     </div>
+
+  </div>
+
+</div>
   </div>
 
 
