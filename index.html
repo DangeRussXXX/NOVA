@@ -55,6 +55,32 @@ button{
   padding:16px;
 }
 
+
+  /* =========================================
+   AMOMII CONTROLLER HEADER STATUS
+   ========================================= */
+
+.controllerHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.connectionStatus{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  letter-spacing:.5px;
+  opacity:.8;
+}
+
+.connectionStatus .dot{
+  width:7px;
+  height:7px;
+  flex:none;
+}
+
 /* HEADER */
 
 header{
@@ -1080,15 +1106,9 @@ video{
   </div>
 
   <div class="headerStatus">
-    <div class="statusItem">
-      <span id="connectionDot" class="dot red"></span>
-      <span id="connectionText">DISCONNECTED</span>
-    </div>
+  
 
-    <div class="statusItem">
-      <span id="voiceDot" class="dot red"></span>
-      <span id="voiceText">VOICE OFF</span>
-    </div>
+  
   </div>
 </header>
 
@@ -1168,16 +1188,20 @@ video{
 
   </div>
 
+<!-- AMOMII ONE CONTROLLER -->
 
-  <!-- AMOMII ONE CONTROLLER -->
+<div class="panel card">
 
-  <div class="panel card">
+  <div class="panelHeader controllerHeader">
+    <span>AMOMII ONE CONTROLLER</span>
 
-    <div class="panelHeader">
-      AMOMII ONE CONTROLLER
+    <div class="connectionStatus">
+      <span id="connectionDot" class="dot red"></span>
+      <span id="connectionText">DISCONNECTED</span>
     </div>
+  </div>
 
-    <div class="panelBody">
+  <div class="panelBody">
 
       <!-- CONTROLLER BUTTONS -->
 
@@ -1879,7 +1903,6 @@ let SpeechRecognition =
 const speechSupported =
   "speechSynthesis" in window &&
   !!SpeechRecognition;
-
 
 /* ============================================================
    SYSTEM TEST
