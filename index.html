@@ -735,14 +735,11 @@ button.control.danger{
   font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
   font-size:12px;
 }
-
 /* =========================================
    MORSE DISPLAY
    ========================================= */
 
 .morseCard{
-  width:100%;
-  box-sizing:border-box;
   overflow:hidden;
 }
 
@@ -764,36 +761,25 @@ button.control.danger{
 .morseStatus .dot{
   width:7px;
   height:7px;
-  flex:none;
 }
 
 .morseDisplay{
-  position:relative;
-  width:100%;
-  box-sizing:border-box;
   overflow:hidden;
-  padding:18px 0;
-  background:rgba(0,255,255,.02);
-  border-top:1px solid rgba(255,255,255,.06);
-  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:16px 0;
+  background:#05080c;
+  border-top:1px solid var(--border);
 }
 
 .morseLabel{
-  padding:0 16px 8px;
+  padding:0 14px 8px;
   font-size:9px;
   letter-spacing:2px;
-  opacity:.45;
+  opacity:.5;
 }
 
 .morseScrollingText{
   white-space:nowrap;
-  display:block;
-  width:max-content;
-  font-family:
-    "Cascadia Code",
-    "SFMono-Regular",
-    Consolas,
-    monospace;
+  font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
   font-size:28px;
   font-weight:700;
   letter-spacing:6px;
@@ -815,7 +801,6 @@ button.control.danger{
   }
 
 }
-
 /* RIGHT */
 
 .statList{
