@@ -691,6 +691,51 @@ button.control.danger{
   border-color:var(--cyan);
 }
 
+/* =========================================
+   MORSE PANEL
+   ========================================= */
+
+.morsePanel{
+  padding:12px;
+  border-top:1px solid var(--border);
+}
+
+.morsePanel .panelSubHeader{
+  margin-bottom:8px;
+}
+
+.morseRow{
+  display:flex;
+  gap:8px;
+}
+
+.morseRow input{
+  flex:1;
+  min-width:0;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:10px;
+  border-radius:8px;
+  outline:none;
+}
+
+.morseRow input:focus{
+  border-color:var(--cyan);
+}
+
+.morseOutput{
+  margin-top:8px;
+  min-height:20px;
+  padding:8px;
+  background:#05080c;
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--cyan);
+  font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  font-size:12px;
+}
+
 /* RIGHT */
 
 .statList{
@@ -1217,6 +1262,37 @@ video{
       </button>
 
     </div>
+
+<!-- MORSE -->
+
+<div class="morsePanel">
+
+  <div class="panelSubHeader">
+    MORSE
+  </div>
+
+  <div class="morseRow">
+
+    <input
+      id="morseInput"
+      type="text"
+      placeholder="Enter Morse or text..."
+      autocomplete="off">
+
+    <button
+      class="control primary"
+      onclick="processMorse()">
+      SEND
+    </button>
+
+  </div>
+
+  <div
+    id="morseOutput"
+    class="morseOutput">
+  </div>
+
+</div>
 
   </div>
 
@@ -2343,6 +2419,154 @@ function toggleConsole(){
 }
 
 
+
+  // ============================================================
+  // NOVA COMMAND CONSOLE EXPAND / COLLAPSE
+  // ============================================================
+
+  function toggleConsole(){
+
+    const header =
+      document.querySelector(".consoleHeader");
+
+    const body =
+      header.parentElement.querySelector(".consoleBody");
+
+    if(!body) return;
+
+    body.classList.toggle("collapsed");
+
+  }
+
+
+  // ============================================================
+  // MORSE CONVERTER
+  // ============================================================
+
+  const morseCode = {
+
+    "A": ".-",
+    "B": "-...",
+    "C": "-.-.",
+    "D": "-..",
+    "E": ".",
+    "F": "..-.",
+    "G": "--.",
+    "H": "....",
+    "I": "..",
+    "J": ".---",
+    "K": "-.-",
+    "L": ".-..",
+    "M": "--",
+    "N": "-.",
+    "O": "---",
+    "P": ".--.",
+    "Q": "--.-",
+    "R": ".-.",
+    "S": "...",
+    "T": "-",
+    "U": "..-",
+    "V": "...-",
+    "W": ".--",
+    "X": "-..-",
+    "Y": "-.--",
+    "Z": "--..",
+
+    "0": "-----",
+    "1": ".----",
+    "2": "..---",
+    "3": "...--",
+    "4": "....-",
+    "5": ".....",
+    "6": "-....",
+    "7": "--...",
+    "8": "---..",
+    "9": "----.",
+
+    ".": ".-.-.-",
+    ",": "--..--",
+    "?": "..--..",
+    "!": "-.-.--",
+    "/": "-..-.",
+    "(": "-.--.",
+    ")": "-.--.-",
+    "&": ".-...",
+    ":": "---...",
+    ";": "-.-.-.",
+    "=": "-...-",
+    "+": ".-.-.",
+    "-": "-....-",
+    "_": "..--.-",
+    "\"": ".-..-.",
+    "$": "...-..-",
+    "@": ".--.-."
+  };
+
+  function processMorse(){
+
+    const input =
+      document.getElementById("morseInput");
+
+    const output =
+      document.getElementById("morseOutput");
+
+    if(!input || !output) return;
+
+    const value =
+      input.value.trim();
+
+    if(!value){
+
+      output.textContent = "";
+
+      return;
+    }
+
+    if(/^[.\-\/\s]+$/.test(value)){
+
+      const reverseMorse = {};
+
+      Object.keys(morseCode).forEach(letter => {
+        reverseMorse[morseCode[letter]] = letter;
+      });
+
+      const words =
+        value.split(" / ");
+
+      const decoded =
+        words.map(word => {
+
+          return word
+            .trim()
+            .split(/\s+/)
+            .map(code =>
+              reverseMorse[code] || "?"
+            )
+            .join("");
+
+        }).join(" ");
+
+      output.textContent = decoded;
+
+      return;
+    }
+
+    const encoded =
+      value
+        .toUpperCase()
+        .split("")
+        .map(char => {
+
+          if(char === " ") return "/";
+
+          return morseCode[char] || char;
+
+        })
+        .join(" ");
+
+    output.textContent = encoded;
+
+  }
 
 
 // ============================================================
