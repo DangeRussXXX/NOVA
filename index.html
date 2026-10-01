@@ -214,6 +214,26 @@ button.control.danger{
   grid-column:1/-1;
 }
 
+/* =========================================
+   NOVA VOICE BUTTONS
+   ========================================= */
+
+.voiceButtons{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:6px;
+}
+
+.voiceButtons .control{
+  width:100%;
+  min-height:32px;
+  height:32px;
+  padding:4px 6px;
+  font-size:10px;
+  line-height:1;
+  white-space:nowrap;
+}
+
 /* CENTER */
 
 .centerColumn{
@@ -584,28 +604,6 @@ button.control.danger{
 .commandRow input:focus{
   border-color:var(--cyan);
 }
-
-
-/* =========================================
-   NOVA VOICE BUTTONS
-   ========================================= */
-
-.voiceButtons{
-  display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:6px;
-}
-
-.voiceButtons .control{
-  width:100%;
-  min-height:32px;
-  height:32px;
-  padding:4px 6px;
-  font-size:10px;
-  line-height:1;
-  white-space:nowrap;
-}
-
 
 /* RIGHT */
 
