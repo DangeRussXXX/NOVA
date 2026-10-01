@@ -1040,17 +1040,17 @@ video{
 </header>
 
 <div class="mainGrid">
-
 <!-- LEFT COLUMN -->
 
 <div class="leftColumn">
 
-  
+
   <!-- VOICE -->
 
   <div class="panel card">
 
-     VOICE
+    <div class="panelHeader">
+      VOICE
     </div>
 
     <div class="panelBody">
@@ -1081,18 +1081,19 @@ video{
     </div>
   </div>
 
-    <div class="panelHeader">
+
+  <!-- NOVA COMMAND CONSOLE -->
 
   <div class="panel">
 
     <div class="panelHeader">
-      
       NOVA COMMAND CONSOLE
     </div>
-</div>
+
     <div id="console" class="console"></div>
 
     <div class="commandRow">
+
       <input
         id="commandInput"
         type="text"
@@ -1104,6 +1105,7 @@ video{
         onclick="sendManualCommand()">
         SEND TO NOVA
       </button>
+
     </div>
 
   </div>
@@ -1123,51 +1125,75 @@ video{
 
       <div class="buttonGrid">
 
-        <button class="control primary full" onclick="connectSerial()">
+        <button
+          class="control primary full"
+          onclick="connectSerial()">
           CONNECT
         </button>
 
-        <button class="control danger full" onclick="disconnectSerial()">
+        <button
+          class="control danger full"
+          onclick="disconnectSerial()">
           DISCONNECT
         </button>
 
-        <button class="control" onclick="sendCloudCommand('status')">
+        <button
+          class="control"
+          onclick="sendCloudCommand('status')">
           STATUS
         </button>
 
-        <button class="control" onclick="runSystemTest()">
+        <button
+          class="control"
+          onclick="runSystemTest()">
           SYSTEM TEST
         </button>
 
-        <button class="control" onclick="sendCloudCommand('help')">
+        <button
+          class="control"
+          onclick="sendCloudCommand('help')">
           HELP
         </button>
 
-        <button class="control" onclick="stopBoard()">
+        <button
+          class="control"
+          onclick="stopBoard()">
           STOP
         </button>
 
-        <button class="control good" onclick="sendCloudCommand('led on')">
+        <button
+          class="control good"
+          onclick="sendCloudCommand('led on')">
           LED ON
         </button>
 
-        <button class="control danger" onclick="sendCloudCommand('led off')">
+        <button
+          class="control danger"
+          onclick="sendCloudCommand('led off')">
           LED OFF
         </button>
 
-        <button class="control" onclick="sendCloudCommand('toggle')">
+        <button
+          class="control"
+          onclick="sendCloudCommand('toggle')">
           TOGGLE
         </button>
 
-        <button class="control warn" onclick="sendCloudCommand('blink 5')">
+        <button
+          class="control warn"
+          onclick="sendCloudCommand('blink 5')">
           BLINK 5
         </button>
 
-        <button class="control warn" onclick="sendCloudCommand('sos')">
+        <button
+          class="control warn"
+          onclick="sendCloudCommand('sos')">
           SOS
         </button>
 
-        <button class="control danger" onclick="sendCloudCommand('stop')">
+        <button
+          class="control danger"
+          onclick="sendCloudCommand('stop')">
           STOP
         </button>
 
@@ -1280,6 +1306,8 @@ video{
     </div>
   </div>
 
+
+</div>
 
 <!-- CENTER COLUMN -->
 
