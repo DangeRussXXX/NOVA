@@ -585,6 +585,28 @@ button.control.danger{
   border-color:var(--cyan);
 }
 
+
+/* =========================================
+   NOVA VOICE BUTTONS
+   ========================================= */
+
+.voiceButtons{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+
+.voiceButtons .control{
+  padding:8px 10px;
+  font-size:11px;
+  min-height:36px;
+}
+
+.voiceButtons .full{
+  width:100%;
+}
+
+
 /* RIGHT */
 
 .statList{
@@ -1055,7 +1077,7 @@ video{
 
     <div class="panelBody">
 
-      <div class="buttonGrid">
+      <div class="buttonGrid voiceButtons">
 
         <button
           id="voiceButton"
