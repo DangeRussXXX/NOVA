@@ -57,7 +57,7 @@ button{
 
 
   /* =========================================
-   AMOMII CONTROLLER HEADER STATUS
+   AMOMII CONTROLLER EXPAND / COLLAPSE
    ========================================= */
 
 .controllerHeader{
@@ -68,19 +68,18 @@ button{
   user-select:none;
 }
 
-.connectionStatus{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:10px;
-  letter-spacing:.5px;
-  opacity:.8;
+.controllerHeader + .panelBody{
+  overflow:hidden;
+  max-height:3000px;
+  opacity:1;
+  transition:
+    max-height .25s ease,
+    opacity .2s ease;
 }
 
-.connectionStatus .dot{
-  width:7px;
-  height:7px;
-  flex:none;
+.controllerHeader + .panelBody.collapsed{
+  max-height:0;
+  opacity:0;
 }
 
 /* HEADER */
@@ -2307,7 +2306,7 @@ function toggleController(){
     document.querySelector(".controllerHeader");
 
   const body =
-    header.nextElementSibling;
+    header.parentElement.querySelector(".panelBody");
 
   if(!body) return;
 
