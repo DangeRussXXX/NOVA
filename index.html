@@ -241,6 +241,32 @@ button.control.danger{
   grid-column:auto !important;
 }
 
+
+/* =========================================
+   VOICE HEADER STATUS
+   ========================================= */
+
+.voiceHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.voiceStatus{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  letter-spacing:.5px;
+  opacity:.8;
+}
+
+.voiceStatus .dot{
+  width:7px;
+  height:7px;
+  flex:none;
+}
+
 /* CENTER */
 
 .centerColumn{
@@ -1076,9 +1102,14 @@ video{
 
   <div class="panel card">
 
-    <div class="panelHeader">
-      VOICE
-    </div>
+   <div class="panelHeader voiceHeader">
+  <span>VOICE</span>
+
+  <div class="voiceStatus">
+    <span id="voiceDot" class="dot red"></span>
+    <span id="voiceText">VOICE OFF</span>
+  </div>
+</div>
 
     <div class="panelBody">
 
