@@ -620,6 +620,32 @@ button.control.danger{
 
 /* CONSOLE */
 
+/* =========================================
+   NOVA COMMAND CONSOLE EXPAND / COLLAPSE
+   ========================================= */
+
+.consoleHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+}
+
+.consoleBody{
+  overflow:hidden;
+  max-height:2000px;
+  opacity:1;
+  transition:
+    max-height .25s ease,
+    opacity .2s ease;
+}
+
+.consoleBody.collapsed{
+  max-height:0;
+  opacity:0;
+}
+
 .console{
   height:430px;
   overflow-y:auto;
@@ -1160,14 +1186,19 @@ video{
     </div>
   </div>
 
+<!-- NOVA COMMAND CONSOLE -->
 
-  <!-- NOVA COMMAND CONSOLE -->
+<div class="panel">
 
-  <div class="panel">
+  <div
+    class="panelHeader consoleHeader"
+    onclick="toggleConsole()">
 
-    <div class="panelHeader">
-      NOVA COMMAND CONSOLE
-    </div>
+    <span>NOVA COMMAND CONSOLE</span>
+
+  </div>
+
+  <div class="consoleBody">
 
     <div id="console" class="console"></div>
 
@@ -1188,6 +1219,8 @@ video{
     </div>
 
   </div>
+
+</div>
 
 <!-- AMOMII ONE CONTROLLER -->
 
@@ -2294,6 +2327,22 @@ function updateConnectionUI(connected){
   }
 
 }
+
+function toggleConsole(){
+
+  const header =
+    document.querySelector(".consoleHeader");
+
+  const body =
+    header.parentElement.querySelector(".consoleBody");
+
+  if(!body) return;
+
+  body.classList.toggle("collapsed");
+
+}
+
+
 
 
 // ============================================================
