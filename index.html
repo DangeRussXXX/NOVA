@@ -64,6 +64,8 @@ button{
   display:flex;
   align-items:center;
   justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
 }
 
 .connectionStatus{
@@ -1192,7 +1194,7 @@ video{
 
 <div class="panel card">
 
-  <div class="panelHeader controllerHeader">
+  <div class="panelHeader controllerHeader" onclick="toggleController()">
     <span>AMOMII ONE CONTROLLER</span>
 
     <div class="connectionStatus">
@@ -2294,6 +2296,24 @@ function updateConnectionUI(connected){
 
 }
 
+
+// ============================================================
+// AMOMII CONTROLLER EXPAND / COLLAPSE
+// ============================================================
+
+function toggleController(){
+
+  const header =
+    document.querySelector(".controllerHeader");
+
+  const body =
+    header.nextElementSibling;
+
+  if(!body) return;
+
+  body.classList.toggle("collapsed");
+
+}
 /* ============================================================
    SERIAL READ
    ============================================================ */
