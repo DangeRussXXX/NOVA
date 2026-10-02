@@ -14,91 +14,91 @@
 
 // Targets:
 
-//   ARDUINO
+//   ARDUINO
 
-//   TRAINER
+//   TRAINER
 
-//   BOTH
+//   BOTH
 
 //
 
 // Examples:
 
-//   LED ON
+//   LED ON
 
-//   LED OFF
+//   LED OFF
 
-//   ARDUINO LED ON
+//   ARDUINO LED ON
 
-//   TRAINER LED 3 ON
+//   TRAINER LED 3 ON
 
-//   TRAINER LED ALL ON
+//   TRAINER LED ALL ON
 
-//   ARDUINO ALL OFF
+//   ARDUINO ALL OFF
 
-//   ALL ON
+//   ALL ON
 
-//   ALL OFF
+//   ALL OFF
 
-//   BOTH ON
+//   BOTH ON
 
-//   BOTH OFF
+//   BOTH OFF
 
-//   BLINK 10
+//   BLINK 10
 
-//   TRAINER BLINK 10
+//   TRAINER BLINK 10
 
-//   BOTH BLINK 10
+//   BOTH BLINK 10
 
-//   SPEED 100
+//   SPEED 100
 
-//   FLASH 10 100
+//   FLASH 10 100
 
-//   TRAINER FLASH 10 100
+//   TRAINER FLASH 10 100
 
-//   BOTH FLASH 10 100
+//   BOTH FLASH 10 100
 
-//   PULSE 500
+//   PULSE 500
 
-//   SOS
+//   SOS
 
-//   BOTH SOS
+//   BOTH SOS
 
-//   MORSE SOS
+//   MORSE SOS
 
-//   BOTH MORSE SOS
+//   BOTH MORSE SOS
 
-//   STOP
+//   STOP
 
 //
 
 // Voice-friendly examples:
 
-//   trainer led three on
+//   trainer led three on
 
-//   trainer led all off
+//   trainer led all off
 
-//   arduino led on
+//   arduino led on
 
-//   all leds on
+//   all leds on
 
-//   both blink five
+//   both blink five
 
-//   speed one hundred
+//   speed one hundred
 
-//   flash ten one hundred
+//   flash ten one hundred
 
 // ============================================================
 
 
 
-\#include \<Arduino.h>
+#include <Arduino.h>
 
-\#include \<string.h>
+#include <string.h>
 
-\#include \<stdlib.h>
+#include <stdlib.h>
 
-\#include \<ctype.h>
+#include <ctype.h>
 
 
 
@@ -118,7 +118,7 @@ const byte LED = LED_BUILTIN;
 
 const byte TRAINER[8] = {
 
-  2, 3, 4, 5, 6, 7, 8, 9
+  2, 3, 4, 5, 6, 7, 8, 9
 
 };
 
@@ -265,11 +265,11 @@ bool bothBlinkState = false;
 
 enum TargetType {
 
-  TARGET_ARDUINO,
+  TARGET_ARDUINO,
 
-  TARGET_TRAINER,
+  TARGET_TRAINER,
 
-  TARGET_BOTH
+  TARGET_BOTH
 
 };
 
@@ -289,59 +289,59 @@ void setup() {
 
 
 
-  pinMode(LED, OUTPUT);
+  pinMode(LED, OUTPUT);
 
-  digitalWrite(LED, LOW);
-
-
-
-  for (byte i = 0; i < 8; i++) {
-
-    pinMode(TRAINER[i], OUTPUT);
-
-    digitalWrite(TRAINER[i], LOW);
-
-  }
+  digitalWrite(LED, LOW);
 
 
 
-  Serial.begin(9600);
+  for (byte i = 0; i < 8; i++) {
+
+    pinMode(TRAINER[i], OUTPUT);
+
+    digitalWrite(TRAINER[i], LOW);
+
+  }
 
 
 
-  startTime = millis();
+  Serial.begin(9600);
 
 
 
-  startupAnimation();
+  startTime = millis();
 
 
 
-  Serial.println();
+  startupAnimation();
 
-  Serial.println(F("================================================"));
 
-  Serial.println(F("        AMOMII ONE COMMAND CENTER 6.0"));
 
-  Serial.println(F("================================================"));
+  Serial.println();
 
-  Serial.println();
+  Serial.println(F("================================================"));
 
-  Serial.println(F("SYSTEM ONLINE"));
+  Serial.println(F("        AMOMII ONE COMMAND CENTER 6.0"));
 
-  Serial.println(F("USB CONNECTION ACTIVE"));
+  Serial.println(F("================================================"));
 
-  Serial.println(F("ARDUINO LED READY"));
+  Serial.println();
 
-  Serial.println(F("TRAINER LEDS READY (2-9)"));
+  Serial.println(F("SYSTEM ONLINE"));
 
-  Serial.println();
+  Serial.println(F("USB CONNECTION ACTIVE"));
 
-  Serial.println(F("TEXT + VOICE COMMAND MODE"));
+  Serial.println(F("ARDUINO LED READY"));
 
-  Serial.println(F("Type HELP for commands."));
+  Serial.println(F("TRAINER LEDS READY (2-9)"));
 
-  Serial.println();
+  Serial.println();
+
+  Serial.println(F("TEXT + VOICE COMMAND MODE"));
+
+  Serial.println(F("Type HELP for commands."));
+
+  Serial.println();
 
 }
 
@@ -361,15 +361,15 @@ void loop() {
 
 
 
-  readSerial();
+  readSerial();
 
 
 
-  updateArduinoBlink();
+  updateArduinoBlink();
 
-  updateTrainerBlink();
+  updateTrainerBlink();
 
-  updateBothBlink();
+  updateBothBlink();
 
   updateTrainerPattern();
 
@@ -391,55 +391,55 @@ void readSerial() {
 
 
 
-  while (Serial.available() > 0) {
+  while (Serial.available() > 0) {
 
 
 
-    char c = Serial.read();
+    char c = Serial.read();
 
 
 
-    if (c == '\n' || c == '\r') {
+    if (c == '\n' || c == '\r') {
 
 
 
-      if (commandLength > 0) {
+      if (commandLength > 0) {
 
 
 
-        command[commandLength] = '\0';
+        command[commandLength] = '\0';
 
 
 
-        commandCount++;
+        commandCount++;
 
 
 
-        processCommand();
+        processCommand();
 
 
 
-        commandLength = 0;
+        commandLength = 0;
 
-        command[0] = '\0';
+        command[0] = '\0';
 
-      }
-
-
-
-    } else {
+      }
 
 
 
-      if (commandLength < sizeof(command) - 1) {
+    } else {
 
-        command[commandLength++] = c;
 
-      }
 
-    }
+      if (commandLength < sizeof(command) - 1) {
 
-  }
+        command[commandLength++] = c;
+
+      }
+
+    }
+
+  }
 
 }
 
@@ -459,21 +459,21 @@ void lowerCase(char \*text) {
 
 
 
-  while (\*text) {
+  while (\*text) {
 
 
 
-    if (\*text >= 'A' && \*text <= 'Z') {
+    if (\*text >= 'A' && \*text <= 'Z') {
 
-      \*text = \*text + ('a' - 'A');
+      \*text = \*text + ('a' - 'A');
 
-    }
+    }
 
 
 
-    text++;
+    text++;
 
-  }
+  }
 
 }
 
@@ -493,63 +493,63 @@ void removeExtraSpaces(char \*text) {
 
 
 
-  char buffer[120];
+  char buffer[120];
 
 
 
-  byte j = 0;
+  byte j = 0;
 
-  bool previousSpace = false;
-
-
-
-  for (byte i = 0; text[i] != '\0'; i++) {
+  bool previousSpace = false;
 
 
 
-    if (text[i] == ' ') {
+  for (byte i = 0; text[i] != '\0'; i++) {
 
 
 
-      if (!previousSpace) {
-
-        buffer[j++] = ' ';
-
-      }
+    if (text[i] == ' ') {
 
 
 
-      previousSpace = true;
+      if (!previousSpace) {
+
+        buffer[j++] = ' ';
+
+      }
 
 
 
-    } else {
+      previousSpace = true;
 
 
 
-      buffer[j++] = text[i];
-
-      previousSpace = false;
-
-    }
-
-  }
+    } else {
 
 
 
-  if (j > 0 && buffer[j - 1] == ' ') {
+      buffer[j++] = text[i];
 
-    j--;
+      previousSpace = false;
 
-  }
+    }
 
-
-
-  buffer[j] = '\0';
+  }
 
 
 
-  strcpy(text, buffer);
+  if (j > 0 && buffer[j - 1] == ' ') {
+
+    j--;
+
+  }
+
+
+
+  buffer[j] = '\0';
+
+
+
+  strcpy(text, buffer);
 
 }
 
@@ -569,35 +569,35 @@ void replaceFirst(char \*text, const char \*from, const char \*to) {
 
 
 
-  char \*p = strstr(text, from);
+  char \*p = strstr(text, from);
 
 
 
-  if (!p) return;
+  if (!p) return;
 
 
 
-  char buffer[120];
+  char buffer[120];
 
 
 
-  size_t before = p - text;
+  size_t before = p - text;
 
 
 
-  buffer[0] = '\0';
+  buffer[0] = '\0';
 
 
 
-  strncat(buffer, text, before);
+  strncat(buffer, text, before);
 
-  strcat(buffer, to);
+  strcat(buffer, to);
 
-  strcat(buffer, p + strlen(from));
+  strcat(buffer, p + strlen(from));
 
 
 
-  strcpy(text, buffer);
+  strcpy(text, buffer);
 
 }
 
@@ -617,25 +617,25 @@ void replaceNumberWords(char \*text) {
 
 
 
-  replaceFirst(text, "zero", "0");
+  replaceFirst(text, "zero", "0");
 
-  replaceFirst(text, "one", "1");
+  replaceFirst(text, "one", "1");
 
-  replaceFirst(text, "two", "2");
+  replaceFirst(text, "two", "2");
 
-  replaceFirst(text, "three", "3");
+  replaceFirst(text, "three", "3");
 
-  replaceFirst(text, "four", "4");
+  replaceFirst(text, "four", "4");
 
-  replaceFirst(text, "five", "5");
+  replaceFirst(text, "five", "5");
 
-  replaceFirst(text, "six", "6");
+  replaceFirst(text, "six", "6");
 
-  replaceFirst(text, "seven", "7");
+  replaceFirst(text, "seven", "7");
 
-  replaceFirst(text, "eight", "8");
+  replaceFirst(text, "eight", "8");
 
-  replaceFirst(text, "nine", "9");
+  replaceFirst(text, "nine", "9");
 
 }
 
@@ -655,105 +655,105 @@ void normalizeVoice(char \*text) {
 
 
 
-  lowerCase(text);
+  lowerCase(text);
 
 
 
-  removeExtraSpaces(text);
+  removeExtraSpaces(text);
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER COMMANDS
+  // TRAINER COMMANDS
 
-  // Keep "trainer led" intact so individual LED commands work.
+  // Keep "trainer led" intact so individual LED commands work.
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  replaceFirst(text, "trainer leds", "trainer led");
+  replaceFirst(text, "trainer leds", "trainer led");
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ARDUINO COMMANDS
+  // ARDUINO COMMANDS
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  replaceFirst(text, "arduino led", "arduino");
+  replaceFirst(text, "arduino led", "arduino");
 
 
 
-  replaceFirst(text, "built in led", "arduino");
+  replaceFirst(text, "built in led", "arduino");
 
 
 
-  replaceFirst(text, "builtin led", "arduino");
+  replaceFirst(text, "builtin led", "arduino");
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH / ALL COMMANDS
+  // BOTH / ALL COMMANDS
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  replaceFirst(text, "all leds", "both");
+  replaceFirst(text, "all leds", "both");
 
 
 
-  replaceFirst(text, "all led", "both");
+  replaceFirst(text, "all led", "both");
 
 
 
-  replaceFirst(text, "all lights", "both");
+  replaceFirst(text, "all lights", "both");
 
 
 
-  replaceFirst(text, "both leds", "both");
+  replaceFirst(text, "both leds", "both");
 
 
 
-  replaceFirst(text, "both led", "both");
+  replaceFirst(text, "both led", "both");
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // VOICE NUMBERS
+  // VOICE NUMBERS
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  replaceNumberWords(text);
+  replaceNumberWords(text);
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // FINAL CLEANUP
+  // FINAL CLEANUP
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  removeExtraSpaces(text);
+  removeExtraSpaces(text);
 
 }
 
@@ -775,17 +775,17 @@ void setTrainerLED(byte index, bool state) {
 
 
 
-  if (index > 7) return;
+  if (index > 7) return;
 
 
 
-  digitalWrite(
+  digitalWrite(
 
-    TRAINER[index],
+    TRAINER[index],
 
-    state ? HIGH : LOW
+    state ? HIGH : LOW
 
-  );
+  );
 
 }
 
@@ -805,15 +805,15 @@ void trainerAllOn() {
 
 
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
 
 
-  for (byte i = 0; i < 8; i++) {
+  for (byte i = 0; i < 8; i++) {
 
-    setTrainerLED(i, true);
+    setTrainerLED(i, true);
 
-  }
+  }
 
 }
 
@@ -833,15 +833,15 @@ void trainerAllOff() {
 
 
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
 
 
-  for (byte i = 0; i < 8; i++) {
+  for (byte i = 0; i < 8; i++) {
 
-    setTrainerLED(i, false);
+    setTrainerLED(i, false);
 
-  }
+  }
 
 }
 
@@ -1054,15 +1054,15 @@ void arduinoOn() {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
 
 
-  arduinoState = true;
+  arduinoState = true;
 
 
 
-  digitalWrite(LED, HIGH);
+  digitalWrite(LED, HIGH);
 
 }
 
@@ -1082,15 +1082,15 @@ void arduinoOff() {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
 
 
-  arduinoState = false;
+  arduinoState = false;
 
 
 
-  digitalWrite(LED, LOW);
+  digitalWrite(LED, LOW);
 
 }
 
@@ -1110,27 +1110,27 @@ void bothOn() {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
-
-
-
-  arduinoState = true;
+  stopBothBlink();
 
 
 
-  digitalWrite(LED, HIGH);
+  arduinoState = true;
 
 
 
-  for (byte i = 0; i < 8; i++) {
+  digitalWrite(LED, HIGH);
 
-    setTrainerLED(i, true);
 
-  }
+
+  for (byte i = 0; i < 8; i++) {
+
+    setTrainerLED(i, true);
+
+  }
 
 }
 
@@ -1150,27 +1150,27 @@ void bothOff() {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
-
-
-
-  arduinoState = false;
+  stopBothBlink();
 
 
 
-  digitalWrite(LED, LOW);
+  arduinoState = false;
 
 
 
-  for (byte i = 0; i < 8; i++) {
+  digitalWrite(LED, LOW);
 
-    setTrainerLED(i, false);
 
-  }
+
+  for (byte i = 0; i < 8; i++) {
+
+    setTrainerLED(i, false);
+
+  }
 
 }
 
@@ -1190,9 +1190,9 @@ void stopArduinoBlink() {
 
 
 
-  arduinoBlinking = false;
+  arduinoBlinking = false;
 
-  arduinoRemainingBlinks = 0;
+  arduinoRemainingBlinks = 0;
 
 }
 
@@ -1212,9 +1212,9 @@ void stopTrainerBlink() {
 
 
 
-  trainerBlinking = false;
+  trainerBlinking = false;
 
-  trainerRemainingBlinks = 0;
+  trainerRemainingBlinks = 0;
 
 }
 
@@ -1234,9 +1234,9 @@ void stopBothBlink() {
 
 
 
-  bothBlinking = false;
+  bothBlinking = false;
 
-  bothRemainingBlinks = 0;
+  bothRemainingBlinks = 0;
 
 }
 
@@ -1256,15 +1256,15 @@ void stopAllEffects() {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
+  stopBothBlink();
 
 
 
-  Serial.println(F("All effects stopped."));
+  Serial.println(F("All effects stopped."));
 
 }
 
@@ -1284,63 +1284,63 @@ void updateArduinoBlink() {
 
 
 
-  if (!arduinoBlinking) return;
+  if (!arduinoBlinking) return;
 
 
 
-  unsigned long now = millis();
+  unsigned long now = millis();
 
 
 
-  if (now - arduinoLastBlink >= arduinoBlinkSpeed) {
+  if (now - arduinoLastBlink >= arduinoBlinkSpeed) {
 
 
 
-    arduinoLastBlink = now;
+    arduinoLastBlink = now;
 
 
 
-    arduinoState = !arduinoState;
+    arduinoState = !arduinoState;
 
 
 
-    digitalWrite(
+    digitalWrite(
 
-      LED,
+      LED,
 
-      arduinoState ? HIGH : LOW
+      arduinoState ? HIGH : LOW
 
-    );
-
-
-
-    if (!arduinoState) {
+    );
 
 
 
-      if (arduinoRemainingBlinks > 0) {
-
-        arduinoRemainingBlinks--;
-
-      }
+    if (!arduinoState) {
 
 
 
-      if (arduinoRemainingBlinks == 0) {
+      if (arduinoRemainingBlinks > 0) {
+
+        arduinoRemainingBlinks--;
+
+      }
 
 
 
-        arduinoBlinking = false;
+      if (arduinoRemainingBlinks == 0) {
 
 
 
-        Serial.println(F("Arduino blink complete."));
+        arduinoBlinking = false;
 
-      }
 
-    }
 
-  }
+        Serial.println(F("Arduino blink complete."));
+
+      }
+
+    }
+
+  }
 
 }
 
@@ -1360,61 +1360,61 @@ void updateTrainerBlink() {
 
 
 
-  if (!trainerBlinking) return;
+  if (!trainerBlinking) return;
 
 
 
-  unsigned long now = millis();
+  unsigned long now = millis();
 
 
 
-  if (now - trainerLastBlink >= trainerBlinkSpeed) {
+  if (now - trainerLastBlink >= trainerBlinkSpeed) {
 
 
 
-    trainerLastBlink = now;
+    trainerLastBlink = now;
 
 
 
-    trainerBlinkState = !trainerBlinkState;
+    trainerBlinkState = !trainerBlinkState;
 
 
 
-    for (byte i = 0; i < 8; i++) {
+    for (byte i = 0; i < 8; i++) {
 
-      setTrainerLED(i, trainerBlinkState);
+      setTrainerLED(i, trainerBlinkState);
 
-    }
-
-
-
-    if (!trainerBlinkState) {
+    }
 
 
 
-      if (trainerRemainingBlinks > 0) {
-
-        trainerRemainingBlinks--;
-
-      }
+    if (!trainerBlinkState) {
 
 
 
-      if (trainerRemainingBlinks == 0) {
+      if (trainerRemainingBlinks > 0) {
+
+        trainerRemainingBlinks--;
+
+      }
 
 
 
-        trainerBlinking = false;
+      if (trainerRemainingBlinks == 0) {
 
 
 
-        Serial.println(F("Trainer blink complete."));
+        trainerBlinking = false;
 
-      }
 
-    }
 
-  }
+        Serial.println(F("Trainer blink complete."));
+
+      }
+
+    }
+
+  }
 
 }
 
@@ -1434,71 +1434,71 @@ void updateBothBlink() {
 
 
 
-  if (!bothBlinking) return;
+  if (!bothBlinking) return;
 
 
 
-  unsigned long now = millis();
+  unsigned long now = millis();
 
 
 
-  if (now - bothLastBlink >= bothBlinkSpeed) {
+  if (now - bothLastBlink >= bothBlinkSpeed) {
 
 
 
-    bothLastBlink = now;
+    bothLastBlink = now;
 
 
 
-    bothBlinkState = !bothBlinkState;
+    bothBlinkState = !bothBlinkState;
 
 
 
-    digitalWrite(
+    digitalWrite(
 
-      LED,
+      LED,
 
-      bothBlinkState ? HIGH : LOW
+      bothBlinkState ? HIGH : LOW
 
-    );
-
-
-
-    for (byte i = 0; i < 8; i++) {
-
-      setTrainerLED(i, bothBlinkState);
-
-    }
+    );
 
 
 
-    if (!bothBlinkState) {
+    for (byte i = 0; i < 8; i++) {
+
+      setTrainerLED(i, bothBlinkState);
+
+    }
 
 
 
-      if (bothRemainingBlinks > 0) {
-
-        bothRemainingBlinks--;
-
-      }
+    if (!bothBlinkState) {
 
 
 
-      if (bothRemainingBlinks == 0) {
+      if (bothRemainingBlinks > 0) {
+
+        bothRemainingBlinks--;
+
+      }
 
 
 
-        bothBlinking = false;
+      if (bothRemainingBlinks == 0) {
 
 
 
-        Serial.println(F("Both blink complete."));
+        bothBlinking = false;
 
-      }
 
-    }
 
-  }
+        Serial.println(F("Both blink complete."));
+
+      }
+
+    }
+
+  }
 
 }
 
@@ -1516,49 +1516,49 @@ void updateBothBlink() {
 
 void startArduinoBlink(
 
-  unsigned int count,
+  unsigned int count,
 
-  unsigned int speed
+  unsigned int speed
 
 ) {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
 
 
-  arduinoBlinkSpeed = speed;
+  arduinoBlinkSpeed = speed;
 
-  arduinoRemainingBlinks = count;
-
-
-
-  arduinoState = false;
+  arduinoRemainingBlinks = count;
 
 
 
-  digitalWrite(LED, LOW);
+  arduinoState = false;
 
 
 
-  arduinoBlinking = true;
+  digitalWrite(LED, LOW);
 
 
 
-  arduinoLastBlink = millis();
+  arduinoBlinking = true;
 
 
 
-  Serial.print(F("Arduino blinking "));
+  arduinoLastBlink = millis();
 
-  Serial.print(count);
 
-  Serial.print(F(" times at "));
 
-  Serial.print(speed);
+  Serial.print(F("Arduino blinking "));
 
-  Serial.println(F(" ms."));
+  Serial.print(count);
+
+  Serial.print(F(" times at "));
+
+  Serial.print(speed);
+
+  Serial.println(F(" ms."));
 
 }
 
@@ -1576,53 +1576,53 @@ void startArduinoBlink(
 
 void startTrainerBlink(
 
-  unsigned int count,
+  unsigned int count,
 
-  unsigned int speed
+  unsigned int speed
 
 ) {
 
 
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
 
 
-  trainerBlinkSpeed = speed;
+  trainerBlinkSpeed = speed;
 
-  trainerRemainingBlinks = count;
-
-
-
-  trainerBlinkState = false;
+  trainerRemainingBlinks = count;
 
 
 
-  for (byte i = 0; i < 8; i++) {
-
-    setTrainerLED(i, false);
-
-  }
+  trainerBlinkState = false;
 
 
 
-  trainerBlinking = true;
+  for (byte i = 0; i < 8; i++) {
+
+    setTrainerLED(i, false);
+
+  }
 
 
 
-  trainerLastBlink = millis();
+  trainerBlinking = true;
 
 
 
-  Serial.print(F("Trainer blinking "));
+  trainerLastBlink = millis();
 
-  Serial.print(count);
 
-  Serial.print(F(" times at "));
 
-  Serial.print(speed);
+  Serial.print(F("Trainer blinking "));
 
-  Serial.println(F(" ms."));
+  Serial.print(count);
+
+  Serial.print(F(" times at "));
+
+  Serial.print(speed);
+
+  Serial.println(F(" ms."));
 
 }
 
@@ -1640,65 +1640,65 @@ void startTrainerBlink(
 
 void startBothBlink(
 
-  unsigned int count,
+  unsigned int count,
 
-  unsigned int speed
+  unsigned int speed
 
 ) {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
-
-
-
-  bothBlinkSpeed = speed;
-
-  bothRemainingBlinks = count;
+  stopBothBlink();
 
 
 
-  bothBlinkState = false;
+  bothBlinkSpeed = speed;
+
+  bothRemainingBlinks = count;
 
 
 
-  digitalWrite(LED, LOW);
+  bothBlinkState = false;
 
 
 
-  for (byte i = 0; i < 8; i++) {
-
-    setTrainerLED(i, false);
-
-  }
+  digitalWrite(LED, LOW);
 
 
 
-  arduinoState = false;
+  for (byte i = 0; i < 8; i++) {
+
+    setTrainerLED(i, false);
+
+  }
 
 
 
-  bothBlinking = true;
+  arduinoState = false;
 
 
 
-  bothLastBlink = millis();
+  bothBlinking = true;
 
 
 
-  Serial.print(F("Both blinking "));
+  bothLastBlink = millis();
 
-  Serial.print(count);
 
-  Serial.print(F(" times at "));
 
-  Serial.print(speed);
+  Serial.print(F("Both blinking "));
 
-  Serial.println(F(" ms."));
+  Serial.print(count);
+
+  Serial.print(F(" times at "));
+
+  Serial.print(speed);
+
+  Serial.println(F(" ms."));
 
 }
 
@@ -1718,31 +1718,31 @@ void pulseArduino(unsigned int duration) {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
 
 
-  arduinoState = true;
+  arduinoState = true;
 
 
 
-  digitalWrite(LED, HIGH);
+  digitalWrite(LED, HIGH);
 
 
 
-  delay(duration);
+  delay(duration);
 
 
 
-  arduinoState = false;
+  arduinoState = false;
 
 
 
-  digitalWrite(LED, LOW);
+  digitalWrite(LED, LOW);
 
 
 
-  Serial.println(F("Arduino pulse complete."));
+  Serial.println(F("Arduino pulse complete."));
 
 }
 
@@ -1762,31 +1762,31 @@ void pulseTrainer(unsigned int duration) {
 
 
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
 
 
-  for (byte i = 0; i < 8; i++) {
+  for (byte i = 0; i < 8; i++) {
 
-    setTrainerLED(i, true);
+    setTrainerLED(i, true);
 
-  }
-
-
-
-  delay(duration);
+  }
 
 
 
-  for (byte i = 0; i < 8; i++) {
-
-    setTrainerLED(i, false);
-
-  }
+  delay(duration);
 
 
 
-  Serial.println(F("Trainer pulse complete."));
+  for (byte i = 0; i < 8; i++) {
+
+    setTrainerLED(i, false);
+
+  }
+
+
+
+  Serial.println(F("Trainer pulse complete."));
 
 }
 
@@ -1806,47 +1806,47 @@ void pulseBoth(unsigned int duration) {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
-
-
-
-  digitalWrite(LED, HIGH);
+  stopBothBlink();
 
 
 
-  for (byte i = 0; i < 8; i++) {
-
-    setTrainerLED(i, true);
-
-  }
+  digitalWrite(LED, HIGH);
 
 
 
-  delay(duration);
+  for (byte i = 0; i < 8; i++) {
+
+    setTrainerLED(i, true);
+
+  }
 
 
 
-  digitalWrite(LED, LOW);
+  delay(duration);
 
 
 
-  for (byte i = 0; i < 8; i++) {
-
-    setTrainerLED(i, false);
-
-  }
+  digitalWrite(LED, LOW);
 
 
 
-  arduinoState = false;
+  for (byte i = 0; i < 8; i++) {
+
+    setTrainerLED(i, false);
+
+  }
 
 
 
-  Serial.println(F("Both pulse complete."));
+  arduinoState = false;
+
+
+
+  Serial.println(F("Both pulse complete."));
 
 }
 
@@ -1864,45 +1864,45 @@ void pulseBoth(unsigned int duration) {
 
 void flashArduino(
 
-  int count,
+  int count,
 
-  int speed
+  int speed
 
 ) {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
 
 
-  for (int i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++) {
 
 
 
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);
 
-    arduinoState = true;
-
-
-
-    delay(speed);
+    arduinoState = true;
 
 
 
-    digitalWrite(LED, LOW);
-
-    arduinoState = false;
+    delay(speed);
 
 
 
-    delay(speed);
+    digitalWrite(LED, LOW);
 
-  }
+    arduinoState = false;
 
 
 
-  Serial.println(F("Arduino flash complete."));
+    delay(speed);
+
+  }
+
+
+
+  Serial.println(F("Arduino flash complete."));
 
 }
 
@@ -1920,49 +1920,49 @@ void flashArduino(
 
 void flashTrainer(
 
-  int count,
+  int count,
 
-  int speed
+  int speed
 
 ) {
 
 
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
 
 
-  for (int i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++) {
 
 
 
-    for (byte j = 0; j < 8; j++) {
+    for (byte j = 0; j < 8; j++) {
 
-      setTrainerLED(j, true);
+      setTrainerLED(j, true);
 
-    }
-
-
-
-    delay(speed);
+    }
 
 
 
-    for (byte j = 0; j < 8; j++) {
-
-      setTrainerLED(j, false);
-
-    }
+    delay(speed);
 
 
 
-    delay(speed);
+    for (byte j = 0; j < 8; j++) {
 
-  }
+      setTrainerLED(j, false);
+
+    }
 
 
 
-  Serial.println(F("Trainer flash complete."));
+    delay(speed);
+
+  }
+
+
+
+  Serial.println(F("Trainer flash complete."));
 
 }
 
@@ -1980,65 +1980,65 @@ void flashTrainer(
 
 void flashBoth(
 
-  int count,
+  int count,
 
-  int speed
+  int speed
 
 ) {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
-
-
-
-  for (int i = 0; i < count; i++) {
+  stopBothBlink();
 
 
 
-    digitalWrite(LED, HIGH);
+  for (int i = 0; i < count; i++) {
 
 
 
-    for (byte j = 0; j < 8; j++) {
-
-      setTrainerLED(j, true);
-
-    }
+    digitalWrite(LED, HIGH);
 
 
 
-    delay(speed);
+    for (byte j = 0; j < 8; j++) {
+
+      setTrainerLED(j, true);
+
+    }
 
 
 
-    digitalWrite(LED, LOW);
+    delay(speed);
 
 
 
-    for (byte j = 0; j < 8; j++) {
-
-      setTrainerLED(j, false);
-
-    }
+    digitalWrite(LED, LOW);
 
 
 
-    delay(speed);
+    for (byte j = 0; j < 8; j++) {
 
-  }
+      setTrainerLED(j, false);
 
-
-
-  arduinoState = false;
+    }
 
 
 
-  Serial.println(F("Both flash complete."));
+    delay(speed);
+
+  }
+
+
+
+  arduinoState = false;
+
+
+
+  Serial.println(F("Both flash complete."));
 
 }
 
@@ -2058,81 +2058,81 @@ void sendSOSArduino() {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
 
 
-  Serial.println(F("Arduino SOS..."));
+  Serial.println(F("Arduino SOS..."));
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);
 
-    delay(200);
-
-
-
-    digitalWrite(LED, LOW);
-
-    delay(200);
-
-  }
+    delay(200);
 
 
 
-  delay(300);
+    digitalWrite(LED, LOW);
+
+    delay(200);
+
+  }
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  delay(300);
 
 
 
-    digitalWrite(LED, HIGH);
-
-    delay(600);
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, HIGH);
 
-    delay(200);
-
-  }
+    delay(600);
 
 
 
-  delay(300);
+    digitalWrite(LED, LOW);
+
+    delay(200);
+
+  }
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  delay(300);
 
 
 
-    digitalWrite(LED, HIGH);
-
-    delay(200);
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, HIGH);
 
-    delay(200);
-
-  }
+    delay(200);
 
 
 
-  arduinoState = false;
+    digitalWrite(LED, LOW);
+
+    delay(200);
+
+  }
 
 
 
-  Serial.println(F("Arduino SOS complete."));
+  arduinoState = false;
+
+
+
+  Serial.println(F("Arduino SOS complete."));
 
 }
 
@@ -2152,77 +2152,77 @@ void sendSOSTrainer() {
 
 
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
 
 
-  Serial.println(F("Trainer SOS..."));
+  Serial.println(F("Trainer SOS..."));
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
 
-    delay(200);
-
-
-
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
-
-    delay(200);
-
-  }
+    delay(200);
 
 
 
-  delay(300);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+
+    delay(200);
+
+  }
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  delay(300);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
-
-    delay(600);
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
 
-    delay(200);
-
-  }
+    delay(600);
 
 
 
-  delay(300);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+
+    delay(200);
+
+  }
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  delay(300);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
-
-    delay(200);
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
 
-    delay(200);
-
-  }
+    delay(200);
 
 
 
-  Serial.println(F("Trainer SOS complete."));
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+
+    delay(200);
+
+  }
+
+
+
+  Serial.println(F("Trainer SOS complete."));
 
 }
 
@@ -2242,121 +2242,121 @@ void sendSOSBoth() {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
+  stopBothBlink();
 
 
 
-  Serial.println(F("Both SOS..."));
+  Serial.println(F("Both SOS..."));
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
 
 
 
-    delay(200);
+    delay(200);
 
 
 
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, LOW);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
 
 
 
-    delay(200);
+    delay(200);
 
-  }
+  }
 
 
 
-  delay(300);
+  delay(300);
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
 
 
 
-    delay(600);
+    delay(600);
 
 
 
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, LOW);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
 
 
 
-    delay(200);
+    delay(200);
 
-  }
+  }
 
 
 
-  delay(300);
+  delay(300);
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, true);
 
 
 
-    delay(200);
+    delay(200);
 
 
 
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, LOW);
 
 
 
-    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
+    for (byte j = 0; j < 8; j++) setTrainerLED(j, false);
 
 
 
-    delay(200);
+    delay(200);
 
-  }
+  }
 
 
 
-  arduinoState = false;
+  arduinoState = false;
 
 
 
-  Serial.println(F("Both SOS complete."));
+  Serial.println(F("Both SOS complete."));
 
 }
 
@@ -2376,129 +2376,129 @@ const char \*getMorse(char c) {
 
 
 
-  switch (c) {
+  switch (c) {
 
 
 
-    case 'A': return ".-";
+    case 'A': return ".-";
 
-    case 'B': return "-...";
+    case 'B': return "-...";
 
-    case 'C': return "-.-.";
+    case 'C': return "-.-.";
 
-    case 'D': return "-..";
+    case 'D': return "-..";
 
-    case 'E': return ".";
+    case 'E': return ".";
 
-    case 'F': return "..-.";
+    case 'F': return "..-.";
 
-    case 'G': return "--.";
+    case 'G': return "--.";
 
-    case 'H': return "....";
+    case 'H': return "....";
 
-    case 'I': return "..";
+    case 'I': return "..";
 
-    case 'J': return ".---";
+    case 'J': return ".---";
 
-    case 'K': return "-.-";
+    case 'K': return "-.-";
 
-    case 'L': return ".-..";
+    case 'L': return ".-..";
 
-    case 'M': return "--";
+    case 'M': return "--";
 
-    case 'N': return "-.";
+    case 'N': return "-.";
 
-    case 'O': return "---";
+    case 'O': return "---";
 
-    case 'P': return ".--.";
+    case 'P': return ".--.";
 
-    case 'Q': return "--.-";
+    case 'Q': return "--.-";
 
-    case 'R': return ".-.";
+    case 'R': return ".-.";
 
-    case 'S': return "...";
+    case 'S': return "...";
 
-    case 'T': return "-";
+    case 'T': return "-";
 
-    case 'U': return "..-";
+    case 'U': return "..-";
 
-    case 'V': return "...-";
+    case 'V': return "...-";
 
-    case 'W': return ".--";
+    case 'W': return ".--";
 
-    case 'X': return "-..-";
+    case 'X': return "-..-";
 
-    case 'Y': return "-.--";
+    case 'Y': return "-.--";
 
-    case 'Z': return "--..";
+    case 'Z': return "--..";
 
 
 
-    case '0': return "-----";
+    case '0': return "-----";
 
-    case '1': return ".----";
+    case '1': return ".----";
 
-    case '2': return "..---";
+    case '2': return "..---";
 
-    case '3': return "...--";
+    case '3': return "...--";
 
-    case '4': return "....-";
+    case '4': return "....-";
 
-    case '5': return ".....";
+    case '5': return ".....";
 
-    case '6': return "-....";
+    case '6': return "-....";
 
-    case '7': return "--...";
+    case '7': return "--...";
 
-    case '8': return "---..";
+    case '8': return "---..";
 
-    case '9': return "----.";
+    case '9': return "----.";
 
 
 
-    case '.': return ".-.-.-";
+    case '.': return ".-.-.-";
 
-    case ',': return "--..--";
+    case ',': return "--..--";
 
-    case '?': return "..--..";
+    case '?': return "..--..";
 
-    case '!': return "-.-.--";
+    case '!': return "-.-.--";
 
-    case '/': return "-..-.";
+    case '/': return "-..-.";
 
-    case '-': return "-....-";
+    case '-': return "-....-";
 
-    case ':': return "---...";
+    case ':': return "---...";
 
-    case ';': return "-.-.-.";
+    case ';': return "-.-.-.";
 
-    case '=': return "-...-";
+    case '=': return "-...-";
 
-    case '+': return ".-.-.";
+    case '+': return ".-.-.";
 
-    case '@': return ".--.-.";
+    case '@': return ".--.-.";
 
 
 
-    case '\\'': return ".----.";
+    case '\\'': return ".----.";
 
-    case '"': return ".-..-.";
+    case '"': return ".-..-.";
 
-    case '(':
+    case '(':
 
-    case ')': return "-.--.";
+    case ')': return "-.--.";
 
-    case '&': return ".-...";
+    case '&': return ".-...";
 
-    case '$': return "...-..-";
+    case '$': return "...-..-";
 
 
 
-    default:
+    default:
 
-      return NULL;
+      return NULL;
 
-  }
+  }
 
 }
 
@@ -2516,133 +2516,133 @@ const char \*getMorse(char c) {
 
 void sendMorseSymbol(
 
-  const char \*code,
+  const char \*code,
 
-  TargetType target
+  TargetType target
 
 ) {
 
 
 
-  while (\*code) {
+  while (\*code) {
 
 
 
-    unsigned int duration;
+    unsigned int duration;
 
 
 
-    if (\*code == '.') {
+    if (\*code == '.') {
 
-      duration = 200;
+      duration = 200;
 
-    } else {
+    } else {
 
-      duration = 600;
+      duration = 600;
 
-    }
+    }
 
 
 
-    if (target == TARGET_ARDUINO) {
+    if (target == TARGET_ARDUINO) {
 
 
 
-      digitalWrite(LED, HIGH);
+      digitalWrite(LED, HIGH);
 
-      arduinoState = true;
+      arduinoState = true;
 
 
 
-    } else if (target == TARGET_TRAINER) {
+    } else if (target == TARGET_TRAINER) {
 
 
 
-      for (byte i = 0; i < 8; i++) {
+      for (byte i = 0; i < 8; i++) {
 
-        setTrainerLED(i, true);
+        setTrainerLED(i, true);
 
-      }
+      }
 
 
 
-    } else {
+    } else {
 
 
 
-      digitalWrite(LED, HIGH);
+      digitalWrite(LED, HIGH);
 
 
 
-      for (byte i = 0; i < 8; i++) {
+      for (byte i = 0; i < 8; i++) {
 
-        setTrainerLED(i, true);
+        setTrainerLED(i, true);
 
-      }
+      }
 
 
 
-      arduinoState = true;
+      arduinoState = true;
 
-    }
+    }
 
 
 
-    delay(duration);
+    delay(duration);
 
 
 
-    if (target == TARGET_ARDUINO) {
+    if (target == TARGET_ARDUINO) {
 
 
 
-      digitalWrite(LED, LOW);
+      digitalWrite(LED, LOW);
 
-      arduinoState = false;
+      arduinoState = false;
 
 
 
-    } else if (target == TARGET_TRAINER) {
+    } else if (target == TARGET_TRAINER) {
 
 
 
-      for (byte i = 0; i < 8; i++) {
+      for (byte i = 0; i < 8; i++) {
 
-        setTrainerLED(i, false);
+        setTrainerLED(i, false);
 
-      }
+      }
 
 
 
-    } else {
+    } else {
 
 
 
-      digitalWrite(LED, LOW);
+      digitalWrite(LED, LOW);
 
 
 
-      for (byte i = 0; i < 8; i++) {
+      for (byte i = 0; i < 8; i++) {
 
-        setTrainerLED(i, false);
+        setTrainerLED(i, false);
 
-      }
+      }
 
 
 
-      arduinoState = false;
+      arduinoState = false;
 
-    }
+    }
 
 
 
-    delay(200);
+    delay(200);
 
 
 
-    code++;
+    code++;
 
-  }
+  }
 
 }
 
@@ -2660,85 +2660,85 @@ void sendMorseSymbol(
 
 void sendMorse(
 
-  char \*message,
+  char \*message,
 
-  TargetType target
+  TargetType target
 
 ) {
 
 
 
-  stopArduinoBlink();
+  stopArduinoBlink();
 
-  stopTrainerBlink();
+  stopTrainerBlink();
 
-  stopBothBlink();
-
-
-
-  Serial.print(F("MORSE TX: "));
-
-  Serial.println(message);
+  stopBothBlink();
 
 
 
-  while (\*message) {
+  Serial.print(F("MORSE TX: "));
+
+  Serial.println(message);
 
 
 
-    char c = \*message++;
+  while (\*message) {
 
 
 
-    if (c >= 'a' && c <= 'z') {
-
-      c -= 32;
-
-    }
+    char c = \*message++;
 
 
 
-    if (c == ' ') {
+    if (c >= 'a' && c <= 'z') {
+
+      c -= 32;
+
+    }
 
 
 
-      delay(1000);
-
-      continue;
-
-    }
+    if (c == ' ') {
 
 
 
-    const char \*code = getMorse(c);
+      delay(1000);
+
+      continue;
+
+    }
 
 
 
-    if (code != NULL) {
+    const char \*code = getMorse(c);
 
 
 
-      Serial.print(c);
-
-      Serial.print(F(": "));
-
-      Serial.println(code);
+    if (code != NULL) {
 
 
 
-      sendMorseSymbol(code, target);
+      Serial.print(c);
+
+      Serial.print(F(": "));
+
+      Serial.println(code);
 
 
 
-      delay(600);
-
-    }
-
-  }
+      sendMorseSymbol(code, target);
 
 
 
-  Serial.println(F("Morse transmission complete."));
+      delay(600);
+
+    }
+
+  }
+
+
+
+  Serial.println(F("Morse transmission complete."));
 
 }
 
@@ -2756,89 +2756,89 @@ void sendMorse(
 
 void countdown(
 
-  byte seconds,
+  byte seconds,
 
-  TargetType target
+  TargetType target
 
 ) {
 
 
 
-  stopAllEffects();
+  stopAllEffects();
 
 
 
-  Serial.println();
+  Serial.println();
 
-  Serial.println(F("COUNTDOWN"));
-
-
-
-  for (int i = seconds; i > 0; i--) {
+  Serial.println(F("COUNTDOWN"));
 
 
 
-    Serial.print(i);
-
-    Serial.println(F("..."));
+  for (int i = seconds; i > 0; i--) {
 
 
 
-    if (target == TARGET_ARDUINO) {
+    Serial.print(i);
 
-      pulseArduino(150);
-
-    }
+    Serial.println(F("..."));
 
 
 
-    else if (target == TARGET_TRAINER) {
+    if (target == TARGET_ARDUINO) {
 
-      pulseTrainer(150);
+      pulseArduino(150);
 
-    }
-
-
-
-    else {
-
-      pulseBoth(150);
-
-    }
+    }
 
 
 
-    delay(850);
+    else if (target == TARGET_TRAINER) {
 
-  }
+      pulseTrainer(150);
 
-
-
-  Serial.println(F("GO!"));
+    }
 
 
 
-  if (target == TARGET_ARDUINO) {
+    else {
 
-    flashArduino(3, 100);
+      pulseBoth(150);
 
-  }
-
-
-
-  else if (target == TARGET_TRAINER) {
-
-    flashTrainer(3, 100);
-
-  }
+    }
 
 
 
-  else {
+    delay(850);
 
-    flashBoth(3, 100);
+  }
 
-  }
+
+
+  Serial.println(F("GO!"));
+
+
+
+  if (target == TARGET_ARDUINO) {
+
+    flashArduino(3, 100);
+
+  }
+
+
+
+  else if (target == TARGET_TRAINER) {
+
+    flashTrainer(3, 100);
+
+  }
+
+
+
+  else {
+
+    flashBoth(3, 100);
+
+  }
 
 }
 
@@ -2856,153 +2856,153 @@ void countdown(
 
 void timer(
 
-  byte seconds,
+  byte seconds,
 
-  TargetType target
+  TargetType target
 
 ) {
 
 
 
-  stopAllEffects();
+  stopAllEffects();
 
 
 
-  Serial.print(F("Timer started: "));
+  Serial.print(F("Timer started: "));
 
-  Serial.print(seconds);
+  Serial.print(seconds);
 
-  Serial.println(F(" seconds."));
+  Serial.println(F(" seconds."));
 
 
 
-  for (int i = seconds; i > 0; i--) {
+  for (int i = seconds; i > 0; i--) {
 
 
 
-    Serial.print(i);
+    Serial.print(i);
 
-    Serial.println(F(" seconds remaining"));
+    Serial.println(F(" seconds remaining"));
 
 
 
-    if (target == TARGET_ARDUINO) {
+    if (target == TARGET_ARDUINO) {
 
 
 
-      digitalWrite(LED, HIGH);
+      digitalWrite(LED, HIGH);
 
-      arduinoState = true;
+      arduinoState = true;
 
 
 
-      delay(100);
+      delay(100);
 
 
 
-      digitalWrite(LED, LOW);
+      digitalWrite(LED, LOW);
 
-      arduinoState = false;
+      arduinoState = false;
 
-    }
+    }
 
 
 
-    else if (target == TARGET_TRAINER) {
+    else if (target == TARGET_TRAINER) {
 
 
 
-      for (byte j = 0; j < 8; j++) {
+      for (byte j = 0; j < 8; j++) {
 
-        setTrainerLED(j, true);
+        setTrainerLED(j, true);
 
-      }
+      }
 
 
 
-      delay(100);
+      delay(100);
 
 
 
-      for (byte j = 0; j < 8; j++) {
+      for (byte j = 0; j < 8; j++) {
 
-        setTrainerLED(j, false);
+        setTrainerLED(j, false);
 
-      }
+      }
 
-    }
+    }
 
 
 
-    else {
+    else {
 
 
 
-      digitalWrite(LED, HIGH);
+      digitalWrite(LED, HIGH);
 
 
 
-      for (byte j = 0; j < 8; j++) {
+      for (byte j = 0; j < 8; j++) {
 
-        setTrainerLED(j, true);
+        setTrainerLED(j, true);
 
-      }
+      }
 
 
 
-      delay(100);
+      delay(100);
 
 
 
-      digitalWrite(LED, LOW);
+      digitalWrite(LED, LOW);
 
 
 
-      for (byte j = 0; j < 8; j++) {
+      for (byte j = 0; j < 8; j++) {
 
-        setTrainerLED(j, false);
+        setTrainerLED(j, false);
 
-      }
+      }
 
 
 
-      arduinoState = false;
+      arduinoState = false;
 
-    }
+    }
 
 
 
-    delay(900);
+    delay(900);
 
-  }
+  }
 
 
 
-  Serial.println(F("TIME!"));
+  Serial.println(F("TIME!"));
 
 
 
-  if (target == TARGET_ARDUINO) {
+  if (target == TARGET_ARDUINO) {
 
-    flashArduino(5, 100);
+    flashArduino(5, 100);
 
-  }
+  }
 
 
 
-  else if (target == TARGET_TRAINER) {
+  else if (target == TARGET_TRAINER) {
 
-    flashTrainer(5, 100);
+    flashTrainer(5, 100);
 
-  }
+  }
 
 
 
-  else {
+  else {
 
-    flashBoth(5, 100);
+    flashBoth(5, 100);
 
-  }
+  }
 
 }
 
@@ -3022,21 +3022,21 @@ void randomPattern(TargetType target) {
 
 
 
-  randomSeed(micros());
+  randomSeed(micros());
 
 
 
-  byte pattern = random(1, 6);
+  byte pattern = random(1, 6);
 
 
 
-  Serial.print(F("Random pattern selected: "));
+  Serial.print(F("Random pattern selected: "));
 
-  Serial.println(pattern);
+  Serial.println(pattern);
 
 
 
-  runPattern(pattern, target);
+  runPattern(pattern, target);
 
 }
 
@@ -3054,245 +3054,245 @@ void randomPattern(TargetType target) {
 
 void runPattern(
 
-  byte pattern,
+  byte pattern,
 
-  TargetType target
+  TargetType target
 
 ) {
 
 
 
-  switch (pattern) {
+  switch (pattern) {
 
 
 
-    case 1:
+    case 1:
 
 
 
-      Serial.println(F("Pattern 1: FAST"));
+      Serial.println(F("Pattern 1: FAST"));
 
 
 
-      if (target == TARGET_ARDUINO)
+      if (target == TARGET_ARDUINO)
 
-        flashArduino(10, 100);
+        flashArduino(10, 100);
 
 
 
-      else if (target == TARGET_TRAINER)
+      else if (target == TARGET_TRAINER)
 
-        flashTrainer(10, 100);
+        flashTrainer(10, 100);
 
 
 
-      else
+      else
 
-        flashBoth(10, 100);
+        flashBoth(10, 100);
 
 
 
-      break;
+      break;
 
 
 
 
 
-    case 2:
+    case 2:
 
 
 
-      Serial.println(F("Pattern 2: SLOW"));
+      Serial.println(F("Pattern 2: SLOW"));
 
 
 
-      if (target == TARGET_ARDUINO)
+      if (target == TARGET_ARDUINO)
 
-        flashArduino(5, 500);
+        flashArduino(5, 500);
 
 
 
-      else if (target == TARGET_TRAINER)
+      else if (target == TARGET_TRAINER)
 
-        flashTrainer(5, 500);
+        flashTrainer(5, 500);
 
 
 
-      else
+      else
 
-        flashBoth(5, 500);
+        flashBoth(5, 500);
 
 
 
-      break;
+      break;
 
 
 
 
 
-    case 3:
+    case 3:
 
 
 
-      Serial.println(F("Pattern 3: SOS"));
+      Serial.println(F("Pattern 3: SOS"));
 
 
 
-      if (target == TARGET_ARDUINO)
+      if (target == TARGET_ARDUINO)
 
-        sendSOSArduino();
+        sendSOSArduino();
 
 
 
-      else if (target == TARGET_TRAINER)
+      else if (target == TARGET_TRAINER)
 
-        sendSOSTrainer();
+        sendSOSTrainer();
 
 
 
-      else
+      else
 
-        sendSOSBoth();
+        sendSOSBoth();
 
 
 
-      break;
+      break;
 
 
 
 
 
-    case 4:
+    case 4:
 
 
 
-      Serial.println(F("Pattern 4: DOUBLE FLASH"));
+      Serial.println(F("Pattern 4: DOUBLE FLASH"));
 
 
 
-      for (byte i = 0; i < 5; i++) {
+      for (byte i = 0; i < 5; i++) {
 
 
 
-        if (target == TARGET_ARDUINO) {
+        if (target == TARGET_ARDUINO) {
 
-          pulseArduino(100);
+          pulseArduino(100);
 
-          delay(100);
+          delay(100);
 
-          pulseArduino(100);
+          pulseArduino(100);
 
-        }
+        }
 
 
 
-        else if (target == TARGET_TRAINER) {
+        else if (target == TARGET_TRAINER) {
 
-          pulseTrainer(100);
+          pulseTrainer(100);
 
-          delay(100);
+          delay(100);
 
-          pulseTrainer(100);
+          pulseTrainer(100);
 
-        }
+        }
 
 
 
-        else {
+        else {
 
-          pulseBoth(100);
+          pulseBoth(100);
 
-          delay(100);
+          delay(100);
 
-          pulseBoth(100);
+          pulseBoth(100);
 
-        }
+        }
 
 
 
-        delay(500);
+        delay(500);
 
-      }
+      }
 
 
 
-      break;
+      break;
 
 
 
 
 
-    case 5:
+    case 5:
 
 
 
-      Serial.println(F("Pattern 5: HEARTBEAT"));
+      Serial.println(F("Pattern 5: HEARTBEAT"));
 
 
 
-      for (byte i = 0; i < 5; i++) {
+      for (byte i = 0; i < 5; i++) {
 
 
 
-        if (target == TARGET_ARDUINO) {
+        if (target == TARGET_ARDUINO) {
 
-          pulseArduino(100);
+          pulseArduino(100);
 
-          delay(100);
+          delay(100);
 
-          pulseArduino(300);
+          pulseArduino(300);
 
-        }
+        }
 
 
 
-        else if (target == TARGET_TRAINER) {
+        else if (target == TARGET_TRAINER) {
 
-          pulseTrainer(100);
+          pulseTrainer(100);
 
-          delay(100);
+          delay(100);
 
-          pulseTrainer(300);
+          pulseTrainer(300);
 
-        }
+        }
 
 
 
-        else {
+        else {
 
-          pulseBoth(100);
+          pulseBoth(100);
 
-          delay(100);
+          delay(100);
 
-          pulseBoth(300);
+          pulseBoth(300);
 
-        }
+        }
 
 
 
-        delay(700);
+        delay(700);
 
-      }
+      }
 
 
 
-      break;
+      break;
 
 
 
 
 
-    default:
+    default:
 
 
 
-      Serial.println(F("ERROR: Pattern must be 1-5."));
+      Serial.println(F("ERROR: Pattern must be 1-5."));
 
 
 
-      break;
+      break;
 
-  }
+  }
 
 }
 
@@ -3312,135 +3312,135 @@ void showStatus() {
 
 
 
-  unsigned long seconds =
+  unsigned long seconds =
 
-    (millis() - startTime) / 1000UL;
+    (millis() - startTime) / 1000UL;
 
 
 
-  Serial.println();
+  Serial.println();
 
-  Serial.println(F("========================================"));
+  Serial.println(F("========================================"));
 
-  Serial.println(F("              SYSTEM STATUS"));
+  Serial.println(F("              SYSTEM STATUS"));
 
-  Serial.println(F("========================================"));
+  Serial.println(F("========================================"));
 
 
 
-  Serial.println(F("Board:       AMOMII ONE"));
+  Serial.println(F("Board:       AMOMII ONE"));
 
-  Serial.println(F("Connection:  USB"));
+  Serial.println(F("Connection:  USB"));
 
-  Serial.println(F("System:      ONLINE"));
+  Serial.println(F("System:      ONLINE"));
 
 
 
-  Serial.print(F("Arduino LED: "));
+  Serial.print(F("Arduino LED: "));
 
-  Serial.println(
+  Serial.println(
 
-    arduinoState ? F("ON") : F("OFF")
+    arduinoState ? F("ON") : F("OFF")
 
-  );
+  );
 
 
 
-  Serial.print(F("Arduino Blink: "));
+  Serial.print(F("Arduino Blink: "));
 
-  Serial.println(
+  Serial.println(
 
-    arduinoBlinking ? F("YES") : F("NO")
+    arduinoBlinking ? F("YES") : F("NO")
 
-  );
+  );
 
 
 
-  Serial.print(F("Arduino Speed: "));
+  Serial.print(F("Arduino Speed: "));
 
-  Serial.print(arduinoBlinkSpeed);
+  Serial.print(arduinoBlinkSpeed);
 
-  Serial.println(F(" ms"));
+  Serial.println(F(" ms"));
 
 
 
-  Serial.print(F("Trainer Blink: "));
+  Serial.print(F("Trainer Blink: "));
 
-  Serial.println(
+  Serial.println(
 
-    trainerBlinking ? F("YES") : F("NO")
+    trainerBlinking ? F("YES") : F("NO")
 
-  );
+  );
 
 
 
-  Serial.print(F("Trainer Speed: "));
+  Serial.print(F("Trainer Speed: "));
 
-  Serial.print(trainerBlinkSpeed);
+  Serial.print(trainerBlinkSpeed);
 
-  Serial.println(F(" ms"));
+  Serial.println(F(" ms"));
 
 
 
-  Serial.print(F("Both Blink: "));
+  Serial.print(F("Both Blink: "));
 
-  Serial.println(
+  Serial.println(
 
-    bothBlinking ? F("YES") : F("NO")
+    bothBlinking ? F("YES") : F("NO")
 
-  );
+  );
 
 
 
-  Serial.print(F("Commands:    "));
+  Serial.print(F("Commands:    "));
 
-  Serial.println(commandCount);
+  Serial.println(commandCount);
 
 
 
-  Serial.print(F("Uptime:      "));
+  Serial.print(F("Uptime:      "));
 
-  Serial.print(seconds);
+  Serial.print(seconds);
 
-  Serial.println(F(" seconds"));
+  Serial.println(F(" seconds"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("Trainer LEDs:"));
+  Serial.println(F("Trainer LEDs:"));
 
 
 
-  for (byte i = 0; i < 8; i++) {
+  for (byte i = 0; i < 8; i++) {
 
 
 
-    Serial.print(F("  "));
+    Serial.print(F("  "));
 
-    Serial.print(i);
+    Serial.print(i);
 
-    Serial.print(F(": "));
+    Serial.print(F(": "));
 
 
 
-    Serial.println(
+    Serial.println(
 
-      digitalRead(TRAINER[i])
+      digitalRead(TRAINER[i])
 
-      ? F("ON")
+      ? F("ON")
 
-      : F("OFF")
+      : F("OFF")
 
-    );
+    );
 
-  }
+  }
 
 
 
-  Serial.println(F("========================================"));
+  Serial.println(F("========================================"));
 
 }
 
@@ -3460,57 +3460,57 @@ void showUptime() {
 
 
 
-  unsigned long total =
+  unsigned long total =
 
-    (millis() - startTime) / 1000UL;
-
-
-
-  unsigned long hours =
-
-    total / 3600UL;
+    (millis() - startTime) / 1000UL;
 
 
 
-  byte minutes =
+  unsigned long hours =
 
-    (total % 3600UL) / 60UL;
-
-
-
-  byte seconds =
-
-    total % 60UL;
+    total / 3600UL;
 
 
 
-  Serial.print(F("Uptime: "));
+  byte minutes =
+
+    (total % 3600UL) / 60UL;
 
 
 
-  if (hours < 10) Serial.print('0');
+  byte seconds =
 
-  Serial.print(hours);
-
-
-
-  Serial.print(':');
+    total % 60UL;
 
 
 
-  if (minutes < 10) Serial.print('0');
-
-  Serial.print(minutes);
+  Serial.print(F("Uptime: "));
 
 
 
-  Serial.print(':');
+  if (hours < 10) Serial.print('0');
+
+  Serial.print(hours);
 
 
 
-  if (seconds < 10) Serial.print('0');
+  Serial.print(':');
 
-  Serial.println(seconds);
+
+
+  if (minutes < 10) Serial.print('0');
+
+  Serial.print(minutes);
+
+
+
+  Serial.print(':');
+
+
+
+  if (seconds < 10) Serial.print('0');
+
+  Serial.println(seconds);
 
 }
 
@@ -3530,83 +3530,83 @@ void showAbout() {
 
 
 
-  Serial.println();
+  Serial.println();
 
-  Serial.println(F("========================================"));
+  Serial.println(F("========================================"));
 
-  Serial.println(F("       AMOMII ONE COMMAND CENTER"));
+  Serial.println(F("       AMOMII ONE COMMAND CENTER"));
 
-  Serial.println(F("                 VERSION 6.0"));
+  Serial.println(F("                 VERSION 6.0"));
 
-  Serial.println(F("========================================"));
+  Serial.println(F("========================================"));
 
-  Serial.println();
-
-
-
-  Serial.println(F("USB ROBOT DEVELOPMENT CONSOLE"));
+  Serial.println();
 
 
 
-  Serial.println();
+  Serial.println(F("USB ROBOT DEVELOPMENT CONSOLE"));
 
 
 
-  Serial.println(F("HARDWARE"));
-
-  Serial.println(F("  AMOMII ONE"));
-
-  Serial.println(F("  BUILT-IN LED"));
-
-  Serial.println(F("  TRAINER LEDS 2-9"));
-
-  Serial.println(F("  USB"));
+  Serial.println();
 
 
 
-  Serial.println();
+  Serial.println(F("HARDWARE"));
+
+  Serial.println(F("  AMOMII ONE"));
+
+  Serial.println(F("  BUILT-IN LED"));
+
+  Serial.println(F("  TRAINER LEDS 2-9"));
+
+  Serial.println(F("  USB"));
 
 
 
-  Serial.println(F("CONTROL"));
-
-  Serial.println(F("  TEXT COMMANDS"));
-
-  Serial.println(F("  VOICE-FRIENDLY COMMANDS"));
-
-  Serial.println(F("  INDEPENDENT TARGETS"));
-
-  Serial.println(F("  SYNCHRONIZED BOTH TARGET"));
+  Serial.println();
 
 
 
-  Serial.println();
+  Serial.println(F("CONTROL"));
+
+  Serial.println(F("  TEXT COMMANDS"));
+
+  Serial.println(F("  VOICE-FRIENDLY COMMANDS"));
+
+  Serial.println(F("  INDEPENDENT TARGETS"));
+
+  Serial.println(F("  SYNCHRONIZED BOTH TARGET"));
 
 
 
-  Serial.println(F("EFFECTS"));
-
-  Serial.println(F("  BLINK"));
-
-  Serial.println(F("  FLASH"));
-
-  Serial.println(F("  PULSE"));
-
-  Serial.println(F("  SOS"));
-
-  Serial.println(F("  MORSE"));
-
-  Serial.println(F("  COUNTDOWN"));
-
-  Serial.println(F("  TIMER"));
-
-  Serial.println(F("  PATTERNS"));
-
-  Serial.println(F("  RANDOM"));
+  Serial.println();
 
 
 
-  Serial.println();
+  Serial.println(F("EFFECTS"));
+
+  Serial.println(F("  BLINK"));
+
+  Serial.println(F("  FLASH"));
+
+  Serial.println(F("  PULSE"));
+
+  Serial.println(F("  SOS"));
+
+  Serial.println(F("  MORSE"));
+
+  Serial.println(F("  COUNTDOWN"));
+
+  Serial.println(F("  TIMER"));
+
+  Serial.println(F("  PATTERNS"));
+
+  Serial.println(F("  RANDOM"));
+
+
+
+  Serial.println();
 
 }
 
@@ -3626,83 +3626,83 @@ void systemTest() {
 
 
 
-  Serial.println();
+  Serial.println();
 
-  Serial.println(F("========== SYSTEM TEST =========="));
-
-
-
-  stopAllEffects();
+  Serial.println(F("========== SYSTEM TEST =========="));
 
 
 
-  Serial.println(F("Serial:       OK"));
+  stopAllEffects();
 
 
 
-  Serial.println(F("Arduino LED:  TESTING"));
+  Serial.println(F("Serial:       OK"));
 
 
 
-  flashArduino(3, 200);
+  Serial.println(F("Arduino LED:  TESTING"));
 
 
 
-  Serial.println(F("Arduino LED:  OK"));
+  flashArduino(3, 200);
 
 
 
-  Serial.println(F("Trainer LEDs: TESTING"));
+  Serial.println(F("Arduino LED:  OK"));
 
 
 
-  for (byte i = 0; i < 8; i++) {
+  Serial.println(F("Trainer LEDs: TESTING"));
 
 
 
-    setTrainerLED(i, true);
+  for (byte i = 0; i < 8; i++) {
 
 
 
-    delay(100);
+    setTrainerLED(i, true);
 
 
 
-    setTrainerLED(i, false);
-
-  }
+    delay(100);
 
 
 
-  Serial.println(F("Trainer LEDs: OK"));
+    setTrainerLED(i, false);
+
+  }
 
 
 
-  Serial.println(F("Both LEDs:    TESTING"));
+  Serial.println(F("Trainer LEDs: OK"));
 
 
 
-  flashBoth(3, 150);
+  Serial.println(F("Both LEDs:    TESTING"));
 
 
 
-  Serial.println(F("Both LEDs:    OK"));
+  flashBoth(3, 150);
 
 
 
-  Serial.println(F("Timing:       OK"));
-
-  Serial.println(F("Memory:       OK"));
-
-  Serial.println(F("Commands:     OK"));
-
-  Serial.println(F("System:       OK"));
+  Serial.println(F("Both LEDs:    OK"));
 
 
 
-  Serial.println(F("================================="));
+  Serial.println(F("Timing:       OK"));
 
-  Serial.println();
+  Serial.println(F("Memory:       OK"));
+
+  Serial.println(F("Commands:     OK"));
+
+  Serial.println(F("System:       OK"));
+
+
+
+  Serial.println(F("================================="));
+
+  Serial.println();
 
 }
 
@@ -3722,25 +3722,25 @@ void startupAnimation() {
 
 
 
-  for (byte i = 0; i < 3; i++) {
+  for (byte i = 0; i < 3; i++) {
 
 
 
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, HIGH);
 
 
 
-    delay(100);
+    delay(100);
 
 
 
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, LOW);
 
 
 
-    delay(100);
+    delay(100);
 
-  }
+  }
 
 }
 
@@ -3760,19 +3760,19 @@ void clearScreen() {
 
 
 
-  for (byte i = 0; i < 30; i++) {
+  for (byte i = 0; i < 30; i++) {
 
-    Serial.println();
+    Serial.println();
 
-  }
+  }
 
 
 
-  Serial.println(
+  Serial.println(
 
-    F("AMOMII ONE Command Center ready.")
+    F("AMOMII ONE Command Center ready.")
 
-  );
+  );
 
 }
 
@@ -3792,221 +3792,221 @@ void showHelp() {
 
 
 
-  Serial.println();
+  Serial.println();
 
-  Serial.println(F("================================================"));
+  Serial.println(F("================================================"));
 
-  Serial.println(F("          AMOMII ONE COMMAND CENTER 6.0"));
+  Serial.println(F("          AMOMII ONE COMMAND CENTER 6.0"));
 
-  Serial.println(F("================================================"));
+  Serial.println(F("================================================"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("ARDUINO LED"));
+  Serial.println(F("ARDUINO LED"));
 
-  Serial.println(F("-----------"));
+  Serial.println(F("-----------"));
 
-  Serial.println(F("LED ON"));
+  Serial.println(F("LED ON"));
 
-  Serial.println(F("LED OFF"));
+  Serial.println(F("LED OFF"));
 
-  Serial.println(F("ARDUINO ON"));
+  Serial.println(F("ARDUINO ON"));
 
-  Serial.println(F("ARDUINO OFF"));
+  Serial.println(F("ARDUINO OFF"));
 
-  Serial.println(F("BLINK 10"));
+  Serial.println(F("BLINK 10"));
 
-  Serial.println(F("SPEED 100"));
+  Serial.println(F("SPEED 100"));
 
-  Serial.println(F("PULSE 500"));
+  Serial.println(F("PULSE 500"));
 
-  Serial.println(F("FLASH 10 100"));
+  Serial.println(F("FLASH 10 100"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("TRAINER LEDS"));
+  Serial.println(F("TRAINER LEDS"));
 
-  Serial.println(F("------------"));
+  Serial.println(F("------------"));
 
-  Serial.println(F("TRAINER LED 0 ON"));
+  Serial.println(F("TRAINER LED 0 ON"));
 
-  Serial.println(F("TRAINER LED 0 OFF"));
+  Serial.println(F("TRAINER LED 0 OFF"));
 
-  Serial.println(F("TRAINER LED 7 ON"));
+  Serial.println(F("TRAINER LED 7 ON"));
 
-  Serial.println(F("TRAINER LED 7 OFF"));
+  Serial.println(F("TRAINER LED 7 OFF"));
 
-  Serial.println(F("TRAINER ALL ON"));
+  Serial.println(F("TRAINER ALL ON"));
 
-  Serial.println(F("TRAINER ALL OFF"));
+  Serial.println(F("TRAINER ALL OFF"));
 
-  Serial.println(F("TRAINER BLINK 10"));
+  Serial.println(F("TRAINER BLINK 10"));
 
-  Serial.println(F("TRAINER FLASH 10 100"));
+  Serial.println(F("TRAINER FLASH 10 100"));
 
-  Serial.println(F("TRAINER PULSE 500"));
+  Serial.println(F("TRAINER PULSE 500"));
 
-  Serial.println(F("TRAINER SOS"));
+  Serial.println(F("TRAINER SOS"));
 
-  Serial.println(F("TRAINER MORSE SOS"));
+  Serial.println(F("TRAINER MORSE SOS"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("BOTH"));
+  Serial.println(F("BOTH"));
 
-  Serial.println(F("----"));
+  Serial.println(F("----"));
 
-  Serial.println(F("ALL ON"));
+  Serial.println(F("ALL ON"));
 
-  Serial.println(F("ALL OFF"));
+  Serial.println(F("ALL OFF"));
 
-  Serial.println(F("BOTH ON"));
+  Serial.println(F("BOTH ON"));
 
-  Serial.println(F("BOTH OFF"));
+  Serial.println(F("BOTH OFF"));
 
-  Serial.println(F("BOTH BLINK 10"));
+  Serial.println(F("BOTH BLINK 10"));
 
-  Serial.println(F("BOTH FLASH 10 100"));
+  Serial.println(F("BOTH FLASH 10 100"));
 
-  Serial.println(F("BOTH PULSE 500"));
+  Serial.println(F("BOTH PULSE 500"));
 
-  Serial.println(F("BOTH SOS"));
+  Serial.println(F("BOTH SOS"));
 
-  Serial.println(F("BOTH MORSE SOS"));
+  Serial.println(F("BOTH MORSE SOS"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("EFFECTS"));
+  Serial.println(F("EFFECTS"));
 
-  Serial.println(F("-------"));
+  Serial.println(F("-------"));
 
-  Serial.println(F("BLINK 10"));
+  Serial.println(F("BLINK 10"));
 
-  Serial.println(F("TRAINER BLINK 10"));
+  Serial.println(F("TRAINER BLINK 10"));
 
-  Serial.println(F("BOTH BLINK 10"));
+  Serial.println(F("BOTH BLINK 10"));
 
-  Serial.println(F("SPEED 100"));
+  Serial.println(F("SPEED 100"));
 
-  Serial.println(F("FLASH 10 100"));
+  Serial.println(F("FLASH 10 100"));
 
-  Serial.println(F("PULSE 500"));
+  Serial.println(F("PULSE 500"));
 
-  Serial.println(F("SOS"));
+  Serial.println(F("SOS"));
 
-  Serial.println(F("MORSE HELLO"));
+  Serial.println(F("MORSE HELLO"));
 
-  Serial.println(F("MORSE 123"));
+  Serial.println(F("MORSE 123"));
 
-  Serial.println(F("COUNTDOWN 10"));
+  Serial.println(F("COUNTDOWN 10"));
 
-  Serial.println(F("TIMER 10"));
+  Serial.println(F("TIMER 10"));
 
-  Serial.println(F("RANDOM"));
+  Serial.println(F("RANDOM"));
 
-  Serial.println(F("PATTERN 1"));
+  Serial.println(F("PATTERN 1"));
 
-  Serial.println(F("PATTERN 2"));
+  Serial.println(F("PATTERN 2"));
 
-  Serial.println(F("PATTERN 3"));
+  Serial.println(F("PATTERN 3"));
 
-  Serial.println(F("PATTERN 4"));
+  Serial.println(F("PATTERN 4"));
 
-  Serial.println(F("PATTERN 5"));
+  Serial.println(F("PATTERN 5"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("STOP"));
+  Serial.println(F("STOP"));
 
-  Serial.println(F("----"));
+  Serial.println(F("----"));
 
-  Serial.println(F("STOP"));
+  Serial.println(F("STOP"));
 
-  Serial.println(F("STOP ALL"));
+  Serial.println(F("STOP ALL"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("SYSTEM"));
+  Serial.println(F("SYSTEM"));
 
-  Serial.println(F("------"));
+  Serial.println(F("------"));
 
-  Serial.println(F("STATUS"));
+  Serial.println(F("STATUS"));
 
-  Serial.println(F("UPTIME"));
+  Serial.println(F("UPTIME"));
 
-  Serial.println(F("VERSION"));
+  Serial.println(F("VERSION"));
 
-  Serial.println(F("ABOUT"));
+  Serial.println(F("ABOUT"));
 
-  Serial.println(F("TEST"));
+  Serial.println(F("TEST"));
 
-  Serial.println(F("REBOOT"));
+  Serial.println(F("REBOOT"));
 
-  Serial.println(F("HELP"));
+  Serial.println(F("HELP"));
 
-  Serial.println(F("COMMANDS"));
+  Serial.println(F("COMMANDS"));
 
-  Serial.println(F("ECHO HELLO"));
+  Serial.println(F("ECHO HELLO"));
 
-  Serial.println(F("CLEAR"));
+  Serial.println(F("CLEAR"));
 
 
 
-  Serial.println();
+  Serial.println();
 
 
 
-  Serial.println(F("VOICE EXAMPLES"));
+  Serial.println(F("VOICE EXAMPLES"));
 
-  Serial.println(F("--------------"));
+  Serial.println(F("--------------"));
 
-  Serial.println(F("trainer led three on"));
+  Serial.println(F("trainer led three on"));
 
-  Serial.println(F("trainer led all off"));
+  Serial.println(F("trainer led all off"));
 
-  Serial.println(F("arduino led on"));
+  Serial.println(F("arduino led on"));
 
-  Serial.println(F("all leds on"));
+  Serial.println(F("all leds on"));
 
-  Serial.println(F("both blink five"));
+  Serial.println(F("both blink five"));
 
-  Serial.println(F("speed one hundred"));
+  Serial.println(F("speed one hundred"));
 
-  Serial.println(F("flash ten one hundred"));
+  Serial.println(F("flash ten one hundred"));
 
-  Serial.println(F("both morse hello"));
+  Serial.println(F("both morse hello"));
 
 
 
-  Serial.println();
+  Serial.println();
 
-  Serial.println(F("================================================"));
+  Serial.println(F("================================================"));
 
-  Serial.println();
+  Serial.println();
 
 }
 
@@ -4026,355 +4026,355 @@ void processCommand() {
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // NORMALIZE INPUT
+  // NORMALIZE INPUT
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  normalizeVoice(command);
+  normalizeVoice(command);
 
 
 
-  Serial.print(F("> "));
+  Serial.print(F("> "));
 
-  Serial.println(command);
+  Serial.println(command);
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // HELP
+  // HELP
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "help") ||
+  if (!strcmp(command, "help") ||
 
-      !strcmp(command, "?") ||
+      !strcmp(command, "?") ||
 
-      !strcmp(command, "commands")) {
+      !strcmp(command, "commands")) {
 
 
 
-    showHelp();
+    showHelp();
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // STATUS
+  // STATUS
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "status")) {
+  if (!strcmp(command, "status")) {
 
 
 
-    showStatus();
+    showStatus();
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // UPTIME
+  // UPTIME
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "uptime")) {
+  if (!strcmp(command, "uptime")) {
 
 
 
-    showUptime();
+    showUptime();
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // VERSION
+  // VERSION
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "version")) {
+  if (!strcmp(command, "version")) {
 
 
 
-    Serial.println(
+    Serial.println(
 
-      F("AMOMII ONE COMMAND CENTER 6.0")
+      F("AMOMII ONE COMMAND CENTER 6.0")
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ABOUT
+  // ABOUT
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "about")) {
+  if (!strcmp(command, "about")) {
 
 
 
-    showAbout();
+    showAbout();
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // CLEAR
+  // CLEAR
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "clear")) {
+  if (!strcmp(command, "clear")) {
 
 
 
-    clearScreen();
+    clearScreen();
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // STOP
+  // STOP
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "stop") ||
+  if (!strcmp(command, "stop") ||
 
-      !strcmp(command, "stop all") ||
+      !strcmp(command, "stop all") ||
 
-      !strcmp(command, "stopall")) {
+      !strcmp(command, "stopall")) {
 
 
 
-    stopAllEffects();
+    stopAllEffects();
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ALL ON / BOTH ON
+  // ALL ON / BOTH ON
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "all on") ||
+  if (!strcmp(command, "all on") ||
 
-      !strcmp(command, "allon") ||
+      !strcmp(command, "allon") ||
 
-      !strcmp(command, "both on") ||
+      !strcmp(command, "both on") ||
 
-      !strcmp(command, "both on")) {
+      !strcmp(command, "both on")) {
 
 
 
-    bothOn();
+    bothOn();
 
 
 
-    Serial.println(F("ALL LEDs ON"));
+    Serial.println(F("ALL LEDs ON"));
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ALL OFF / BOTH OFF
+  // ALL OFF / BOTH OFF
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "all off") ||
+  if (!strcmp(command, "all off") ||
 
-      !strcmp(command, "alloff") ||
+      !strcmp(command, "alloff") ||
 
-      !strcmp(command, "both off") ||
+      !strcmp(command, "both off") ||
 
-      !strcmp(command, "both off")) {
+      !strcmp(command, "both off")) {
 
 
 
-    bothOff();
+    bothOff();
 
 
 
-    Serial.println(F("ALL LEDs OFF"));
+    Serial.println(F("ALL LEDs OFF"));
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER ALL ON
+  // TRAINER ALL ON
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "trainer all on") ||
+  if (!strcmp(command, "trainer all on") ||
 
-      !strcmp(command, "trainer on")) {
+      !strcmp(command, "trainer on")) {
 
 
 
-    trainerAllOn();
+    trainerAllOn();
 
 
 
-    Serial.println(F("TRAINER ALL ON"));
+    Serial.println(F("TRAINER ALL ON"));
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER ALL OFF
+  // TRAINER ALL OFF
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "trainer all off") ||
+  if (!strcmp(command, "trainer all off") ||
 
-      !strcmp(command, "trainer off")) {
+      !strcmp(command, "trainer off")) {
 
 
 
-    trainerAllOff();
+    trainerAllOff();
 
 
 
-    Serial.println(F("TRAINER ALL OFF"));
+    Serial.println(F("TRAINER ALL OFF"));
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ARDUINO ON
+  // ARDUINO ON
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "on") ||
+  if (!strcmp(command, "on") ||
 
-      !strcmp(command, "ledon") ||
+      !strcmp(command, "ledon") ||
 
-      !strcmp(command, "led on") ||
+      !strcmp(command, "led on") ||
 
-      !strcmp(command, "arduino on") ||
+      !strcmp(command, "arduino on") ||
 
-      !strcmp(command, "arduino led on")) {
+      !strcmp(command, "arduino led on")) {
 
 
 
-    arduinoOn();
+    arduinoOn();
 
 
 
-    Serial.println(F("ARDUINO LED ON"));
+    Serial.println(F("ARDUINO LED ON"));
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
@@ -4388,25 +4388,25 @@ void processCommand() {
 
 if (!strcmp(command, "off") ||
 
-    !strcmp(command, "ledoff") ||
+    !strcmp(command, "ledoff") ||
 
-    !strcmp(command, "led off") ||
+    !strcmp(command, "led off") ||
 
-    !strcmp(command, "arduino off") ||
+    !strcmp(command, "arduino off") ||
 
-    !strcmp(command, "arduino led off")) {
-
-
-
-  arduinoOff();
+    !strcmp(command, "arduino led off")) {
 
 
 
-  Serial.println(F("ARDUINO LED OFF"));
+  arduinoOff();
 
 
 
-  return;
+  Serial.println(F("ARDUINO LED OFF"));
+
+
+
+  return;
 
 }
 
@@ -4424,31 +4424,31 @@ if (!strcmp(command, "off") ||
 
 if (!strcmp(command, "toggle") ||
 
-    !strcmp(command, "led toggle") ||
+    !strcmp(command, "led toggle") ||
 
-    !strcmp(command, "arduino toggle") ||
+    !strcmp(command, "arduino toggle") ||
 
-    !strcmp(command, "arduino led toggle")) {
-
-
-
-  if (arduinoState) {
-
-    arduinoOff();
-
-    Serial.println(F("ARDUINO LED OFF"));
-
-  } else {
-
-    arduinoOn();
-
-    Serial.println(F("ARDUINO LED ON"));
-
-  }
+    !strcmp(command, "arduino led toggle")) {
 
 
 
-  return;
+  if (arduinoState) {
+
+    arduinoOff();
+
+    Serial.println(F("ARDUINO LED OFF"));
+
+  } else {
+
+    arduinoOn();
+
+    Serial.println(F("ARDUINO LED ON"));
+
+  }
+
+
+
+  return;
 
 }
 
@@ -4460,1494 +4460,1494 @@ if (!strcmp(command, "toggle") ||
 
 // TRAINER INDIVIDUAL LED
 
-  //
+  //
 
-  // TRAINER LED 0 ON
+  // TRAINER LED 0 ON
 
-  // TRAINER LED 7 OFF
+  // TRAINER LED 7 OFF
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer led ", 12)) {
+  if (!strncmp(command, "trainer led ", 12)) {
 
 
 
-    char \*p = command + 12;
+    char \*p = command + 12;
 
 
 
-    if (\*p >= '0' && \*p <= '7') {
+    if (\*p >= '0' && \*p <= '7') {
 
 
 
-      byte index = \*p - '0';
+      byte index = \*p - '0';
 
 
 
-      p++;
+      p++;
 
 
 
-      while (\*p == ' ') p++;
+      while (\*p == ' ') p++;
 
 
 
-      if (!strcmp(p, "on")) {
+      if (!strcmp(p, "on")) {
 
 
 
-        stopTrainerBlink();
+        stopTrainerBlink();
 
 
 
-        setTrainerLED(index, true);
+        setTrainerLED(index, true);
 
 
 
-        Serial.print(F("TRAINER LED "));
+        Serial.print(F("TRAINER LED "));
 
-        Serial.print(index);
+        Serial.print(index);
 
-        Serial.println(F(" ON"));
+        Serial.println(F(" ON"));
 
 
 
-        return;
+        return;
 
-      }
+      }
 
 
 
-      if (!strcmp(p, "off")) {
+      if (!strcmp(p, "off")) {
 
 
 
-        stopTrainerBlink();
+        stopTrainerBlink();
 
 
 
-        setTrainerLED(index, false);
+        setTrainerLED(index, false);
 
 
 
-        Serial.print(F("TRAINER LED "));
+        Serial.print(F("TRAINER LED "));
 
-        Serial.print(index);
+        Serial.print(index);
 
-        Serial.println(F(" OFF"));
+        Serial.println(F(" OFF"));
 
 
 
-        return;
+        return;
 
-      }
+      }
 
-    }
+    }
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ARDUINO BLINK
+  // ARDUINO BLINK
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "blink ", 6) ||
+  if (!strncmp(command, "blink ", 6) ||
 
-      !strncmp(command, "blink", 5)) {
+      !strncmp(command, "blink", 5)) {
 
 
 
-    int count = atoi(
+    int count = atoi(
 
-      command + (command[5] == ' ' ? 6 : 5)
+      command + (command[5] == ' ' ? 6 : 5)
 
-    );
+    );
 
 
 
-    if (count >= 1 && count <= 1000) {
+    if (count >= 1 && count <= 1000) {
 
 
 
-      startArduinoBlink(
+      startArduinoBlink(
 
-        count,
+        count,
 
-        arduinoBlinkSpeed
+        arduinoBlinkSpeed
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: BLINK must be 1-1000.")
+        F("ERROR: BLINK must be 1-1000.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER BLINK
+  // TRAINER BLINK
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer blink ", 14)) {
+  if (!strncmp(command, "trainer blink ", 14)) {
 
 
 
-    int count = atoi(command + 14);
+    int count = atoi(command + 14);
 
 
 
-    if (count >= 1 && count <= 1000) {
+    if (count >= 1 && count <= 1000) {
 
 
 
-      startTrainerBlink(
+      startTrainerBlink(
 
-        count,
+        count,
 
-        trainerBlinkSpeed
+        trainerBlinkSpeed
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: TRAINER BLINK must be 1-1000.")
+        F("ERROR: TRAINER BLINK must be 1-1000.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH BLINK
+  // BOTH BLINK
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "both blink ", 11)) {
+  if (!strncmp(command, "both blink ", 11)) {
 
 
 
-    int count = atoi(command + 11);
+    int count = atoi(command + 11);
 
 
 
-    if (count >= 1 && count <= 1000) {
+    if (count >= 1 && count <= 1000) {
 
 
 
-      startBothBlink(
+      startBothBlink(
 
-        count,
+        count,
 
-        bothBlinkSpeed
+        bothBlinkSpeed
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: BOTH BLINK must be 1-1000.")
+        F("ERROR: BOTH BLINK must be 1-1000.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // SPEED
+  // SPEED
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "speed", 5)) {
+  if (!strncmp(command, "speed", 5)) {
 
 
 
-    int speed = atoi(command + 5);
+    int speed = atoi(command + 5);
 
 
 
-    if (speed >= 20 && speed <= 5000) {
+    if (speed >= 20 && speed <= 5000) {
 
 
 
-      arduinoBlinkSpeed = speed;
+      arduinoBlinkSpeed = speed;
 
-      trainerBlinkSpeed = speed;
+      trainerBlinkSpeed = speed;
 
-      bothBlinkSpeed = speed;
+      bothBlinkSpeed = speed;
 
 
 
-      Serial.print(F("All blink speeds set to "));
+      Serial.print(F("All blink speeds set to "));
 
-      Serial.print(speed);
+      Serial.print(speed);
 
-      Serial.println(F(" ms."));
+      Serial.println(F(" ms."));
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: SPEED must be 20-5000.")
+        F("ERROR: SPEED must be 20-5000.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER FLASH
+  // TRAINER FLASH
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer flash ", 14)) {
+  if (!strncmp(command, "trainer flash ", 14)) {
 
 
 
-    int count;
+    int count;
 
-    int speed;
+    int speed;
 
 
 
-    if (sscanf(
+    if (sscanf(
 
-          command + 14,
+          command + 14,
 
-          "%d %d",
+          "%d %d",
 
-          &count,
+          &count,
 
-          &speed
+          &speed
 
-        ) == 2) {
+        ) == 2) {
 
 
 
-      if (count >= 1 &&
+      if (count >= 1 &&
 
-          count <= 1000 &&
+          count <= 1000 &&
 
-          speed >= 20 &&
+          speed >= 20 &&
 
-          speed <= 5000) {
+          speed <= 5000) {
 
 
 
-        flashTrainer(count, speed);
+        flashTrainer(count, speed);
 
 
 
-      } else {
+      } else {
 
 
 
-        Serial.println(
+        Serial.println(
 
-          F("ERROR: invalid TRAINER FLASH values.")
+          F("ERROR: invalid TRAINER FLASH values.")
 
-        );
+        );
 
-      }
+      }
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("Usage: TRAINER FLASH COUNT SPEED")
+        F("Usage: TRAINER FLASH COUNT SPEED")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH FLASH
+  // BOTH FLASH
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "both flash ", 11)) {
+  if (!strncmp(command, "both flash ", 11)) {
 
 
 
-    int count;
+    int count;
 
-    int speed;
+    int speed;
 
 
 
-    if (sscanf(
+    if (sscanf(
 
-          command + 11,
+          command + 11,
 
-          "%d %d",
+          "%d %d",
 
-          &count,
+          &count,
 
-          &speed
+          &speed
 
-        ) == 2) {
+        ) == 2) {
 
 
 
-      if (count >= 1 &&
+      if (count >= 1 &&
 
-          count <= 1000 &&
+          count <= 1000 &&
 
-          speed >= 20 &&
+          speed >= 20 &&
 
-          speed <= 5000) {
+          speed <= 5000) {
 
 
 
-        flashBoth(count, speed);
+        flashBoth(count, speed);
 
 
 
-      } else {
+      } else {
 
 
 
-        Serial.println(
+        Serial.println(
 
-          F("ERROR: invalid BOTH FLASH values.")
+          F("ERROR: invalid BOTH FLASH values.")
 
-        );
+        );
 
-      }
+      }
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("Usage: BOTH FLASH COUNT SPEED")
+        F("Usage: BOTH FLASH COUNT SPEED")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ARDUINO FLASH
+  // ARDUINO FLASH
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "flash ", 6) ||
+  if (!strncmp(command, "flash ", 6) ||
 
-      !strncmp(command, "flash", 5)) {
+      !strncmp(command, "flash", 5)) {
 
 
 
-    int count;
+    int count;
 
-    int speed;
+    int speed;
 
 
 
-    if (sscanf(
+    if (sscanf(
 
-          command + 5,
+          command + 5,
 
-          "%d %d",
+          "%d %d",
 
-          &count,
+          &count,
 
-          &speed
+          &speed
 
-        ) == 2) {
+        ) == 2) {
 
 
 
-      if (count >= 1 &&
+      if (count >= 1 &&
 
-          count <= 1000 &&
+          count <= 1000 &&
 
-          speed >= 20 &&
+          speed >= 20 &&
 
-          speed <= 5000) {
+          speed <= 5000) {
 
 
 
-        flashArduino(count, speed);
+        flashArduino(count, speed);
 
 
 
-      } else {
+      } else {
 
 
 
-        Serial.println(
+        Serial.println(
 
-          F("ERROR: invalid FLASH values.")
+          F("ERROR: invalid FLASH values.")
 
-        );
+        );
 
-      }
+      }
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("Usage: FLASH COUNT SPEED")
+        F("Usage: FLASH COUNT SPEED")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER PULSE
+  // TRAINER PULSE
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer pulse ", 14)) {
+  if (!strncmp(command, "trainer pulse ", 14)) {
 
 
 
-    int duration = atoi(command + 14);
+    int duration = atoi(command + 14);
 
 
 
-    if (duration >= 1 && duration <= 10000) {
+    if (duration >= 1 && duration <= 10000) {
 
 
 
-      pulseTrainer(duration);
+      pulseTrainer(duration);
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: TRAINER PULSE must be 1-10000.")
+        F("ERROR: TRAINER PULSE must be 1-10000.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH PULSE
+  // BOTH PULSE
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "both pulse ", 11)) {
+  if (!strncmp(command, "both pulse ", 11)) {
 
 
 
-    int duration = atoi(command + 11);
+    int duration = atoi(command + 11);
 
 
 
-    if (duration >= 1 && duration <= 10000) {
+    if (duration >= 1 && duration <= 10000) {
 
 
 
-      pulseBoth(duration);
+      pulseBoth(duration);
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: BOTH PULSE must be 1-10000.")
+        F("ERROR: BOTH PULSE must be 1-10000.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ARDUINO PULSE
+  // ARDUINO PULSE
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "pulse ", 6) ||
+  if (!strncmp(command, "pulse ", 6) ||
 
-      !strncmp(command, "pulse", 5)) {
+      !strncmp(command, "pulse", 5)) {
 
 
 
-    int duration = atoi(command + 5);
+    int duration = atoi(command + 5);
 
 
 
-    if (duration >= 1 && duration <= 10000) {
+    if (duration >= 1 && duration <= 10000) {
 
 
 
-      pulseArduino(duration);
+      pulseArduino(duration);
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: PULSE must be 1-10000.")
+        F("ERROR: PULSE must be 1-10000.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER SOS
+  // TRAINER SOS
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "trainer sos")) {
+  if (!strcmp(command, "trainer sos")) {
 
 
 
-    sendSOSTrainer();
+    sendSOSTrainer();
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH SOS
+  // BOTH SOS
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "both sos")) {
+  if (!strcmp(command, "both sos")) {
 
 
 
-    sendSOSBoth();
+    sendSOSBoth();
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ARDUINO SOS
+  // ARDUINO SOS
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "sos") ||
+  if (!strcmp(command, "sos") ||
 
-      !strcmp(command, "arduino sos")) {
+      !strcmp(command, "arduino sos")) {
 
 
 
-    sendSOSArduino();
+    sendSOSArduino();
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER MORSE
+  // TRAINER MORSE
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer morse ", 14)) {
+  if (!strncmp(command, "trainer morse ", 14)) {
 
 
 
-    sendMorse(
+    sendMorse(
 
-      command + 14,
+      command + 14,
 
-      TARGET_TRAINER
+      TARGET_TRAINER
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH MORSE
+  // BOTH MORSE
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "both morse ", 11)) {
+  if (!strncmp(command, "both morse ", 11)) {
 
 
 
-    sendMorse(
+    sendMorse(
 
-      command + 11,
+      command + 11,
 
-      TARGET_BOTH
+      TARGET_BOTH
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ARDUINO MORSE
+  // ARDUINO MORSE
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "arduino morse ", 14)) {
+  if (!strncmp(command, "arduino morse ", 14)) {
 
 
 
-    sendMorse(
+    sendMorse(
 
-      command + 14,
+      command + 14,
 
-      TARGET_ARDUINO
+      TARGET_ARDUINO
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // NORMAL MORSE
+  // NORMAL MORSE
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "morse ", 6) ||
+  if (!strncmp(command, "morse ", 6) ||
 
-      !strncmp(command, "morse", 5)) {
+      !strncmp(command, "morse", 5)) {
 
 
 
-    sendMorse(
+    sendMorse(
 
-      command + 5,
+      command + 5,
 
-      TARGET_ARDUINO
+      TARGET_ARDUINO
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER COUNTDOWN
+  // TRAINER COUNTDOWN
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer countdown ", 18)) {
+  if (!strncmp(command, "trainer countdown ", 18)) {
 
 
 
-    int seconds = atoi(command + 18);
+    int seconds = atoi(command + 18);
 
 
 
-    if (seconds >= 1 && seconds <= 60) {
+    if (seconds >= 1 && seconds <= 60) {
 
 
 
-      countdown(
+      countdown(
 
-        seconds,
+        seconds,
 
-        TARGET_TRAINER
+        TARGET_TRAINER
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: COUNTDOWN must be 1-60.")
+        F("ERROR: COUNTDOWN must be 1-60.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH COUNTDOWN
+  // BOTH COUNTDOWN
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "both countdown ", 15)) {
+  if (!strncmp(command, "both countdown ", 15)) {
 
 
 
-    int seconds = atoi(command + 15);
+    int seconds = atoi(command + 15);
 
 
 
-    if (seconds >= 1 && seconds <= 60) {
+    if (seconds >= 1 && seconds <= 60) {
 
 
 
-      countdown(
+      countdown(
 
-        seconds,
+        seconds,
 
-        TARGET_BOTH
+        TARGET_BOTH
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: COUNTDOWN must be 1-60.")
+        F("ERROR: COUNTDOWN must be 1-60.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // COUNTDOWN
+  // COUNTDOWN
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "countdown ", 10)) {
+  if (!strncmp(command, "countdown ", 10)) {
 
 
 
-    int seconds = atoi(command + 10);
+    int seconds = atoi(command + 10);
 
 
 
-    if (seconds >= 1 && seconds <= 60) {
+    if (seconds >= 1 && seconds <= 60) {
 
 
 
-      countdown(
+      countdown(
 
-        seconds,
+        seconds,
 
-        TARGET_ARDUINO
+        TARGET_ARDUINO
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: COUNTDOWN must be 1-60.")
+        F("ERROR: COUNTDOWN must be 1-60.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER TIMER
+  // TRAINER TIMER
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer timer ", 15)) {
+  if (!strncmp(command, "trainer timer ", 15)) {
 
 
 
-    int seconds = atoi(command + 15);
+    int seconds = atoi(command + 15);
 
 
 
-    if (seconds >= 1 && seconds <= 60) {
+    if (seconds >= 1 && seconds <= 60) {
 
 
 
-      timer(
+      timer(
 
-        seconds,
+        seconds,
 
-        TARGET_TRAINER
+        TARGET_TRAINER
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: TIMER must be 1-60.")
+        F("ERROR: TIMER must be 1-60.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH TIMER
+  // BOTH TIMER
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "both timer ", 12)) {
+  if (!strncmp(command, "both timer ", 12)) {
 
 
 
-    int seconds = atoi(command + 12);
+    int seconds = atoi(command + 12);
 
 
 
-    if (seconds >= 1 && seconds <= 60) {
+    if (seconds >= 1 && seconds <= 60) {
 
 
 
-      timer(
+      timer(
 
-        seconds,
+        seconds,
 
-        TARGET_BOTH
+        TARGET_BOTH
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: TIMER must be 1-60.")
+        F("ERROR: TIMER must be 1-60.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TIMER
+  // TIMER
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "timer ", 6)) {
+  if (!strncmp(command, "timer ", 6)) {
 
 
 
-    int seconds = atoi(command + 6);
+    int seconds = atoi(command + 6);
 
 
 
-    if (seconds >= 1 && seconds <= 60) {
+    if (seconds >= 1 && seconds <= 60) {
 
 
 
-      timer(
+      timer(
 
-        seconds,
+        seconds,
 
-        TARGET_ARDUINO
+        TARGET_ARDUINO
 
-      );
+      );
 
 
 
-    } else {
+    } else {
 
 
 
-      Serial.println(
+      Serial.println(
 
-        F("ERROR: TIMER must be 1-60.")
+        F("ERROR: TIMER must be 1-60.")
 
-      );
+      );
 
-    }
+    }
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER RANDOM
+  // TRAINER RANDOM
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "trainer random")) {
+  if (!strcmp(command, "trainer random")) {
 
 
 
-    randomPattern(TARGET_TRAINER);
+    randomPattern(TARGET_TRAINER);
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH RANDOM
+  // BOTH RANDOM
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "both random")) {
+  if (!strcmp(command, "both random")) {
 
 
 
-    randomPattern(TARGET_BOTH);
+    randomPattern(TARGET_BOTH);
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // RANDOM
+  // RANDOM
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "random")) {
+  if (!strcmp(command, "random")) {
 
 
 
-    randomPattern(TARGET_ARDUINO);
+    randomPattern(TARGET_ARDUINO);
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TRAINER PATTERN
+  // TRAINER PATTERN
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "trainer pattern ", 16)) {
+  if (!strncmp(command, "trainer pattern ", 16)) {
 
 
 
-    byte pattern = atoi(command + 16);
+    byte pattern = atoi(command + 16);
 
 
 
-    runPattern(
+    runPattern(
 
-      pattern,
+      pattern,
 
-      TARGET_TRAINER
+      TARGET_TRAINER
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // BOTH PATTERN
+  // BOTH PATTERN
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "both pattern ", 13)) {
+  if (!strncmp(command, "both pattern ", 13)) {
 
 
 
-    byte pattern = atoi(command + 13);
+    byte pattern = atoi(command + 13);
 
 
 
-    runPattern(
+    runPattern(
 
-      pattern,
+      pattern,
 
-      TARGET_BOTH
+      TARGET_BOTH
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // PATTERN
+  // PATTERN
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "pattern ", 8)) {
+  if (!strncmp(command, "pattern ", 8)) {
 
 
 
-    byte pattern = atoi(command + 8);
+    byte pattern = atoi(command + 8);
 
 
 
-    runPattern(
+    runPattern(
 
-      pattern,
+      pattern,
 
-      TARGET_ARDUINO
+      TARGET_ARDUINO
 
-    );
+    );
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // TEST
+  // TEST
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "test")) {
+  if (!strcmp(command, "test")) {
 
 
 
-    systemTest();
+    systemTest();
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // REBOOT
+  // REBOOT
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strcmp(command, "reboot")) {
+  if (!strcmp(command, "reboot")) {
 
 
 
-    Serial.println();
+    Serial.println();
 
-    Serial.println(F("REBOOT REQUESTED"));
+    Serial.println(F("REBOOT REQUESTED"));
 
-    Serial.println(
+    Serial.println(
 
-      F("Press the RESET button on the board.")
+      F("Press the RESET button on the board.")
 
-    );
+    );
 
-    Serial.println();
+    Serial.println();
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // ECHO
+  // ECHO
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  if (!strncmp(command, "echo ", 5) ||
+  if (!strncmp(command, "echo ", 5) ||
 
-      !strncmp(command, "echo", 4)) {
+      !strncmp(command, "echo", 4)) {
 
 
 
-    Serial.print(F("ECHO: "));
+    Serial.print(F("ECHO: "));
 
 
 
-    Serial.println(command + 4);
+    Serial.println(command + 4);
 
 
 
-    return;
+    return;
 
-  }
+  }
 
 
 
 
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
-  // UNKNOWN
+  // UNKNOWN
 
-  // ----------------------------------------------------------
+  // ----------------------------------------------------------
 
 
 
-  Serial.print(F("ERROR: Unknown command: "));
+  Serial.print(F("ERROR: Unknown command: "));
 
-  Serial.println(command);
+  Serial.println(command);
 
 
 
-  Serial.println(
+  Serial.println(
 
-    F("Type HELP for available commands.")
+    F("Type HELP for available commands.")
 
-  );
+  );
 
 }
