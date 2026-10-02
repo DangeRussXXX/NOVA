@@ -1272,6 +1272,63 @@ video{
 }
 
 /* ============================================================
+   AMOMII ONE CONTROLLER - CLEAN CONTROLS + SYSTEM PANEL
+   ============================================================ */
+
+button.control.electricGreen{
+  background:rgba(57,255,136,.18);
+  border-color:#39ff88;
+  color:#39ff88;
+  box-shadow:0 0 10px rgba(57,255,136,.65), inset 0 0 12px rgba(57,255,136,.12);
+}
+
+.controllerSystemPanel{
+  margin-top:12px;
+}
+
+.systemCollapseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+}
+
+.systemCollapseHeader .collapseArrow{
+  font-size:16px;
+  line-height:1;
+  transition:transform .18s ease;
+}
+
+.systemCollapseHeader.expanded .collapseArrow{
+  transform:rotate(90deg);
+}
+
+.systemCollapseBody{
+  overflow:hidden;
+  max-height:2000px;
+  opacity:1;
+  transition:max-height .25s ease, opacity .18s ease;
+}
+
+.systemCollapseBody.collapsed{
+  max-height:0;
+  opacity:0;
+}
+
+.systemActionRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:10px 0;
+}
+
+.systemTestGrid{
+  margin-top:12px;
+}
+
+/* ============================================================
    FULL SCREEN + DRAGGABLE COLUMN RESIZERS
    ============================================================ */
 
@@ -1505,45 +1562,46 @@ body.columnResizing *{
 
     <div class="panelBody">
       <div class="buttonGrid">
-        <button class="control primary full" onclick="connectSerial()">CONNECT</button>
-        <button class="control danger full" onclick="disconnectSerial()">DISCONNECT</button>
-        <button class="control" onclick="sendCloudCommand('status')">STATUS</button>
-        <button class="control" onclick="runSystemTest()">SYSTEM TEST</button>
+        <button id="connectionButton" class="control primary full" onclick="toggleConnection()">CONNECT</button>
+        <button id="boardLedButton" class="control full" onclick="toggleBoardLed()">LED</button>
         <button class="control" onclick="sendCloudCommand('help')">HELP</button>
         <button class="control" onclick="stopBoard()">STOP</button>
-        <button class="control good" onclick="sendCloudCommand('led on')">LED ON</button>
-        <button class="control danger" onclick="sendCloudCommand('led off')">LED OFF</button>
-        <button class="control" onclick="sendCloudCommand('toggle')">TOGGLE</button>
         <button class="control warn" onclick="sendCloudCommand('blink 5')">BLINK 5</button>
         <button class="control warn" onclick="sendCloudCommand('sos')">SOS</button>
-        <button class="control danger" onclick="sendCloudCommand('stop')">STOP</button>
       </div>
 
-      <div class="panelSection">
-        <div class="panelSubHeader">SYSTEM STATUS</div>
-        <div class="statList">
-          <div class="stat"><span>Board</span><span>AMOMII ONE</span></div>
-          <div class="stat"><span>Connection</span><span id="statusConnection">OFFLINE</span></div>
-          <div class="stat"><span>System</span><span id="statusSystem">READY</span></div>
-          <div class="stat"><span>LED</span><span id="statusLed">UNKNOWN</span></div>
-          <div class="stat"><span>Blinking</span><span id="statusBlinking">NO</span></div>
-          <div class="stat"><span>Blink speed</span><span id="statusBlinkSpeed">—</span></div>
-          <div class="stat"><span>Commands</span><span id="statusCommands">0</span></div>
-          <div class="stat"><span>Uptime</span><span id="uptime">00:00:00</span></div>
+      <div class="panelSection controllerSystemPanel">
+        <div class="panelSubHeader systemCollapseHeader" onclick="toggleSystemPanel(this)">
+          <span>SYSTEM</span>
+          <span class="collapseArrow">▸</span>
         </div>
-      </div>
+        <div class="systemCollapseBody collapsed">
+          <div class="systemActionRow">
+            <button class="control" onclick="sendCloudCommand('status')">STATUS</button>
+            <button class="control" onclick="runSystemTest()">RUN SYSTEM TEST</button>
+          </div>
 
-      <div class="panelSection">
-        <div class="panelSubHeader">SYSTEM TEST</div>
-        <div class="testGrid">
-          <div class="testItem"><span>Serial</span><span id="testSerial" class="testValue pending">—</span></div>
-          <div class="testItem"><span>LED</span><span id="testLed" class="testValue pending">—</span></div>
-          <div class="testItem"><span>Timing</span><span id="testTiming" class="testValue pending">—</span></div>
-          <div class="testItem"><span>Memory</span><span id="testMemory" class="testValue pending">—</span></div>
-          <div class="testItem"><span>Commands</span><span id="testCommands" class="testValue pending">—</span></div>
-          <div class="testItem"><span>System</span><span id="testSystem" class="testValue pending">—</span></div>
+          <div class="statList">
+            <div class="stat"><span>Board</span><span>AMOMII ONE</span></div>
+            <div class="stat"><span>Connection</span><span id="statusConnection">OFFLINE</span></div>
+            <div class="stat"><span>System</span><span id="statusSystem">READY</span></div>
+            <div class="stat"><span>LED</span><span id="statusLed">UNKNOWN</span></div>
+            <div class="stat"><span>Blinking</span><span id="statusBlinking">NO</span></div>
+            <div class="stat"><span>Blink speed</span><span id="statusBlinkSpeed">—</span></div>
+            <div class="stat"><span>Commands</span><span id="statusCommands">0</span></div>
+            <div class="stat"><span>Uptime</span><span id="uptime">00:00:00</span></div>
+          </div>
+
+          <div class="testGrid systemTestGrid">
+            <div class="testItem"><span>Serial</span><span id="testSerial" class="testValue pending">—</span></div>
+            <div class="testItem"><span>LED</span><span id="testLed" class="testValue pending">—</span></div>
+            <div class="testItem"><span>Timing</span><span id="testTiming" class="testValue pending">—</span></div>
+            <div class="testItem"><span>Memory</span><span id="testMemory" class="testValue pending">—</span></div>
+            <div class="testItem"><span>Commands</span><span id="testCommands" class="testValue pending">—</span></div>
+            <div class="testItem"><span>System</span><span id="testSystem" class="testValue pending">—</span></div>
+          </div>
+          <div id="testResult" class="testResult">NOT RUN</div>
         </div>
-        <div id="testResult" class="testResult">NOT RUN</div>
       </div>
     </div>
   </div>
@@ -2029,10 +2087,44 @@ function setAssistantName(name){
 }
 
 
+let amomiiConnected = false;
+let boardLedOn = false;
+
+function toggleConnection(){
+  if(amomiiConnected){
+    disconnectSerial();
+  }else{
+    connectSerial();
+  }
+}
+
 function connectSerial() {
   log("Connected to AMOMII Cloud Relay.", "success");
   updateConnectionUI(true);
   speak("AMOMII Cloud Relay is connected.");
+}
+
+function toggleBoardLed(){
+  const nextState = !boardLedOn;
+  setBoardLedUI(nextState);
+  sendCloudCommand(nextState ? "led on" : "led off");
+}
+
+function setBoardLedUI(isOn){
+  boardLedOn = !!isOn;
+  const button = document.getElementById("boardLedButton");
+  if(button){
+    button.classList.toggle("electricGreen", boardLedOn);
+    button.setAttribute("aria-pressed", boardLedOn ? "true" : "false");
+  }
+}
+
+function toggleSystemPanel(header){
+  if(!header) return;
+  const body = header.nextElementSibling;
+  if(!body || !body.classList.contains("systemCollapseBody")) return;
+  const isCollapsed = body.classList.toggle("collapsed");
+  header.classList.toggle("expanded", !isCollapsed);
 }
 
 async function disconnectSerial(){
@@ -2083,6 +2175,17 @@ async function disconnectSerial(){
 
 
 function updateConnectionUI(connected){
+
+  amomiiConnected = !!connected;
+
+  const connectionButton =
+    document.getElementById("connectionButton");
+
+  if(connectionButton){
+    connectionButton.textContent = connected ? "DISCONNECT" : "CONNECT";
+    connectionButton.classList.toggle("danger", connected);
+    connectionButton.classList.toggle("primary", !connected);
+  }
 
   const dot =
     document.getElementById("connectionDot");
@@ -2478,6 +2581,9 @@ function parseBoardStatus(line){
     ).textContent =
       led[1].toUpperCase();
 
+    if(led[1].toUpperCase() === "ON") setBoardLedUI(true);
+    if(led[1].toUpperCase() === "OFF") setBoardLedUI(false);
+
   }
 
   const blinking =
@@ -2520,6 +2626,7 @@ function parseLedState(line){
     document.getElementById(
       "statusLed"
     ).textContent = "ON";
+    setBoardLedUI(true);
 
   }
 
@@ -2530,6 +2637,7 @@ function parseLedState(line){
     document.getElementById(
       "statusLed"
     ).textContent = "OFF";
+    setBoardLedUI(false);
 
   }
 
