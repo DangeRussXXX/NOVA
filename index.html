@@ -152,8 +152,11 @@ header{
 
 .mainGrid{
   display:grid;
-  grid-template-columns:minmax(250px,1fr) 1000px 300px;
+  grid-template-columns:250px minmax(250px,1fr) 300px;
   gap:16px;
+  position:relative;
+  width:100%;
+  box-sizing:border-box;
 }
 
 /* ============================================================
@@ -6124,57 +6127,83 @@ function resizeColumns(event){
   const grid =
     mainGrid.getBoundingClientRect();
 
-  const x =
-    event.clientX - grid.left;
+  const totalWidth =
+    grid.width;
 
   const gap = 16;
 
+  const rightWidth = 300;
+
+  const minLeft = 250;
+  const minCenter = 250;
+
+  const x =
+    event.clientX - grid.left;
+
+
   if(resizingColumn === "left"){
 
-    const leftWidth =
-      Math.max(250, x);
+    let leftWidth =
+      Math.max(minLeft, x);
 
-    const centerWidth =
-      mainGrid
-        .getBoundingClientRect()
-        .width
-        - leftWidth
-        - 300
-        - gap * 2;
+    let centerWidth =
+      totalWidth
+      - leftWidth
+      - rightWidth
+      - (gap * 2);
 
-    if(centerWidth >= 250){
+    if(centerWidth < minCenter){
 
-      mainGrid.style.gridTemplateColumns =
-        `${leftWidth}px ${centerWidth}px 300px`;
+      centerWidth = minCenter;
+
+      leftWidth =
+        totalWidth
+        - centerWidth
+        - rightWidth
+        - (gap * 2);
 
     }
 
+    mainGrid.style.gridTemplateColumns =
+      `${leftWidth}px ${centerWidth}px ${rightWidth}px`;
   }
+
 
   if(resizingColumn === "center"){
 
-    const left =
+    const leftColumn =
       mainGrid
         .querySelector(".leftColumn")
         .getBoundingClientRect();
 
-    const centerWidth =
-      Math.max(
-        250,
-        x - (left.right - grid.left) - gap
-      );
-
     const leftWidth =
-      left.width;
+      leftColumn.width;
+
+    let centerWidth =
+      x
+      - leftWidth
+      - gap;
+
+    centerWidth =
+      Math.max(minCenter, centerWidth);
+
+    const maxCenter =
+      totalWidth
+      - leftWidth
+      - rightWidth
+      - (gap * 2);
+
+    centerWidth =
+      Math.min(centerWidth, maxCenter);
 
     mainGrid.style.gridTemplateColumns =
-      `${leftWidth}px ${centerWidth}px 300px`;
-
+      `${leftWidth}px ${centerWidth}px ${rightWidth}px`;
   }
 
   updateResizerPositions();
 
 }
+
 
 leftResizer.addEventListener(
   "mousedown",
