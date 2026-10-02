@@ -1390,6 +1390,13 @@ body.columnResizing *{
   border-top:0;
 }
 
+
+/* NOVA LEFT COLUMN TEST LAYOUT */
+.novaResponseConsole{height:180px;margin-top:10px;border:1px solid var(--border);border-radius:8px;}
+.novaConsoleVoiceStatus{margin-bottom:10px;}
+.novaConsoleCommandRow{margin-top:10px;padding:0;border-top:0;}
+#lastHeard{white-space:pre-wrap;}
+
 </style>
 </head>
 
@@ -1428,145 +1435,62 @@ body.columnResizing *{
         <div id="novaGlyphLayer"></div>
         <div id="novaConduits"></div>
       </div>
-
       <div id="novaOrb">
         <div class="novaOuterRing"></div>
         <div class="novaInnerRing"></div>
-
-        <div class="novaIris">
-          <div class="novaName">NOVA</div>
-        </div>
-
+        <div class="novaIris"><div class="novaName">NOVA</div></div>
         <div class="novaWaveform"></div>
         <div class="novaParticles"></div>
       </div>
     </div>
   </div>
 
-  <!-- NOVA VOICE COMMANDS - DEFAULT COLLAPSED -->
   <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)">
-      <span>NOVA VOICE COMMANDS</span>
-      <span class="collapseArrow">▸</span>
-    </div>
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA'S RESPONSE</span><span class="collapseArrow">▸</span></div>
     <div class="panelBody leftCollapseBody collapsed">
-      <div class="helpList">
-        <div><b>“Connect”</b> — connect AMOMII ONE</div>
-        <div><b>“Status”</b> — board status</div>
-        <div><b>“System test”</b> — diagnostics</div>
-        <div><b>“LED on/off”</b> — LED control</div>
-        <div><b>“Blink five”</b> — blink LED</div>
-        <div><b>“SOS”</b> — SOS pattern</div>
-        <div><b>“Play music”</b> — music</div>
-        <div><b>“Next song”</b> — next track</div>
-        <div><b>“Play video”</b> — video</div>
-        <div><b>“Add event…”</b> — calendar</div>
-        <div><b>“What can you do?”</b> — help</div>
-        <div><b>“Change your name”</b> — rename assistant</div>
+      <div id="lastHeard" class="lastHeard">READY</div>
+      <div id="console" class="console novaResponseConsole"></div>
+    </div>
+  </div>
+
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA COMMAND CONSOLE</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed">
+      <div class="voiceStatus novaConsoleVoiceStatus"><span id="voiceDot" class="dot red"></span><span id="voiceText">VOICE OFF</span></div>
+      <div class="buttonGrid voiceButtons">
+        <button id="voiceButton" class="control good full" onclick="toggleVoice()">TALK TO NOVA</button>
+        <button class="control full" onclick="speakHelp()">NOVA HELP</button>
+        <button class="control full" onclick="speakCommands()">NOVA COMMANDS</button>
+      </div>
+      <div class="commandRow mergedCommandRow novaConsoleCommandRow">
+        <input id="commandInput" type="text" placeholder="Enter commands for NOVA." autocomplete="off">
+        <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
       </div>
     </div>
   </div>
 
-  <!-- NOVA COMMAND HISTORY - DEFAULT COLLAPSED -->
   <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)">
-      <span>NOVA COMMAND HISTORY</span>
-      <span class="collapseArrow">▸</span>
-    </div>
-    <div class="panelBody leftCollapseBody collapsed">
-      <div id="commandHistory" class="history"></div>
-    </div>
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE COMMANDS</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div class="helpList">
+      <div><b>“Connect”</b> — connect AMOMII ONE</div><div><b>“Status”</b> — board status</div><div><b>“System test”</b> — diagnostics</div><div><b>“LED on/off”</b> — LED control</div><div><b>“Blink five”</b> — blink LED</div><div><b>“SOS”</b> — SOS pattern</div><div><b>“Play music”</b> — music</div><div><b>“Next song”</b> — next track</div><div><b>“Play video”</b> — video</div><div><b>“Add event…”</b> — calendar</div><div><b>“What can you do?”</b> — help</div><div><b>“Change your name”</b> — rename assistant</div>
+    </div></div>
   </div>
 
-  <!-- NOVA VOICE ENGINE - DEFAULT COLLAPSED -->
   <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)">
-      <span>NOVA VOICE ENGINE</span>
-      <span class="collapseArrow">▸</span>
-    </div>
-    <div class="panelBody leftCollapseBody collapsed">
-      <div class="statList">
-        <div class="stat">
-          <span>Assistant</span>
-          <span id="voiceEngineName">NOVA</span>
-        </div>
-        <div class="stat">
-          <span>Recognition</span>
-          <span id="recognitionState">OFF</span>
-        </div>
-        <div class="stat">
-          <span>Speaking</span>
-          <span id="speakingState">NO</span>
-        </div>
-        <div class="stat">
-          <span>Last heard</span>
-          <span id="voiceLastShort">—</span>
-        </div>
-      </div>
-    </div>
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA COMMAND HISTORY</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div id="commandHistory" class="history"></div></div>
   </div>
 
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div class="statList">
+      <div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
+    </div></div>
+  </div>
 </div>
 
 <!-- CENTER COLUMN -->
-
 <div class="centerColumn">
-
-  <!-- NOVA COMMAND CENTER - CENTRAL OUTPUT -->
-  <div class="panel card novaCommandCenterPanel">
-    <div class="panelHeader">NOVA COMMAND CENTER</div>
-    <div class="panelBody">
-      <div class="voiceSubtitle">LAST HEARD</div>
-      <div id="lastHeard" class="lastHeard"></div>
-
-      <div class="panelSection novaOutputSection">
-        <div class="panelSubHeader">NOVA RESPONSES / SYSTEM OUTPUT</div>
-        <div id="console" class="console"></div>
-      </div>
-
-      <div class="panelSection novaMorseSection">
-        <div class="panelSubHeader">MORSE TRANSMISSION</div>
-        <div class="morseIntegratedOutput">
-          <div><span class="morseIntegratedLabel">TEXT:</span> <span id="morsePlainText">—</span></div>
-          <div><span class="morseIntegratedLabel">MORSE:</span> <span id="morseText">—</span></div>
-        </div>
-        <div class="morseRow" style="margin-top:8px">
-          <input id="morseInput" type="text" placeholder="Enter text or Morse code">
-          <button class="control primary" onclick="processMorse()">CONVERT</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- NOVA COMMAND CONSOLE - VOICE + VOICE ENGINE + TEXT COMMAND LINE -->
-  <div class="panel card">
-    <div class="panelHeader consoleHeader" onclick="toggleConsole()">
-      <span>NOVA COMMAND CONSOLE</span>
-      <div class="voiceStatus">
-        <span id="voiceDot" class="dot red"></span>
-        <span id="voiceText">VOICE OFF</span>
-      </div>
-    </div>
-    <div class="consoleBody">
-      <div class="panelBody">
-        <div class="panelSubHeader">VOICE &amp; VOICE ENGINE</div>
-        <div class="buttonGrid voiceButtons">
-          <button id="voiceButton" class="control good full" onclick="toggleVoice()">TALK TO NOVA</button>
-          <button class="control full" onclick="speakHelp()">NOVA HELP</button>
-          <button class="control full" onclick="speakCommands()">NOVA COMMANDS</button>
-        </div>
-
-        <div class="panelSection">
-          <div class="panelSubHeader">TEXT COMMAND LINE</div>
-          <div class="commandRow mergedCommandRow">
-            <input id="commandInput" type="text" placeholder="Enter commands for NOVA." autocomplete="off">
-            <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- AMOMII ONE CONTROLLER -->
   <div class="panel card">
     <div class="panelHeader controllerHeader" onclick="toggleController()">
@@ -2281,51 +2205,29 @@ function toggleConsole(){
     "@": ".--.-."
   };
 
-  function processMorse(){
+  function morseToText(value){
+    const reverseMorse = {};
+    Object.keys(morseCode).forEach(letter => { reverseMorse[morseCode[letter]] = letter; });
+    return String(value).trim().split(" / ").map(word => word.trim().split(/\s+/).map(code => reverseMorse[code] || "?").join("")).join(" ");
+  }
 
-    const input = document.getElementById("morseInput");
-    const textOutput = document.getElementById("morsePlainText");
-    const morseOutput = document.getElementById("morseText");
+  function textToMorse(value){
+    return String(value).toUpperCase().split("").map(char => char === " " ? "/" : (morseCode[char] || char)).join(" ");
+  }
 
-    if(!input || !textOutput || !morseOutput) return;
+  function showNovaResponse(text){
+    if(lastHeardEl) lastHeardEl.textContent = String(text || "");
+  }
 
-    const value = input.value.trim();
-
-    if(!value){
-      textOutput.textContent = "—";
-      morseOutput.textContent = "—";
-      return;
-    }
-
+  function showMorseResponse(value){
+    value = String(value || "").trim();
+    if(!value) return;
     if(/^[.\-\/\s]+$/.test(value)){
-      const reverseMorse = {};
-
-      Object.keys(morseCode).forEach(letter => {
-        reverseMorse[morseCode[letter]] = letter;
-      });
-
-      const decoded = value
-        .split(" / ")
-        .map(word => word.trim().split(/\s+/).map(code => reverseMorse[code] || "?").join(""))
-        .join(" ");
-
-      textOutput.textContent = decoded;
-      morseOutput.textContent = value;
-      log(`MORSE TEXT: ${decoded}`, "system");
-      log(`MORSE CODE: ${value}`, "system");
-      return;
+      showNovaResponse(`${morseToText(value)}\n${value}`);
+    }else{
+      const plainText = value.toUpperCase();
+      showNovaResponse(`${plainText}\n${textToMorse(plainText)}`);
     }
-
-    const plainText = value.toUpperCase();
-    const encoded = plainText
-      .split("")
-      .map(char => char === " " ? "/" : (morseCode[char] || char))
-      .join(" ");
-
-    textOutput.textContent = plainText;
-    morseOutput.textContent = encoded;
-    log(`MORSE TEXT: ${plainText}`, "system");
-    log(`MORSE CODE: ${encoded}`, "system");
   }
 
 
@@ -2509,6 +2411,9 @@ function sendManualCommand() {
 
   if (!command) return;
 
+  const morseMatch = command.match(/^morse(?:\s+)(.+)$/i);
+  if(morseMatch){ showMorseResponse(morseMatch[1]); }
+
   sendCloudCommand(command);
 
   input.value = "";
@@ -2531,6 +2436,7 @@ document.getElementById("commandInput").addEventListener("keydown", function(eve
 
 function processSerialLine(line){
 
+  showNovaResponse(line);
   log(line);
 
   parseSystemTestLine(line);
@@ -3350,6 +3256,7 @@ function speakNext(){
   const text =
     speechQueue.shift();
 
+  showNovaResponse(text);
   log(`NOVA: ${text}`, "voice");
 
   isSpeaking = true;
@@ -3446,7 +3353,6 @@ function handleVoiceInput(rawText){
   }
 
   lastVoiceCommand = text;
-  lastHeardEl.textContent = text;
 
   document.getElementById("voiceLastShort").textContent =
     text.slice(0, 45);
@@ -5747,7 +5653,7 @@ const columnResizer1 = document.getElementById("columnResizer1");
 const columnResizer2 = document.getElementById("columnResizer2");
 
 const COLUMN_MIN_WIDTH = 220;
-const COLUMN_LAYOUT_KEY = "novaColumnWidthsV4";
+const COLUMN_LAYOUT_KEY = "novaColumnWidthsV5";
 
 let activeColumnResize = null;
 let savedDesktopWidths = null;
@@ -5962,7 +5868,7 @@ function restoreColumnLayout(){
     // CENTER gets the remaining workspace, RIGHT keeps a practical width.
     requestAnimationFrame(() => {
       const available = mainGrid.clientWidth - 32;
-      const leftPanelWidth = 320;
+      const leftPanelWidth = 340;
       const rightPanelWidth = 320;
       const centerWorkspaceWidth = Math.max(420, available - leftPanelWidth - rightPanelWidth);
       applyColumnWidths([leftPanelWidth, centerWorkspaceWidth, rightPanelWidth], false);
