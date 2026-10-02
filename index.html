@@ -1328,6 +1328,40 @@ button.control.electricGreen{
   margin-top:12px;
 }
 
+.rsrSystemPanel{
+  margin-top:14px;
+}
+
+.rsrPatternGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.rsrPatternGrid .full{
+  grid-column:1/-1;
+}
+
+.rsrPatternStatus{
+  margin-top:12px;
+}
+
+.rsrPatternActive{
+  border-color:rgba(57,255,136,.55) !important;
+  color:var(--green) !important;
+  box-shadow:0 0 10px rgba(57,255,136,.25);
+}
+
+@media(max-width:600px){
+  .rsrPatternGrid{
+    grid-template-columns:1fr;
+  }
+  .rsrPatternGrid .full{
+    grid-column:auto;
+  }
+}
+
 /* ============================================================
    FULL SCREEN + DRAGGABLE COLUMN RESIZERS
    ============================================================ */
@@ -1619,6 +1653,46 @@ body.columnResizing *{
         <button id="trainerLedButton5" class="control" onclick="toggleTrainerLed(5)" aria-pressed="false">LED 5</button>
         <button id="trainerLedButton6" class="control" onclick="toggleTrainerLed(6)" aria-pressed="false">LED 6</button>
         <button id="trainerLedButton7" class="control" onclick="toggleTrainerLed(7)" aria-pressed="false">LED 7</button>
+      </div>
+
+      <div class="panelSection rsrPatternControls">
+        <div class="panelSubHeader">LIGHT PATTERNS</div>
+        <div class="rsrPatternGrid">
+            <button class="control trainerPatternButton" data-pattern="KNIGHT RIDER" onclick="startTrainerPatternUI('knight','KNIGHT RIDER',this)">KNIGHT RIDER</button>
+            <button class="control trainerPatternButton" data-pattern="CHASE" onclick="startTrainerPatternUI('chase','CHASE',this)">CHASE</button>
+            <button class="control trainerPatternButton" data-pattern="REVERSE CHASE" onclick="startTrainerPatternUI('reverse','REVERSE CHASE',this)">REVERSE CHASE</button>
+            <button class="control trainerPatternButton" data-pattern="CENTER OUT" onclick="startTrainerPatternUI('center out','CENTER OUT',this)">CENTER OUT</button>
+            <button class="control trainerPatternButton" data-pattern="OUTSIDE IN" onclick="startTrainerPatternUI('outside in','OUTSIDE IN',this)">OUTSIDE IN</button>
+            <button class="control trainerPatternButton" data-pattern="ALTERNATE" onclick="startTrainerPatternUI('alternate','ALTERNATE',this)">ALTERNATE</button>
+            <button class="control trainerPatternButton" data-pattern="FILL" onclick="startTrainerPatternUI('fill','FILL',this)">FILL</button>
+            <button class="control trainerPatternButton" data-pattern="WAVE" onclick="startTrainerPatternUI('wave','WAVE',this)">WAVE</button>
+            <button class="control trainerPatternButton" data-pattern="POLICE" onclick="startTrainerPatternUI('police','POLICE',this)">POLICE</button>
+            <button class="control trainerPatternButton" data-pattern="STROBE" onclick="startTrainerPatternUI('strobe','STROBE',this)">STROBE</button>
+            <button class="control danger full" onclick="stopTrainerSystem()">STOP RSR TRAINER</button>
+          </div>
+      </div>
+
+      <div class="panelSection rsrSystemPanel">
+        <div class="panelSubHeader systemCollapseHeader" onclick="toggleSystemPanel(this)">
+          <span>RSR TRAINER SYSTEM</span>
+          <span class="collapseArrow">▸</span>
+        </div>
+
+        <div class="systemCollapseBody collapsed">
+          <div class="systemActionRow">
+            <button class="control primary" onclick="requestTrainerStatus()">STATUS</button>
+            <button class="control good" onclick="runTrainerTest()">RUN TEST</button>
+          </div>
+
+          <div class="statList rsrPatternStatus">
+            <div class="stat"><span>Trainer</span><span id="rsrStatus">READY</span></div>
+            <div class="stat"><span>LEDs</span><span>8</span></div>
+            <div class="stat"><span>Active Pattern</span><span id="rsrPatternName">NONE</span></div>
+            <div class="stat"><span>Pattern State</span><span id="rsrPatternState">STOPPED</span></div>
+            <div class="stat"><span>Pattern Speed</span><span id="rsrPatternSpeed">150 ms</span></div>
+            <div class="stat"><span>Test</span><span id="rsrTestResult">NOT RUN</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2165,6 +2239,89 @@ function parseTrainerLedState(line){
   setTrainerLedUI(Number(match[1]), match[2].toLowerCase() === "on");
 }
 
+function setTrainerPatternButton(name){
+  document.querySelectorAll(".trainerPatternButton").forEach(button => {
+    button.classList.toggle(
+      "rsrPatternActive",
+      String(button.dataset.pattern || "").toUpperCase() === String(name || "").toUpperCase()
+    );
+  });
+}
+
+function startTrainerPatternUI(commandName, displayName){
+  sendCloudCommand(`trainer pattern ${commandName}`);
+  document.getElementById("rsrPatternName").textContent = displayName;
+  document.getElementById("rsrPatternState").textContent = "RUNNING";
+  document.getElementById("rsrStatus").textContent = "RUNNING";
+  setTrainerPatternButton(displayName);
+}
+
+function stopTrainerSystem(){
+  sendCloudCommand("trainer stop");
+  document.getElementById("rsrPatternName").textContent = "NONE";
+  document.getElementById("rsrPatternState").textContent = "STOPPED";
+  document.getElementById("rsrStatus").textContent = "READY";
+  setTrainerPatternButton("");
+  trainerLedStates.forEach((_, index) => setTrainerLedUI(index, false));
+}
+
+function requestTrainerStatus(){
+  document.getElementById("rsrStatus").textContent = "CHECKING";
+  sendCloudCommand("trainer status");
+}
+
+function runTrainerTest(){
+  document.getElementById("rsrTestResult").textContent = "RUNNING";
+  document.getElementById("rsrStatus").textContent = "TESTING";
+  setTrainerPatternButton("");
+  sendCloudCommand("trainer test");
+}
+
+function parseTrainerSystemLine(line){
+  let match;
+
+  if(/^Trainer:\s*ONLINE\s*$/i.test(line)){
+    document.getElementById("rsrStatus").textContent = "ONLINE";
+  }
+
+  match = String(line).match(/^TRAINER PATTERN:\s*(.+)$/i);
+  if(match){
+    const name = match[1].trim().toUpperCase();
+    document.getElementById("rsrPatternName").textContent = name;
+    setTrainerPatternButton(name === "NONE" ? "" : name);
+  }
+
+  match = String(line).match(/^TRAINER PATTERN STATE:\s*(RUNNING|STOPPED)$/i);
+  if(match){
+    document.getElementById("rsrPatternState").textContent = match[1].toUpperCase();
+    document.getElementById("rsrStatus").textContent =
+      match[1].toUpperCase() === "RUNNING" ? "RUNNING" : "READY";
+  }
+
+  match = String(line).match(/^TRAINER PATTERN SPEED:\s*(.+)$/i);
+  if(match){
+    document.getElementById("rsrPatternSpeed").textContent = match[1].trim();
+  }
+
+  if(/^RSR TRAINER TEST:\s*PASS$/i.test(line)){
+    document.getElementById("rsrTestResult").textContent = "PASS";
+    document.getElementById("rsrStatus").textContent = "READY";
+    trainerLedStates.forEach((_, index) => setTrainerLedUI(index, false));
+  }
+
+  if(/^RSR TRAINER TEST:\s*FAIL$/i.test(line)){
+    document.getElementById("rsrTestResult").textContent = "FAIL";
+    document.getElementById("rsrStatus").textContent = "ERROR";
+  }
+
+  if(/^TRAINER STOPPED$/i.test(line)){
+    document.getElementById("rsrPatternName").textContent = "NONE";
+    document.getElementById("rsrPatternState").textContent = "STOPPED";
+    document.getElementById("rsrStatus").textContent = "READY";
+    setTrainerPatternButton("");
+  }
+}
+
 function toggleSystemPanel(header){
   if(!header) return;
   const body = header.nextElementSibling;
@@ -2594,6 +2751,7 @@ function processSerialLine(line){
   parseBoardStatus(line);
   parseLedState(line);
   parseTrainerLedState(line);
+  parseTrainerSystemLine(line);
 
   if(
     /^flash complete\.?$/i.test(line)
