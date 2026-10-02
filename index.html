@@ -1606,6 +1606,23 @@ body.columnResizing *{
     </div>
   </div>
 
+  <!-- RSR TRAINER ONE CONTROLLER -->
+  <div class="panel card rsrTrainerController">
+    <div class="panelHeader">RSR TRAINER ONE CONTROLLER</div>
+    <div class="panelBody">
+      <div class="buttonGrid">
+        <button id="trainerLedButton0" class="control" onclick="toggleTrainerLed(0)" aria-pressed="false">LED 0</button>
+        <button id="trainerLedButton1" class="control" onclick="toggleTrainerLed(1)" aria-pressed="false">LED 1</button>
+        <button id="trainerLedButton2" class="control" onclick="toggleTrainerLed(2)" aria-pressed="false">LED 2</button>
+        <button id="trainerLedButton3" class="control" onclick="toggleTrainerLed(3)" aria-pressed="false">LED 3</button>
+        <button id="trainerLedButton4" class="control" onclick="toggleTrainerLed(4)" aria-pressed="false">LED 4</button>
+        <button id="trainerLedButton5" class="control" onclick="toggleTrainerLed(5)" aria-pressed="false">LED 5</button>
+        <button id="trainerLedButton6" class="control" onclick="toggleTrainerLed(6)" aria-pressed="false">LED 6</button>
+        <button id="trainerLedButton7" class="control" onclick="toggleTrainerLed(7)" aria-pressed="false">LED 7</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- RIGHT COLUMN -->
@@ -2119,6 +2136,35 @@ function setBoardLedUI(isOn){
   }
 }
 
+const trainerLedStates = Array(8).fill(false);
+
+function toggleTrainerLed(ledNumber){
+  if(!Number.isInteger(ledNumber) || ledNumber < 0 || ledNumber > 7) return;
+
+  const nextState = !trainerLedStates[ledNumber];
+  setTrainerLedUI(ledNumber, nextState);
+  sendCloudCommand(`trainer led ${ledNumber} ${nextState ? "on" : "off"}`);
+}
+
+function setTrainerLedUI(ledNumber, isOn){
+  if(!Number.isInteger(ledNumber) || ledNumber < 0 || ledNumber > 7) return;
+
+  trainerLedStates[ledNumber] = !!isOn;
+
+  const button = document.getElementById(`trainerLedButton${ledNumber}`);
+  if(button){
+    button.classList.toggle("electricGreen", trainerLedStates[ledNumber]);
+    button.setAttribute("aria-pressed", trainerLedStates[ledNumber] ? "true" : "false");
+  }
+}
+
+function parseTrainerLedState(line){
+  const match = String(line).match(/\btrainer\s+led\s+([0-7])\s*(?::|=)?\s*(on|off)\b/i);
+  if(!match) return;
+
+  setTrainerLedUI(Number(match[1]), match[2].toLowerCase() === "on");
+}
+
 function toggleSystemPanel(header){
   if(!header) return;
   const body = header.nextElementSibling;
@@ -2547,6 +2593,7 @@ function processSerialLine(line){
   parseSystemTestLine(line);
   parseBoardStatus(line);
   parseLedState(line);
+  parseTrainerLedState(line);
 
   if(
     /^flash complete\.?$/i.test(line)
