@@ -371,6 +371,8 @@ void loop() {
 
   updateBothBlink();
 
+  updateTrainerPattern();
+
 }
 
 
