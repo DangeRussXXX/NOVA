@@ -1397,6 +1397,15 @@ body.columnResizing *{
 .novaConsoleCommandRow{margin-top:10px;padding:0;border-top:0;}
 #lastHeard{white-space:pre-wrap;}
 
+
+/* NOVA UNIFIED COMMAND CONSOLE TEST */
+.novaUnifiedConsole{overflow:hidden;}
+.novaUnifiedConsole .novaLeftHome{margin-bottom:0;}
+.novaUnifiedBody{padding-top:4px;}
+.novaUnifiedBody .novaConsoleVoiceStatus{margin:0 0 10px;}
+.novaResponseLine{margin-top:10px;min-height:40px;}
+.novaUnifiedConsole .novaResponseConsole{margin-top:8px;height:150px;}
+
 </style>
 </head>
 
@@ -1427,35 +1436,26 @@ body.columnResizing *{
 
 <div class="leftColumn">
 
-  <!-- NOVA - ALWAYS VISIBLE -->
-  <div class="novaLeftHome">
-    <div id="novaCoreContainer">
-      <div id="novaPedestal">
-        <div id="novaThroneRing"></div>
-        <div id="novaGlyphLayer"></div>
-        <div id="novaConduits"></div>
-      </div>
-      <div id="novaOrb">
-        <div class="novaOuterRing"></div>
-        <div class="novaInnerRing"></div>
-        <div class="novaIris"><div class="novaName">NOVA</div></div>
-        <div class="novaWaveform"></div>
-        <div class="novaParticles"></div>
+  <!-- NOVA COMMAND CONSOLE - ALWAYS VISIBLE -->
+  <div class="panel card novaUnifiedConsole">
+    <div class="novaLeftHome">
+      <div id="novaCoreContainer">
+        <div id="novaPedestal">
+          <div id="novaThroneRing"></div>
+          <div id="novaGlyphLayer"></div>
+          <div id="novaConduits"></div>
+        </div>
+        <div id="novaOrb">
+          <div class="novaOuterRing"></div>
+          <div class="novaInnerRing"></div>
+          <div class="novaIris"><div class="novaName">NOVA</div></div>
+          <div class="novaWaveform"></div>
+          <div class="novaParticles"></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA'S RESPONSE</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed">
-      <div id="lastHeard" class="lastHeard">READY</div>
-      <div id="console" class="console novaResponseConsole"></div>
-    </div>
-  </div>
-
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA COMMAND CONSOLE</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed">
+    <div class="panelBody novaUnifiedBody">
       <div class="voiceStatus novaConsoleVoiceStatus"><span id="voiceDot" class="dot red"></span><span id="voiceText">VOICE OFF</span></div>
       <div class="buttonGrid voiceButtons">
         <button id="voiceButton" class="control good full" onclick="toggleVoice()">TALK TO NOVA</button>
@@ -1466,6 +1466,8 @@ body.columnResizing *{
         <input id="commandInput" type="text" placeholder="Enter commands for NOVA." autocomplete="off">
         <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
       </div>
+      <div id="lastHeard" class="lastHeard novaResponseLine">READY</div>
+      <div id="console" class="console novaResponseConsole"></div>
     </div>
   </div>
 
