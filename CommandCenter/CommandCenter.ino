@@ -455,17 +455,17 @@ void readSerial() {
 
 
 
-void lowerCase(char \*text) {
+void lowerCase(char *text) {
 
 
 
-  while (\*text) {
+  while (*text) {
 
 
 
-    if (\*text >= 'A' && \*text <= 'Z') {
+    if (*text >= 'A' && *text <= 'Z') {
 
-      \*text = \*text + ('a' - 'A');
+      *text = *text + ('a' - 'A');
 
     }
 
@@ -489,7 +489,7 @@ void lowerCase(char \*text) {
 
 
 
-void removeExtraSpaces(char \*text) {
+void removeExtraSpaces(char *text) {
 
 
 
@@ -565,11 +565,11 @@ void removeExtraSpaces(char \*text) {
 
 
 
-void replaceFirst(char \*text, const char \*from, const char \*to) {
+void replaceFirst(char *text, const char *from, const char *to) {
 
 
 
-  char \*p = strstr(text, from);
+  char *p = strstr(text, from);
 
 
 
@@ -613,7 +613,7 @@ void replaceFirst(char \*text, const char \*from, const char \*to) {
 
 
 
-void replaceNumberWords(char \*text) {
+void replaceNumberWords(char *text) {
 
 
 
@@ -651,7 +651,7 @@ void replaceNumberWords(char \*text) {
 
 
 
-void normalizeVoice(char \*text) {
+void normalizeVoice(char *text) {
 
 
 
@@ -806,6 +806,7 @@ void trainerAllOn() {
 
 
   stopTrainerBlink();
+  stopTrainerPattern();
 
 
 
@@ -834,6 +835,7 @@ void trainerAllOff() {
 
 
   stopTrainerBlink();
+  stopTrainerPattern();
 
 
 
@@ -1115,6 +1117,7 @@ void bothOn() {
   stopTrainerBlink();
 
   stopBothBlink();
+  stopTrainerPattern();
 
 
 
@@ -1155,6 +1158,7 @@ void bothOff() {
   stopTrainerBlink();
 
   stopBothBlink();
+  stopTrainerPattern();
 
 
 
@@ -1261,6 +1265,7 @@ void stopAllEffects() {
   stopTrainerBlink();
 
   stopBothBlink();
+  stopTrainerPattern();
 
 
 
@@ -2372,7 +2377,7 @@ void sendSOSBoth() {
 
 
 
-const char \*getMorse(char c) {
+const char *getMorse(char c) {
 
 
 
@@ -2480,7 +2485,7 @@ const char \*getMorse(char c) {
 
 
 
-    case '\\'': return ".----.";
+    case '\'': return ".----.";
 
     case '"': return ".-..-.";
 
@@ -2516,7 +2521,7 @@ const char \*getMorse(char c) {
 
 void sendMorseSymbol(
 
-  const char \*code,
+  const char *code,
 
   TargetType target
 
@@ -2524,7 +2529,7 @@ void sendMorseSymbol(
 
 
 
-  while (\*code) {
+  while (*code) {
 
 
 
@@ -2532,7 +2537,7 @@ void sendMorseSymbol(
 
 
 
-    if (\*code == '.') {
+    if (*code == '.') {
 
       duration = 200;
 
@@ -2660,7 +2665,7 @@ void sendMorseSymbol(
 
 void sendMorse(
 
-  char \*message,
+  char *message,
 
   TargetType target
 
@@ -2682,11 +2687,11 @@ void sendMorse(
 
 
 
-  while (\*message) {
+  while (*message) {
 
 
 
-    char c = \*message++;
+    char c = *message++;
 
 
 
@@ -2710,7 +2715,7 @@ void sendMorse(
 
 
 
-    const char \*code = getMorse(c);
+    const char *code = getMorse(c);
 
 
 
@@ -3857,6 +3862,20 @@ void showHelp() {
   Serial.println(F("TRAINER SOS"));
 
   Serial.println(F("TRAINER MORSE SOS"));
+  Serial.println(F("TRAINER STATUS"));
+  Serial.println(F("TRAINER TEST"));
+  Serial.println(F("TRAINER STOP"));
+  Serial.println(F("TRAINER PATTERN KNIGHT"));
+  Serial.println(F("TRAINER PATTERN CHASE"));
+  Serial.println(F("TRAINER PATTERN REVERSE CHASE"));
+  Serial.println(F("TRAINER PATTERN CENTER OUT"));
+  Serial.println(F("TRAINER PATTERN OUTSIDE IN"));
+  Serial.println(F("TRAINER PATTERN ALTERNATE"));
+  Serial.println(F("TRAINER PATTERN FILL"));
+  Serial.println(F("TRAINER PATTERN WAVE"));
+  Serial.println(F("TRAINER PATTERN POLICE"));
+  Serial.println(F("TRAINER PATTERN STROBE"));
+  Serial.println(F("TRAINER PATTERN SPEED 150"));
 
 
 
@@ -4474,15 +4493,15 @@ if (!strcmp(command, "toggle") ||
 
 
 
-    char \*p = command + 12;
+    char *p = command + 12;
 
 
 
-    if (\*p >= '0' && \*p <= '7') {
+    if (*p >= '0' && *p <= '7') {
 
 
 
-      byte index = \*p - '0';
+      byte index = *p - '0';
 
 
 
@@ -4490,7 +4509,7 @@ if (!strcmp(command, "toggle") ||
 
 
 
-      while (\*p == ' ') p++;
+      while (*p == ' ') p++;
 
 
 
@@ -4499,6 +4518,7 @@ if (!strcmp(command, "toggle") ||
 
 
         stopTrainerBlink();
+        stopTrainerPattern();
 
 
 
@@ -4525,6 +4545,7 @@ if (!strcmp(command, "toggle") ||
 
 
         stopTrainerBlink();
+        stopTrainerPattern();
 
 
 
@@ -5741,33 +5762,101 @@ if (!strcmp(command, "toggle") ||
 
 
   // ----------------------------------------------------------
-
-  // TRAINER PATTERN
-
+  // RSR TRAINER SYSTEM / LOOPING PATTERNS
   // ----------------------------------------------------------
 
-
-
-  if (!strncmp(command, "trainer pattern ", 16)) {
-
-
-
-    byte pattern = atoi(command + 16);
-
-
-
-    runPattern(
-
-      pattern,
-
-      TARGET_TRAINER
-
-    );
-
-
-
+  if (!strcmp(command, "trainer status") ||
+      !strcmp(command, "rsr status")) {
+    showTrainerStatus();
     return;
+  }
 
+  if (!strcmp(command, "trainer test") ||
+      !strcmp(command, "rsr test")) {
+    trainerTest();
+    return;
+  }
+
+  if (!strcmp(command, "trainer stop") ||
+      !strcmp(command, "rsr stop")) {
+    stopTrainerBlink();
+    stopBothBlink();
+    stopTrainerPattern();
+    Serial.println(F("TRAINER STOPPED"));
+    Serial.println(F("TRAINER PATTERN STATE: STOPPED"));
+    return;
+  }
+
+  if (!strncmp(command, "trainer pattern speed ", 22)) {
+    int speed = atoi(command + 22);
+    if (speed >= 40 && speed <= 2000) {
+      trainerPatternSpeed = (unsigned int)speed;
+      Serial.print(F("TRAINER PATTERN SPEED: "));
+      Serial.print(trainerPatternSpeed);
+      Serial.println(F(" ms"));
+    } else {
+      Serial.println(F("ERROR: TRAINER PATTERN SPEED must be 40-2000 ms."));
+    }
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern knight") ||
+      !strcmp(command, "trainer pattern knight rider")) {
+    startTrainerPattern(TRAINER_PATTERN_KNIGHT);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern chase")) {
+    startTrainerPattern(TRAINER_PATTERN_CHASE);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern reverse") ||
+      !strcmp(command, "trainer pattern reverse chase")) {
+    startTrainerPattern(TRAINER_PATTERN_REVERSE);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern center out")) {
+    startTrainerPattern(TRAINER_PATTERN_CENTER_OUT);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern outside in")) {
+    startTrainerPattern(TRAINER_PATTERN_OUTSIDE_IN);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern alternate")) {
+    startTrainerPattern(TRAINER_PATTERN_ALTERNATE);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern fill")) {
+    startTrainerPattern(TRAINER_PATTERN_FILL);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern wave")) {
+    startTrainerPattern(TRAINER_PATTERN_WAVE);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern police")) {
+    startTrainerPattern(TRAINER_PATTERN_POLICE);
+    return;
+  }
+
+  if (!strcmp(command, "trainer pattern strobe")) {
+    startTrainerPattern(TRAINER_PATTERN_STROBE);
+    return;
+  }
+
+  // Preserve the original numeric trainer patterns 1-5.
+  if (!strncmp(command, "trainer pattern ", 16)) {
+    byte pattern = atoi(command + 16);
+    runPattern(pattern, TARGET_TRAINER);
+    return;
   }
 
 
