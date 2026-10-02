@@ -1497,6 +1497,22 @@ body.columnResizing *{
 .novaResponseLine{margin-top:10px;min-height:40px;}
 .novaUnifiedConsole .novaResponseConsole{margin-top:8px;height:150px;}
 
+
+/* ============================================================
+   DESKTOP CAMERA MONITOR
+   ============================================================ */
+.cameraMonitor{margin-bottom:16px;}
+.cameraViewport{position:relative;width:100%;aspect-ratio:16/9;background:#020406;border:1px solid #1c2732;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.cameraViewport video{width:100%;height:100%;margin:0;object-fit:cover;background:#000;border-radius:0;}
+.cameraPlaceholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:1px;pointer-events:none;}
+.cameraControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.cameraControls .full{grid-column:1/-1;}
+.cameraSelect{width:100%;margin-top:10px;background:#080c11;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:7px;outline:none;}
+.cameraSelect:focus{border-color:var(--cyan);}
+.cameraStatusRow{display:flex;align-items:center;gap:7px;margin-top:10px;color:var(--muted);font-size:10px;letter-spacing:1px;}
+.cameraStatusRow .dot{width:7px;height:7px;}
+.cameraSnapshot{display:none;}
+
 </style>
 </head>
 
@@ -1702,6 +1718,28 @@ body.columnResizing *{
 <!-- RIGHT COLUMN -->
 
 <div class="rightColumn">
+
+  <!-- DESKTOP CAMERA MONITOR -->
+  <div class="panel card cameraMonitor">
+    <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
+    <div class="panelBody">
+      <div class="cameraViewport" id="cameraViewport">
+        <video id="desktopCameraVideo" autoplay playsinline muted></video>
+        <div id="cameraPlaceholder" class="cameraPlaceholder">CAMERA OFFLINE</div>
+      </div>
+      <select id="desktopCameraSelect" class="cameraSelect" aria-label="Desktop camera selector">
+        <option value="">DEFAULT CAMERA</option>
+      </select>
+      <div class="cameraControls">
+        <button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
+        <button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
+        <button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
+        <button class="control primary" onclick="fullscreenDesktopCamera()">FULLSCREEN</button>
+      </div>
+      <div class="cameraStatusRow"><span id="cameraStatusDot" class="dot red"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
+      <canvas id="desktopCameraSnapshot" class="cameraSnapshot"></canvas>
+    </div>
+  </div>
 
   <!-- PROFILE -->
   <div class="panel card">
@@ -6197,6 +6235,117 @@ window.addEventListener("resize", restoreColumnLayout);
 window.addEventListener("load", restoreColumnLayout);
 requestAnimationFrame(restoreColumnLayout);
 
+
+
+/* ============================================================
+   DESKTOP CAMERA MONITOR
+   Local USB / built-in cameras via browser MediaDevices API.
+   ============================================================ */
+let desktopCameraStream = null;
+
+function setDesktopCameraStatus(online, text){
+  const dot = document.getElementById("cameraStatusDot");
+  const label = document.getElementById("cameraStatusText");
+  const placeholder = document.getElementById("cameraPlaceholder");
+  if(dot){ dot.classList.toggle("green", !!online); dot.classList.toggle("red", !online); }
+  if(label){ label.textContent = text || (online ? "CAMERA ONLINE" : "CAMERA OFFLINE"); }
+  if(placeholder){ placeholder.style.display = online ? "none" : "flex"; }
+}
+
+async function refreshDesktopCameraList(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+  const select = document.getElementById("desktopCameraSelect");
+  if(!select) return;
+  const previous = select.value;
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const cameras = devices.filter(device => device.kind === "videoinput");
+  select.innerHTML = "";
+  cameras.forEach((camera, index) => {
+    const option = document.createElement("option");
+    option.value = camera.deviceId;
+    option.textContent = camera.label || `CAMERA ${index + 1}`;
+    select.appendChild(option);
+  });
+  if(!cameras.length){
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "NO CAMERA FOUND";
+    select.appendChild(option);
+  } else if(previous && cameras.some(camera => camera.deviceId === previous)){
+    select.value = previous;
+  }
+}
+
+async function startDesktopCamera(){
+  const video = document.getElementById("desktopCameraVideo");
+  const select = document.getElementById("desktopCameraSelect");
+  if(!video) return;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    setDesktopCameraStatus(false, "CAMERA NOT SUPPORTED");
+    if(typeof log === "function") log("Browser camera access is not supported.", "error");
+    return;
+  }
+  try{
+    if(desktopCameraStream){ desktopCameraStream.getTracks().forEach(track => track.stop()); }
+    const deviceId = select && select.value ? select.value : null;
+    const constraints = { video: deviceId ? {deviceId:{exact:deviceId}} : true, audio:false };
+    desktopCameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = desktopCameraStream;
+    await video.play();
+    setDesktopCameraStatus(true, "CAMERA ONLINE");
+    await refreshDesktopCameraList();
+    if(select && deviceId) select.value = deviceId;
+    if(typeof log === "function") log("Desktop camera connected.", "success");
+  }catch(error){
+    desktopCameraStream = null;
+    setDesktopCameraStatus(false, "CAMERA ACCESS FAILED");
+    if(typeof log === "function") log(`Camera error: ${error.message}`, "error");
+  }
+}
+
+function stopDesktopCamera(){
+  const video = document.getElementById("desktopCameraVideo");
+  if(desktopCameraStream){ desktopCameraStream.getTracks().forEach(track => track.stop()); desktopCameraStream = null; }
+  if(video) video.srcObject = null;
+  setDesktopCameraStatus(false, "CAMERA OFFLINE");
+  if(typeof log === "function") log("Desktop camera stopped.", "system");
+}
+
+async function changeDesktopCamera(){
+  if(desktopCameraStream) await startDesktopCamera();
+}
+
+function fullscreenDesktopCamera(){
+  const viewport = document.getElementById("cameraViewport");
+  if(!viewport) return;
+  if(document.fullscreenElement){ document.exitFullscreen(); }
+  else if(viewport.requestFullscreen){ viewport.requestFullscreen(); }
+}
+
+function snapshotDesktopCamera(){
+  const video = document.getElementById("desktopCameraVideo");
+  const canvas = document.getElementById("desktopCameraSnapshot");
+  if(!video || !canvas || !desktopCameraStream || !video.videoWidth){
+    if(typeof log === "function") log("Start the camera before taking a snapshot.", "warning");
+    return;
+  }
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+  const link = document.createElement("a");
+  link.download = `amomii-camera-${new Date().toISOString().replace(/[:.]/g,"-")}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+  if(typeof log === "function") log("Camera snapshot captured.", "success");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const select = document.getElementById("desktopCameraSelect");
+  if(select) select.addEventListener("change", changeDesktopCamera);
+  if(navigator.mediaDevices && navigator.mediaDevices.addEventListener){
+    navigator.mediaDevices.addEventListener("devicechange", refreshDesktopCameraList);
+  }
+  refreshDesktopCameraList().catch(() => {});
+});
 
 </script>
 
