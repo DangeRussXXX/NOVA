@@ -1352,6 +1352,44 @@ body.columnResizing *{
   }
 }
 
+
+/* ============================================================
+   CENTER COLUMN MERGED PANELS
+   ============================================================ */
+
+.novaCommandCenterPanel .console{
+  height:300px;
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+
+.novaOutputSection{
+  margin-top:14px;
+}
+
+.morseIntegratedOutput{
+  display:grid;
+  gap:8px;
+  padding:10px;
+  background:#05080c;
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--cyan);
+  font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  font-size:12px;
+  word-break:break-word;
+}
+
+.morseIntegratedLabel{
+  color:var(--muted);
+  font-weight:700;
+}
+
+.mergedCommandRow{
+  padding:0;
+  border-top:0;
+}
+
 </style>
 </head>
 
@@ -1474,61 +1512,58 @@ body.columnResizing *{
 
 <div class="centerColumn">
 
-  <!-- NOVA COMMAND CENTER -->
-  <div class="voiceHero">
-    <div class="voiceSubtitle">NOVA Command Center</div>
-    <div id="lastHeard" class="lastHeard"></div>
+  <!-- NOVA COMMAND CENTER - CENTRAL OUTPUT -->
+  <div class="panel card novaCommandCenterPanel">
+    <div class="panelHeader">NOVA COMMAND CENTER</div>
+    <div class="panelBody">
+      <div class="voiceSubtitle">LAST HEARD</div>
+      <div id="lastHeard" class="lastHeard"></div>
+
+      <div class="panelSection novaOutputSection">
+        <div class="panelSubHeader">NOVA RESPONSES / SYSTEM OUTPUT</div>
+        <div id="console" class="console"></div>
+      </div>
+
+      <div class="panelSection novaMorseSection">
+        <div class="panelSubHeader">MORSE TRANSMISSION</div>
+        <div class="morseIntegratedOutput">
+          <div><span class="morseIntegratedLabel">TEXT:</span> <span id="morsePlainText">—</span></div>
+          <div><span class="morseIntegratedLabel">MORSE:</span> <span id="morseText">—</span></div>
+        </div>
+        <div class="morseRow" style="margin-top:8px">
+          <input id="morseInput" type="text" placeholder="Enter text or Morse code">
+          <button class="control primary" onclick="processMorse()">CONVERT</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- NOVA COMMAND CONSOLE -->
+  <!-- NOVA COMMAND CONSOLE - VOICE + VOICE ENGINE + TEXT COMMAND LINE -->
   <div class="panel card">
     <div class="panelHeader consoleHeader" onclick="toggleConsole()">
       <span>NOVA COMMAND CONSOLE</span>
-    </div>
-    <div class="consoleBody">
-      <div id="console" class="console"></div>
-    </div>
-  </div>
-
-  <!-- MORSE -->
-  <div class="panel card morseCard">
-    <div class="panelHeader morseHeader">
-      <span>MORSE</span>
-      <div class="morseStatus">
-        <span id="morseDot" class="dot green"></span>
-        <span id="morseStatus">READY</span>
-      </div>
-    </div>
-    <div class="morseDisplay">
-      <div class="morseLabel">MORSE TRANSMISSION</div>
-      <div id="morseText" class="morseScrollingText">· · ·   ---   · · ·</div>
-    </div>
-  </div>
-
-  <!-- VOICE + VOICE ENGINE -->
-  <div class="panel card">
-    <div class="panelHeader voiceHeader">
-      <span>VOICE &amp; VOICE ENGINE</span>
       <div class="voiceStatus">
         <span id="voiceDot" class="dot red"></span>
         <span id="voiceText">VOICE OFF</span>
       </div>
     </div>
-    <div class="panelBody">
-      <div class="buttonGrid voiceButtons">
-        <button id="voiceButton" class="control good full" onclick="toggleVoice()">TALK TO NOVA</button>
-        <button class="control full" onclick="speakHelp()">NOVA HELP</button>
-        <button class="control full" onclick="speakCommands()">NOVA COMMANDS</button>
-      </div>
-    </div>
-  </div>
+    <div class="consoleBody">
+      <div class="panelBody">
+        <div class="panelSubHeader">VOICE &amp; VOICE ENGINE</div>
+        <div class="buttonGrid voiceButtons">
+          <button id="voiceButton" class="control good full" onclick="toggleVoice()">TALK TO NOVA</button>
+          <button class="control full" onclick="speakHelp()">NOVA HELP</button>
+          <button class="control full" onclick="speakCommands()">NOVA COMMANDS</button>
+        </div>
 
-  <!-- TEXT COMMAND LINE -->
-  <div class="panel card">
-    <div class="panelHeader">TEXT COMMAND LINE</div>
-    <div class="commandRow">
-      <input id="commandInput" type="text" placeholder="Enter commands for NOVA." autocomplete="off">
-      <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
+        <div class="panelSection">
+          <div class="panelSubHeader">TEXT COMMAND LINE</div>
+          <div class="commandRow mergedCommandRow">
+            <input id="commandInput" type="text" placeholder="Enter commands for NOVA." autocomplete="off">
+            <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2248,68 +2283,49 @@ function toggleConsole(){
 
   function processMorse(){
 
-    const input =
-      document.getElementById("morseInput");
+    const input = document.getElementById("morseInput");
+    const textOutput = document.getElementById("morsePlainText");
+    const morseOutput = document.getElementById("morseText");
 
-    const output =
-      document.getElementById("morseOutput");
+    if(!input || !textOutput || !morseOutput) return;
 
-    if(!input || !output) return;
-
-    const value =
-      input.value.trim();
+    const value = input.value.trim();
 
     if(!value){
-
-      output.textContent = "";
-
+      textOutput.textContent = "—";
+      morseOutput.textContent = "—";
       return;
     }
 
     if(/^[.\-\/\s]+$/.test(value)){
-
       const reverseMorse = {};
 
       Object.keys(morseCode).forEach(letter => {
         reverseMorse[morseCode[letter]] = letter;
       });
 
-      const words =
-        value.split(" / ");
+      const decoded = value
+        .split(" / ")
+        .map(word => word.trim().split(/\s+/).map(code => reverseMorse[code] || "?").join(""))
+        .join(" ");
 
-      const decoded =
-        words.map(word => {
-
-          return word
-            .trim()
-            .split(/\s+/)
-            .map(code =>
-              reverseMorse[code] || "?"
-            )
-            .join("");
-
-        }).join(" ");
-
-      output.textContent = decoded;
-
+      textOutput.textContent = decoded;
+      morseOutput.textContent = value;
+      log(`MORSE TEXT: ${decoded}`, "system");
+      log(`MORSE CODE: ${value}`, "system");
       return;
     }
 
-    const encoded =
-      value
-        .toUpperCase()
-        .split("")
-        .map(char => {
+    const plainText = value.toUpperCase();
+    const encoded = plainText
+      .split("")
+      .map(char => char === " " ? "/" : (morseCode[char] || char))
+      .join(" ");
 
-          if(char === " ") return "/";
-
-          return morseCode[char] || char;
-
-        })
-        .join(" ");
-
-    output.textContent = encoded;
-
+    textOutput.textContent = plainText;
+    morseOutput.textContent = encoded;
+    log(`MORSE TEXT: ${plainText}`, "system");
+    log(`MORSE CODE: ${encoded}`, "system");
   }
 
 
@@ -2532,16 +2548,6 @@ function processSerialLine(line){
 
   }
 
-  if(
-    /morse/i.test(line)
-  ){
-
-    document.getElementById(
-      "morseStatus"
-    ).textContent =
-      line;
-
-  }
 
 }
 
@@ -3344,6 +3350,8 @@ function speakNext(){
   const text =
     speechQueue.shift();
 
+  log(`NOVA: ${text}`, "voice");
+
   isSpeaking = true;
 
   document.getElementById(
@@ -3352,11 +3360,6 @@ function speakNext(){
     "YES";
 
   stopRecognitionForSpeech();
-
-  log(
-    `Speaking: "${text}"`,
-    "voice"
-  );
 
  const utterance =
   new SpeechSynthesisUtterance(text);
@@ -5735,8 +5738,8 @@ function toggleLeftPanel(header){
 
 /* ============================================================
    DRAGGABLE COLUMN WIDTHS
-   Works with the page's VISUAL column order, not DOM order.
-   The current CSS orders the columns CENTER -> LEFT -> RIGHT.
+   Works with the page's VISUAL column order.
+   Desktop order is LEFT -> CENTER -> RIGHT.
    ============================================================ */
 
 const mainGrid = document.querySelector(".mainGrid");
@@ -5744,7 +5747,7 @@ const columnResizer1 = document.getElementById("columnResizer1");
 const columnResizer2 = document.getElementById("columnResizer2");
 
 const COLUMN_MIN_WIDTH = 220;
-const COLUMN_LAYOUT_KEY = "novaColumnWidthsV3";
+const COLUMN_LAYOUT_KEY = "novaColumnWidthsV4";
 
 let activeColumnResize = null;
 let savedDesktopWidths = null;
@@ -5955,15 +5958,14 @@ function restoreColumnLayout(){
   }else if(savedDesktopWidths){
     applyColumnWidths(savedDesktopWidths, false);
   }else{
-    // New default layout: CENTER gets the remaining workspace,
-    // LEFT starts wide enough for its longest panel title,
-    // RIGHT keeps a practical holding-panel width.
+    // New default layout: LEFT is wide enough for its panel titles,
+    // CENTER gets the remaining workspace, RIGHT keeps a practical width.
     requestAnimationFrame(() => {
       const available = mainGrid.clientWidth - 32;
       const leftPanelWidth = 320;
       const rightPanelWidth = 320;
       const centerWorkspaceWidth = Math.max(420, available - leftPanelWidth - rightPanelWidth);
-      applyColumnWidths([centerWorkspaceWidth, leftPanelWidth, rightPanelWidth], false);
+      applyColumnWidths([leftPanelWidth, centerWorkspaceWidth, rightPanelWidth], false);
     });
   }
 
