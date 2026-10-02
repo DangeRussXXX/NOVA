@@ -152,33 +152,8 @@ header{
 
 .mainGrid{
   display:grid;
-  grid-template-columns:250px minmax(250px,1fr) 300px;
+  grid-template-columns:minmax(250px,1fr) 00px 300px;
   gap:16px;
-  position:relative;
-  width:100%;
-  box-sizing:border-box;
-}
-
-/* ============================================================
-   DRAGGABLE COLUMN RESIZERS
-   ============================================================ */
-
-.columnResizer{
-  position:absolute;
-  top:0;
-  width:6px;
-  height:100%;
-  cursor:col-resize;
-  z-index:50;
-  background:transparent;
-}
-
-.columnResizer:hover{
-  background:rgba(0,255,255,.35);
-}
-
-.mainGrid{
-  position:relative;
 }
 
 .centerColumn{
@@ -1274,11 +1249,8 @@ video{
 </header>
 
 <div class="mainGrid">
-
-  <div id="leftColumnResizer" class="columnResizer"></div>
-  <div id="centerColumnResizer" class="columnResizer"></div>
-
 <!-- LEFT COLUMN -->
+
 <div class="leftColumn">
 
 
@@ -6064,174 +6036,6 @@ window.addEventListener(
 
   }
 );
-
-/* ============================================================
-   DRAGGABLE COLUMN WIDTHS
-   ============================================================ */
-
-const mainGrid = document.querySelector(".mainGrid");
-
-const leftResizer =
-  document.getElementById("leftColumnResizer");
-
-const centerResizer =
-  document.getElementById("centerColumnResizer");
-
-let resizingColumn = null;
-
-function updateResizerPositions(){
-
-  const columns =
-    mainGrid.querySelectorAll(
-      ":scope > .leftColumn, :scope > .centerColumn, :scope > .rightColumn"
-    );
-
-  if(columns.length < 3) return;
-
-  const left =
-    columns[0].getBoundingClientRect();
-
-  const center =
-    columns[1].getBoundingClientRect();
-
-  const grid =
-    mainGrid.getBoundingClientRect();
-
-  leftResizer.style.left =
-    (left.right - grid.left - 3) + "px";
-
-  centerResizer.style.left =
-    (center.right - grid.left - 3) + "px";
-}
-
-function startResize(column){
-  resizingColumn = column;
-
-  document.body.style.cursor = "col-resize";
-  document.body.style.userSelect = "none";
-}
-
-function stopResize(){
-
-  resizingColumn = null;
-
-  document.body.style.cursor = "";
-  document.body.style.userSelect = "";
-
-}
-
-function resizeColumns(event){
-
-  if(!resizingColumn) return;
-
-  const grid =
-    mainGrid.getBoundingClientRect();
-
-  const totalWidth =
-    grid.width;
-
-  const gap = 16;
-
-  const rightWidth = 300;
-
-  const minLeft = 250;
-  const minCenter = 250;
-
-  const x =
-    event.clientX - grid.left;
-
-
-  if(resizingColumn === "left"){
-
-    let leftWidth =
-      Math.max(minLeft, x);
-
-    let centerWidth =
-      totalWidth
-      - leftWidth
-      - rightWidth
-      - (gap * 2);
-
-    if(centerWidth < minCenter){
-
-      centerWidth = minCenter;
-
-      leftWidth =
-        totalWidth
-        - centerWidth
-        - rightWidth
-        - (gap * 2);
-
-    }
-
-    mainGrid.style.gridTemplateColumns =
-      `${leftWidth}px ${centerWidth}px ${rightWidth}px`;
-  }
-
-
-  if(resizingColumn === "center"){
-
-    const leftColumn =
-      mainGrid
-        .querySelector(".leftColumn")
-        .getBoundingClientRect();
-
-    const leftWidth =
-      leftColumn.width;
-
-    let centerWidth =
-      x
-      - leftWidth
-      - gap;
-
-    centerWidth =
-      Math.max(minCenter, centerWidth);
-
-    const maxCenter =
-      totalWidth
-      - leftWidth
-      - rightWidth
-      - (gap * 2);
-
-    centerWidth =
-      Math.min(centerWidth, maxCenter);
-
-    mainGrid.style.gridTemplateColumns =
-      `${leftWidth}px ${centerWidth}px ${rightWidth}px`;
-  }
-
-  updateResizerPositions();
-
-}
-
-
-leftResizer.addEventListener(
-  "mousedown",
-  () => startResize("left")
-);
-
-centerResizer.addEventListener(
-  "mousedown",
-  () => startResize("center")
-);
-
-document.addEventListener(
-  "mousemove",
-  resizeColumns
-);
-
-document.addEventListener(
-  "mouseup",
-  stopResize
-);
-
-window.addEventListener(
-  "resize",
-  updateResizerPositions
-);
-
-updateResizerPositions();
-
 
 </script>
 
