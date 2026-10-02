@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1232,6 +1231,58 @@ video{
 
 
 /* ============================================================
+   LEFT COLUMN COLLAPSIBLE PANELS
+   NOVA stays visible; all panels below NOVA start collapsed.
+   ============================================================ */
+
+.leftColumn{
+  min-width:300px;
+}
+
+.novaLeftHome{
+  margin-bottom:10px;
+}
+
+.leftCollapsePanel{
+  margin-bottom:10px;
+}
+
+.leftCollapseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+
+.leftCollapseHeader .collapseArrow{
+  flex:0 0 auto;
+  font-size:16px;
+  line-height:1;
+  transition:transform .18s ease;
+}
+
+.leftCollapseHeader.expanded .collapseArrow{
+  transform:rotate(90deg);
+}
+
+.leftCollapseBody{
+  overflow:hidden;
+  max-height:2000px;
+  opacity:1;
+  transition:max-height .25s ease, opacity .18s ease;
+}
+
+.leftCollapseBody.collapsed{
+  max-height:0;
+  opacity:0;
+  padding-top:0;
+  padding-bottom:0;
+}
+
+/* ============================================================
    FULL SCREEN + DRAGGABLE COLUMN RESIZERS
    ============================================================ */
 
@@ -1342,744 +1393,37 @@ body.columnResizing *{
 
 <div class="leftColumn">
 
-
-  <!-- VOICE -->
-
-  <div class="panel card">
-
-   <div class="panelHeader voiceHeader">
-  <span>VOICE</span>
-
-  <div class="voiceStatus">
-    <span id="voiceDot" class="dot red"></span>
-    <span id="voiceText">VOICE OFF</span>
-  </div>
-</div>
-
-    <div class="panelBody">
-
-      <div class="buttonGrid voiceButtons">
-
-  <button
-    id="voiceButton"
-    class="control good full"
-    onclick="toggleVoice()">
-    TALK TO NOVA
-  </button>
-
-  <button
-    class="control full"
-    onclick="speakHelp()">
-    NOVA HELP
-  </button>
-
-  <button
-    class="control full"
-    onclick="speakCommands()">
-    NOVA COMMANDS
-  </button>
-
-</div>
-
-    </div>
-  </div>
-
-<!-- NOVA COMMAND CONSOLE -->
-
-<div class="panel">
-
-  <div
-    class="panelHeader consoleHeader"
-    onclick="toggleConsole()">
-
-    <span>NOVA COMMAND CONSOLE</span>
-
-  </div>
-
-  <div class="consoleBody">
-
-    <div id="console" class="console"></div>
-
-    <div class="commandRow">
-
-      <input
-        id="commandInput"
-        type="text"
-        placeholder="Enter commands for NOVA."
-        autocomplete="off">
-
-      <button
-        class="control primary"
-        onclick="sendManualCommand()">
-        SEND TO NOVA
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- MORSE -->
-
-<div class="panel card">
-
-  <div class="panelHeader">
-    MORSE
-  </div>
-
-  <div class="panelBody">
-
-    <div class="statList">
-
-      <div class="stat">
-        <span>Status</span>
-        <span id="morseStatus">READY</span>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-<!-- AMOMII ONE CONTROLLER -->
-
-<div class="panel card">
-
-  <div class="panelHeader controllerHeader" onclick="toggleController()">
-    <span>AMOMII ONE CONTROLLER</span>
-
-    <div class="connectionStatus">
-      <span id="connectionDot" class="dot red"></span>
-      <span id="connectionText">DISCONNECTED</span>
-    </div>
-  </div>
-
-  <div class="panelBody">
-
-      <!-- CONTROLLER BUTTONS -->
-
-      <div class="buttonGrid">
-
-        <button
-          class="control primary full"
-          onclick="connectSerial()">
-          CONNECT
-        </button>
-
-        <button
-          class="control danger full"
-          onclick="disconnectSerial()">
-          DISCONNECT
-        </button>
-
-        <button
-          class="control"
-          onclick="sendCloudCommand('status')">
-          STATUS
-        </button>
-
-        <button
-          class="control"
-          onclick="runSystemTest()">
-          SYSTEM TEST
-        </button>
-
-        <button
-          class="control"
-          onclick="sendCloudCommand('help')">
-          HELP
-        </button>
-
-        <button
-          class="control"
-          onclick="stopBoard()">
-          STOP
-        </button>
-
-        <button
-          class="control good"
-          onclick="sendCloudCommand('led on')">
-          LED ON
-        </button>
-
-        <button
-          class="control danger"
-          onclick="sendCloudCommand('led off')">
-          LED OFF
-        </button>
-
-        <button
-          class="control"
-          onclick="sendCloudCommand('toggle')">
-          TOGGLE
-        </button>
-
-        <button
-          class="control warn"
-          onclick="sendCloudCommand('blink 5')">
-          BLINK 5
-        </button>
-
-        <button
-          class="control warn"
-          onclick="sendCloudCommand('sos')">
-          SOS
-        </button>
-
-        <button
-          class="control danger"
-          onclick="sendCloudCommand('stop')">
-          STOP
-        </button>
-
-      </div>
-
-
-      <!-- SYSTEM STATUS -->
-
-      <div class="panelSection">
-
-        <div class="panelSubHeader">
-          SYSTEM STATUS
-        </div>
-
-        <div class="statList">
-
-          <div class="stat">
-            <span>Board</span>
-            <span>AMOMII ONE</span>
-          </div>
-
-          <div class="stat">
-            <span>Connection</span>
-            <span id="statusConnection">OFFLINE</span>
-          </div>
-
-          <div class="stat">
-            <span>System</span>
-            <span id="statusSystem">READY</span>
-          </div>
-
-          <div class="stat">
-            <span>LED</span>
-            <span id="statusLed">UNKNOWN</span>
-          </div>
-
-          <div class="stat">
-            <span>Blinking</span>
-            <span id="statusBlinking">NO</span>
-          </div>
-
-          <div class="stat">
-            <span>Blink speed</span>
-            <span id="statusBlinkSpeed">—</span>
-          </div>
-
-          <div class="stat">
-            <span>Commands</span>
-            <span id="statusCommands">0</span>
-          </div>
-
-          <div class="stat">
-            <span>Uptime</span>
-            <span id="uptime">00:00:00</span>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- SYSTEM TEST -->
-
-      <div class="panelSection">
-
-        <div class="panelSubHeader">
-          SYSTEM TEST
-        </div>
-
-        <div class="testGrid">
-
-          <div class="testItem">
-            <span>Serial</span>
-            <span id="testSerial" class="testValue pending">—</span>
-          </div>
-
-          <div class="testItem">
-            <span>LED</span>
-            <span id="testLed" class="testValue pending">—</span>
-          </div>
-
-          <div class="testItem">
-            <span>Timing</span>
-            <span id="testTiming" class="testValue pending">—</span>
-          </div>
-
-          <div class="testItem">
-            <span>Memory</span>
-            <span id="testMemory" class="testValue pending">—</span>
-          </div>
-
-          <div class="testItem">
-            <span>Commands</span>
-            <span id="testCommands" class="testValue pending">—</span>
-          </div>
-
-          <div class="testItem">
-            <span>System</span>
-            <span id="testSystem" class="testValue pending">—</span>
-          </div>
-
-        </div>
-
-        <div id="testResult" class="testResult">
-          NOT RUN
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-
-</div>
-
-<!-- CENTER COLUMN -->
-
-<div class="centerColumn">
-
-      <!-- NOVA AI CORE -->
+  <!-- NOVA - ALWAYS VISIBLE -->
+  <div class="novaLeftHome">
     <div id="novaCoreContainer">
-        <div id="novaPedestal">
-            <div id="novaThroneRing"></div>
-            <div id="novaGlyphLayer"></div>
-            <div id="novaConduits"></div>
-        </div>
-
-    <div id="novaOrb">
-    <div class="novaOuterRing"></div>
-    <div class="novaInnerRing"></div>
-
-    <div class="novaIris">
-        <div class="novaName">NOVA</div>
-    </div>
-
-    <div class="novaWaveform"></div>
-    <div class="novaParticles"></div>
-</div>
-
-    </div>
-
-  <div class="voiceHero">
-
-
-
-    <div class="voiceSubtitle">
-      NOVA Command Center
-    </div>
-
-    <div id="lastHeard" class="lastHeard">
-    </div>
-
-  </div>
-
-
-
-  <!-- MEDIA CENTER -->
-
-  <div class="panel mediaPanel">
-
-    <div class="panelHeader">
-      MEDIA CENTER
-    </div>
-
-    <div class="panelBody">
-
-      <div class="mediaTabs">
-
-        <button
-          class="tab active"
-          data-tab="music"
-          onclick="showMediaTab('music')">
-          MUSIC LIBRARY
-        </button>
-
-        <button
-          class="tab"
-          data-tab="video"
-          onclick="showMediaTab('video')">
-          VIDEO LIBRARY
-        </button>
-
-        <button
-          class="tab"
-          data-tab="youtube"
-          onclick="showMediaTab('youtube')">
-          YOUTUBE
-        </button>
-
+      <div id="novaPedestal">
+        <div id="novaThroneRing"></div>
+        <div id="novaGlyphLayer"></div>
+        <div id="novaConduits"></div>
       </div>
 
+      <div id="novaOrb">
+        <div class="novaOuterRing"></div>
+        <div class="novaInnerRing"></div>
 
-      <!-- MUSIC -->
-
-      <div id="musicSection" class="mediaSection active">
-
-        <div class="mediaFileRow">
-
-          <label class="fileButton">
-            ADD MUSIC
-            <input
-              id="musicFiles"
-              type="file"
-              accept="audio/*"
-              multiple>
-          </label>
-
-          <span id="musicCount" class="voiceSubtitle">
-            0 tracks
-          </span>
-
+        <div class="novaIris">
+          <div class="novaName">NOVA</div>
         </div>
 
-        <audio
-          id="audioPlayer"
-          controls>
-        </audio>
-
-        <div class="mediaControls">
-
-          <button onclick="previousMusic()">PREVIOUS</button>
-          <button onclick="toggleMusic()">PLAY / PAUSE</button>
-          <button onclick="stopMusic()">STOP</button>
-          <button onclick="nextMusic()">NEXT</button>
-
-          <button onclick="toggleShuffle()">
-            SHUFFLE: <span id="shuffleText">OFF</span>
-          </button>
-
-          <button onclick="toggleRepeat()">
-            REPEAT: <span id="repeatText">OFF</span>
-          </button>
-
-        </div>
-
-        <div style="margin-top:10px">
-          <label style="font-size:10px;color:var(--muted)">
-            VOLUME
-          </label>
-
-          <input
-            id="musicVolume"
-            type="range"
-            min="0"
-            max="1"
-            step=".01"
-            value=".8"
-            style="width:100%">
-        </div>
-
-        <div id="musicList" class="mediaList"></div>
-
+        <div class="novaWaveform"></div>
+        <div class="novaParticles"></div>
       </div>
-
-
-      <!-- VIDEO -->
-
-      <div id="videoSection" class="mediaSection">
-
-        <div class="mediaFileRow">
-
-          <label class="fileButton">
-            ADD VIDEOS
-            <input
-              id="videoFiles"
-              type="file"
-              accept="video/*"
-              multiple>
-          </label>
-
-          <span id="videoCount" class="voiceSubtitle">
-            0 videos
-          </span>
-
-        </div>
-
-        <video
-          id="videoPlayer"
-          controls>
-        </video>
-
-        <div class="mediaControls">
-
-          <button onclick="previousVideo()">PREVIOUS</button>
-          <button onclick="toggleVideo()">PLAY / PAUSE</button>
-          <button onclick="stopVideo()">STOP</button>
-          <button onclick="nextVideo()">NEXT</button>
-
-        </div>
-
-        <div style="margin-top:10px">
-          <label style="font-size:10px;color:var(--muted)">
-            VOLUME
-          </label>
-
-          <input
-            id="videoVolume"
-            type="range"
-            min="0"
-            max="1"
-            step=".01"
-            value=".8"
-            style="width:100%">
-        </div>
-
-        <div id="videoList" class="mediaList"></div>
-
-      </div>
-
-
-      <!-- YOUTUBE -->
-
-      <div id="youtubeSection" class="mediaSection">
-
-        <div class="youtubeRow">
-
-          <input
-            id="youtubeInput"
-            type="text"
-            placeholder="Paste YouTube URL or video ID">
-
-          <button
-            class="control primary"
-            onclick="loadYouTube()">
-            LOAD
-          </button>
-
-        </div>
-
-        <div class="videoWrap" style="margin-top:10px">
-          <iframe
-            id="youtubeFrame"
-            src=""
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-        </div>
-
-        <div class="mediaControls">
-
-          <button onclick="youtubeCommand('playVideo')">
-            PLAY
-          </button>
-
-          <button onclick="youtubeCommand('pauseVideo')">
-            PAUSE
-          </button>
-
-          <button onclick="youtubeCommand('stopVideo')">
-            STOP
-          </button>
-
-        </div>
-
-      </div>
-
     </div>
   </div>
 
-
-  <!-- CALENDAR -->
-
-  <div class="panel mediaPanel">
-
-    <div class="panelHeader">
-      COMMAND CENTER CALENDAR
+  <!-- NOVA VOICE COMMANDS - DEFAULT COLLAPSED -->
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)">
+      <span>NOVA VOICE COMMANDS</span>
+      <span class="collapseArrow">▸</span>
     </div>
-
-    <div class="panelBody">
-
-      <div class="calendarHeader">
-
-        <button onclick="changeMonth(-1)">‹</button>
-
-        <div id="calendarMonth" class="calendarMonth"></div>
-
-        <button onclick="changeMonth(1)">›</button>
-
-      </div>
-
-      <div
-        id="calendarGrid"
-        class="calendarGrid">
-      </div>
-
-      <div id="eventList" class="eventList"></div>
-
-      <div class="mediaControls">
-
-        <button
-          class="control primary"
-          onclick="voiceAddEvent()">
-          ADD EVENT BY VOICE
-        </button>
-
-        <button
-          class="control"
-          onclick="addTestEvent()">
-          TEST EVENT
-        </button>
-
-        <button
-          class="control danger"
-          onclick="clearEvents()">
-          CLEAR EVENTS
-        </button>
-
-      </div>
-
-    </div>
-  </div>
-
-</div>
-
-
-<!-- RIGHT COLUMN -->
-
-<div class="rightColumn">
-
-
-  <!-- PROFILE -->
-
-  <div class="panel card">
-
-    <div class="panelHeader">
-      PROFILE
-    </div>
-
-    <div class="panelBody">
-
-      <div class="profileName" id="profileUserName">
-        DangeRuss
-      </div>
-
-      <div class="profileRow">
-        <span>Assistant</span>
-        <span id="profileAssistantName">NOVA</span>
-      </div>
-
-      <div class="profileRow">
-        <span>Board</span>
-        <span>AMOMII ONE</span>
-      </div>
-
-      <div class="profileRow">
-        <span>Voice</span>
-        <span id="profileVoice">READY</span>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- VOICE ENGINE -->
-
-  <div class="panel card">
-
-    <div class="panelHeader">
-      VOICE ENGINE
-    </div>
-
-    <div class="panelBody">
-
-      <div class="statList">
-
-        <div class="stat">
-          <span>Assistant</span>
-          <span id="voiceEngineName">NOVA</span>
-        </div>
-
-        <div class="stat">
-          <span>Recognition</span>
-          <span id="recognitionState">OFF</span>
-        </div>
-
-        <div class="stat">
-          <span>Speaking</span>
-          <span id="speakingState">NO</span>
-        </div>
-
-        <div class="stat">
-          <span>Last heard</span>
-          <span id="voiceLastShort">—</span>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- COMMAND HISTORY -->
-
-  <div class="panel card">
-
-    <div class="panelHeader">
-      NOVA COMMAND HISTORY
-    </div>
-
-    <div class="panelBody">
-
-      <div id="commandHistory" class="history"></div>
-
-    </div>
-  </div>
-
-
-  <!-- MORSE -->
-
-<div class="panel card morseCard">
-
-  <div class="panelHeader morseHeader">
-    <span>MORSE</span>
-
-    <div class="morseStatus">
-      <span id="morseDot" class="dot green"></span>
-      <span id="morseStatus">READY</span>
-    </div>
-  </div>
-
-  <div class="morseDisplay">
-
-    <div class="morseLabel">
-      MORSE TRANSMISSION
-    </div>
-
-    <div
-      id="morseText"
-      class="morseScrollingText">
-      · · ·   ---   · · ·
-    </div>
-
-  </div>
-
-</div>
-  </div>
-
-
-  <!-- VOICE HELP -->
-
-  <div class="panel card">
-
-    <div class="panelHeader">
-      NOVA VOICE COMMANDS
-    </div>
-
-    <div class="panelBody">
-
+    <div class="panelBody leftCollapseBody collapsed">
       <div class="helpList">
-
         <div><b>“Connect”</b> — connect AMOMII ONE</div>
         <div><b>“Status”</b> — board status</div>
         <div><b>“System test”</b> — diagnostics</div>
@@ -2092,9 +1436,268 @@ body.columnResizing *{
         <div><b>“Add event…”</b> — calendar</div>
         <div><b>“What can you do?”</b> — help</div>
         <div><b>“Change your name”</b> — rename assistant</div>
+      </div>
+    </div>
+  </div>
 
+  <!-- NOVA COMMAND HISTORY - DEFAULT COLLAPSED -->
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)">
+      <span>NOVA COMMAND HISTORY</span>
+      <span class="collapseArrow">▸</span>
+    </div>
+    <div class="panelBody leftCollapseBody collapsed">
+      <div id="commandHistory" class="history"></div>
+    </div>
+  </div>
+
+  <!-- NOVA VOICE ENGINE - DEFAULT COLLAPSED -->
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)">
+      <span>NOVA VOICE ENGINE</span>
+      <span class="collapseArrow">▸</span>
+    </div>
+    <div class="panelBody leftCollapseBody collapsed">
+      <div class="statList">
+        <div class="stat">
+          <span>Assistant</span>
+          <span id="voiceEngineName">NOVA</span>
+        </div>
+        <div class="stat">
+          <span>Recognition</span>
+          <span id="recognitionState">OFF</span>
+        </div>
+        <div class="stat">
+          <span>Speaking</span>
+          <span id="speakingState">NO</span>
+        </div>
+        <div class="stat">
+          <span>Last heard</span>
+          <span id="voiceLastShort">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CENTER COLUMN -->
+
+<div class="centerColumn">
+
+  <!-- NOVA COMMAND CENTER -->
+  <div class="voiceHero">
+    <div class="voiceSubtitle">NOVA Command Center</div>
+    <div id="lastHeard" class="lastHeard"></div>
+  </div>
+
+  <!-- NOVA COMMAND CONSOLE -->
+  <div class="panel card">
+    <div class="panelHeader consoleHeader" onclick="toggleConsole()">
+      <span>NOVA COMMAND CONSOLE</span>
+    </div>
+    <div class="consoleBody">
+      <div id="console" class="console"></div>
+    </div>
+  </div>
+
+  <!-- MORSE -->
+  <div class="panel card morseCard">
+    <div class="panelHeader morseHeader">
+      <span>MORSE</span>
+      <div class="morseStatus">
+        <span id="morseDot" class="dot green"></span>
+        <span id="morseStatus">READY</span>
+      </div>
+    </div>
+    <div class="morseDisplay">
+      <div class="morseLabel">MORSE TRANSMISSION</div>
+      <div id="morseText" class="morseScrollingText">· · ·   ---   · · ·</div>
+    </div>
+  </div>
+
+  <!-- VOICE + VOICE ENGINE -->
+  <div class="panel card">
+    <div class="panelHeader voiceHeader">
+      <span>VOICE &amp; VOICE ENGINE</span>
+      <div class="voiceStatus">
+        <span id="voiceDot" class="dot red"></span>
+        <span id="voiceText">VOICE OFF</span>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="buttonGrid voiceButtons">
+        <button id="voiceButton" class="control good full" onclick="toggleVoice()">TALK TO NOVA</button>
+        <button class="control full" onclick="speakHelp()">NOVA HELP</button>
+        <button class="control full" onclick="speakCommands()">NOVA COMMANDS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEXT COMMAND LINE -->
+  <div class="panel card">
+    <div class="panelHeader">TEXT COMMAND LINE</div>
+    <div class="commandRow">
+      <input id="commandInput" type="text" placeholder="Enter commands for NOVA." autocomplete="off">
+      <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
+    </div>
+  </div>
+
+  <!-- AMOMII ONE CONTROLLER -->
+  <div class="panel card">
+    <div class="panelHeader controllerHeader" onclick="toggleController()">
+      <span>AMOMII ONE CONTROLLER</span>
+      <div class="connectionStatus">
+        <span id="connectionDot" class="dot red"></span>
+        <span id="connectionText">DISCONNECTED</span>
+      </div>
+    </div>
+
+    <div class="panelBody">
+      <div class="buttonGrid">
+        <button class="control primary full" onclick="connectSerial()">CONNECT</button>
+        <button class="control danger full" onclick="disconnectSerial()">DISCONNECT</button>
+        <button class="control" onclick="sendCloudCommand('status')">STATUS</button>
+        <button class="control" onclick="runSystemTest()">SYSTEM TEST</button>
+        <button class="control" onclick="sendCloudCommand('help')">HELP</button>
+        <button class="control" onclick="stopBoard()">STOP</button>
+        <button class="control good" onclick="sendCloudCommand('led on')">LED ON</button>
+        <button class="control danger" onclick="sendCloudCommand('led off')">LED OFF</button>
+        <button class="control" onclick="sendCloudCommand('toggle')">TOGGLE</button>
+        <button class="control warn" onclick="sendCloudCommand('blink 5')">BLINK 5</button>
+        <button class="control warn" onclick="sendCloudCommand('sos')">SOS</button>
+        <button class="control danger" onclick="sendCloudCommand('stop')">STOP</button>
       </div>
 
+      <div class="panelSection">
+        <div class="panelSubHeader">SYSTEM STATUS</div>
+        <div class="statList">
+          <div class="stat"><span>Board</span><span>AMOMII ONE</span></div>
+          <div class="stat"><span>Connection</span><span id="statusConnection">OFFLINE</span></div>
+          <div class="stat"><span>System</span><span id="statusSystem">READY</span></div>
+          <div class="stat"><span>LED</span><span id="statusLed">UNKNOWN</span></div>
+          <div class="stat"><span>Blinking</span><span id="statusBlinking">NO</span></div>
+          <div class="stat"><span>Blink speed</span><span id="statusBlinkSpeed">—</span></div>
+          <div class="stat"><span>Commands</span><span id="statusCommands">0</span></div>
+          <div class="stat"><span>Uptime</span><span id="uptime">00:00:00</span></div>
+        </div>
+      </div>
+
+      <div class="panelSection">
+        <div class="panelSubHeader">SYSTEM TEST</div>
+        <div class="testGrid">
+          <div class="testItem"><span>Serial</span><span id="testSerial" class="testValue pending">—</span></div>
+          <div class="testItem"><span>LED</span><span id="testLed" class="testValue pending">—</span></div>
+          <div class="testItem"><span>Timing</span><span id="testTiming" class="testValue pending">—</span></div>
+          <div class="testItem"><span>Memory</span><span id="testMemory" class="testValue pending">—</span></div>
+          <div class="testItem"><span>Commands</span><span id="testCommands" class="testValue pending">—</span></div>
+          <div class="testItem"><span>System</span><span id="testSystem" class="testValue pending">—</span></div>
+        </div>
+        <div id="testResult" class="testResult">NOT RUN</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RIGHT COLUMN -->
+
+<div class="rightColumn">
+
+  <!-- PROFILE -->
+  <div class="panel card">
+    <div class="panelHeader">PROFILE</div>
+    <div class="panelBody">
+      <div class="profileName" id="profileUserName">DangeRuss</div>
+      <div class="profileRow"><span>Assistant</span><span id="profileAssistantName">NOVA</span></div>
+      <div class="profileRow"><span>Board</span><span>AMOMII ONE</span></div>
+      <div class="profileRow"><span>Voice</span><span id="profileVoice">READY</span></div>
+    </div>
+  </div>
+
+  <!-- MEDIA CENTER -->
+  <div class="panel mediaPanel">
+    <div class="panelHeader">MEDIA CENTER</div>
+    <div class="panelBody">
+      <div class="mediaTabs">
+        <button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
+        <button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
+        <button class="tab" data-tab="youtube" onclick="showMediaTab('youtube')">YOUTUBE</button>
+      </div>
+
+      <div id="musicSection" class="mediaSection active">
+        <div class="mediaFileRow">
+          <label class="fileButton">ADD MUSIC<input id="musicFiles" type="file" accept="audio/*" multiple></label>
+          <span id="musicCount" class="voiceSubtitle">0 tracks</span>
+        </div>
+        <audio id="audioPlayer" controls></audio>
+        <div class="mediaControls">
+          <button onclick="previousMusic()">PREVIOUS</button>
+          <button onclick="toggleMusic()">PLAY / PAUSE</button>
+          <button onclick="stopMusic()">STOP</button>
+          <button onclick="nextMusic()">NEXT</button>
+          <button onclick="toggleShuffle()">SHUFFLE: <span id="shuffleText">OFF</span></button>
+          <button onclick="toggleRepeat()">REPEAT: <span id="repeatText">OFF</span></button>
+        </div>
+        <div style="margin-top:10px">
+          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
+          <input id="musicVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
+        </div>
+        <div id="musicList" class="mediaList"></div>
+      </div>
+
+      <div id="videoSection" class="mediaSection">
+        <div class="mediaFileRow">
+          <label class="fileButton">ADD VIDEOS<input id="videoFiles" type="file" accept="video/*" multiple></label>
+          <span id="videoCount" class="voiceSubtitle">0 videos</span>
+        </div>
+        <video id="videoPlayer" controls></video>
+        <div class="mediaControls">
+          <button onclick="previousVideo()">PREVIOUS</button>
+          <button onclick="toggleVideo()">PLAY / PAUSE</button>
+          <button onclick="stopVideo()">STOP</button>
+          <button onclick="nextVideo()">NEXT</button>
+        </div>
+        <div style="margin-top:10px">
+          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
+          <input id="videoVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
+        </div>
+        <div id="videoList" class="mediaList"></div>
+      </div>
+
+      <div id="youtubeSection" class="mediaSection">
+        <div class="youtubeRow">
+          <input id="youtubeInput" type="text" placeholder="Paste YouTube URL or video ID">
+          <button class="control primary" onclick="loadYouTube()">LOAD</button>
+        </div>
+        <div class="videoWrap" style="margin-top:10px">
+          <iframe id="youtubeFrame" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="mediaControls">
+          <button onclick="youtubeCommand('playVideo')">PLAY</button>
+          <button onclick="youtubeCommand('pauseVideo')">PAUSE</button>
+          <button onclick="youtubeCommand('stopVideo')">STOP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND CENTER CALENDAR -->
+  <div class="panel mediaPanel">
+    <div class="panelHeader">COMMAND CENTER CALENDAR</div>
+    <div class="panelBody">
+      <div class="calendarHeader">
+        <button onclick="changeMonth(-1)">‹</button>
+        <div id="calendarMonth" class="calendarMonth"></div>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <div id="calendarGrid" class="calendarGrid"></div>
+      <div id="eventList" class="eventList"></div>
+      <div class="mediaControls">
+        <button class="control primary" onclick="voiceAddEvent()">ADD EVENT BY VOICE</button>
+        <button class="control" onclick="addTestEvent()">TEST EVENT</button>
+        <button class="control danger" onclick="clearEvents()">CLEAR EVENTS</button>
+      </div>
     </div>
   </div>
 
@@ -2102,7 +1705,6 @@ body.columnResizing *{
 
 </div>
 </div>
-
 
 <script>
 /* ============================================================
@@ -6129,6 +5731,20 @@ window.addEventListener(
 
 
 /* ============================================================
+   LEFT COLUMN COLLAPSIBLE PANELS
+   ============================================================ */
+
+function toggleLeftPanel(header){
+  if(!header) return;
+
+  const body = header.nextElementSibling;
+  if(!body || !body.classList.contains("leftCollapseBody")) return;
+
+  const isCollapsed = body.classList.toggle("collapsed");
+  header.classList.toggle("expanded", !isCollapsed);
+}
+
+/* ============================================================
    DRAGGABLE COLUMN WIDTHS
    Works with the page's VISUAL column order, not DOM order.
    The current CSS orders the columns CENTER -> LEFT -> RIGHT.
@@ -6139,7 +5755,7 @@ const columnResizer1 = document.getElementById("columnResizer1");
 const columnResizer2 = document.getElementById("columnResizer2");
 
 const COLUMN_MIN_WIDTH = 220;
-const COLUMN_LAYOUT_KEY = "novaColumnWidthsV2";
+const COLUMN_LAYOUT_KEY = "novaColumnWidthsV3";
 
 let activeColumnResize = null;
 let savedDesktopWidths = null;
@@ -6350,12 +5966,15 @@ function restoreColumnLayout(){
   }else if(savedDesktopWidths){
     applyColumnWidths(savedDesktopWidths, false);
   }else{
-    // Start from whatever widths the existing page CSS produced.
+    // New default layout: CENTER gets the remaining workspace,
+    // LEFT starts wide enough for its longest panel title,
+    // RIGHT keeps a practical holding-panel width.
     requestAnimationFrame(() => {
-      const widths = getCurrentColumnWidths();
-      if(widths.length === 3){
-        applyColumnWidths(widths, false);
-      }
+      const available = mainGrid.clientWidth - 32;
+      const leftPanelWidth = 320;
+      const rightPanelWidth = 320;
+      const centerWorkspaceWidth = Math.max(420, available - leftPanelWidth - rightPanelWidth);
+      applyColumnWidths([centerWorkspaceWidth, leftPanelWidth, rightPanelWidth], false);
     });
   }
 
