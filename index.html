@@ -2003,31 +2003,32 @@ body.novaMusicAlive .novaParticles{
 
 
 /* ============================================================
-   NOVA TRUE TWO-COLUMN LAYOUT
-   LEFT = NOVA console
-   RIGHT = Calendar, Media, Camera, Browser, AMOMII, RSR
+   NOVA REPAIRED TRUE TWO-COLUMN LAYOUT
+   LEFT: NOVA
+   RIGHT: Calendar, Media, Camera, Browser, AMOMII, RSR
    ============================================================ */
 .mainGrid{
   display:grid !important;
   grid-template-columns:340px minmax(0,1fr) !important;
   gap:16px !important;
-  align-items:start;
+  align-items:start !important;
 }
 .mainGrid > .leftColumn,
 .mainGrid > .rightColumn{
-  min-width:0;
+  min-width:0 !important;
 }
-.rightColumn{
+.mainGrid > .rightColumn{
   display:block !important;
-  grid-column:auto !important;
+  grid-column:2 !important;
 }
-.rightColumn > .panel,
-.rightColumn > .card{
-  margin-bottom:16px;
+.mainGrid > .rightColumn > .panel,
+.mainGrid > .rightColumn > .card{
+  width:100% !important;
+  margin-bottom:16px !important;
 }
-.rightColumn > .panel:last-child,
-.rightColumn > .card:last-child{
-  margin-bottom:0;
+.mainGrid > .rightColumn > .panel:last-child,
+.mainGrid > .rightColumn > .card:last-child{
+  margin-bottom:0 !important;
 }
 #columnResizer2{
   display:none !important;
@@ -2036,35 +2037,18 @@ body.novaMusicAlive .novaParticles{
   .mainGrid{
     grid-template-columns:300px minmax(0,1fr) !important;
   }
-  .rightColumn{
+  .mainGrid > .rightColumn{
     display:block !important;
-    grid-column:auto !important;
+    grid-column:2 !important;
   }
 }
 @media(max-width:750px){
   .mainGrid{
     grid-template-columns:1fr !important;
   }
-  .rightColumn{
-    display:block !important;
+  .mainGrid > .rightColumn{
+    grid-column:1 !important;
   }
-}
-
-
-/* ============================================================
-   HARDWARE POSITION FIX
-   AMOMII + RSR live ONLY in RIGHT COLUMN directly under Browser.
-   ============================================================ */
-.rightColumn{
-  display:block !important;
-}
-.rightColumn > .panel,
-.rightColumn > .card{
-  width:100%;
-  grid-column:auto !important;
-}
-.rightColumn .novaHardwareStack{
-  display:contents !important;
 }
 
 </style>
@@ -2388,11 +2372,7 @@ body.novaMusicAlive .novaParticles{
       </div>
 
     </div>
-  </div>
-  </div>
-  </div>
-
-<!-- AMOMII ONE CONTROLLER -->
+  </div><!-- AMOMII ONE CONTROLLER -->
   <div class="panel card">
     <div class="panelHeader controllerHeader" onclick="toggleController()">
       <span>AMOMII ONE CONTROLLER</span>
@@ -2448,7 +2428,7 @@ body.novaMusicAlive .novaParticles{
     </div>
   </div>
 
-<!-- RSR TRAINER ONE CONTROLLER -->
+  <!-- RSR TRAINER ONE CONTROLLER -->
   <div class="panel card rsrTrainerController">
     <div class="panelHeader">RSR TRAINER ONE CONTROLLER</div>
     <div class="panelBody">
@@ -2794,20 +2774,35 @@ function updateIdentityUI(){
   ).textContent =
     assistantName.substring(0,6);
 
-  document.getElementById(
-    "profileAssistantName"
-  ).textContent =
-    assistantName;
+  const profileAssistantName =
+    document.getElementById(
+      "profileAssistantName"
+    );
 
-  document.getElementById(
-    "voiceEngineName"
-  ).textContent =
-    assistantName;
+  if(profileAssistantName){
+    profileAssistantName.textContent =
+      assistantName;
+  }
 
-  document.getElementById(
-    "profileUserName"
-  ).textContent =
-    userName;
+  const voiceEngineName =
+    document.getElementById(
+      "voiceEngineName"
+    );
+
+  if(voiceEngineName){
+    voiceEngineName.textContent =
+      assistantName;
+  }
+
+  const profileUserName =
+    document.getElementById(
+      "profileUserName"
+    );
+
+  if(profileUserName){
+    profileUserName.textContent =
+      userName;
+  }
 
 }
 
@@ -4197,6 +4192,18 @@ function startVoice(){
     `Voice control enabled. Listening for voice input...`
   );
 
+  clearTimeout(recognitionCooldownTimer);
+  recognitionCooldownTimer =
+    setTimeout(() => {
+      if(
+        voiceEnabled &&
+        !isSpeaking &&
+        !recognitionRunning
+      ){
+        startRecognition();
+      }
+    },1200);
+
 }
 
 
@@ -4255,8 +4262,10 @@ function updateVoiceUI(){
     text.textContent =
       "VOICE ON";
 
-    profile.textContent =
-      "READY";
+    if(profile){
+      profile.textContent =
+        "READY";
+    }
 
   }else{
 
@@ -4272,8 +4281,10 @@ function updateVoiceUI(){
     text.textContent =
       "VOICE OFF";
 
-    profile.textContent =
-      "OFF";
+    if(profile){
+      profile.textContent =
+        "OFF";
+    }
 
     document.getElementById(
       "recognitionState"
@@ -10182,10 +10193,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </script>
 
-
-
-  
-  
     <!-- NOVA AUDIO -->
     <audio id="novaHumSpeak" src="nova_hum_speak.mp3" preload="auto"></audio>
     <audio id="novaHumListen" src="nova_hum_listen.mp3" preload="auto"></audio>
