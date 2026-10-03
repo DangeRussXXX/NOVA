@@ -3371,6 +3371,64 @@ body.novaMusicAlive .novaUnifiedConsole .novaIris{
   }
 }
 
+
+/* ============================================================
+   NOVA FULL-PANEL SYSTEM STREAM — FIX
+   Independent live messages fill the NOVA panel bottom-to-top.
+   ============================================================ */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:205 !important;
+  inset:10px 18px 10px 18px !important;
+  width:auto !important;
+  height:auto !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:none !important;
+}
+.novaUnifiedConsole .novaSystemStreamMessage{
+  display:block !important;
+  position:absolute !important;
+  z-index:206 !important;
+  left:0 !important;
+  top:0 !important;
+  width:max-content !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:rgba(57,255,136,.76) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:.25px !important;
+  text-shadow:0 0 5px rgba(57,255,136,.24) !important;
+  opacity:0 !important;
+  will-change:transform,opacity !important;
+  pointer-events:none !important;
+}
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:240 !important;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaHudTicker{
+    inset:8px 10px !important;
+  }
+  .novaUnifiedConsole .novaSystemStreamMessage{
+    font-size:9px !important;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -3968,42 +4026,33 @@ function timestamp(){
 const novaTickerQueue=[];
 let novaTickerBusy=false;
 let novaTickerLastQueued="";
+let novaSystemStreamRow=0;
 
 function novaQueueResponse(message){
   const clean=String(message||"").replace(/\s+/g," ").trim();
   if(!clean)return;
 
-  /* Prevent the same event from being queued twice by overlapping legacy paths. */
+  /* Only suppress an immediate duplicate from overlapping legacy paths. */
   if(clean===novaTickerLastQueued)return;
   novaTickerLastQueued=clean;
   setTimeout(()=>{
-    if(novaTickerLastQueued===clean)novaTickerLastQueued="";
-  },90);
+    if(novaTickerLastQueued===clean){
+      novaTickerLastQueued="";
+    }
+  },80);
 
-  novaTickerQueue.push(clean);
-
-  /* Do not let startup chatter create a huge backlog. */
-  if(novaTickerQueue.length>16){
-    novaTickerQueue.splice(0,novaTickerQueue.length-16);
-  }
-
-  novaRunNextResponse();
+  novaLaunchSystemStream(clean);
 }
 
-function novaRunNextResponse(){
-  if(novaTickerBusy || !novaTickerQueue.length)return;
-
+/*
+  Each event launches immediately instead of waiting for the previous
+  message to finish. Rows begin near the bottom and rotate upward,
+  making the entire NOVA field look alive with current system traffic.
+*/
+function novaLaunchSystemStream(message){
   const lane=document.getElementById("novaHudTicker");
-  const el=document.getElementById("novaIrisSpeechText");
+  if(!lane)return;
 
-  if(!lane || !el){
-    novaTickerBusy=false;
-    return;
-  }
-
-  novaTickerBusy=true;
-
-  const message=novaTickerQueue.shift();
   const now=new Date();
   const stamp=now.toLocaleTimeString(undefined,{
     hour:"numeric",
@@ -4011,80 +4060,82 @@ function novaRunNextResponse(){
     second:"2-digit"
   });
 
-  el.textContent=`[${stamp}] NOVA: ${message}`;
-
-  el.getAnimations().forEach(animation=>animation.cancel());
-  el.style.animation="none";
-  el.style.left="0px";
-  el.style.top="0px";
-  el.style.transform="none";
-  el.style.opacity=".88";
-  el.style.visibility="visible";
+  const item=document.createElement("div");
+  item.className="novaSystemStreamMessage";
+  item.textContent=`[${stamp}] NOVA: ${message}`;
+  lane.appendChild(item);
 
   requestAnimationFrame(()=>{
     const laneWidth=Math.max(1,lane.clientWidth);
     const laneHeight=Math.max(1,lane.clientHeight);
-    const textWidth=Math.max(1,el.scrollWidth);
-    const textHeight=Math.max(1,el.scrollHeight);
+    const textWidth=Math.max(1,item.scrollWidth);
+    const textHeight=Math.max(1,item.scrollHeight);
 
-    /*
-      Faster real-time movement:
-      short messages cross in ~2.6s;
-      long messages can take up to ~5.2s.
-    */
+    /* 7 rotating vertical lanes, starting at the bottom. */
+    const rows=7;
+    const row=novaSystemStreamRow++ % rows;
+    const bottomPadding=18;
+    const usableHeight=Math.max(40,laneHeight-36);
+    const endY=
+      Math.max(
+        0,
+        usableHeight-
+        (row*(usableHeight/(rows-1)))
+      );
+
+    const startY=
+      Math.max(
+        0,
+        laneHeight-textHeight-bottomPadding
+      );
+
+    /* Real-time: ~2.2–4.2 seconds depending on message length. */
     const duration=Math.max(
-      2600,
+      2200,
       Math.min(
-        5200,
-        (laneWidth+textWidth)*2.9
+        4200,
+        1800+(textWidth*.9)
       )
     );
 
-    /*
-      Start at the lower-right edge and finish beyond the upper-left.
-      This lets NOVA's system activity occupy the entire panel rather
-      than living in one horizontal strip.
-    */
-    const animation=el.animate(
+    const animation=item.animate(
       [
         {
-          transform:
-            `translate(${laneWidth}px,${laneHeight-textHeight}px)`,
-          opacity:.18
+          transform:`translate(${laneWidth+20}px,${startY}px)`,
+          opacity:0
         },
         {
-          offset:.10,
-          opacity:.88
+          offset:.07,
+          opacity:.78
         },
         {
           offset:.88,
-          opacity:.88
+          opacity:.78
         },
         {
-          transform:
-            `translate(${-textWidth}px,${-textHeight}px)`,
-          opacity:.12
+          transform:`translate(${-textWidth-20}px,${endY}px)`,
+          opacity:0
         }
       ],
       {
-        duration:duration,
+        duration,
         easing:"linear",
         fill:"forwards"
       }
     );
 
-    const finish=()=>{
-      if(!novaTickerBusy)return;
-      novaTickerBusy=false;
-      novaRunNextResponse();
+    const remove=()=>{
+      try{item.remove();}catch(e){}
     };
 
-    animation.onfinish=finish;
-    animation.oncancel=finish;
-
-    setTimeout(finish,duration+250);
+    animation.onfinish=remove;
+    animation.oncancel=remove;
+    setTimeout(remove,duration+300);
   });
 }
+
+/* Legacy callers can still call this safely. */
+function novaRunNextResponse(){}
 
 
 function log(message, type="system"){
@@ -12568,38 +12619,6 @@ if(document.readyState==="loading"){
   initializeNovaAlwaysAliveDisplay();
 }
 
-
-function novaDirectResponseBootTest(){
-  const lane=document.getElementById("novaHudTicker");
-  const el=document.getElementById("novaIrisSpeechText");
-
-  if(lane && el){
-    el.textContent="NOVA RESPONSE DISPLAY ONLINE";
-    el.style.color="#39ff88";
-    el.style.opacity="1";
-    el.style.visibility="visible";
-
-    setTimeout(()=>{
-      novaQueueResponse("Command Center initialized.");
-    },250);
-  }else{
-    console.error(
-      "NOVA RESPONSE DISPLAY ERROR:",
-      "ticker lane or response text element was not found.",
-      {lane:!!lane,text:!!el}
-    );
-  }
-}
-
-if(document.readyState==="loading"){
-  document.addEventListener(
-    "DOMContentLoaded",
-    novaDirectResponseBootTest,
-    {once:true}
-  );
-}else{
-  novaDirectResponseBootTest();
-}
 
 </script>
 </body>
