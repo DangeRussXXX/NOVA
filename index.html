@@ -2578,6 +2578,76 @@ body.novaMusicAlive .novaParticles{
   100%{opacity:1;transform:scale(1)}
 }
 
+
+/* ============================================================
+   NOVA SCROLLING COMMAND RESPONSE
+   Command responses travel right-to-left across NOVA.
+   ============================================================ */
+.novaUnifiedConsole .novaIris{
+  overflow:visible !important;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  width:100% !important;
+  max-width:none !important;
+  overflow:visible !important;
+}
+.novaUnifiedConsole #novaIrisSpeech{
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  z-index:20 !important;
+  width:min(88vw,1200px) !important;
+  max-width:none !important;
+  height:54px !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  transform:translate(-50%,-50%) !important;
+  border-top:1px solid rgba(54,217,255,.12);
+  border-bottom:1px solid rgba(54,217,255,.12);
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(1,8,14,.24) 12%,
+    rgba(1,8,14,.24) 88%,
+    transparent);
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  position:absolute;
+  left:0;
+  top:50%;
+  display:inline-block;
+  width:max-content;
+  min-width:max-content;
+  white-space:nowrap;
+  color:var(--green);
+  font-size:clamp(15px,1.35vw,21px);
+  line-height:1;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-shadow:
+    0 0 8px rgba(57,255,136,.32),
+    0 0 18px rgba(54,217,255,.15);
+  transform:translate(100vw,-50%);
+  will-change:transform;
+}
+.novaUnifiedConsole #novaIrisSpeechText.novaMarqueeRunning{
+  animation:novaCommandMarquee var(--nova-marquee-duration,12s) linear 1 forwards;
+}
+@keyframes novaCommandMarquee{
+  from{transform:translate(100vw,-50%)}
+  to{transform:translate(calc(-100% - 100vw),-50%)}
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaIrisSpeech{
+    width:94vw !important;
+    height:48px !important;
+  }
+  .novaUnifiedConsole #novaIrisSpeechText{
+    font-size:14px;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -2617,7 +2687,7 @@ body.novaMusicAlive .novaParticles{
 <div id="novaOrb">
 <div class="novaOuterRing"></div>
 <div class="novaInnerRing"></div>
-<div class="novaIris"><div class="novaName novaIrisDashboard"><div id="novaIrisPrimary">NOVA</div><div id="novaIrisSecondary"></div><div id="novaIrisSpeech" aria-live="polite">NOVA READY.</div>
+<div class="novaIris"><div class="novaName novaIrisDashboard"><div id="novaIrisPrimary">NOVA</div><div id="novaIrisSecondary"></div><div id="novaIrisSpeech" aria-live="polite"><span id="novaIrisSpeechText">NOVA READY.</span></div>
 <div id="novaIrisResponse" aria-live="polite"></div></div></div>
 <div class="novaWaveform"></div>
 <div class="novaParticles"></div>
@@ -3846,10 +3916,10 @@ function toggleConsole(){
       lastHeardEl.textContent=value;
     }
 
-    const novaSpeech=
-      document.getElementById("novaIrisSpeech");
+    const novaSpeechText=
+      document.getElementById("novaIrisSpeechText");
 
-    if(novaSpeech && value){
+    if(novaSpeechText && value){
       const now=new Date();
       const stamp=now.toLocaleTimeString(undefined,{
         hour:"numeric",
@@ -3857,14 +3927,35 @@ function toggleConsole(){
         second:"2-digit"
       });
 
-      novaSpeech.textContent=
+      novaSpeechText.textContent=
         `[${stamp}] NOVA: ${value}`;
 
-      novaSpeech.classList.remove("novaSpeechActive");
-      void novaSpeech.offsetWidth;
-      novaSpeech.classList.add("novaSpeechActive");
+      const characters=
+        novaSpeechText.textContent.length;
+
+      const duration=
+        Math.max(
+          8,
+          Math.min(22,characters * 0.085)
+        );
+
+      novaSpeechText.style.setProperty(
+        "--nova-marquee-duration",
+        `${duration}s`
+      );
+
+      novaSpeechText.classList.remove(
+        "novaMarqueeRunning"
+      );
+
+      void novaSpeechText.offsetWidth;
+
+      novaSpeechText.classList.add(
+        "novaMarqueeRunning"
+      );
     }
   }
+
 
   function showMorseResponse(value){
     value = String(value || "").trim();
@@ -11260,6 +11351,8 @@ function novaRenderSystemFeed(){
 function novaIrisSetResponse(message,duration=0){
   const clean=String(message||"").replace(/\s+/g," ").trim();
   if(!clean)return;
+
+  showNovaResponse(clean);
 
   const line=novaFormatSystemLine(
     /^NOVA:/i.test(clean)
