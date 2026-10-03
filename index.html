@@ -2003,29 +2003,42 @@ body.novaMusicAlive .novaParticles{
 
 
 /* ============================================================
-   NOVA HARDWARE CONTROL STACK
-   AMOMII + RSR stay together with no dead space between them.
+   RIGHT COLUMN RESTORED
    ============================================================ */
-.novaHardwareStack{
-  display:flex;
-  flex-direction:column;
-  gap:0;
-  margin:0 0 16px 0;
+.mainGrid{
+  grid-template-columns:340px minmax(520px,1fr) minmax(320px,420px) !important;
+  gap:16px !important;
 }
-.novaHardwareStack > .panel,
-.novaHardwareStack > .card{
-  margin:0 !important;
+.rightColumn{
+  display:block !important;
+  min-width:0;
 }
-.novaHardwareStack > .panel:first-of-type,
-.novaHardwareStack > .card:first-of-type{
-  border-bottom-left-radius:0;
-  border-bottom-right-radius:0;
+.rightColumn > .panel,
+.rightColumn > .card{
+  margin-bottom:16px;
 }
-.novaHardwareStack > .panel:last-of-type,
-.novaHardwareStack > .card:last-of-type{
-  border-top-left-radius:0;
-  border-top-right-radius:0;
-  border-top-width:0;
+.rightColumn > .panel:last-child,
+.rightColumn > .card:last-child{
+  margin-bottom:0;
+}
+@media(max-width:1100px){
+  .mainGrid{
+    grid-template-columns:260px minmax(0,1fr) !important;
+  }
+  .rightColumn{
+    grid-column:1/-1;
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+}
+@media(max-width:750px){
+  .mainGrid{
+    grid-template-columns:1fr !important;
+  }
+  .rightColumn{
+    display:block !important;
+  }
 }
 
 </style>
@@ -2290,9 +2303,77 @@ body.novaMusicAlive .novaParticles{
     </div>
   </div>
 
-  <!-- NOVA HARDWARE CONTROL STACK -->
-  <div class="novaHardwareStack">
-<!-- AMOMII ONE CONTROLLER -->
+
+
+
+
+</div>
+
+<!-- RIGHT COLUMN -->
+<div class="rightColumn">
+
+  <!-- DESKTOP CAMERA MONITOR -->
+  <div class="panel card cameraMonitor">
+    <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
+    <div class="panelBody">
+      <div class="cameraViewport" id="cameraViewport">
+        <video id="desktopCameraVideo" autoplay playsinline muted></video>
+        <div id="cameraPlaceholder" class="cameraPlaceholder">CAMERA OFFLINE</div>
+      </div>
+      <select id="desktopCameraSelect" class="cameraSelect" aria-label="Desktop camera selector">
+        <option value="">DEFAULT CAMERA</option>
+      </select>
+      <div class="cameraControls">
+        <button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
+        <button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
+        <button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
+        <button id="cameraRecordButton" class="control danger" onclick="toggleDesktopCameraRecording()">RECORD</button>
+        <button class="control primary full" onclick="fullscreenDesktopCamera()">FULL SCREEN WINDOW</button>
+      </div>
+      <div class="cameraStatusRow"><span id="cameraStatusDot" class="dot red"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
+      <canvas id="desktopCameraSnapshot" class="cameraSnapshot"></canvas>
+    </div>
+  </div>
+
+
+  <!-- NOVA BROWSER -->
+  <div class="panel card">
+    <div class="panelHeader">NOVA BROWSER</div>
+    <div class="panelBody">
+
+      <div class="browserSearchRow">
+        <input id="novaGoogleSearch" type="text" placeholder="Search Google or enter a website..." autocomplete="off">
+        <button class="control primary" type="button" onclick="novaBrowserGo()">GO</button>
+        <button class="control" type="button" onclick="startNovaBrowserVoiceSearch()">🎙 VOICE</button>
+      </div>
+
+      <div class="buttonGrid browserQuickLaunch">
+        <button class="control primary" type="button" onclick="openNovaBrowserPage('https://www.google.com/')">GOOGLE</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://mail.google.com/')">GMAIL</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://www.youtube.com/')">YOUTUBE</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://maps.google.com/')">MAPS</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://drive.google.com/')">DRIVE</button>
+        <button class="control" type="button" onclick="addNovaBookmark()">+ BOOKMARK</button>
+      </div>
+
+      <div class="browserHint">
+        OPENS IN A REAL BROWSER WINDOW • GOOGLE LOGIN + NORMAL BROWSER BOOKMARKS WORK THERE
+      </div>
+
+      <div class="panelSubHeader" style="margin-top:10px">NOVA BOOKMARKS</div>
+      <div id="novaBookmarkList" class="novaBookmarkList"></div>
+
+      <div class="browserHint">
+        VOICE: “SEARCH GOOGLE FOR ARDUINO MEGA” • “OPEN GOOGLE” • “OPEN GMAIL” • “OPEN YOUTUBE”
+      </div>
+
+    </div>
+  </div>
+  </div>
+  </div>
+
+
+  <!-- AMOMII ONE CONTROLLER -->
   <div class="panel card">
     <div class="panelHeader controllerHeader" onclick="toggleController()">
       <span>AMOMII ONE CONTROLLER</span>
@@ -2348,7 +2429,7 @@ body.novaMusicAlive .novaParticles{
     </div>
   </div>
 
-<!-- RSR TRAINER ONE CONTROLLER -->
+  <!-- RSR TRAINER ONE CONTROLLER -->
   <div class="panel card rsrTrainerController">
     <div class="panelHeader">RSR TRAINER ONE CONTROLLER</div>
     <div class="panelBody">
@@ -2426,6 +2507,7 @@ body.novaMusicAlive .novaParticles{
   </div>
 
 </div>
+
 
 
 
@@ -10081,75 +10163,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 </script>
-  </div>
 
-
-
-
-
-  <!-- DESKTOP CAMERA MONITOR -->
-  <div class="panel card cameraMonitor">
-    <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
-    <div class="panelBody">
-      <div class="cameraViewport" id="cameraViewport">
-        <video id="desktopCameraVideo" autoplay playsinline muted></video>
-        <div id="cameraPlaceholder" class="cameraPlaceholder">CAMERA OFFLINE</div>
-      </div>
-      <select id="desktopCameraSelect" class="cameraSelect" aria-label="Desktop camera selector">
-        <option value="">DEFAULT CAMERA</option>
-      </select>
-      <div class="cameraControls">
-        <button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
-        <button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
-        <button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
-        <button id="cameraRecordButton" class="control danger" onclick="toggleDesktopCameraRecording()">RECORD</button>
-        <button class="control primary full" onclick="fullscreenDesktopCamera()">FULL SCREEN WINDOW</button>
-      </div>
-      <div class="cameraStatusRow"><span id="cameraStatusDot" class="dot red"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
-      <canvas id="desktopCameraSnapshot" class="cameraSnapshot"></canvas>
-    </div>
-  </div>
-
-
-  <!-- NOVA BROWSER -->
-  <div class="panel card">
-    <div class="panelHeader">NOVA BROWSER</div>
-    <div class="panelBody">
-
-      <div class="browserSearchRow">
-        <input id="novaGoogleSearch" type="text" placeholder="Search Google or enter a website..." autocomplete="off">
-        <button class="control primary" type="button" onclick="novaBrowserGo()">GO</button>
-        <button class="control" type="button" onclick="startNovaBrowserVoiceSearch()">🎙 VOICE</button>
-      </div>
-
-      <div class="buttonGrid browserQuickLaunch">
-        <button class="control primary" type="button" onclick="openNovaBrowserPage('https://www.google.com/')">GOOGLE</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://mail.google.com/')">GMAIL</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://www.youtube.com/')">YOUTUBE</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://maps.google.com/')">MAPS</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://drive.google.com/')">DRIVE</button>
-        <button class="control" type="button" onclick="addNovaBookmark()">+ BOOKMARK</button>
-      </div>
-
-      <div class="browserHint">
-        OPENS IN A REAL BROWSER WINDOW • GOOGLE LOGIN + NORMAL BROWSER BOOKMARKS WORK THERE
-      </div>
-
-      <div class="panelSubHeader" style="margin-top:10px">NOVA BOOKMARKS</div>
-      <div id="novaBookmarkList" class="novaBookmarkList"></div>
-
-      <div class="browserHint">
-        VOICE: “SEARCH GOOGLE FOR ARDUINO MEGA” • “OPEN GOOGLE” • “OPEN GMAIL” • “OPEN YOUTUBE”
-      </div>
-
-    </div>
-  </div>
-  </div>
-  </div>
-
-
-  
-  
     <!-- NOVA AUDIO -->
     <audio id="novaHumSpeak" src="nova_hum_speak.mp3" preload="auto"></audio>
     <audio id="novaHumListen" src="nova_hum_listen.mp3" preload="auto"></audio>
