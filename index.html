@@ -1989,25 +1989,7 @@ body.novaMusicAlive .novaParticles{
     </div>
   </div>
 
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE COMMANDS</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed"><div class="helpList">
-      <div><b>“Connect”</b> — connect AMOMII ONE</div><div><b>“Status”</b> — board status</div><div><b>“System test”</b> — diagnostics</div><div><b>“LED on/off”</b> — LED control</div><div><b>“Blink five”</b> — blink LED</div><div><b>“SOS”</b> — SOS pattern</div><div><b>“Play music”</b> — music</div><div><b>“Next song”</b> — next track</div><div><b>“Play video”</b> — video</div><div><b>“Add event…”</b> — calendar</div><div><b>“What can you do?”</b> — help</div><div><b>“Change your name”</b> — rename assistant</div>
-    </div></div>
-  </div>
-
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA COMMAND HISTORY</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed"><div id="commandHistory" class="history"></div></div>
-  </div>
-
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed"><div class="statList">
-      <div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
-    </div></div>
-  </div>
-  <!-- MEDIA CENTER -->
+    <!-- MEDIA CENTER -->
   <div class="panel mediaPanel">
     <div class="panelHeader">MEDIA CENTER</div>
     <div class="panelBody">
@@ -2019,10 +2001,10 @@ body.novaMusicAlive .novaParticles{
 
       <div id="musicSection" class="mediaSection active">
         <div class="mediaFileRow">
-          <label class="control primary mediaNativePicker" for="musicFiles">ADD MUSIC</label>
+          <button class="control primary" type="button" onclick="openMusicFilePicker()">ADD MUSIC</button>
           <button class="control" type="button" onclick="linkMusicFolder()">LINK MUSIC FOLDER</button>
           <button id="refreshMusicFolderButton" class="control" type="button" onclick="refreshLinkedMusicFolder()" style="display:none">REFRESH FOLDER</button>
-          <input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple hidden>
+          <input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple hidden onchange="handleMusicFiles(event)">
           <input id="musicFolderFallback" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" webkitdirectory directory multiple hidden>
           <span id="musicCount" class="voiceSubtitle">0 tracks</span>
         </div>
@@ -2082,6 +2064,26 @@ body.novaMusicAlive .novaParticles{
     </div>
   </div>
 
+
+
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE COMMANDS</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div class="helpList">
+      <div><b>“Connect”</b> — connect AMOMII ONE</div><div><b>“Status”</b> — board status</div><div><b>“System test”</b> — diagnostics</div><div><b>“LED on/off”</b> — LED control</div><div><b>“Blink five”</b> — blink LED</div><div><b>“SOS”</b> — SOS pattern</div><div><b>“Play music”</b> — music</div><div><b>“Next song”</b> — next track</div><div><b>“Play video”</b> — video</div><div><b>“Add event…”</b> — calendar</div><div><b>“What can you do?”</b> — help</div><div><b>“Change your name”</b> — rename assistant</div>
+    </div></div>
+  </div>
+
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA COMMAND HISTORY</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div id="commandHistory" class="history"></div></div>
+  </div>
+
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div class="statList">
+      <div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
+    </div></div>
+  </div>
 
 </div>
 
@@ -5549,8 +5551,21 @@ function addMusicFiles(files, replaceLibrary = false){
 
 
 function handleMusicFiles(event){
+
+  const files =
+    event &&
+    event.target &&
+    event.target.files
+      ? event.target.files
+      : [];
+
+  console.log(
+    "NOVA MUSIC SELECTED:",
+    files.length
+  );
+
   addMusicFiles(
-    event.target.files || [],
+    files,
     false
   );
 }
@@ -9033,7 +9048,8 @@ document.addEventListener("DOMContentLoaded", () => {
     <audio id="novaHumError" src="nova_hum_error.mp3" preload="auto"></audio>
 
     <!-- NOVA JS -->
-    <script src="nova.js">
+    <script src="nova.js"></script>
+<script>
 
 /* ============================================================
    STAGE 6C - NOVA MUSIC LIFE HOOKS
@@ -9323,10 +9339,14 @@ function initializeNovaMusicLife(){
 
 }
 
-document.addEventListener(
-  "DOMContentLoaded",
-  initializeNovaMusicLife
-);
+if(document.readyState === "loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeNovaMusicLife
+  );
+}else{
+  initializeNovaMusicLife();
+}
 
 </script>
 </body>
