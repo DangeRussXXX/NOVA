@@ -3780,6 +3780,158 @@ body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTicker{
   opacity:.22;
 }
 
+
+/* ============================================================
+   NOVA ALIVE — VISUAL UPGRADE V1
+   Visual-only layer. Existing voice/music/command logic preserved.
+   ============================================================ */
+
+.novaUnifiedConsole .novaLeftHome{
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(54,217,255,.09),transparent 26%),
+    radial-gradient(circle at 50% 50%,rgba(57,255,136,.035),transparent 52%),
+    linear-gradient(180deg,rgba(1,10,18,.94),rgba(0,5,10,.98)) !important;
+}
+
+/* Ambient energy field */
+.novaUnifiedConsole .novaLeftHome::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:-18%;
+  pointer-events:none;
+  background:
+    conic-gradient(
+      from 0deg at 50% 50%,
+      transparent 0deg,
+      rgba(54,217,255,.07) 45deg,
+      transparent 90deg,
+      rgba(57,255,136,.045) 180deg,
+      transparent 245deg,
+      rgba(54,217,255,.055) 315deg,
+      transparent 360deg
+    );
+  opacity:.32;
+  filter:blur(24px);
+  animation:novaAmbientRotate 22s linear infinite;
+}
+
+/* Breathing core glow */
+.novaUnifiedConsole .novaLeftHome::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  left:50%;
+  top:50%;
+  width:62%;
+  aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle,
+      rgba(54,217,255,.075) 0%,
+      rgba(54,217,255,.035) 30%,
+      transparent 68%);
+  filter:blur(9px);
+  animation:novaAmbientBreath 4.8s ease-in-out infinite;
+}
+
+@keyframes novaAmbientRotate{
+  to{transform:rotate(360deg)}
+}
+@keyframes novaAmbientBreath{
+  0%,100%{opacity:.32;transform:translate(-50%,-50%) scale(.94)}
+  50%{opacity:.62;transform:translate(-50%,-50%) scale(1.06)}
+}
+
+/* Keep real NOVA content above ambient layers. */
+.novaUnifiedConsole #novaCoreContainer,
+.novaUnifiedConsole #novaPersistentTicker,
+.novaUnifiedConsole #novaLiveSpeechDisplay,
+.novaUnifiedConsole #novaMusicInfoDisplay{
+  position:absolute;
+  z-index:20;
+}
+
+/* Music wakes the whole visual field up. Existing analyser variables drive it. */
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome::before{
+  opacity:calc(.42 + (var(--nova-energy,0) * .42));
+  filter:blur(calc(20px - (var(--nova-energy,0) * 5px)));
+  animation-duration:calc(18s - (var(--nova-energy,0) * 8s));
+}
+
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome::after{
+  opacity:calc(.48 + (var(--nova-bass,0) * .42));
+  transform:
+    translate(-50%,-50%)
+    scale(calc(1 + (var(--nova-bass,0) * .13)));
+  box-shadow:
+    0 0 calc(35px + (var(--nova-bass,0) * 75px))
+    rgba(54,217,255,.16);
+  animation:none;
+}
+
+/* Existing NOVA core becomes brighter/cleaner during music without moving text. */
+body.irisMediaPlaying .novaUnifiedConsole #novaCoreContainer{
+  filter:
+    brightness(calc(1.02 + (var(--nova-energy,0) * .30)))
+    drop-shadow(
+      0 0 calc(8px + (var(--nova-bass,0) * 18px))
+      rgba(54,217,255,.30)
+    );
+}
+
+/* Music information gets a subtle HUD plate. */
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoDisplay{
+  padding:9px 16px;
+  border-top:1px solid rgba(54,217,255,.18);
+  border-bottom:1px solid rgba(54,217,255,.10);
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,12,20,.48) 18%,
+      rgba(0,12,20,.48) 82%,
+      transparent
+    );
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+
+/* Speaking becomes NOVA's strongest foreground state. */
+.novaUnifiedConsole #novaLiveSpeechDisplay.novaLiveSpeechVisible{
+  z-index:280 !important;
+  text-shadow:
+    0 0 7px rgba(54,217,255,.65),
+    0 0 18px rgba(54,217,255,.22) !important;
+  animation:novaSpeechPresence 1.15s ease-in-out infinite alternate;
+}
+
+@keyframes novaSpeechPresence{
+  from{filter:brightness(1)}
+  to{filter:brightness(1.22)}
+}
+
+/* System activity stays behind NOVA's speech/music information. */
+.novaUnifiedConsole #novaPersistentTicker{
+  z-index:240 !important;
+}
+.novaUnifiedConsole .novaVerticalSystemLine{
+  text-shadow:
+    0 0 4px rgba(57,255,136,.38),
+    0 0 10px rgba(57,255,136,.10);
+}
+
+/* Panel edge feels active instead of static. */
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome{
+  box-shadow:
+    inset 0 0 28px rgba(54,217,255,.07),
+    inset 0 0 calc(18px + (var(--nova-bass,0) * 28px))
+      rgba(57,255,136,.035);
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
