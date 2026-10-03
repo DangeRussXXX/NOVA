@@ -4307,6 +4307,202 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
   .novaUnifiedConsole .novaMediaControlRow{gap:7px}
 }
 
+
+/* ============================================================
+   NOVA INTEGRATED MEDIA LIBRARY V2
+   The old media panel remains as a compatibility source only.
+   NOVA now owns the visible media experience.
+   ============================================================ */
+
+/* Hide legacy media/player panels when identifiable by their content IDs.
+   DOM stays alive so existing playlist/load/event code keeps working. */
+.novaLegacyMediaHidden{
+  display:none !important;
+}
+
+/* Expanded NOVA media library */
+.novaUnifiedConsole #novaIntegratedMediaLibrary{
+  display:none;
+  position:absolute;
+  z-index:320;
+  left:4%;
+  right:4%;
+  top:7%;
+  bottom:7%;
+  overflow:hidden;
+  border:1px solid rgba(54,217,255,.22);
+  border-radius:16px;
+  background:
+    linear-gradient(180deg,rgba(2,16,25,.94),rgba(0,7,13,.96)),
+    radial-gradient(circle at 50% 0%,rgba(54,217,255,.11),transparent 48%);
+  box-shadow:
+    inset 0 0 32px rgba(54,217,255,.035),
+    0 0 32px rgba(0,0,0,.52),
+    0 0 18px rgba(54,217,255,.08);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  opacity:0;
+  transform:scale(.975) translateY(7px);
+  transition:opacity .22s ease,transform .22s ease;
+  pointer-events:auto;
+}
+.novaUnifiedConsole #novaIntegratedMediaLibrary.active{
+  display:flex;
+  flex-direction:column;
+  opacity:1;
+  transform:scale(1) translateY(0);
+}
+
+.novaUnifiedConsole .novaMediaLibraryHeader{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:52px;
+  padding:0 15px;
+  border-bottom:1px solid rgba(54,217,255,.12);
+  background:linear-gradient(90deg,rgba(54,217,255,.045),transparent);
+}
+.novaUnifiedConsole .novaMediaLibraryIdentity{
+  flex:1;
+  min-width:0;
+}
+.novaUnifiedConsole .novaMediaLibraryEyebrow{
+  color:rgba(57,255,136,.64);
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+.novaUnifiedConsole .novaMediaLibraryTitle{
+  margin-top:2px;
+  color:#36d9ff;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-shadow:0 0 10px rgba(54,217,255,.25);
+}
+.novaUnifiedConsole .novaMediaLibraryAction{
+  appearance:none;
+  height:29px;
+  padding:0 11px;
+  border:1px solid rgba(54,217,255,.20);
+  border-radius:14px;
+  background:rgba(0,10,18,.55);
+  color:rgba(54,217,255,.78);
+  font:700 9px/1 Inter,Segoe UI,sans-serif;
+  letter-spacing:.7px;
+  cursor:pointer;
+}
+.novaUnifiedConsole .novaMediaLibraryAction:hover{
+  color:#39ff88;
+  border-color:rgba(57,255,136,.45);
+  box-shadow:0 0 12px rgba(57,255,136,.10);
+}
+.novaUnifiedConsole #novaMediaLibraryClose{
+  width:30px;
+  padding:0;
+  font-size:15px;
+}
+
+.novaUnifiedConsole #novaMediaLibraryNow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  padding:10px 16px;
+  border-bottom:1px solid rgba(54,217,255,.08);
+  background:rgba(54,217,255,.025);
+}
+.novaUnifiedConsole #novaMediaLibraryNowTitle{
+  overflow:hidden;
+  color:rgba(255,255,255,.82);
+  font-size:11px;
+  font-weight:650;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.novaUnifiedConsole #novaMediaLibraryCount{
+  color:rgba(57,255,136,.55);
+  font-size:9px;
+  letter-spacing:.8px;
+}
+
+.novaUnifiedConsole #novaMediaLibraryList{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:8px 10px 14px;
+}
+.novaUnifiedConsole .novaLibraryTrack{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+  width:100%;
+  min-height:37px;
+  padding:5px 9px;
+  margin:2px 0;
+  border:1px solid transparent;
+  border-radius:9px;
+  background:transparent;
+  color:rgba(255,255,255,.68);
+  text-align:left;
+  cursor:pointer;
+}
+.novaUnifiedConsole .novaLibraryTrack:hover{
+  border-color:rgba(54,217,255,.14);
+  background:rgba(54,217,255,.045);
+}
+.novaUnifiedConsole .novaLibraryTrack.active{
+  border-color:rgba(57,255,136,.20);
+  background:linear-gradient(90deg,rgba(57,255,136,.07),rgba(54,217,255,.025));
+  color:#fff;
+}
+.novaUnifiedConsole .novaLibraryTrackNumber{
+  color:rgba(54,217,255,.42);
+  font-size:9px;
+  text-align:center;
+}
+.novaUnifiedConsole .novaLibraryTrack.active .novaLibraryTrackNumber{
+  color:#39ff88;
+}
+.novaUnifiedConsole .novaLibraryTrackName{
+  overflow:hidden;
+  font-size:10px;
+  font-weight:600;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.novaUnifiedConsole .novaLibraryTrackState{
+  color:rgba(57,255,136,.62);
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+.novaUnifiedConsole .novaMediaLibraryEmpty{
+  display:flex;
+  height:100%;
+  align-items:center;
+  justify-content:center;
+  color:rgba(54,217,255,.42);
+  font-size:10px;
+  letter-spacing:1px;
+  text-align:center;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaIntegratedMediaLibrary{
+    left:2%;
+    right:2%;
+    top:4%;
+    bottom:4%;
+  }
+  .novaUnifiedConsole .novaMediaLibraryHeader{
+    gap:7px;
+    padding:0 9px;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -4337,6 +4533,22 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
 
 <div class="panel card novaUnifiedConsole">
 <div class="novaLeftHome">
+      <div id="novaIntegratedMediaLibrary" aria-label="NOVA Media Library">
+        <div class="novaMediaLibraryHeader">
+          <div class="novaMediaLibraryIdentity">
+            <div class="novaMediaLibraryEyebrow">NOVA MEDIA SYSTEM</div>
+            <div class="novaMediaLibraryTitle">MEDIA LIBRARY</div>
+          </div>
+          <button type="button" class="novaMediaLibraryAction" id="novaMediaAddMusic">ADD MUSIC</button>
+          <button type="button" class="novaMediaLibraryAction" id="novaMediaAddFolder">ADD FOLDER</button>
+          <button type="button" class="novaMediaLibraryAction" id="novaMediaLibraryClose" title="Close">×</button>
+        </div>
+        <div id="novaMediaLibraryNow">
+          <div id="novaMediaLibraryNowTitle">NO TRACK SELECTED</div>
+          <div id="novaMediaLibraryCount">0 TRACKS</div>
+        </div>
+        <div id="novaMediaLibraryList"></div>
+      </div>
       <div class="novaFutureField" aria-hidden="true">
         <div class="novaScanBeam"></div>
         <div class="novaHorizon novaHorizonOne"></div>
@@ -4497,7 +4709,7 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
 
 <div class="panel mediaPanel startExpandedPanel">
 <div class="panelHeader">MEDIA CENTER</div>
-<div class="panelBody">
+<div class="panelBody novaLegacyMediaHidden">
 <div class="mediaTabs">
 <button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
 <button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
@@ -13997,6 +14209,205 @@ if(document.readyState==="loading"){
   );
 }else{
   initializeNovaIntegratedMedia();
+}
+
+
+/* ============================================================
+   NOVA MEDIA LIBRARY V2
+   Renders the existing musicLibrary inside NOVA.
+   Existing loading, persistence, playback and auto-next remain authoritative.
+   ============================================================ */
+function novaCleanIntegratedTrackName(item){
+  if(!item)return"UNTITLED TRACK";
+  const raw=
+    item.file && item.file.name
+      ? item.file.name
+      : (item.name || "UNTITLED TRACK");
+
+  try{
+    return cleanMediaName(raw);
+  }catch(e){
+    return String(raw).replace(/\.[^.]+$/,"").replace(/_/g," ");
+  }
+}
+
+function renderNovaIntegratedMediaLibrary(){
+  const list=document.getElementById("novaMediaLibraryList");
+  const now=document.getElementById("novaMediaLibraryNowTitle");
+  const count=document.getElementById("novaMediaLibraryCount");
+
+  if(!list || !now || !count)return;
+
+  const tracks=
+    Array.isArray(musicLibrary)
+      ? musicLibrary
+      : [];
+
+  count.textContent=
+    `${tracks.length} ${tracks.length===1 ? "TRACK" : "TRACKS"}`;
+
+  if(
+    musicIndex>=0 &&
+    tracks[musicIndex]
+  ){
+    now.textContent=
+      `NOW PLAYING • ${novaCleanIntegratedTrackName(tracks[musicIndex])}`;
+  }else{
+    now.textContent="NO TRACK SELECTED";
+  }
+
+  list.innerHTML="";
+
+  if(!tracks.length){
+    const empty=document.createElement("div");
+    empty.className="novaMediaLibraryEmpty";
+    empty.textContent="ADD MUSIC OR A FOLDER TO BUILD NOVA'S MEDIA LIBRARY";
+    list.appendChild(empty);
+    return;
+  }
+
+  tracks.forEach((item,index)=>{
+    const row=document.createElement("button");
+    row.type="button";
+    row.className=
+      `novaLibraryTrack${index===musicIndex ? " active" : ""}`;
+
+    const number=document.createElement("span");
+    number.className="novaLibraryTrackNumber";
+    number.textContent=String(index+1).padStart(2,"0");
+
+    const name=document.createElement("span");
+    name.className="novaLibraryTrackName";
+    name.textContent=novaCleanIntegratedTrackName(item);
+
+    const state=document.createElement("span");
+    state.className="novaLibraryTrackState";
+    state.textContent=
+      index===musicIndex
+        ? "ACTIVE"
+        : "";
+
+    row.append(number,name,state);
+
+    row.addEventListener("click",()=>{
+      playMusic(index);
+      renderNovaIntegratedMediaLibrary();
+    });
+
+    list.appendChild(row);
+  });
+}
+
+function openNovaIntegratedMediaLibrary(){
+  const panel=document.getElementById("novaIntegratedMediaLibrary");
+  if(!panel)return;
+
+  renderNovaIntegratedMediaLibrary();
+  panel.classList.add("active");
+}
+
+function closeNovaIntegratedMediaLibrary(){
+  const panel=document.getElementById("novaIntegratedMediaLibrary");
+  if(panel)panel.classList.remove("active");
+}
+
+function novaClickFirstExistingInput(ids){
+  for(const id of ids){
+    const el=document.getElementById(id);
+    if(el){
+      el.click();
+      return true;
+    }
+  }
+  return false;
+}
+
+function initializeNovaIntegratedLibrary(){
+  const mediaButton=document.getElementById("novaMediaLibraryButton");
+  const close=document.getElementById("novaMediaLibraryClose");
+  const addMusic=document.getElementById("novaMediaAddMusic");
+  const addFolder=document.getElementById("novaMediaAddFolder");
+  const audio=document.getElementById("audioPlayer");
+
+  if(mediaButton){
+    /*
+      Replace the V1 MEDIA button behavior with NOVA's integrated library.
+      Capture phase stops the earlier fallback handler from opening a picker.
+    */
+    mediaButton.addEventListener(
+      "click",
+      event=>{
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        openNovaIntegratedMediaLibrary();
+      },
+      true
+    );
+  }
+
+  if(close){
+    close.addEventListener("click",closeNovaIntegratedMediaLibrary);
+  }
+
+  if(addMusic){
+    addMusic.addEventListener("click",()=>{
+      novaClickFirstExistingInput([
+        "musicFileInput",
+        "musicFiles",
+        "audioFileInput",
+        "mediaFileInput"
+      ]);
+    });
+  }
+
+  if(addFolder){
+    addFolder.addEventListener("click",()=>{
+      novaClickFirstExistingInput([
+        "musicFolderInput",
+        "musicFolder",
+        "audioFolderInput"
+      ]);
+    });
+  }
+
+  if(audio){
+    ["play","pause","ended","loadedmetadata"]
+      .forEach(name=>{
+        audio.addEventListener(
+          name,
+          renderNovaIntegratedMediaLibrary
+        );
+      });
+  }
+
+  /*
+    Existing library loading may be async. Refresh the NOVA view after
+    file/folder changes without replacing the persistence implementation.
+  */
+  document.addEventListener("change",event=>{
+    const target=event.target;
+    if(
+      target &&
+      target.tagName==="INPUT" &&
+      target.type==="file"
+    ){
+      setTimeout(renderNovaIntegratedMediaLibrary,100);
+      setTimeout(renderNovaIntegratedMediaLibrary,700);
+      setTimeout(renderNovaIntegratedMediaLibrary,1600);
+    }
+  });
+
+  renderNovaIntegratedMediaLibrary();
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeNovaIntegratedLibrary,
+    {once:true}
+  );
+}else{
+  initializeNovaIntegratedLibrary();
 }
 
 </script>
