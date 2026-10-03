@@ -1939,6 +1939,46 @@ body.novaMusicAlive .novaParticles{
   #columnResizer1,#columnResizer2{display:none !important;}
 }
 
+
+/* NOVA BROWSER PANEL */
+.browserSearchRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.browserSearchRow input{
+  flex:1;
+  min-width:0;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:10px;
+  border-radius:8px;
+  outline:none;
+}
+.browserSearchRow input:focus{border-color:var(--cyan);}
+.browserHint{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:9px;
+  letter-spacing:1px;
+}
+
+/* DRAGGABLE NOVA MUSIC PLAYLIST */
+#musicList .mediaItem{
+  cursor:grab;
+  user-select:none;
+}
+#musicList .mediaItem:active{cursor:grabbing;}
+#musicList .mediaItem.musicDragging{
+  opacity:.45;
+  border-color:var(--cyan);
+}
+#musicList .mediaItem.musicDropTarget{
+  border-color:var(--green);
+  box-shadow:0 0 10px rgba(57,255,136,.25);
+}
+
 </style>
 </head>
 
@@ -2219,7 +2259,8 @@ body.novaMusicAlive .novaParticles{
         <button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
         <button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
         <button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
-        <button class="control primary" onclick="fullscreenDesktopCamera()">FULLSCREEN</button>
+        <button id="cameraRecordButton" class="control danger" onclick="toggleDesktopCameraRecording()">RECORD</button>
+        <button class="control primary full" onclick="fullscreenDesktopCamera()">FULL SCREEN WINDOW</button>
       </div>
       <div class="cameraStatusRow"><span id="cameraStatusDot" class="dot red"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
       <canvas id="desktopCameraSnapshot" class="cameraSnapshot"></canvas>
@@ -2227,15 +2268,17 @@ body.novaMusicAlive .novaParticles{
   </div>
 
 
-  <!-- PROFILE -->
+  <!-- NOVA BROWSER -->
   <div class="panel card">
-    <div class="panelHeader">PROFILE</div>
+    <div class="panelHeader">NOVA BROWSER</div>
     <div class="panelBody">
-      <div class="profileName" id="profileUserName">DangeRuss</div>
-      <div class="profileRow"><span>Assistant</span><span id="profileAssistantName">NOVA</span></div>
-      <div class="profileRow"><span>Board</span><span>AMOMII ONE</span></div>
-      <div class="profileRow"><span>Voice</span><span id="profileVoice">READY</span></div>
+      <div class="browserSearchRow">
+        <input id="novaGoogleSearch" type="text" placeholder="Search Google with text or ask NOVA..." autocomplete="off">
+        <button class="control primary" type="button" onclick="searchGoogleFromBrowser()">SEARCH</button>
+      </div>
+      <div class="browserHint">VOICE: “NOVA, SEARCH GOOGLE FOR …”</div>
     </div>
+  </div>
   </div>
 
 
@@ -4452,11 +4495,107 @@ function looksLikeCommand(text){
 }
 
 
+
+/* ============================================================
+   NOVA GOOGLE BROWSER
+   ============================================================ */
+
+function searchGoogle(query){
+  const clean=String(query||"").trim();
+  if(!clean)return;
+
+  const url=
+    "https://www.google.com/search?q="+
+    encodeURIComponent(clean);
+
+  const win=window.open(
+    url,
+    "novaGoogleSearchWindow"
+  );
+
+  if(!win){
+    log(
+      "Google search window was blocked by the browser. Allow pop-ups for NOVA.",
+      "warning"
+    );
+  }else{
+    log(
+      `Google search: ${clean}`,
+      "success"
+    );
+  }
+}
+
+function searchGoogleFromBrowser(){
+  const input=
+    document.getElementById(
+      "novaGoogleSearch"
+    );
+
+  if(!input)return;
+
+  const query=
+    input.value.trim();
+
+  if(!query)return;
+
+  searchGoogle(query);
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  ()=>{
+    const input=
+      document.getElementById(
+        "novaGoogleSearch"
+      );
+
+    if(input){
+      input.addEventListener(
+        "keydown",
+        event=>{
+          if(event.key==="Enter"){
+            event.preventDefault();
+            searchGoogleFromBrowser();
+          }
+        }
+      );
+    }
+  }
+);
+
+
 /* ============================================================
    CENTRAL COMMAND ROUTER
    ============================================================ */
 
 function routeVoiceCommand(command,raw){
+
+  const googleSearchMatch=
+    raw.match(
+      /^(?:nova[,\s]*)?(?:search google for|google|search for|search)\s+(.+)$/i
+    );
+
+  if(googleSearchMatch){
+    const query=
+      googleSearchMatch[1].trim();
+
+    const input=
+      document.getElementById(
+        "novaGoogleSearch"
+      );
+
+    if(input){
+      input.value=query;
+    }
+
+    speak(
+      `Searching Google for ${query}.`
+    );
+
+    searchGoogle(query);
+    return;
+  }
 
   /* IDENTITY */
 
@@ -5483,6 +5622,40 @@ let linkedMusicDirectoryHandle = null;
 
 const NOVA_PLAYLIST_DB="novaPersistentPlaylistDB";
 const NOVA_PLAYLIST_STORE="tracks";
+const NOVA_PLAYLIST_ORDER_KEY="novaPersistentPlaylistOrderV1";
+
+function getSavedPlaylistOrder(){
+  try{
+    const value=
+      JSON.parse(
+        localStorage.getItem(
+          NOVA_PLAYLIST_ORDER_KEY
+        ) || "[]"
+      );
+
+    return Array.isArray(value)
+      ? value
+      : [];
+  }catch(error){
+    return [];
+  }
+}
+
+function saveCurrentPlaylistOrder(){
+  const order=
+    musicLibrary.map(
+      item=>
+        novaTrackKey(
+          item.file
+        )
+    );
+
+  localStorage.setItem(
+    NOVA_PLAYLIST_ORDER_KEY,
+    JSON.stringify(order)
+  );
+}
+
 
 async function requestNovaPersistentStorage(){
   try{
@@ -5621,25 +5794,56 @@ async function getSavedPlaylistFiles(){
 
     db.close();
 
-    return rows
-      .filter(row=>row && row.blob)
-      .map(row=>
-        new File(
-          [row.blob],
-          row.name,
-          {
-            type:
-              row.type ||
-              row.blob.type ||
-              "audio/mpeg",
+    const files=
+      rows
+        .filter(row=>row && row.blob)
+        .map(row=>
+          new File(
+            [row.blob],
+            row.name,
+            {
+              type:
+                row.type ||
+                row.blob.type ||
+                "audio/mpeg",
 
-            lastModified:
-              row.lastModified ||
-              Date.now()
-          }
+              lastModified:
+                row.lastModified ||
+                Date.now()
+            }
+          )
         )
-      )
-      .filter(isSupportedAudioFile);
+        .filter(isSupportedAudioFile);
+
+    const savedOrder=
+      getSavedPlaylistOrder();
+
+    if(savedOrder.length){
+      const positions=
+        new Map(
+          savedOrder.map(
+            (key,index)=>[key,index]
+          )
+        );
+
+      files.sort(
+        (a,b)=>{
+          const aPos=
+            positions.has(novaTrackKey(a))
+              ? positions.get(novaTrackKey(a))
+              : Number.MAX_SAFE_INTEGER;
+
+          const bPos=
+            positions.has(novaTrackKey(b))
+              ? positions.get(novaTrackKey(b))
+              : Number.MAX_SAFE_INTEGER;
+
+          return aPos-bPos;
+        }
+      );
+    }
+
+    return files;
 
   }catch(error){
     console.warn(
@@ -5740,6 +5944,10 @@ async function clearSavedPlaylist(){
 
     musicLibrary=[];
     musicIndex=-1;
+
+    localStorage.removeItem(
+      NOVA_PLAYLIST_ORDER_KEY
+    );
 
     const audio=
       document.getElementById(
@@ -5869,6 +6077,8 @@ function addMusicFiles(files, replaceLibrary = false, persistPlaylist = true){
   });
 
   renderMusicList();
+
+  saveCurrentPlaylistOrder();
 
   document.getElementById(
     "musicCount"
@@ -6475,34 +6685,159 @@ function initializeMusicDropZone(){
 
 function renderMusicList(){
 
-  const list =
+  const list=
     document.getElementById(
       "musicList"
     );
 
-  list.innerHTML = "";
+  list.innerHTML="";
 
   musicLibrary.forEach(
-    (item,index) => {
+    (item,index)=>{
 
-      const div =
+      const div=
         document.createElement(
           "div"
         );
 
-      div.className =
-        "mediaItem" +
+      div.className=
+        "mediaItem"+
         (
-          index === musicIndex
+          index===musicIndex
             ? " selected"
             : ""
         );
 
-      div.textContent =
+      div.textContent=
         item.file.name;
 
-      div.onclick =
-        () => playMusic(index);
+      div.draggable=true;
+      div.dataset.musicIndex=
+        String(index);
+
+      div.onclick=
+        ()=>playMusic(index);
+
+      div.addEventListener(
+        "dragstart",
+        event=>{
+          div.classList.add(
+            "musicDragging"
+          );
+
+          event.dataTransfer.effectAllowed=
+            "move";
+
+          event.dataTransfer.setData(
+            "text/plain",
+            String(index)
+          );
+        }
+      );
+
+      div.addEventListener(
+        "dragend",
+        ()=>{
+          div.classList.remove(
+            "musicDragging"
+          );
+
+          list
+            .querySelectorAll(
+              ".musicDropTarget"
+            )
+            .forEach(
+              element=>
+                element.classList.remove(
+                  "musicDropTarget"
+                )
+            );
+        }
+      );
+
+      div.addEventListener(
+        "dragover",
+        event=>{
+          event.preventDefault();
+          event.dataTransfer.dropEffect=
+            "move";
+
+          div.classList.add(
+            "musicDropTarget"
+          );
+        }
+      );
+
+      div.addEventListener(
+        "dragleave",
+        ()=>{
+          div.classList.remove(
+            "musicDropTarget"
+          );
+        }
+      );
+
+      div.addEventListener(
+        "drop",
+        event=>{
+          event.preventDefault();
+          event.stopPropagation();
+
+          div.classList.remove(
+            "musicDropTarget"
+          );
+
+          const fromIndex=
+            Number(
+              event.dataTransfer.getData(
+                "text/plain"
+              )
+            );
+
+          const toIndex=index;
+
+          if(
+            !Number.isInteger(fromIndex) ||
+            fromIndex<0 ||
+            fromIndex>=musicLibrary.length ||
+            fromIndex===toIndex
+          ){
+            return;
+          }
+
+          const currentItem=
+            musicIndex>=0
+              ? musicLibrary[musicIndex]
+              : null;
+
+          const moved=
+            musicLibrary.splice(
+              fromIndex,
+              1
+            )[0];
+
+          musicLibrary.splice(
+            toIndex,
+            0,
+            moved
+          );
+
+          musicIndex=
+            currentItem
+              ? musicLibrary.indexOf(
+                  currentItem
+                )
+              : -1;
+
+          saveCurrentPlaylistOrder();
+          renderMusicList();
+
+          log(
+            "Music playlist order updated.",
+            "success"
+          );
+        }
+      );
 
       list.appendChild(div);
 
@@ -6510,7 +6845,6 @@ function renderMusicList(){
   );
 
 }
-
 
 function playMusic(index){
 
@@ -9178,6 +9512,9 @@ requestAnimationFrame(restoreColumnLayout);
    Local USB / built-in cameras via browser MediaDevices API.
    ============================================================ */
 let desktopCameraStream = null;
+let desktopCameraRecorder = null;
+let desktopCameraRecordedChunks = [];
+let desktopCameraPopup = null;
 
 function setDesktopCameraStatus(online, text){
   const dot = document.getElementById("cameraStatusDot");
@@ -9241,6 +9578,13 @@ async function startDesktopCamera(){
 
 function stopDesktopCamera(){
   const video = document.getElementById("desktopCameraVideo");
+
+  if(
+    desktopCameraRecorder &&
+    desktopCameraRecorder.state==="recording"
+  ){
+    desktopCameraRecorder.stop();
+  }
   if(desktopCameraStream){ desktopCameraStream.getTracks().forEach(track => track.stop()); desktopCameraStream = null; }
   if(video) video.srcObject = null;
   setDesktopCameraStatus(false, "CAMERA OFFLINE");
@@ -9252,10 +9596,224 @@ async function changeDesktopCamera(){
 }
 
 function fullscreenDesktopCamera(){
-  const viewport = document.getElementById("cameraViewport");
-  if(!viewport) return;
-  if(document.fullscreenElement){ document.exitFullscreen(); }
-  else if(viewport.requestFullscreen){ viewport.requestFullscreen(); }
+
+  if(
+    !desktopCameraStream ||
+    !desktopCameraStream.active
+  ){
+    log(
+      "Start the camera before opening the full screen window.",
+      "warning"
+    );
+    return;
+  }
+
+  desktopCameraPopup=
+    window.open(
+      "",
+      "novaCameraWindow",
+      "width=1100,height=700,resizable=yes,scrollbars=no"
+    );
+
+  if(!desktopCameraPopup){
+    log(
+      "Camera window was blocked. Allow pop-ups for NOVA.",
+      "warning"
+    );
+    return;
+  }
+
+  desktopCameraPopup.document.open();
+  desktopCameraPopup.document.write(
+    `<!DOCTYPE html>
+    <html>
+    <head>
+      <title>NOVA Camera Monitor</title>
+      <style>
+        html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
+        video{width:100%;height:100%;object-fit:contain;background:#000}
+      </style>
+    </head>
+    <body>
+      <video id="novaPopupCamera" autoplay playsinline muted></video>
+    </body>
+    </html>`
+  );
+  desktopCameraPopup.document.close();
+
+  const popupVideo=
+    desktopCameraPopup.document.getElementById(
+      "novaPopupCamera"
+    );
+
+  if(popupVideo){
+    popupVideo.srcObject=
+      desktopCameraStream;
+
+    popupVideo.play()
+      .catch(()=>{});
+  }
+
+  desktopCameraPopup.focus();
+
+  log(
+    "Camera monitor opened in a separate window.",
+    "success"
+  );
+}
+
+function toggleDesktopCameraRecording(){
+
+  const button=
+    document.getElementById(
+      "cameraRecordButton"
+    );
+
+  if(
+    desktopCameraRecorder &&
+    desktopCameraRecorder.state==="recording"
+  ){
+    desktopCameraRecorder.stop();
+    return;
+  }
+
+  if(
+    !desktopCameraStream ||
+    !desktopCameraStream.active
+  ){
+    log(
+      "Start the camera before recording.",
+      "warning"
+    );
+    return;
+  }
+
+  if(typeof MediaRecorder==="undefined"){
+    log(
+      "Camera recording is not supported by this browser.",
+      "error"
+    );
+    return;
+  }
+
+  desktopCameraRecordedChunks=[];
+
+  let options={};
+
+  if(
+    MediaRecorder.isTypeSupported(
+      "video/webm;codecs=vp9"
+    )
+  ){
+    options.mimeType=
+      "video/webm;codecs=vp9";
+  }else if(
+    MediaRecorder.isTypeSupported(
+      "video/webm;codecs=vp8"
+    )
+  ){
+    options.mimeType=
+      "video/webm;codecs=vp8";
+  }
+
+  try{
+    desktopCameraRecorder=
+      new MediaRecorder(
+        desktopCameraStream,
+        options
+      );
+  }catch(error){
+    log(
+      `Camera recorder error: ${error.message}`,
+      "error"
+    );
+    return;
+  }
+
+  desktopCameraRecorder.addEventListener(
+    "dataavailable",
+    event=>{
+      if(
+        event.data &&
+        event.data.size>0
+      ){
+        desktopCameraRecordedChunks.push(
+          event.data
+        );
+      }
+    }
+  );
+
+  desktopCameraRecorder.addEventListener(
+    "stop",
+    ()=>{
+      const type=
+        desktopCameraRecorder.mimeType ||
+        "video/webm";
+
+      const blob=
+        new Blob(
+          desktopCameraRecordedChunks,
+          {type}
+        );
+
+      const url=
+        URL.createObjectURL(
+          blob
+        );
+
+      const link=
+        document.createElement(
+          "a"
+        );
+
+      link.href=url;
+      link.download=
+        `nova-camera-${new Date().toISOString().replace(/[:.]/g,"-")}.webm`;
+
+      document.body.appendChild(
+        link
+      );
+
+      link.click();
+      link.remove();
+
+      setTimeout(
+        ()=>URL.revokeObjectURL(url),
+        2000
+      );
+
+      if(button){
+        button.textContent="RECORD";
+        button.classList.remove(
+          "rsrPatternActive"
+        );
+      }
+
+      log(
+        "Camera recording saved.",
+        "success"
+      );
+    }
+  );
+
+  desktopCameraRecorder.start(
+    1000
+  );
+
+  if(button){
+    button.textContent=
+      "STOP RECORDING";
+
+    button.classList.add(
+      "rsrPatternActive"
+    );
+  }
+
+  log(
+    "Camera recording started.",
+    "success"
+  );
 }
 
 function snapshotDesktopCamera(){
