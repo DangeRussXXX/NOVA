@@ -2059,6 +2059,60 @@ body.novaMusicAlive .novaParticles{
   }
 }
 
+
+/* ============================================================
+   NOVA SINGLE-STACK COMMAND CENTER
+   NOVA AT TOP — ALL PANELS BELOW
+   ============================================================ */
+.mainGrid.novaSingleStack{
+  display:block !important;
+  width:100% !important;
+}
+.novaTopStack,
+.novaPanelStack{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+.novaTopStack > .panel,
+.novaTopStack > .card,
+.novaPanelStack > .panel,
+.novaPanelStack > .card{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 0 16px 0 !important;
+  grid-column:auto !important;
+}
+.novaTopStack > .panel:last-child,
+.novaTopStack > .card:last-child{
+  margin-bottom:16px !important;
+}
+.novaPanelStack > .panel:last-child,
+.novaPanelStack > .card:last-child{
+  margin-bottom:0 !important;
+}
+#columnResizer1,
+#columnResizer2{
+  display:none !important;
+  pointer-events:none !important;
+}
+@media(max-width:1100px){
+  .mainGrid.novaSingleStack,
+  .novaTopStack,
+  .novaPanelStack{
+    display:block !important;
+    width:100% !important;
+  }
+}
+@media(max-width:750px){
+  .mainGrid.novaSingleStack,
+  .novaTopStack,
+  .novaPanelStack{
+    display:block !important;
+    width:100% !important;
+  }
+}
+
 </style>
 </head>
 
@@ -2079,439 +2133,384 @@ body.novaMusicAlive .novaParticles{
   </div>
 </header>
 
-<div class="mainGrid">
+<div class="mainGrid novaSingleStack">
+<div class="novaTopStack">
 
-  <!-- DRAGGABLE COLUMN RESIZERS -->
-  <div id="columnResizer1" class="columnResizer" aria-hidden="true"></div>
-  <div id="columnResizer2" class="columnResizer" aria-hidden="true"></div>
-
-<!-- LEFT COLUMN -->
-
-<div class="leftColumn">
-
-  <!-- NOVA COMMAND CONSOLE - ALWAYS VISIBLE -->
-  <div class="panel card novaUnifiedConsole">
-    <div class="novaLeftHome">
-      <div id="novaCoreContainer">
-        <div id="novaPedestal">
-          <div id="novaThroneRing"></div>
-          <div id="novaGlyphLayer"></div>
-          <div id="novaConduits"></div>
-        </div>
-        <div id="novaOrb">
-          <div class="novaOuterRing"></div>
-          <div class="novaInnerRing"></div>
-          <div class="novaIris"><div class="novaName">NOVA</div></div>
-          <div class="novaWaveform"></div>
-          <div class="novaParticles"></div>
-          <div id="novaMusicPulseRing" class="novaMusicPulseRing"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panelBody novaUnifiedBody">
-      <div class="voiceStatus novaConsoleVoiceStatus"><span id="voiceDot" class="dot red"></span><span id="voiceText">VOICE OFF</span></div>
-      <div class="buttonGrid voiceButtons">
-        <button id="voiceButton" class="control good full" onclick="toggleVoice()">TALK TO NOVA</button>
-        <button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
-        <button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
-        <button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
-        <button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button>
-      </div>
-      <div class="commandRow mergedCommandRow novaConsoleCommandRow">
-        <input id="commandInput" type="text" placeholder="Enter commands for NOVA." autocomplete="off">
-        <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
-      </div>
-      <div id="lastHeard" class="lastHeard novaResponseLine">READY</div>
-      <div id="console" class="console novaResponseConsole"></div>
-    </div>
-  </div>
-
-  
-
-  
-
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed"><div class="statList">
-      <div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
-    </div></div>
-  </div>
-
-  <div id="commandHistory" class="history" style="display:none"></div>
+ NOVA COMMAND CONSOLE - ALWAYS VISIBLE 
+<div class="panel card novaUnifiedConsole">
+<div class="novaLeftHome">
+<div id="novaCoreContainer">
+<div id="novaPedestal">
+<div id="novaThroneRing"></div>
+<div id="novaGlyphLayer"></div>
+<div id="novaConduits"></div>
 </div>
+<div id="novaOrb">
+<div class="novaOuterRing"></div>
+<div class="novaInnerRing"></div>
+<div class="novaIris"><div class="novaName">NOVA</div></div>
+<div class="novaWaveform"></div>
+<div class="novaParticles"></div>
+<div class="novaMusicPulseRing" id="novaMusicPulseRing"></div>
+</div>
+</div>
+</div>
+<div class="panelBody novaUnifiedBody">
+<div class="voiceStatus novaConsoleVoiceStatus"><span class="dot red" id="voiceDot"></span><span id="voiceText">VOICE OFF</span></div>
+<div class="buttonGrid voiceButtons">
+<button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
+<button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
+<button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
+<button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
+<button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button>
+</div>
+<div class="commandRow mergedCommandRow novaConsoleCommandRow">
+<input autocomplete="off" id="commandInput" placeholder="Enter commands for NOVA." type="text"/>
+<button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
+</div>
+<div class="lastHeard novaResponseLine" id="lastHeard">READY</div>
+<div class="console novaResponseConsole" id="console"></div>
+</div>
+</div>
+<div class="panel card leftCollapsePanel">
+<div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
+<div class="panelBody leftCollapseBody collapsed"><div class="statList">
+<div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
+</div></div>
+</div>
+<div class="history" id="commandHistory" style="display:none"></div>
 
-<!-- CENTER COLUMN -->
-<div class="rightColumn">
+</div>
+<div class="novaPanelStack">
 
-  <!-- TOP CENTER: NOVA CALENDAR + MEDIA CENTER -->
-  <!-- NOVA CALENDAR -->
-  <div class="panel mediaPanel startExpandedPanel">
-    <div class="panelHeader">NOVA CALENDAR</div>
-    <div class="panelBody">
-      <div class="calendarAccountBar">
-        <div class="calendarAccountStatus">
-          <span id="calendarAccountDot" class="dot yellow"></span>
-          <span id="calendarAccountText">LOCAL CALENDAR • OUTLOOK READY</span>
-        </div>
-        <button class="control" onclick="calendarOutlookInfo()">OUTLOOK ACCOUNT</button>
-      </div>
-
-      <div class="calendarToolbar">
-        <div class="calendarToolbarGroup">
-          <button class="control primary" onclick="calendarToday()">TODAY</button>
-          <button class="control good" onclick="openCalendarEditor()">+ NEW EVENT</button>
-          <button class="control" onclick="refreshCalendar()">REFRESH</button>
-        </div>
-        <div class="calendarToolbarGroup">
-          <button id="calendarViewDay" class="control" onclick="setCalendarView('day')">DAY</button>
-          <button id="calendarViewWeek" class="control" onclick="setCalendarView('week')">WEEK</button>
-          <button id="calendarViewMonth" class="control active" onclick="setCalendarView('month')">MONTH</button>
-          <button id="calendarViewAgenda" class="control" onclick="setCalendarView('agenda')">AGENDA</button>
-        </div>
-      </div>
-
-      <div class="calendarHeader">
-        <button onclick="changeCalendarPeriod(-1)">‹</button>
-        <div id="calendarMonth" class="calendarMonth"></div>
-        <button onclick="changeCalendarPeriod(1)">›</button>
-      </div>
-
-      <div id="calendarGrid" class="calendarGrid"></div>
-      <div id="eventList" class="eventList"></div>
-
-      <div class="mediaControls">
-        <button class="control primary" onclick="voiceAddEvent()">ADD EVENT BY VOICE</button>
-        <button class="control" onclick="speakTodaysEvents()">READ TODAY</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="calendarModal" class="calendarModal" onclick="calendarModalBackdrop(event)">
-    <div class="calendarEditor" role="dialog" aria-modal="true" aria-labelledby="calendarEditorTitle">
-      <div id="calendarEditorTitle" class="panelHeader">NEW CALENDAR EVENT</div>
-      <div class="calendarEditorBody">
-        <input id="calendarEventId" type="hidden">
-
-        <label>
+ TOP CENTER: NOVA CALENDAR + MEDIA CENTER 
+ NOVA CALENDAR 
+<div class="panel mediaPanel startExpandedPanel">
+<div class="panelHeader">NOVA CALENDAR</div>
+<div class="panelBody">
+<div class="calendarAccountBar">
+<div class="calendarAccountStatus">
+<span class="dot yellow" id="calendarAccountDot"></span>
+<span id="calendarAccountText">LOCAL CALENDAR • OUTLOOK READY</span>
+</div>
+<button class="control" onclick="calendarOutlookInfo()">OUTLOOK ACCOUNT</button>
+</div>
+<div class="calendarToolbar">
+<div class="calendarToolbarGroup">
+<button class="control primary" onclick="calendarToday()">TODAY</button>
+<button class="control good" onclick="openCalendarEditor()">+ NEW EVENT</button>
+<button class="control" onclick="refreshCalendar()">REFRESH</button>
+</div>
+<div class="calendarToolbarGroup">
+<button class="control" id="calendarViewDay" onclick="setCalendarView('day')">DAY</button>
+<button class="control" id="calendarViewWeek" onclick="setCalendarView('week')">WEEK</button>
+<button class="control active" id="calendarViewMonth" onclick="setCalendarView('month')">MONTH</button>
+<button class="control" id="calendarViewAgenda" onclick="setCalendarView('agenda')">AGENDA</button>
+</div>
+</div>
+<div class="calendarHeader">
+<button onclick="changeCalendarPeriod(-1)">‹</button>
+<div class="calendarMonth" id="calendarMonth"></div>
+<button onclick="changeCalendarPeriod(1)">›</button>
+</div>
+<div class="calendarGrid" id="calendarGrid"></div>
+<div class="eventList" id="eventList"></div>
+<div class="mediaControls">
+<button class="control primary" onclick="voiceAddEvent()">ADD EVENT BY VOICE</button>
+<button class="control" onclick="speakTodaysEvents()">READ TODAY</button>
+</div>
+</div>
+</div>
+<div class="calendarModal" id="calendarModal" onclick="calendarModalBackdrop(event)">
+<div aria-labelledby="calendarEditorTitle" aria-modal="true" class="calendarEditor" role="dialog">
+<div class="panelHeader" id="calendarEditorTitle">NEW CALENDAR EVENT</div>
+<div class="calendarEditorBody">
+<input id="calendarEventId" type="hidden"/>
+<label>
           TITLE
-          <input id="calendarEventTitle" type="text" placeholder="Event title">
-        </label>
-
-        <div class="calendarEditorRow">
-          <label>
+          <input id="calendarEventTitle" placeholder="Event title" type="text"/>
+</label>
+<div class="calendarEditorRow">
+<label>
             DATE
-            <input id="calendarEventDate" type="date">
-          </label>
-          <label>
+            <input id="calendarEventDate" type="date"/>
+</label>
+<label>
             START TIME
-            <input id="calendarEventTime" type="time">
-          </label>
-        </div>
-
-        <div class="calendarEditorRow">
-          <label>
+            <input id="calendarEventTime" type="time"/>
+</label>
+</div>
+<div class="calendarEditorRow">
+<label>
             END TIME
-            <input id="calendarEventEndTime" type="time">
-          </label>
-          <label>
+            <input id="calendarEventEndTime" type="time"/>
+</label>
+<label>
             CALENDAR
-            <input id="calendarEventCalendar" type="text" value="NOVA" disabled>
-          </label>
-        </div>
-
-        <label>
+            <input disabled="" id="calendarEventCalendar" type="text" value="NOVA"/>
+</label>
+</div>
+<label>
           NOTES
           <textarea id="calendarEventNotes" placeholder="Notes"></textarea>
-        </label>
-
-        <div class="calendarEditorActions">
-          <div>
-            <button id="calendarDeleteButton" class="control danger" onclick="deleteCalendarEventFromEditor()" style="display:none">DELETE</button>
-          </div>
-          <div>
-            <button class="control" onclick="closeCalendarEditor()">CANCEL</button>
-            <button class="control primary" onclick="saveCalendarEventFromEditor()">SAVE EVENT</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-    <!-- MEDIA CENTER -->
-  <div class="panel mediaPanel startExpandedPanel">
-    <div class="panelHeader">MEDIA CENTER</div>
-    <div class="panelBody">
-      <div class="mediaTabs">
-        <button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
-        <button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
-        <button class="tab" data-tab="youtube" onclick="showMediaTab('youtube')">YOUTUBE</button>
-      </div>
-
-      <div id="musicSection" class="mediaSection active">
-        <div class="mediaFileRow">
-          <button class="control primary" type="button" onclick="openMusicFilePicker()">ADD MUSIC</button>
-          <button class="control" type="button" onclick="linkMusicFolder()">LINK MUSIC FOLDER</button>
-          <button id="refreshMusicFolderButton" class="control" type="button" onclick="refreshLinkedMusicFolder()" style="display:none">REFRESH FOLDER</button>
-          <button class="control" type="button" onclick="restoreSavedPlaylist(true)">RESTORE PLAYLIST</button>
-          <button class="control danger" type="button" onclick="clearSavedPlaylist()">CLEAR PLAYLIST</button>
-          <input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple hidden onchange="handleMusicFiles(event)">
-          <input id="musicFolderFallback" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" webkitdirectory directory multiple hidden>
-          <span id="musicCount" class="voiceSubtitle">0 tracks</span>
-        </div>
-        <div id="musicFolderStatus" class="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
-        <div id="musicPlaylistStatus" class="musicFolderStatus">PLAYLIST: CHECKING...</div>
-        <div id="musicDropZone" class="musicDropZone">
+</label>
+<div class="calendarEditorActions">
+<div>
+<button class="control danger" id="calendarDeleteButton" onclick="deleteCalendarEventFromEditor()" style="display:none">DELETE</button>
+</div>
+<div>
+<button class="control" onclick="closeCalendarEditor()">CANCEL</button>
+<button class="control primary" onclick="saveCalendarEventFromEditor()">SAVE EVENT</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+ MEDIA CENTER 
+<div class="panel mediaPanel startExpandedPanel">
+<div class="panelHeader">MEDIA CENTER</div>
+<div class="panelBody">
+<div class="mediaTabs">
+<button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
+<button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
+<button class="tab" data-tab="youtube" onclick="showMediaTab('youtube')">YOUTUBE</button>
+</div>
+<div class="mediaSection active" id="musicSection">
+<div class="mediaFileRow">
+<button class="control primary" onclick="openMusicFilePicker()" type="button">ADD MUSIC</button>
+<button class="control" onclick="linkMusicFolder()" type="button">LINK MUSIC FOLDER</button>
+<button class="control" id="refreshMusicFolderButton" onclick="refreshLinkedMusicFolder()" style="display:none" type="button">REFRESH FOLDER</button>
+<button class="control" onclick="restoreSavedPlaylist(true)" type="button">RESTORE PLAYLIST</button>
+<button class="control danger" onclick="clearSavedPlaylist()" type="button">CLEAR PLAYLIST</button>
+<input accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" hidden="" id="musicFiles" multiple="" onchange="handleMusicFiles(event)" type="file"/>
+<input accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" directory="" hidden="" id="musicFolderFallback" multiple="" type="file" webkitdirectory=""/>
+<span class="voiceSubtitle" id="musicCount">0 tracks</span>
+</div>
+<div class="musicFolderStatus" id="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
+<div class="musicFolderStatus" id="musicPlaylistStatus">PLAYLIST: CHECKING...</div>
+<div class="musicDropZone" id="musicDropZone">
           DRAG &amp; DROP MUSIC FILES OR A MUSIC FOLDER HERE
         </div>
-        <audio id="audioPlayer" controls></audio>
-        <div class="mediaControls">
-          <button onclick="previousMusic()">PREVIOUS</button>
-          <button onclick="toggleMusic()">PLAY / PAUSE</button>
-          <button onclick="stopMusic()">STOP</button>
-          <button onclick="nextMusic()">NEXT</button>
-          <button onclick="toggleShuffle()">SHUFFLE: <span id="shuffleText">OFF</span></button>
-          <button onclick="toggleRepeat()">REPEAT: <span id="repeatText">OFF</span></button>
-        </div>
-        <div style="margin-top:10px">
-          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
-          <input id="musicVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
-        </div>
-        <div id="musicList" class="mediaList"></div>
-      </div>
-
-      <div id="videoSection" class="mediaSection">
-        <div class="mediaFileRow">
-          <label class="fileButton">ADD VIDEOS<input id="videoFiles" type="file" accept="video/*" multiple></label>
-          <span id="videoCount" class="voiceSubtitle">0 videos</span>
-        </div>
-        <video id="videoPlayer" controls></video>
-        <div class="mediaControls">
-          <button onclick="previousVideo()">PREVIOUS</button>
-          <button onclick="toggleVideo()">PLAY / PAUSE</button>
-          <button onclick="stopVideo()">STOP</button>
-          <button onclick="nextVideo()">NEXT</button>
-        </div>
-        <div style="margin-top:10px">
-          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
-          <input id="videoVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
-        </div>
-        <div id="videoList" class="mediaList"></div>
-      </div>
-
-      <div id="youtubeSection" class="mediaSection">
-        <div class="youtubeRow">
-          <input id="youtubeInput" type="text" placeholder="Paste YouTube URL or video ID">
-          <button class="control primary" onclick="loadYouTube()">LOAD</button>
-        </div>
-        <div class="videoWrap" style="margin-top:10px">
-          <iframe id="youtubeFrame" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <div class="mediaControls">
-          <button onclick="youtubeCommand('playVideo')">PLAY</button>
-          <button onclick="youtubeCommand('pauseVideo')">PAUSE</button>
-          <button onclick="youtubeCommand('stopVideo')">STOP</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <!-- DESKTOP CAMERA MONITOR -->
-  <div class="panel card cameraMonitor">
-    <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
-    <div class="panelBody">
-      <div class="cameraViewport" id="cameraViewport">
-        <video id="desktopCameraVideo" autoplay playsinline muted></video>
-        <div id="cameraPlaceholder" class="cameraPlaceholder">CAMERA OFFLINE</div>
-      </div>
-      <select id="desktopCameraSelect" class="cameraSelect" aria-label="Desktop camera selector">
-        <option value="">DEFAULT CAMERA</option>
-      </select>
-      <div class="cameraControls">
-        <button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
-        <button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
-        <button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
-        <button id="cameraRecordButton" class="control danger" onclick="toggleDesktopCameraRecording()">RECORD</button>
-        <button class="control primary full" onclick="fullscreenDesktopCamera()">FULL SCREEN WINDOW</button>
-      </div>
-      <div class="cameraStatusRow"><span id="cameraStatusDot" class="dot red"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
-      <canvas id="desktopCameraSnapshot" class="cameraSnapshot"></canvas>
-    </div>
-  </div>
-
-
-  <!-- NOVA BROWSER -->
-  <div class="panel card">
-    <div class="panelHeader">NOVA BROWSER</div>
-    <div class="panelBody">
-
-      <div class="browserSearchRow">
-        <input id="novaGoogleSearch" type="text" placeholder="Search Google or enter a website..." autocomplete="off">
-        <button class="control primary" type="button" onclick="novaBrowserGo()">GO</button>
-        <button class="control" type="button" onclick="startNovaBrowserVoiceSearch()">🎙 VOICE</button>
-      </div>
-
-      <div class="buttonGrid browserQuickLaunch">
-        <button class="control primary" type="button" onclick="openNovaBrowserPage('https://www.google.com/')">GOOGLE</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://mail.google.com/')">GMAIL</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://www.youtube.com/')">YOUTUBE</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://maps.google.com/')">MAPS</button>
-        <button class="control" type="button" onclick="openNovaBrowserPage('https://drive.google.com/')">DRIVE</button>
-        <button class="control" type="button" onclick="addNovaBookmark()">+ BOOKMARK</button>
-      </div>
-
-      <div class="browserHint">
+<audio controls="" id="audioPlayer"></audio>
+<div class="mediaControls">
+<button onclick="previousMusic()">PREVIOUS</button>
+<button onclick="toggleMusic()">PLAY / PAUSE</button>
+<button onclick="stopMusic()">STOP</button>
+<button onclick="nextMusic()">NEXT</button>
+<button onclick="toggleShuffle()">SHUFFLE: <span id="shuffleText">OFF</span></button>
+<button onclick="toggleRepeat()">REPEAT: <span id="repeatText">OFF</span></button>
+</div>
+<div style="margin-top:10px">
+<label style="font-size:10px;color:var(--muted)">VOLUME</label>
+<input id="musicVolume" max="1" min="0" step=".01" style="width:100%" type="range" value=".8"/>
+</div>
+<div class="mediaList" id="musicList"></div>
+</div>
+<div class="mediaSection" id="videoSection">
+<div class="mediaFileRow">
+<label class="fileButton">ADD VIDEOS<input accept="video/*" id="videoFiles" multiple="" type="file"/></label>
+<span class="voiceSubtitle" id="videoCount">0 videos</span>
+</div>
+<video controls="" id="videoPlayer"></video>
+<div class="mediaControls">
+<button onclick="previousVideo()">PREVIOUS</button>
+<button onclick="toggleVideo()">PLAY / PAUSE</button>
+<button onclick="stopVideo()">STOP</button>
+<button onclick="nextVideo()">NEXT</button>
+</div>
+<div style="margin-top:10px">
+<label style="font-size:10px;color:var(--muted)">VOLUME</label>
+<input id="videoVolume" max="1" min="0" step=".01" style="width:100%" type="range" value=".8"/>
+</div>
+<div class="mediaList" id="videoList"></div>
+</div>
+<div class="mediaSection" id="youtubeSection">
+<div class="youtubeRow">
+<input id="youtubeInput" placeholder="Paste YouTube URL or video ID" type="text"/>
+<button class="control primary" onclick="loadYouTube()">LOAD</button>
+</div>
+<div class="videoWrap" style="margin-top:10px">
+<iframe allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen="" id="youtubeFrame" src=""></iframe>
+</div>
+<div class="mediaControls">
+<button onclick="youtubeCommand('playVideo')">PLAY</button>
+<button onclick="youtubeCommand('pauseVideo')">PAUSE</button>
+<button onclick="youtubeCommand('stopVideo')">STOP</button>
+</div>
+</div>
+</div>
+</div>
+ DESKTOP CAMERA MONITOR 
+<div class="panel card cameraMonitor">
+<div class="panelHeader">DESKTOP CAMERA MONITOR</div>
+<div class="panelBody">
+<div class="cameraViewport" id="cameraViewport">
+<video autoplay="" id="desktopCameraVideo" muted="" playsinline=""></video>
+<div class="cameraPlaceholder" id="cameraPlaceholder">CAMERA OFFLINE</div>
+</div>
+<select aria-label="Desktop camera selector" class="cameraSelect" id="desktopCameraSelect">
+<option value="">DEFAULT CAMERA</option>
+</select>
+<div class="cameraControls">
+<button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
+<button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
+<button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
+<button class="control danger" id="cameraRecordButton" onclick="toggleDesktopCameraRecording()">RECORD</button>
+<button class="control primary full" onclick="fullscreenDesktopCamera()">FULL SCREEN WINDOW</button>
+</div>
+<div class="cameraStatusRow"><span class="dot red" id="cameraStatusDot"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
+<canvas class="cameraSnapshot" id="desktopCameraSnapshot"></canvas>
+</div>
+</div>
+ NOVA BROWSER 
+<div class="panel card">
+<div class="panelHeader">NOVA BROWSER</div>
+<div class="panelBody">
+<div class="browserSearchRow">
+<input autocomplete="off" id="novaGoogleSearch" placeholder="Search Google or enter a website..." type="text"/>
+<button class="control primary" onclick="novaBrowserGo()" type="button">GO</button>
+<button class="control" onclick="startNovaBrowserVoiceSearch()" type="button">🎙 VOICE</button>
+</div>
+<div class="buttonGrid browserQuickLaunch">
+<button class="control primary" onclick="openNovaBrowserPage('https://www.google.com/')" type="button">GOOGLE</button>
+<button class="control" onclick="openNovaBrowserPage('https://mail.google.com/')" type="button">GMAIL</button>
+<button class="control" onclick="openNovaBrowserPage('https://www.youtube.com/')" type="button">YOUTUBE</button>
+<button class="control" onclick="openNovaBrowserPage('https://maps.google.com/')" type="button">MAPS</button>
+<button class="control" onclick="openNovaBrowserPage('https://drive.google.com/')" type="button">DRIVE</button>
+<button class="control" onclick="addNovaBookmark()" type="button">+ BOOKMARK</button>
+</div>
+<div class="browserHint">
         OPENS IN A REAL BROWSER WINDOW • GOOGLE LOGIN + NORMAL BROWSER BOOKMARKS WORK THERE
       </div>
-
-      <div class="panelSubHeader" style="margin-top:10px">NOVA BOOKMARKS</div>
-      <div id="novaBookmarkList" class="novaBookmarkList"></div>
-
-      <div class="browserHint">
+<div class="panelSubHeader" style="margin-top:10px">NOVA BOOKMARKS</div>
+<div class="novaBookmarkList" id="novaBookmarkList"></div>
+<div class="browserHint">
         VOICE: “SEARCH GOOGLE FOR ARDUINO MEGA” • “OPEN GOOGLE” • “OPEN GMAIL” • “OPEN YOUTUBE”
       </div>
-
-    </div>
-  </div><!-- AMOMII ONE CONTROLLER -->
-  <div class="panel card">
-    <div class="panelHeader controllerHeader" onclick="toggleController()">
-      <span>AMOMII ONE CONTROLLER</span>
-      <div class="connectionStatus">
-        <span id="connectionDot" class="dot red"></span>
-        <span id="connectionText">DISCONNECTED</span>
-      </div>
-    </div>
-
-    <div class="panelBody collapsed">
-      <div class="buttonGrid">
-        <button id="connectionButton" class="control primary full" onclick="toggleConnection()">CONNECT</button>
-        <button id="boardLedButton" class="control full" onclick="toggleBoardLed()">LED</button>
-        <button class="control" onclick="sendCloudCommand('help')">HELP</button>
-        <button class="control" onclick="stopBoard()">STOP</button>
-        <button class="control warn" onclick="sendCloudCommand('blink 5')">BLINK 5</button>
-        <button class="control warn" onclick="sendCloudCommand('sos')">SOS</button>
-      </div>
-
-      <div class="panelSection controllerSystemPanel">
-        <div class="panelSubHeader systemCollapseHeader" onclick="toggleSystemPanel(this)">
-          <span>SYSTEM</span>
-          <span class="collapseArrow">▸</span>
-        </div>
-        <div class="systemCollapseBody collapsed">
-          <div class="systemActionRow">
-            <button class="control" onclick="sendCloudCommand('status')">STATUS</button>
-            <button class="control" onclick="runSystemTest()">RUN SYSTEM TEST</button>
-          </div>
-
-          <div class="statList">
-            <div class="stat"><span>Board</span><span>AMOMII ONE</span></div>
-            <div class="stat"><span>Connection</span><span id="statusConnection">OFFLINE</span></div>
-            <div class="stat"><span>System</span><span id="statusSystem">READY</span></div>
-            <div class="stat"><span>LED</span><span id="statusLed">UNKNOWN</span></div>
-            <div class="stat"><span>Blinking</span><span id="statusBlinking">NO</span></div>
-            <div class="stat"><span>Blink speed</span><span id="statusBlinkSpeed">—</span></div>
-            <div class="stat"><span>Commands</span><span id="statusCommands">0</span></div>
-            <div class="stat"><span>Uptime</span><span id="uptime">00:00:00</span></div>
-          </div>
-
-          <div class="testGrid systemTestGrid">
-            <div class="testItem"><span>Serial</span><span id="testSerial" class="testValue pending">—</span></div>
-            <div class="testItem"><span>LED</span><span id="testLed" class="testValue pending">—</span></div>
-            <div class="testItem"><span>Timing</span><span id="testTiming" class="testValue pending">—</span></div>
-            <div class="testItem"><span>Memory</span><span id="testMemory" class="testValue pending">—</span></div>
-            <div class="testItem"><span>Commands</span><span id="testCommands" class="testValue pending">—</span></div>
-            <div class="testItem"><span>System</span><span id="testSystem" class="testValue pending">—</span></div>
-          </div>
-          <div id="testResult" class="testResult">NOT RUN</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RSR TRAINER ONE CONTROLLER -->
-  <div class="panel card rsrTrainerController">
-    <div class="panelHeader">RSR TRAINER ONE CONTROLLER</div>
-    <div class="panelBody">
-      <div class="buttonGrid">
-        <button id="trainerLedButton0" class="control" onclick="toggleTrainerLed(0)" aria-pressed="false">LED 0</button>
-        <button id="trainerLedButton1" class="control" onclick="toggleTrainerLed(1)" aria-pressed="false">LED 1</button>
-        <button id="trainerLedButton2" class="control" onclick="toggleTrainerLed(2)" aria-pressed="false">LED 2</button>
-        <button id="trainerLedButton3" class="control" onclick="toggleTrainerLed(3)" aria-pressed="false">LED 3</button>
-        <button id="trainerLedButton4" class="control" onclick="toggleTrainerLed(4)" aria-pressed="false">LED 4</button>
-        <button id="trainerLedButton5" class="control" onclick="toggleTrainerLed(5)" aria-pressed="false">LED 5</button>
-        <button id="trainerLedButton6" class="control" onclick="toggleTrainerLed(6)" aria-pressed="false">LED 6</button>
-        <button id="trainerLedButton7" class="control" onclick="toggleTrainerLed(7)" aria-pressed="false">LED 7</button>
-      </div>
-
-      <div class="panelSection">
-        <div class="panelSubHeader">TRAINER COMMANDS</div>
-        <div class="buttonGrid">
-          <button id="trainerAllButton" class="control" onclick="toggleTrainerAll()" aria-pressed="false">ALL ON</button>
-          <button class="control warn" onclick="trainerBlink()">BLINK</button>
-          <button class="control warn" onclick="trainerSOS()">SOS</button>
-          <button class="control warn" onclick="trainerMorse()">MORSE</button>
-        </div>
-      </div>
-
-      <div class="panelSection rsrPhysicalInputs">
-        <div class="panelSubHeader">PHYSICAL INPUTS</div>
-        <div class="rsrInputGrid">
-          <div id="rsrSwitchIndicator0" class="rsrInputIndicator">
-            <span>SWITCH 0</span>
-            <span id="rsrSwitchState0" class="rsrInputState">UNKNOWN</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="panelSection rsrPatternControls">
-        <div class="panelSubHeader">LIGHT PATTERNS</div>
-        <div class="rsrPatternGrid">
-            <button class="control trainerPatternButton" data-pattern="KNIGHT RIDER" onclick="startTrainerPatternUI('knight','KNIGHT RIDER',this)">KNIGHT RIDER</button>
-            <button class="control trainerPatternButton" data-pattern="CHASE" onclick="startTrainerPatternUI('chase','CHASE',this)">CHASE</button>
-            <button class="control trainerPatternButton" data-pattern="REVERSE CHASE" onclick="startTrainerPatternUI('reverse','REVERSE CHASE',this)">REVERSE CHASE</button>
-            <button class="control trainerPatternButton" data-pattern="CENTER OUT" onclick="startTrainerPatternUI('center out','CENTER OUT',this)">CENTER OUT</button>
-            <button class="control trainerPatternButton" data-pattern="OUTSIDE IN" onclick="startTrainerPatternUI('outside in','OUTSIDE IN',this)">OUTSIDE IN</button>
-            <button class="control trainerPatternButton" data-pattern="ALTERNATE" onclick="startTrainerPatternUI('alternate','ALTERNATE',this)">ALTERNATE</button>
-            <button class="control trainerPatternButton" data-pattern="FILL" onclick="startTrainerPatternUI('fill','FILL',this)">FILL</button>
-            <button class="control trainerPatternButton" data-pattern="WAVE" onclick="startTrainerPatternUI('wave','WAVE',this)">WAVE</button>
-            <button class="control trainerPatternButton" data-pattern="POLICE" onclick="startTrainerPatternUI('police','POLICE',this)">POLICE</button>
-            <button class="control trainerPatternButton" data-pattern="STROBE" onclick="startTrainerPatternUI('strobe','STROBE',this)">STROBE</button>
-            <button class="control danger full" onclick="stopTrainerSystem()">STOP RSR TRAINER</button>
-          </div>
-      </div>
-
-      <div class="panelSection rsrSystemPanel">
-        <div class="panelSubHeader systemCollapseHeader" onclick="toggleSystemPanel(this)">
-          <span>RSR TRAINER SYSTEM</span>
-          <span class="collapseArrow">▸</span>
-        </div>
-
-        <div class="systemCollapseBody collapsed">
-          <div class="systemActionRow">
-            <button class="control primary" onclick="requestTrainerStatus()">STATUS</button>
-            <button class="control good" onclick="runTrainerTest()">RUN TEST</button>
-          </div>
-
-          <div class="statList rsrPatternStatus">
-            <div class="stat"><span>Trainer</span><span id="rsrStatus">READY</span></div>
-            <div class="stat"><span>LEDs</span><span>8</span></div>
-            <div class="stat"><span>Active Pattern</span><span id="rsrPatternName">NONE</span></div>
-            <div class="stat"><span>Pattern State</span><span id="rsrPatternState">STOPPED</span></div>
-            <div class="stat"><span>Pattern Speed</span><span id="rsrPatternSpeed">150 ms</span></div>
-            <div class="stat"><span>Test</span><span id="rsrTestResult">NOT RUN</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+</div>
+</div> AMOMII ONE CONTROLLER 
+<div class="panel card">
+<div class="panelHeader controllerHeader" onclick="toggleController()">
+<span>AMOMII ONE CONTROLLER</span>
+<div class="connectionStatus">
+<span class="dot red" id="connectionDot"></span>
+<span id="connectionText">DISCONNECTED</span>
+</div>
+</div>
+<div class="panelBody collapsed">
+<div class="buttonGrid">
+<button class="control primary full" id="connectionButton" onclick="toggleConnection()">CONNECT</button>
+<button class="control full" id="boardLedButton" onclick="toggleBoardLed()">LED</button>
+<button class="control" onclick="sendCloudCommand('help')">HELP</button>
+<button class="control" onclick="stopBoard()">STOP</button>
+<button class="control warn" onclick="sendCloudCommand('blink 5')">BLINK 5</button>
+<button class="control warn" onclick="sendCloudCommand('sos')">SOS</button>
+</div>
+<div class="panelSection controllerSystemPanel">
+<div class="panelSubHeader systemCollapseHeader" onclick="toggleSystemPanel(this)">
+<span>SYSTEM</span>
+<span class="collapseArrow">▸</span>
+</div>
+<div class="systemCollapseBody collapsed">
+<div class="systemActionRow">
+<button class="control" onclick="sendCloudCommand('status')">STATUS</button>
+<button class="control" onclick="runSystemTest()">RUN SYSTEM TEST</button>
+</div>
+<div class="statList">
+<div class="stat"><span>Board</span><span>AMOMII ONE</span></div>
+<div class="stat"><span>Connection</span><span id="statusConnection">OFFLINE</span></div>
+<div class="stat"><span>System</span><span id="statusSystem">READY</span></div>
+<div class="stat"><span>LED</span><span id="statusLed">UNKNOWN</span></div>
+<div class="stat"><span>Blinking</span><span id="statusBlinking">NO</span></div>
+<div class="stat"><span>Blink speed</span><span id="statusBlinkSpeed">—</span></div>
+<div class="stat"><span>Commands</span><span id="statusCommands">0</span></div>
+<div class="stat"><span>Uptime</span><span id="uptime">00:00:00</span></div>
+</div>
+<div class="testGrid systemTestGrid">
+<div class="testItem"><span>Serial</span><span class="testValue pending" id="testSerial">—</span></div>
+<div class="testItem"><span>LED</span><span class="testValue pending" id="testLed">—</span></div>
+<div class="testItem"><span>Timing</span><span class="testValue pending" id="testTiming">—</span></div>
+<div class="testItem"><span>Memory</span><span class="testValue pending" id="testMemory">—</span></div>
+<div class="testItem"><span>Commands</span><span class="testValue pending" id="testCommands">—</span></div>
+<div class="testItem"><span>System</span><span class="testValue pending" id="testSystem">—</span></div>
+</div>
+<div class="testResult" id="testResult">NOT RUN</div>
+</div>
+</div>
+</div>
+</div>
+ RSR TRAINER ONE CONTROLLER 
+<div class="panel card rsrTrainerController">
+<div class="panelHeader">RSR TRAINER ONE CONTROLLER</div>
+<div class="panelBody">
+<div class="buttonGrid">
+<button aria-pressed="false" class="control" id="trainerLedButton0" onclick="toggleTrainerLed(0)">LED 0</button>
+<button aria-pressed="false" class="control" id="trainerLedButton1" onclick="toggleTrainerLed(1)">LED 1</button>
+<button aria-pressed="false" class="control" id="trainerLedButton2" onclick="toggleTrainerLed(2)">LED 2</button>
+<button aria-pressed="false" class="control" id="trainerLedButton3" onclick="toggleTrainerLed(3)">LED 3</button>
+<button aria-pressed="false" class="control" id="trainerLedButton4" onclick="toggleTrainerLed(4)">LED 4</button>
+<button aria-pressed="false" class="control" id="trainerLedButton5" onclick="toggleTrainerLed(5)">LED 5</button>
+<button aria-pressed="false" class="control" id="trainerLedButton6" onclick="toggleTrainerLed(6)">LED 6</button>
+<button aria-pressed="false" class="control" id="trainerLedButton7" onclick="toggleTrainerLed(7)">LED 7</button>
+</div>
+<div class="panelSection">
+<div class="panelSubHeader">TRAINER COMMANDS</div>
+<div class="buttonGrid">
+<button aria-pressed="false" class="control" id="trainerAllButton" onclick="toggleTrainerAll()">ALL ON</button>
+<button class="control warn" onclick="trainerBlink()">BLINK</button>
+<button class="control warn" onclick="trainerSOS()">SOS</button>
+<button class="control warn" onclick="trainerMorse()">MORSE</button>
+</div>
+</div>
+<div class="panelSection rsrPhysicalInputs">
+<div class="panelSubHeader">PHYSICAL INPUTS</div>
+<div class="rsrInputGrid">
+<div class="rsrInputIndicator" id="rsrSwitchIndicator0">
+<span>SWITCH 0</span>
+<span class="rsrInputState" id="rsrSwitchState0">UNKNOWN</span>
+</div>
+</div>
+</div>
+<div class="panelSection rsrPatternControls">
+<div class="panelSubHeader">LIGHT PATTERNS</div>
+<div class="rsrPatternGrid">
+<button class="control trainerPatternButton" data-pattern="KNIGHT RIDER" onclick="startTrainerPatternUI('knight','KNIGHT RIDER',this)">KNIGHT RIDER</button>
+<button class="control trainerPatternButton" data-pattern="CHASE" onclick="startTrainerPatternUI('chase','CHASE',this)">CHASE</button>
+<button class="control trainerPatternButton" data-pattern="REVERSE CHASE" onclick="startTrainerPatternUI('reverse','REVERSE CHASE',this)">REVERSE CHASE</button>
+<button class="control trainerPatternButton" data-pattern="CENTER OUT" onclick="startTrainerPatternUI('center out','CENTER OUT',this)">CENTER OUT</button>
+<button class="control trainerPatternButton" data-pattern="OUTSIDE IN" onclick="startTrainerPatternUI('outside in','OUTSIDE IN',this)">OUTSIDE IN</button>
+<button class="control trainerPatternButton" data-pattern="ALTERNATE" onclick="startTrainerPatternUI('alternate','ALTERNATE',this)">ALTERNATE</button>
+<button class="control trainerPatternButton" data-pattern="FILL" onclick="startTrainerPatternUI('fill','FILL',this)">FILL</button>
+<button class="control trainerPatternButton" data-pattern="WAVE" onclick="startTrainerPatternUI('wave','WAVE',this)">WAVE</button>
+<button class="control trainerPatternButton" data-pattern="POLICE" onclick="startTrainerPatternUI('police','POLICE',this)">POLICE</button>
+<button class="control trainerPatternButton" data-pattern="STROBE" onclick="startTrainerPatternUI('strobe','STROBE',this)">STROBE</button>
+<button class="control danger full" onclick="stopTrainerSystem()">STOP RSR TRAINER</button>
+</div>
+</div>
+<div class="panelSection rsrSystemPanel">
+<div class="panelSubHeader systemCollapseHeader" onclick="toggleSystemPanel(this)">
+<span>RSR TRAINER SYSTEM</span>
+<span class="collapseArrow">▸</span>
+</div>
+<div class="systemCollapseBody collapsed">
+<div class="systemActionRow">
+<button class="control primary" onclick="requestTrainerStatus()">STATUS</button>
+<button class="control good" onclick="runTrainerTest()">RUN TEST</button>
+</div>
+<div class="statList rsrPatternStatus">
+<div class="stat"><span>Trainer</span><span id="rsrStatus">READY</span></div>
+<div class="stat"><span>LEDs</span><span>8</span></div>
+<div class="stat"><span>Active Pattern</span><span id="rsrPatternName">NONE</span></div>
+<div class="stat"><span>Pattern State</span><span id="rsrPatternState">STOPPED</span></div>
+<div class="stat"><span>Pattern Speed</span><span id="rsrPatternSpeed">150 ms</span></div>
+<div class="stat"><span>Test</span><span id="rsrTestResult">NOT RUN</span></div>
+</div>
+</div>
+</div>
+</div>
 </div>
 
-
-
+</div>
 </div>
 </div>
 
