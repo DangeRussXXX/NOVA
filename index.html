@@ -4158,6 +4158,155 @@ body.irisMediaPlaying .novaUnifiedConsole .novaFutureField{
   .novaUnifiedConsole #novaMusicSpectrum{left:3%;right:3%;gap:2px}
 }
 
+
+/* ============================================================
+   NOVA INTEGRATED MEDIA MODE V1
+   Music is now a NOVA capability, not a separate visual player.
+   ============================================================ */
+.novaUnifiedConsole #novaIntegratedMediaControls{
+  display:none;
+  position:absolute;
+  z-index:38;
+  left:22%;
+  right:22%;
+  bottom:20px;
+  pointer-events:auto;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .35s ease,transform .35s ease;
+}
+
+body.irisMediaPlaying .novaUnifiedConsole #novaIntegratedMediaControls,
+body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls{
+  display:block;
+  opacity:.82;
+  transform:translateY(0);
+}
+
+.novaUnifiedConsole #novaMediaProgressWrap{
+  position:relative;
+  width:100%;
+  height:2px;
+  margin:0 auto 10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(54,217,255,.13);
+  box-shadow:0 0 7px rgba(54,217,255,.08);
+  cursor:pointer;
+}
+.novaUnifiedConsole #novaMediaProgressFill{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#39ff88,#36d9ff);
+  box-shadow:0 0 8px rgba(54,217,255,.7);
+  transition:width .12s linear;
+}
+
+.novaUnifiedConsole .novaMediaControlRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+.novaUnifiedConsole .novaMediaGlyph{
+  appearance:none;
+  border:1px solid rgba(54,217,255,.18);
+  min-width:36px;
+  height:28px;
+  padding:0 9px;
+  border-radius:14px;
+  background:rgba(0,10,17,.42);
+  color:rgba(54,217,255,.74);
+  font:700 10px/1 Inter,Segoe UI,sans-serif;
+  letter-spacing:.5px;
+  cursor:pointer;
+  backdrop-filter:blur(4px);
+  box-shadow:
+    inset 0 0 10px rgba(54,217,255,.035),
+    0 0 8px rgba(54,217,255,.035);
+  transition:
+    color .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease,
+    opacity .18s ease;
+}
+.novaUnifiedConsole .novaMediaGlyph:hover{
+  color:#39ff88;
+  border-color:rgba(57,255,136,.52);
+  box-shadow:0 0 13px rgba(57,255,136,.16);
+  transform:translateY(-1px);
+}
+.novaUnifiedConsole .novaMediaPlayGlyph{
+  width:42px;
+  height:34px;
+  border-radius:50%;
+  color:#36d9ff;
+  border-color:rgba(54,217,255,.42);
+  box-shadow:0 0 14px rgba(54,217,255,.13);
+}
+.novaUnifiedConsole .novaMediaLibraryGlyph{
+  min-width:58px;
+  font-size:9px;
+}
+
+/* Music info becomes the central NOVA HUD instead of a player card. */
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoDisplay{
+  left:18% !important;
+  right:18% !important;
+  bottom:67px !important;
+  padding:8px 18px 10px !important;
+  border:0 !important;
+  background:
+    radial-gradient(ellipse at center,rgba(0,15,24,.48),transparent 72%) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoStatus{
+  color:rgba(57,255,136,.72) !important;
+  letter-spacing:2.4px !important;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoTitle{
+  font-size:17px !important;
+  letter-spacing:.5px;
+  text-shadow:
+    0 0 8px rgba(54,217,255,.50),
+    0 0 22px rgba(54,217,255,.15) !important;
+}
+
+/* Music mode reduces system-feed dominance without disabling it. */
+body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTicker{
+  opacity:.55 !important;
+}
+
+/* Controls softly retreat until pointer approaches NOVA. */
+body.irisMediaPlaying .novaUnifiedConsole #novaIntegratedMediaControls{
+  opacity:.54;
+}
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome:hover #novaIntegratedMediaControls{
+  opacity:1;
+}
+
+/* The spectrum becomes part of the lower media-control environment. */
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
+  height:37% !important;
+  opacity:.38 !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaIntegratedMediaControls{
+    left:9%;
+    right:9%;
+    bottom:14px;
+  }
+  body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoDisplay{
+    left:8% !important;
+    right:8% !important;
+    bottom:60px !important;
+  }
+  .novaUnifiedConsole .novaMediaControlRow{gap:7px}
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -4225,6 +4374,17 @@ body.irisMediaPlaying .novaUnifiedConsole .novaFutureField{
   <div id="novaMusicInfoStatus"></div>
   <div id="novaMusicInfoTitle"></div>
   <div id="novaMusicInfoMeta"></div>
+</div>
+<div id="novaIntegratedMediaControls" aria-label="NOVA media controls">
+  <div id="novaMediaProgressWrap">
+    <div id="novaMediaProgressFill"></div>
+  </div>
+  <div class="novaMediaControlRow">
+    <button type="button" class="novaMediaGlyph" id="novaMediaPrev" title="Previous track">◀◀</button>
+    <button type="button" class="novaMediaGlyph novaMediaPlayGlyph" id="novaMediaPlayPause" title="Play / Pause">▶</button>
+    <button type="button" class="novaMediaGlyph" id="novaMediaNext" title="Next track">▶▶</button>
+    <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaMediaLibraryButton" title="Media Library">MEDIA</button>
+  </div>
 </div>
 <div id="novaHudTicker" aria-live="polite">
   <span id="novaIrisSpeechText">NOVA READY.</span>
@@ -13691,6 +13851,152 @@ if(document.readyState==="loading"){
   );
 }else{
   initializeNovaFutureVisuals();
+}
+
+
+/* ============================================================
+   NOVA INTEGRATED MEDIA CONTROLS
+   Thin UI bridge to the existing working music player.
+   ============================================================ */
+function initializeNovaIntegratedMedia(){
+  const audio=document.getElementById("audioPlayer");
+  const play=document.getElementById("novaMediaPlayPause");
+  const prev=document.getElementById("novaMediaPrev");
+  const next=document.getElementById("novaMediaNext");
+  const progress=document.getElementById("novaMediaProgressWrap");
+  const fill=document.getElementById("novaMediaProgressFill");
+  const library=document.getElementById("novaMediaLibraryButton");
+
+  if(!audio || !play || !prev || !next || !progress || !fill)return;
+
+  const sync=()=>{
+    const hasTrack=
+      musicIndex>=0 &&
+      !!musicLibrary[musicIndex];
+
+    document.body.classList.toggle("novaMediaLoaded",hasTrack);
+
+    play.textContent=
+      !audio.paused && hasTrack
+        ? "❚❚"
+        : "▶";
+
+    if(
+      Number.isFinite(audio.duration) &&
+      audio.duration>0
+    ){
+      fill.style.width=
+        `${Math.max(0,Math.min(100,(audio.currentTime/audio.duration)*100))}%`;
+    }else{
+      fill.style.width="0%";
+    }
+  };
+
+  play.addEventListener("click",()=>{
+    if(musicIndex<0 || !musicLibrary[musicIndex]){
+      if(musicLibrary.length){
+        playMusic(0);
+      }
+      return;
+    }
+
+    if(audio.paused){
+      audio.play().catch(()=>{});
+    }else{
+      audio.pause();
+    }
+  });
+
+  prev.addEventListener("click",()=>{
+    if(!musicLibrary.length)return;
+
+    const target=
+      musicIndex<=0
+        ? musicLibrary.length-1
+        : musicIndex-1;
+
+    playMusic(target);
+  });
+
+  next.addEventListener("click",()=>{
+    if(!musicLibrary.length)return;
+
+    const target=
+      musicIndex<0
+        ? 0
+        : (musicIndex+1)%musicLibrary.length;
+
+    playMusic(target);
+  });
+
+  progress.addEventListener("click",event=>{
+    if(
+      !Number.isFinite(audio.duration) ||
+      audio.duration<=0
+    ){
+      return;
+    }
+
+    const rect=progress.getBoundingClientRect();
+    const ratio=Math.max(
+      0,
+      Math.min(
+        1,
+        (event.clientX-rect.left)/Math.max(1,rect.width)
+      )
+    );
+
+    audio.currentTime=audio.duration*ratio;
+  });
+
+  if(library){
+    library.addEventListener("click",()=>{
+      /*
+        Reuse the existing media/library interface rather than
+        creating a second music system.
+      */
+      const candidates=[
+        "openMusicLibrary",
+        "openMediaLibrary",
+        "openNovaMusicScreen",
+        "openNovaMediaScreen"
+      ];
+
+      for(const name of candidates){
+        try{
+          if(typeof window[name]==="function"){
+            window[name]();
+            return;
+          }
+        }catch(e){}
+      }
+
+      const input=
+        document.getElementById("musicFolderInput") ||
+        document.getElementById("musicFileInput");
+
+      if(input){
+        input.click();
+      }
+    });
+  }
+
+  ["play","pause","timeupdate","loadedmetadata","ended","volumechange"]
+    .forEach(eventName=>{
+      audio.addEventListener(eventName,sync);
+    });
+
+  sync();
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeNovaIntegratedMedia,
+    {once:true}
+  );
+}else{
+  initializeNovaIntegratedMedia();
 }
 
 </script>
