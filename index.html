@@ -2051,6 +2051,14 @@ body.novaMusicAlive .novaParticles{
   }
 }
 
+
+/* KEEP THE TWO-COLUMN WIDTH GRIP AVAILABLE ON DESKTOP */
+@media(min-width:751px){
+  #columnResizer1.columnResizer{
+    display:block;
+  }
+}
+
 </style>
 </head>
 
@@ -2118,7 +2126,10 @@ body.novaMusicAlive .novaParticles{
       <div id="console" class="console novaResponseConsole"></div>
     </div>
   </div>
-  </div>
+
+  
+
+  
 
   <div class="panel card leftCollapsePanel">
     <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
@@ -2127,15 +2138,10 @@ body.novaMusicAlive .novaParticles{
     </div></div>
   </div>
 
-
-
-  <!-- NOVA COMMAND HISTORY DATA STORE - displayed in popup screen -->
   <div id="commandHistory" class="history" style="display:none"></div>
-
 </div>
 
 <!-- CENTER COLUMN -->
-
 <div class="rightColumn">
 
   <!-- TOP CENTER: NOVA CALENDAR + MEDIA CENTER -->
@@ -10512,166 +10518,33 @@ if(document.readyState === "loading"){
 
 
 
-/* ============================================================
-   NOVA POPUP SCREENS
-   HELP / COMMANDS / VOICE COMMANDS / COMMAND HISTORY
-   ============================================================ */
-
-function novaPopupEscape(value){
-  return String(value == null ? "" : value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+/* NOVA SEPARATE INFO SCREENS */
+function novaPopupEscape(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+function openNovaInfoScreen(title,body){
+  const w=window.open("","nova_"+title.toLowerCase().replace(/[^a-z0-9]+/g,"_"),"width=1000,height=760,resizable=yes,scrollbars=yes");
+  if(!w){log("NOVA screen was blocked. Allow pop-ups for this page.","warning");return;}
+  w.document.open();
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${novaPopupEscape(title)}</title><style>
+  *{box-sizing:border-box}body{margin:0;padding:20px;background:#070a0f;color:#d9e4ef;font-family:Segoe UI,Arial,sans-serif}
+  .screen{max-width:1100px;margin:auto;background:#0d1219;border:1px solid #263241;border-radius:14px;overflow:hidden}
+  .head{padding:16px 18px;border-bottom:1px solid #263241;color:#36d9ff;font-weight:800;letter-spacing:2px;display:flex;justify-content:space-between;align-items:center}
+  .body{padding:18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.item{padding:11px;border:1px solid #1c2732;border-radius:8px;background:#090e14;font-size:12px}.item b{color:#36d9ff}.section{margin:18px 0 8px;color:#39ff88;font-size:11px;font-weight:800;letter-spacing:1.5px}.note{color:#788899;font-size:11px;margin-bottom:12px}.historyItem{padding:9px 0;border-bottom:1px solid #1c2732}.time{color:#788899;margin-right:8px}.cmd{color:#36d9ff}.close{background:#111923;color:#d9e4ef;border:1px solid #263241;border-radius:8px;padding:8px 12px;cursor:pointer}@media(max-width:650px){.grid{grid-template-columns:1fr}}
+  </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
+  w.document.close();try{w.focus()}catch(e){}
 }
-
-function openNovaInfoScreen(title,bodyHtml){
-  const popup=window.open(
-    "",
-    "nova_"+String(title).toLowerCase().replace(/[^a-z0-9]+/g,"_"),
-    "width=1000,height=760,resizable=yes,scrollbars=yes"
-  );
-
-  if(!popup){
-    log("NOVA screen was blocked. Allow pop-ups for this page.","warning");
-    return null;
-  }
-
-  popup.document.open();
-  popup.document.write(`<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>${novaPopupEscape(title)}</title>
-<style>
-:root{--bg:#070a0f;--panel:#0d1219;--border:#263241;--text:#d9e4ef;--muted:#788899;--green:#39ff88;--cyan:#36d9ff;--yellow:#ffd84d}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-body{padding:20px;background:radial-gradient(circle at 20% 0%,rgba(54,217,255,.08),transparent 30%),var(--bg)}
-.screen{max-width:1100px;margin:auto;background:rgba(13,18,25,.96);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 12px 35px rgba(0,0,0,.35)}
-.header{padding:16px 18px;border-bottom:1px solid var(--border);color:var(--cyan);font-size:14px;font-weight:800;letter-spacing:2px;display:flex;justify-content:space-between;align-items:center}
-.body{padding:18px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.item{padding:11px 12px;border:1px solid #1c2732;border-radius:8px;background:#090e14;font-size:12px;line-height:1.45}
-.item b{color:var(--cyan)}
-.section{margin:18px 0 8px;color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.5px}
-.historyItem{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px}
-.time{color:var(--muted);margin-right:8px}.cmd{color:var(--cyan)}
-.close{border:1px solid var(--border);background:#111923;color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer}
-.note{color:var(--muted);font-size:11px;margin-bottom:12px}
-@media(max-width:650px){.grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<div class="screen">
-<div class="header"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div>
-<div class="body">${bodyHtml}</div>
-</div>
-</body>
-</html>`);
-  popup.document.close();
-  try{popup.focus();}catch(e){}
-  return popup;
-}
-
 function novaCommandReferenceHtml(){
-  return `
-    <div class="note">NOVA command reference. Commands may be entered in the command field or spoken when voice control is enabled.</div>
-    <div class="section">NOVA / SYSTEM</div>
-    <div class="grid">
-      <div class="item"><b>help</b> — NOVA help</div>
-      <div class="item"><b>commands</b> — command reference</div>
-      <div class="item"><b>status</b> — system / board status</div>
-      <div class="item"><b>system test</b> — run diagnostics</div>
-      <div class="item"><b>connect</b> — connect AMOMII ONE</div>
-      <div class="item"><b>disconnect</b> — disconnect AMOMII ONE</div>
-      <div class="item"><b>stop</b> — stop active board effect</div>
-      <div class="item"><b>change your name</b> — rename NOVA</div>
-    </div>
-    <div class="section">AMOMII ONE</div>
-    <div class="grid">
-      <div class="item"><b>led on / led off</b> — board LED</div>
-      <div class="item"><b>blink 5</b> — blink board LED</div>
-      <div class="item"><b>sos</b> — SOS pattern</div>
-      <div class="item"><b>morse &lt;text&gt;</b> — Morse output</div>
-    </div>
-    <div class="section">RSR TRAINER</div>
-    <div class="grid">
-      <div class="item"><b>trainer led 0 on/off</b> — LED 0</div>
-      <div class="item"><b>trainer led 1 on/off</b> — LED 1</div>
-      <div class="item"><b>trainer led 2 on/off</b> — LED 2</div>
-      <div class="item"><b>trainer led 3 on/off</b> — LED 3</div>
-      <div class="item"><b>trainer led 4 on/off</b> — LED 4</div>
-      <div class="item"><b>trainer led 5 on/off</b> — LED 5</div>
-      <div class="item"><b>trainer led 6 on/off</b> — LED 6</div>
-      <div class="item"><b>trainer led 7 on/off</b> — LED 7</div>
-      <div class="item"><b>trainer led all on/off</b> — all trainer LEDs</div>
-      <div class="item"><b>trainer blink 5</b> — trainer blink pattern</div>
-      <div class="item"><b>trainer sos</b> — trainer SOS</div>
-      <div class="item"><b>trainer morse &lt;text&gt;</b> — trainer Morse</div>
-    </div>
-    <div class="section">MEDIA</div>
-    <div class="grid">
-      <div class="item"><b>play music</b> — play music</div>
-      <div class="item"><b>pause music</b> — pause music</div>
-      <div class="item"><b>stop music</b> — stop music</div>
-      <div class="item"><b>next song</b> — next track</div>
-      <div class="item"><b>previous song</b> — previous track</div>
-      <div class="item"><b>shuffle</b> — toggle shuffle</div>
-      <div class="item"><b>repeat</b> — toggle repeat</div>
-      <div class="item"><b>play video</b> — play selected video</div>
-    </div>
-    <div class="section">CALENDAR + BROWSER</div>
-    <div class="grid">
-      <div class="item"><b>add event ...</b> — create calendar event</div>
-      <div class="item"><b>search Google for ...</b> — Google search</div>
-      <div class="item"><b>open Google</b> — Google</div>
-      <div class="item"><b>open Gmail</b> — Gmail</div>
-      <div class="item"><b>open YouTube</b> — YouTube</div>
-      <div class="item"><b>open Maps</b> — Google Maps</div>
-      <div class="item"><b>open Drive</b> — Google Drive</div>
-    </div>`;
+return `<div class="note">Type these in SEND TO NOVA or speak them while TALK TO NOVA is enabled.</div>
+<div class="section">SYSTEM / AMOMII</div><div class="grid">
+<div class="item"><b>connect / disconnect</b></div><div class="item"><b>status</b></div><div class="item"><b>system test</b></div><div class="item"><b>led on / led off</b></div><div class="item"><b>blink 5</b></div><div class="item"><b>sos</b></div><div class="item"><b>stop</b></div><div class="item"><b>help / commands</b></div></div>
+<div class="section">RSR TRAINER</div><div class="grid">
+<div class="item"><b>trainer led 0–7 on/off</b></div><div class="item"><b>trainer led all on/off</b></div><div class="item"><b>trainer blink 5</b></div><div class="item"><b>trainer sos</b></div><div class="item"><b>trainer morse</b></div></div>
+<div class="section">MEDIA / CALENDAR / BROWSER</div><div class="grid">
+<div class="item"><b>play / pause / stop music</b></div><div class="item"><b>next / previous song</b></div><div class="item"><b>shuffle / repeat</b></div><div class="item"><b>play video</b></div><div class="item"><b>add event ...</b></div><div class="item"><b>search Google for ...</b></div><div class="item"><b>open Google / Gmail / YouTube / Maps / Drive</b></div></div>`;
 }
-
-function openNovaHelpScreen(){
-  openNovaInfoScreen(
-    "NOVA HELP",
-    `<div class="note">NOVA controls AMOMII ONE, the RSR Trainer, media, calendar and browser tools.</div>
-     <div class="grid">
-       <div class="item"><b>TALK TO NOVA</b><br>Turns voice control on or off.</div>
-       <div class="item"><b>NOVA COMMANDS</b><br>Opens the complete command reference.</div>
-       <div class="item"><b>VOICE COMMANDS</b><br>Opens the voice-command reference.</div>
-       <div class="item"><b>COMMAND HISTORY</b><br>Opens the commands NOVA has received.</div>
-       <div class="item"><b>SEND TO NOVA</b><br>Runs a typed NOVA command.</div>
-       <div class="item"><b>Hardware panels</b><br>AMOMII ONE and RSR controls remain in the right column.</div>
-     </div>`
-  );
-}
-
-function openNovaCommandsScreen(){
-  openNovaInfoScreen("NOVA COMMANDS",novaCommandReferenceHtml());
-}
-
-function openNovaVoiceCommandsScreen(){
-  openNovaInfoScreen(
-    "NOVA VOICE COMMANDS",
-    `<div class="note">Turn on TALK TO NOVA, then speak these commands naturally.</div>`+
-    novaCommandReferenceHtml()
-  );
-}
-
-function openNovaHistoryScreen(){
-  const history=document.getElementById("commandHistory");
-  const items=history ? Array.from(history.children) : [];
-
-  const body=items.length
-    ? items.map(item=>`<div class="historyItem">${item.innerHTML}</div>`).join("")
-    : `<div class="note">No NOVA commands have been recorded in this session yet.</div>`;
-
-  openNovaInfoScreen("NOVA COMMAND HISTORY",body);
-}
+function openNovaHelpScreen(){openNovaInfoScreen("NOVA HELP",`<div class="grid"><div class="item"><b>TALK TO NOVA</b><br>Voice control.</div><div class="item"><b>NOVA COMMANDS</b><br>All command groups.</div><div class="item"><b>VOICE COMMANDS</b><br>Voice reference.</div><div class="item"><b>COMMAND HISTORY</b><br>Commands received this session.</div></div>`);}
+function openNovaCommandsScreen(){openNovaInfoScreen("NOVA COMMANDS",novaCommandReferenceHtml());}
+function openNovaVoiceCommandsScreen(){openNovaInfoScreen("NOVA VOICE COMMANDS",novaCommandReferenceHtml());}
+function openNovaHistoryScreen(){const h=document.getElementById("commandHistory");const items=h?Array.from(h.children):[];openNovaInfoScreen("NOVA COMMAND HISTORY",items.length?items.map(x=>`<div class="historyItem">${x.innerHTML}</div>`).join(""):`<div class="note">No commands recorded this session yet.</div>`);}
 
 </script>
 </body>
