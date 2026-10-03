@@ -123,6 +123,18 @@ const byte TRAINER[8] = {
 };
 
 
+// ============================================================
+// RSR TRAINER DIGITAL INPUT TEST
+// ============================================================
+
+const byte RSR_SWITCH_0 = A0;
+
+bool rsrSwitch0State = false;
+bool rsrSwitch0Initialized = false;
+
+
+
+
 
 
 
@@ -304,6 +316,12 @@ void setup() {
   }
 
 
+  // RSR Switch 0: PAD-234 0V = LO, ~5V = HI
+  pinMode(RSR_SWITCH_0, INPUT);
+  rsrSwitch0State = (digitalRead(RSR_SWITCH_0) == HIGH);
+  rsrSwitch0Initialized = true;
+
+
 
   Serial.begin(9600);
 
@@ -373,10 +391,41 @@ void loop() {
 
   updateTrainerPattern();
 
+  updateRSRSwitch0();
+
 }
 
 
 
+
+
+// ============================================================
+// RSR TRAINER SWITCH 0 INPUT
+// ============================================================
+
+void updateRSRSwitch0() {
+
+  bool newState = (digitalRead(RSR_SWITCH_0) == HIGH);
+
+  if (!rsrSwitch0Initialized) {
+    rsrSwitch0State = newState;
+    rsrSwitch0Initialized = true;
+    return;
+  }
+
+  if (newState == rsrSwitch0State) return;
+
+  // Small debounce delay, then confirm the state really changed.
+  delay(20);
+  newState = (digitalRead(RSR_SWITCH_0) == HIGH);
+
+  if (newState == rsrSwitch0State) return;
+
+  rsrSwitch0State = newState;
+
+  Serial.print(F("RSR SWITCH 0: "));
+  Serial.println(rsrSwitch0State ? F("HI") : F("LO"));
+}
 
 
 // ============================================================
