@@ -9757,7 +9757,11 @@ function applyColumnWidths(widths,save=false){
   left=Math.min(left,Math.max(COLUMN_MIN_WIDTH,available-COLUMN_MIN_WIDTH));
   const center=Math.max(COLUMN_MIN_WIDTH,available-left);
 
-  mainGrid.style.gridTemplateColumns=`${left}px ${center}px`;
+  mainGrid.style.setProperty(
+    "grid-template-columns",
+    `${left}px ${center}px`,
+    "important"
+  );
 
   if(save){
     localStorage.setItem(COLUMN_LAYOUT_KEY,JSON.stringify([Math.round(left),Math.round(center)]));
