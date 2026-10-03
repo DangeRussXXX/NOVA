@@ -1048,7 +1048,45 @@ video{
   border-radius:7px;
 }
 
-/* CALENDAR */
+/* CALENDAR - NOVA / OUTLOOK STYLE */
+
+.calendarToolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.calendarToolbarGroup{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.calendarToolbar button,
+.calendarHeader button{
+  border:1px solid var(--border);
+  background:#111923;
+  color:var(--text);
+  padding:7px 10px;
+  border-radius:6px;
+  font-size:10px;
+}
+
+.calendarToolbar button:hover,
+.calendarHeader button:hover{
+  border-color:var(--cyan);
+  color:white;
+}
+
+.calendarToolbar button.active{
+  color:var(--cyan);
+  border-color:rgba(54,217,255,.55);
+  box-shadow:0 0 9px rgba(54,217,255,.18);
+}
 
 .calendarHeader{
   display:flex;
@@ -1058,17 +1096,31 @@ video{
   margin-bottom:10px;
 }
 
-.calendarHeader button{
-  border:1px solid var(--border);
-  background:#111923;
-  color:var(--text);
-  padding:6px 10px;
-  border-radius:6px;
-}
-
 .calendarMonth{
   color:white;
   font-weight:700;
+  letter-spacing:.5px;
+}
+
+.calendarAccountBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:8px 10px;
+  margin-bottom:10px;
+  border:1px solid #1c2732;
+  background:#090e14;
+  border-radius:7px;
+  font-size:10px;
+}
+
+.calendarAccountStatus{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
 }
 
 .calendarGrid{
@@ -1085,16 +1137,29 @@ video{
 }
 
 .day{
-  min-height:55px;
+  min-height:72px;
   border:1px solid #1c2732;
   border-radius:6px;
   padding:5px;
   background:#090e14;
   font-size:10px;
+  cursor:pointer;
+  transition:.12s ease;
+}
+
+.day:hover{
+  border-color:rgba(54,217,255,.55);
+  background:#0d151e;
 }
 
 .day.today{
   border-color:var(--cyan);
+  box-shadow:inset 0 0 10px rgba(54,217,255,.08);
+}
+
+.day.selected{
+  outline:1px solid var(--green);
+  box-shadow:0 0 10px rgba(57,255,136,.22);
 }
 
 .dayNumber{
@@ -1103,18 +1168,63 @@ video{
 
 .eventDot{
   margin-top:4px;
+  padding:2px 4px;
+  border-left:2px solid var(--green);
   color:var(--green);
+  background:rgba(57,255,136,.06);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+
+.calendarListView{
+  display:grid;
+  gap:6px;
+}
+
+.calendarListDay{
+  padding:8px;
+  border:1px solid #1c2732;
+  border-radius:7px;
+  background:#090e14;
+}
+
+.calendarListDayTitle{
+  color:var(--cyan);
+  font-size:11px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.calendarGrid.weekView{
+  grid-template-columns:repeat(7,1fr);
+}
+
+.calendarGrid.dayView{
+  grid-template-columns:1fr;
+}
+
+.calendarGrid.dayView .day{
+  min-height:180px;
+}
+
+.calendarGrid.agendaView{
+  display:block;
 }
 
 /* EVENT LIST */
 
 .eventList{
   margin-top:12px;
-  max-height:230px;
+  max-height:260px;
   overflow-y:auto;
+}
+
+.eventListHeading{
+  color:var(--cyan);
+  font-size:10px;
+  letter-spacing:1px;
+  margin-bottom:7px;
 }
 
 .event{
@@ -1123,6 +1233,11 @@ video{
   background:#090e14;
   border-radius:7px;
   margin-bottom:6px;
+  cursor:pointer;
+}
+
+.event:hover{
+  border-color:var(--cyan);
 }
 
 .eventTitle{
@@ -1135,6 +1250,92 @@ video{
   color:var(--muted);
   font-size:10px;
   margin-top:3px;
+}
+
+.calendarModal{
+  position:fixed;
+  inset:0;
+  z-index:20000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.72);
+}
+
+.calendarModal.open{
+  display:flex;
+}
+
+.calendarEditor{
+  width:min(520px,100%);
+  background:#0d1219;
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.calendarEditorBody{
+  padding:14px;
+  display:grid;
+  gap:10px;
+}
+
+.calendarEditor label{
+  display:grid;
+  gap:5px;
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:.5px;
+}
+
+.calendarEditor input,
+.calendarEditor textarea{
+  width:100%;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:9px;
+  border-radius:7px;
+  outline:none;
+}
+
+.calendarEditor input:focus,
+.calendarEditor textarea:focus{
+  border-color:var(--cyan);
+}
+
+.calendarEditor textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+.calendarEditorRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.calendarEditorActions{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.calendarEditorActions > div{
+  display:flex;
+  gap:8px;
+}
+
+@media(max-width:600px){
+  .calendarEditorRow{
+    grid-template-columns:1fr;
+  }
+  .day{
+    min-height:60px;
+  }
 }
 
 /* HELP */
@@ -1864,21 +2065,95 @@ body.columnResizing *{
     </div>
   </div>
 
-  <!-- COMMAND CENTER CALENDAR -->
+  <!-- NOVA CALENDAR -->
   <div class="panel mediaPanel">
-    <div class="panelHeader">COMMAND CENTER CALENDAR</div>
+    <div class="panelHeader">NOVA CALENDAR</div>
     <div class="panelBody">
-      <div class="calendarHeader">
-        <button onclick="changeMonth(-1)">‹</button>
-        <div id="calendarMonth" class="calendarMonth"></div>
-        <button onclick="changeMonth(1)">›</button>
+      <div class="calendarAccountBar">
+        <div class="calendarAccountStatus">
+          <span id="calendarAccountDot" class="dot yellow"></span>
+          <span id="calendarAccountText">LOCAL CALENDAR • OUTLOOK READY</span>
+        </div>
+        <button class="control" onclick="calendarOutlookInfo()">OUTLOOK ACCOUNT</button>
       </div>
+
+      <div class="calendarToolbar">
+        <div class="calendarToolbarGroup">
+          <button class="control primary" onclick="calendarToday()">TODAY</button>
+          <button class="control good" onclick="openCalendarEditor()">+ NEW EVENT</button>
+          <button class="control" onclick="refreshCalendar()">REFRESH</button>
+        </div>
+        <div class="calendarToolbarGroup">
+          <button id="calendarViewDay" class="control" onclick="setCalendarView('day')">DAY</button>
+          <button id="calendarViewWeek" class="control" onclick="setCalendarView('week')">WEEK</button>
+          <button id="calendarViewMonth" class="control active" onclick="setCalendarView('month')">MONTH</button>
+          <button id="calendarViewAgenda" class="control" onclick="setCalendarView('agenda')">AGENDA</button>
+        </div>
+      </div>
+
+      <div class="calendarHeader">
+        <button onclick="changeCalendarPeriod(-1)">‹</button>
+        <div id="calendarMonth" class="calendarMonth"></div>
+        <button onclick="changeCalendarPeriod(1)">›</button>
+      </div>
+
       <div id="calendarGrid" class="calendarGrid"></div>
       <div id="eventList" class="eventList"></div>
+
       <div class="mediaControls">
         <button class="control primary" onclick="voiceAddEvent()">ADD EVENT BY VOICE</button>
-        <button class="control" onclick="addTestEvent()">TEST EVENT</button>
-        <button class="control danger" onclick="clearEvents()">CLEAR EVENTS</button>
+        <button class="control" onclick="speakTodaysEvents()">READ TODAY</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="calendarModal" class="calendarModal" onclick="calendarModalBackdrop(event)">
+    <div class="calendarEditor" role="dialog" aria-modal="true" aria-labelledby="calendarEditorTitle">
+      <div id="calendarEditorTitle" class="panelHeader">NEW CALENDAR EVENT</div>
+      <div class="calendarEditorBody">
+        <input id="calendarEventId" type="hidden">
+
+        <label>
+          TITLE
+          <input id="calendarEventTitle" type="text" placeholder="Event title">
+        </label>
+
+        <div class="calendarEditorRow">
+          <label>
+            DATE
+            <input id="calendarEventDate" type="date">
+          </label>
+          <label>
+            START TIME
+            <input id="calendarEventTime" type="time">
+          </label>
+        </div>
+
+        <div class="calendarEditorRow">
+          <label>
+            END TIME
+            <input id="calendarEventEndTime" type="time">
+          </label>
+          <label>
+            CALENDAR
+            <input id="calendarEventCalendar" type="text" value="NOVA" disabled>
+          </label>
+        </div>
+
+        <label>
+          NOTES
+          <textarea id="calendarEventNotes" placeholder="Notes"></textarea>
+        </label>
+
+        <div class="calendarEditorActions">
+          <div>
+            <button id="calendarDeleteButton" class="control danger" onclick="deleteCalendarEventFromEditor()" style="display:none">DELETE</button>
+          </div>
+          <div>
+            <button class="control" onclick="closeCalendarEditor()">CANCEL</button>
+            <button class="control primary" onclick="saveCalendarEventFromEditor()">SAVE EVENT</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -4304,6 +4579,41 @@ if (/\bdisconnect\b/.test(command)) {
 
   /* CALENDAR */
 
+  if(/\bcalendar today\b|\bgo to today\b/.test(command)){
+    calendarToday();
+    speak("Showing today.");
+    return;
+  }
+
+  if(/\b(day view|calendar day)\b/.test(command)){
+    setCalendarView("day");
+    speak("Day view.");
+    return;
+  }
+
+  if(/\b(week view|calendar week)\b/.test(command)){
+    setCalendarView("week");
+    speak("Week view.");
+    return;
+  }
+
+  if(/\b(month view|calendar month)\b/.test(command)){
+    setCalendarView("month");
+    speak("Month view.");
+    return;
+  }
+
+  if(/\b(agenda view|calendar agenda|show agenda)\b/.test(command)){
+    setCalendarView("agenda");
+    speak("Agenda view.");
+    return;
+  }
+
+  if(/\bnew event\b/.test(command)){
+    openCalendarEditor();
+    return;
+  }
+
   if(
     /\badd (an )?event\b|\bschedule\b/.test(command)
   ){
@@ -5351,7 +5661,191 @@ function saveEvents(){
 }
 
 
+let calendarView = "month";
+let selectedCalendarDate = new Date();
+
+
+function calendarToday(){
+
+  calendarDate = new Date();
+  selectedCalendarDate = new Date();
+  renderCalendar();
+
+}
+
+
+function refreshCalendar(){
+
+  calendarEvents =
+    JSON.parse(
+      localStorage.getItem("amomiiCalendarEvents") || "[]"
+    );
+
+  renderCalendar();
+
+  log(
+    "NOVA Calendar refreshed.",
+    "system"
+  );
+
+}
+
+
+function calendarOutlookInfo(){
+
+  speak(
+    "NOVA Calendar is ready for Outlook connection. Microsoft account authorization is the next integration step."
+  );
+
+  log(
+    "Outlook connection is not active yet. Calendar is currently using local storage.",
+    "warning"
+  );
+
+}
+
+
+function setCalendarView(view){
+
+  if(
+    !["day","week","month","agenda"].includes(view)
+  ){
+    return;
+  }
+
+  calendarView = view;
+
+  [
+    "Day",
+    "Week",
+    "Month",
+    "Agenda"
+  ].forEach(name => {
+
+    const button =
+      document.getElementById(
+        `calendarView${name}`
+      );
+
+    if(button){
+      button.classList.toggle(
+        "active",
+        name.toLowerCase() === view
+      );
+    }
+
+  });
+
+  renderCalendar();
+
+}
+
+
+function changeCalendarPeriod(amount){
+
+  if(calendarView === "month"){
+
+    calendarDate.setMonth(
+      calendarDate.getMonth() + amount
+    );
+
+  }else if(calendarView === "week"){
+
+    calendarDate.setDate(
+      calendarDate.getDate() + (amount * 7)
+    );
+
+  }else{
+
+    calendarDate.setDate(
+      calendarDate.getDate() + amount
+    );
+
+  }
+
+  selectedCalendarDate =
+    new Date(calendarDate);
+
+  renderCalendar();
+
+}
+
+
+function changeMonth(amount){
+
+  calendarDate.setMonth(
+    calendarDate.getMonth() + amount
+  );
+
+  selectedCalendarDate =
+    new Date(calendarDate);
+
+  renderCalendar();
+
+}
+
+
+function startOfWeek(date){
+
+  const result =
+    new Date(date);
+
+  result.setHours(0,0,0,0);
+  result.setDate(
+    result.getDate() - result.getDay()
+  );
+
+  return result;
+
+}
+
+
 function renderCalendar(){
+
+  const grid =
+    document.getElementById(
+      "calendarGrid"
+    );
+
+  if(!grid){
+    return;
+  }
+
+  grid.className =
+    "calendarGrid";
+
+  grid.innerHTML = "";
+
+  if(calendarView === "month"){
+    renderCalendarMonth(grid);
+  }else if(calendarView === "week"){
+    renderCalendarWeek(grid);
+  }else if(calendarView === "day"){
+    renderCalendarDay(grid);
+  }else{
+    renderCalendarAgenda(grid);
+  }
+
+  renderEventList();
+
+}
+
+
+function updateCalendarHeading(text){
+
+  const heading =
+    document.getElementById(
+      "calendarMonth"
+    );
+
+  if(heading){
+    heading.textContent = text;
+  }
+
+}
+
+
+function renderCalendarMonth(grid){
 
   const year =
     calendarDate.getFullYear();
@@ -5359,23 +5853,15 @@ function renderCalendar(){
   const month =
     calendarDate.getMonth();
 
-  document.getElementById(
-    "calendarMonth"
-  ).textContent =
+  updateCalendarHeading(
     calendarDate.toLocaleDateString(
       [],
       {
         month:"long",
         year:"numeric"
       }
-    );
-
-  const grid =
-    document.getElementById(
-      "calendarGrid"
-    );
-
-  grid.innerHTML = "";
+    )
+  );
 
   [
     "Sun",
@@ -5420,17 +5906,11 @@ function renderCalendar(){
     i++
   ){
 
-    const blank =
-      document.createElement(
-        "div"
-      );
-
-    grid.appendChild(blank);
+    grid.appendChild(
+      document.createElement("div")
+    );
 
   }
-
-  const today =
-    new Date();
 
   for(
     let day=1;
@@ -5438,85 +5918,370 @@ function renderCalendar(){
     day++
   ){
 
-    const cell =
-      document.createElement(
-        "div"
-      );
-
-    cell.className =
-      "day";
-
-    if(
-      day === today.getDate() &&
-      month === today.getMonth() &&
-      year === today.getFullYear()
-    ){
-
-      cell.classList.add(
-        "today"
-      );
-
-    }
-
-    const number =
-      document.createElement(
-        "div"
-      );
-
-    number.className =
-      "dayNumber";
-
-    number.textContent =
-      day;
-
-    cell.appendChild(number);
-
-    const dayEvents =
-      getEventsForDate(
-        new Date(
-          year,
-          month,
-          day
-        )
-      );
-
-    dayEvents
-      .slice(0,3)
-      .forEach(event => {
-
-        const eventDiv =
-          document.createElement(
-            "div"
-          );
-
-        eventDiv.className =
-          "eventDot";
-
-        eventDiv.textContent =
-          event.title;
-
-        cell.appendChild(
-          eventDiv
-        );
-
-      });
-
-    grid.appendChild(cell);
+    appendCalendarDayCell(
+      grid,
+      new Date(
+        year,
+        month,
+        day
+      )
+    );
 
   }
-
-  renderEventList();
 
 }
 
 
-function changeMonth(amount){
+function renderCalendarWeek(grid){
 
-  calendarDate.setMonth(
-    calendarDate.getMonth() + amount
+  grid.classList.add(
+    "weekView"
   );
 
-  renderCalendar();
+  const start =
+    startOfWeek(calendarDate);
+
+  const end =
+    new Date(start);
+
+  end.setDate(
+    end.getDate() + 6
+  );
+
+  updateCalendarHeading(
+    `${start.toLocaleDateString([],{
+      month:"short",
+      day:"numeric"
+    })} – ${end.toLocaleDateString([],{
+      month:"short",
+      day:"numeric",
+      year:"numeric"
+    })}`
+  );
+
+  for(
+    let i=0;
+    i<7;
+    i++
+  ){
+
+    const date =
+      new Date(start);
+
+    date.setDate(
+      start.getDate() + i
+    );
+
+    const label =
+      document.createElement("div");
+
+    label.className =
+      "dayLabel";
+
+    label.textContent =
+      date.toLocaleDateString(
+        [],
+        {
+          weekday:"short"
+        }
+      );
+
+    grid.appendChild(label);
+
+  }
+
+  for(
+    let i=0;
+    i<7;
+    i++
+  ){
+
+    const date =
+      new Date(start);
+
+    date.setDate(
+      start.getDate() + i
+    );
+
+    appendCalendarDayCell(
+      grid,
+      date,
+      true
+    );
+
+  }
+
+}
+
+
+function renderCalendarDay(grid){
+
+  grid.classList.add(
+    "dayView"
+  );
+
+  updateCalendarHeading(
+    calendarDate.toLocaleDateString(
+      [],
+      {
+        weekday:"long",
+        month:"long",
+        day:"numeric",
+        year:"numeric"
+      }
+    )
+  );
+
+  appendCalendarDayCell(
+    grid,
+    new Date(calendarDate),
+    true
+  );
+
+}
+
+
+function renderCalendarAgenda(grid){
+
+  grid.classList.add(
+    "agendaView"
+  );
+
+  updateCalendarHeading(
+    "Upcoming Agenda"
+  );
+
+  const wrapper =
+    document.createElement("div");
+
+  wrapper.className =
+    "calendarListView";
+
+  const start =
+    new Date(calendarDate);
+
+  start.setHours(0,0,0,0);
+
+  let rendered = 0;
+
+  for(
+    let i=0;
+    i<30;
+    i++
+  ){
+
+    const date =
+      new Date(start);
+
+    date.setDate(
+      start.getDate() + i
+    );
+
+    const events =
+      getEventsForDate(date)
+        .sort(compareCalendarEvents);
+
+    if(!events.length){
+      continue;
+    }
+
+    rendered++;
+
+    const day =
+      document.createElement("div");
+
+    day.className =
+      "calendarListDay";
+
+    const title =
+      document.createElement("div");
+
+    title.className =
+      "calendarListDayTitle";
+
+    title.textContent =
+      date.toLocaleDateString(
+        [],
+        {
+          weekday:"short",
+          month:"short",
+          day:"numeric"
+        }
+      );
+
+    day.appendChild(title);
+
+    events.forEach(event => {
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "event";
+
+      item.onclick =
+        () => openCalendarEditor(event.id);
+
+      item.innerHTML =
+        `<div class="eventTitle">${escapeHtml(event.title)}</div>
+         <div class="eventMeta">${
+           event.time
+             ? escapeHtml(formatTime(event.time))
+             : "All day"
+         }</div>`;
+
+      day.appendChild(item);
+
+    });
+
+    wrapper.appendChild(day);
+
+  }
+
+  if(!rendered){
+
+    const empty =
+      document.createElement("div");
+
+    empty.style.color =
+      "var(--muted)";
+
+    empty.style.fontSize =
+      "11px";
+
+    empty.textContent =
+      "No events in the next 30 days.";
+
+    wrapper.appendChild(empty);
+
+  }
+
+  grid.appendChild(wrapper);
+
+}
+
+
+function appendCalendarDayCell(
+  grid,
+  date,
+  showMonth=false
+){
+
+  const cell =
+    document.createElement("div");
+
+  cell.className =
+    "day";
+
+  cell.dataset.date =
+    dateKey(date);
+
+  if(
+    dateKey(date) ===
+    dateKey(new Date())
+  ){
+    cell.classList.add(
+      "today"
+    );
+  }
+
+  if(
+    dateKey(date) ===
+    dateKey(selectedCalendarDate)
+  ){
+    cell.classList.add(
+      "selected"
+    );
+  }
+
+  cell.onclick = () => {
+
+    selectedCalendarDate =
+      new Date(date);
+
+    calendarDate =
+      new Date(date);
+
+    renderCalendar();
+
+  };
+
+  cell.ondblclick = () => {
+
+    selectedCalendarDate =
+      new Date(date);
+
+    openCalendarEditor();
+
+  };
+
+  const number =
+    document.createElement("div");
+
+  number.className =
+    "dayNumber";
+
+  number.textContent =
+    showMonth
+      ? date.toLocaleDateString(
+          [],
+          {
+            month:"short",
+            day:"numeric"
+          }
+        )
+      : date.getDate();
+
+  cell.appendChild(number);
+
+  const events =
+    getEventsForDate(date)
+      .sort(compareCalendarEvents);
+
+  events
+    .slice(0,4)
+    .forEach(event => {
+
+      const eventDiv =
+        document.createElement("div");
+
+      eventDiv.className =
+        "eventDot";
+
+      eventDiv.textContent =
+        `${event.time ? formatTime(event.time) + " " : ""}${event.title}`;
+
+      eventDiv.onclick = clickEvent => {
+
+        clickEvent.stopPropagation();
+        openCalendarEditor(
+          event.id
+        );
+
+      };
+
+      cell.appendChild(
+        eventDiv
+      );
+
+    });
+
+  if(events.length > 4){
+
+    const more =
+      document.createElement("div");
+
+    more.className =
+      "eventDot";
+
+    more.textContent =
+      `+${events.length - 4} more`;
+
+    cell.appendChild(more);
+
+  }
+
+  grid.appendChild(cell);
 
 }
 
@@ -5551,6 +6316,19 @@ function getEventsForDate(date){
 }
 
 
+function compareCalendarEvents(a,b){
+
+  return String(
+    a.time || ""
+  ).localeCompare(
+    String(
+      b.time || ""
+    )
+  );
+
+}
+
+
 function renderEventList(){
 
   const list =
@@ -5558,27 +6336,39 @@ function renderEventList(){
       "eventList"
     );
 
+  if(!list){
+    return;
+  }
+
   list.innerHTML = "";
 
-  const today =
+  const date =
+    selectedCalendarDate ||
     new Date();
 
+  const heading =
+    document.createElement("div");
+
+  heading.className =
+    "eventListHeading";
+
+  heading.textContent =
+    `EVENTS • ${date.toLocaleDateString([],{
+      weekday:"long",
+      month:"long",
+      day:"numeric"
+    }).toUpperCase()}`;
+
+  list.appendChild(heading);
+
   const events =
-    getEventsForDate(today)
-      .sort(
-        (a,b) =>
-          String(a.time)
-            .localeCompare(
-              String(b.time)
-            )
-      );
+    getEventsForDate(date)
+      .sort(compareCalendarEvents);
 
   if(!events.length){
 
     const empty =
-      document.createElement(
-        "div"
-      );
+      document.createElement("div");
 
     empty.style.color =
       "var(--muted)";
@@ -5587,39 +6377,45 @@ function renderEventList(){
       "11px";
 
     empty.textContent =
-      "No events today.";
+      "No events scheduled.";
 
     list.appendChild(empty);
 
     return;
   }
 
-  events.forEach(
-    event => {
+  events.forEach(event => {
 
-      const div =
-        document.createElement(
-          "div"
-        );
+    const div =
+      document.createElement("div");
 
-      div.className =
-        "event";
+    div.className =
+      "event";
 
-      div.innerHTML =
-        `<div class="eventTitle">
-          ${escapeHtml(event.title)}
-        </div>
-        <div class="eventMeta">
-          ${escapeHtml(event.date)}
-          ${event.time
-            ? " • " + escapeHtml(event.time)
-            : ""}
-        </div>`;
+    div.onclick =
+      () => openCalendarEditor(event.id);
 
-      list.appendChild(div);
+    div.innerHTML =
+      `<div class="eventTitle">
+        ${escapeHtml(event.title)}
+      </div>
+      <div class="eventMeta">
+        ${escapeHtml(event.date)}
+        ${
+          event.time
+            ? " • " + escapeHtml(formatTime(event.time))
+            : " • All day"
+        }
+        ${
+          event.endTime
+            ? " – " + escapeHtml(formatTime(event.endTime))
+            : ""
+        }
+      </div>`;
 
-    }
-  );
+    list.appendChild(div);
+
+  });
 
 }
 
@@ -5627,7 +6423,9 @@ function renderEventList(){
 function addEvent(
   title,
   date,
-  time=""
+  time="",
+  endTime="",
+  notes=""
 ){
 
   const event = {
@@ -5640,12 +6438,28 @@ function addEvent(
 
     date,
 
-    time
+    time,
+
+    endTime,
+
+    notes,
+
+    calendar:"NOVA"
   };
 
   calendarEvents.push(
     event
   );
+
+  selectedCalendarDate =
+    new Date(
+      `${date}T12:00:00`
+    );
+
+  calendarDate =
+    new Date(
+      selectedCalendarDate
+    );
 
   saveEvents();
   renderCalendar();
@@ -5656,6 +6470,257 @@ function addEvent(
   );
 
   return event;
+
+}
+
+
+function openCalendarEditor(eventId=null){
+
+  const modal =
+    document.getElementById(
+      "calendarModal"
+    );
+
+  const event =
+    eventId !== null
+      ? calendarEvents.find(
+          item =>
+            String(item.id) ===
+            String(eventId)
+        )
+      : null;
+
+  document.getElementById(
+    "calendarEditorTitle"
+  ).textContent =
+    event
+      ? "EDIT CALENDAR EVENT"
+      : "NEW CALENDAR EVENT";
+
+  document.getElementById(
+    "calendarEventId"
+  ).value =
+    event
+      ? event.id
+      : "";
+
+  document.getElementById(
+    "calendarEventTitle"
+  ).value =
+    event
+      ? event.title || ""
+      : "";
+
+  document.getElementById(
+    "calendarEventDate"
+  ).value =
+    event
+      ? event.date
+      : dateKey(
+          selectedCalendarDate ||
+          new Date()
+        );
+
+  document.getElementById(
+    "calendarEventTime"
+  ).value =
+    event
+      ? event.time || ""
+      : "";
+
+  document.getElementById(
+    "calendarEventEndTime"
+  ).value =
+    event
+      ? event.endTime || ""
+      : "";
+
+  document.getElementById(
+    "calendarEventNotes"
+  ).value =
+    event
+      ? event.notes || ""
+      : "";
+
+  document.getElementById(
+    "calendarDeleteButton"
+  ).style.display =
+    event
+      ? ""
+      : "none";
+
+  modal.classList.add(
+    "open"
+  );
+
+  setTimeout(
+    () =>
+      document.getElementById(
+        "calendarEventTitle"
+      ).focus(),
+    0
+  );
+
+}
+
+
+function closeCalendarEditor(){
+
+  document.getElementById(
+    "calendarModal"
+  ).classList.remove(
+    "open"
+  );
+
+}
+
+
+function calendarModalBackdrop(event){
+
+  if(
+    event.target.id ===
+    "calendarModal"
+  ){
+    closeCalendarEditor();
+  }
+
+}
+
+
+function saveCalendarEventFromEditor(){
+
+  const id =
+    document.getElementById(
+      "calendarEventId"
+    ).value;
+
+  const title =
+    document.getElementById(
+      "calendarEventTitle"
+    ).value.trim();
+
+  const date =
+    document.getElementById(
+      "calendarEventDate"
+    ).value;
+
+  const time =
+    document.getElementById(
+      "calendarEventTime"
+    ).value;
+
+  const endTime =
+    document.getElementById(
+      "calendarEventEndTime"
+    ).value;
+
+  const notes =
+    document.getElementById(
+      "calendarEventNotes"
+    ).value.trim();
+
+  if(!title || !date){
+
+    speak(
+      "The event needs a title and date."
+    );
+
+    return;
+  }
+
+  if(id){
+
+    const event =
+      calendarEvents.find(
+        item =>
+          String(item.id) ===
+          String(id)
+      );
+
+    if(event){
+
+      event.title = title;
+      event.date = date;
+      event.time = time;
+      event.endTime = endTime;
+      event.notes = notes;
+
+      log(
+        `Calendar event updated: ${title}`,
+        "success"
+      );
+
+    }
+
+  }else{
+
+    addEvent(
+      title,
+      date,
+      time,
+      endTime,
+      notes
+    );
+
+  }
+
+  selectedCalendarDate =
+    new Date(
+      `${date}T12:00:00`
+    );
+
+  calendarDate =
+    new Date(
+      selectedCalendarDate
+    );
+
+  saveEvents();
+  closeCalendarEditor();
+  renderCalendar();
+
+}
+
+
+function deleteCalendarEventFromEditor(){
+
+  const id =
+    document.getElementById(
+      "calendarEventId"
+    ).value;
+
+  if(!id){
+    return;
+  }
+
+  const event =
+    calendarEvents.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  if(
+    !confirm(
+      `Delete ${event ? event.title : "this event"}?`
+    )
+  ){
+    return;
+  }
+
+  calendarEvents =
+    calendarEvents.filter(
+      item =>
+        String(item.id) !==
+        String(id)
+    );
+
+  saveEvents();
+  closeCalendarEditor();
+  renderCalendar();
+
+  speak(
+    "Calendar event deleted."
+  );
 
 }
 
@@ -5689,24 +6754,19 @@ function createEventFromNaturalLanguage(text){
     new Date();
 
   if(
+    /\bday after tomorrow\b/i.test(raw)
+  ){
+
+    date.setDate(
+      date.getDate() + 2
+    );
+
+  }else if(
     /\btomorrow\b/i.test(raw)
   ){
 
     date.setDate(
       date.getDate() + 1
-    );
-
-  }
-
-  if(
-    /\bday after tomorrow\b/i.test(raw)
-  ){
-
-    date =
-      new Date();
-
-    date.setDate(
-      date.getDate() + 2
     );
 
   }
@@ -5776,15 +6836,15 @@ function createEventFromNaturalLanguage(text){
   title =
     title
       .replace(
+        /\bday after tomorrow\b/i,
+        ""
+      )
+      .replace(
         /\btomorrow\b/i,
         ""
       )
       .replace(
         /\btoday\b/i,
-        ""
-      )
-      .replace(
-        /\bday after tomorrow\b/i,
         ""
       )
       .replace(
@@ -5856,6 +6916,10 @@ function voiceAddEvent(){
 
 function formatTime(time){
 
+  if(!time){
+    return "";
+  }
+
   const parts =
     time.split(":");
 
@@ -5864,7 +6928,7 @@ function formatTime(time){
 
   date.setHours(
     Number(parts[0]),
-    Number(parts[1])
+    Number(parts[1] || 0)
   );
 
   return date.toLocaleTimeString(
@@ -5884,7 +6948,8 @@ function speakTodaysEvents(){
     new Date();
 
   const events =
-    getEventsForDate(today);
+    getEventsForDate(today)
+      .sort(compareCalendarEvents);
 
   if(!events.length){
 
@@ -5923,8 +6988,6 @@ function addTestEvent(){
     "12:00"
   );
 
-  renderCalendar();
-
 }
 
 
@@ -5932,7 +6995,7 @@ function clearEvents(){
 
   if(
     !confirm(
-      "Clear all Command Center calendar events?"
+      "Clear all NOVA calendar events?"
     )
   ){
     return;
