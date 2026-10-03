@@ -2003,15 +2003,23 @@ body.novaMusicAlive .novaParticles{
 
 
 /* ============================================================
-   RIGHT COLUMN RESTORED
+   NOVA TRUE TWO-COLUMN LAYOUT
+   LEFT = NOVA console
+   RIGHT = Calendar, Media, Camera, Browser, AMOMII, RSR
    ============================================================ */
 .mainGrid{
-  grid-template-columns:340px minmax(520px,1fr) minmax(320px,420px) !important;
+  display:grid !important;
+  grid-template-columns:340px minmax(0,1fr) !important;
   gap:16px !important;
+  align-items:start;
+}
+.mainGrid > .leftColumn,
+.mainGrid > .rightColumn{
+  min-width:0;
 }
 .rightColumn{
   display:block !important;
-  min-width:0;
+  grid-column:auto !important;
 }
 .rightColumn > .panel,
 .rightColumn > .card{
@@ -2021,15 +2029,16 @@ body.novaMusicAlive .novaParticles{
 .rightColumn > .card:last-child{
   margin-bottom:0;
 }
+#columnResizer2{
+  display:none !important;
+}
 @media(max-width:1100px){
   .mainGrid{
-    grid-template-columns:260px minmax(0,1fr) !important;
+    grid-template-columns:300px minmax(0,1fr) !important;
   }
   .rightColumn{
-    grid-column:1/-1;
-    display:grid !important;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
+    display:block !important;
+    grid-column:auto !important;
   }
 }
 @media(max-width:750px){
@@ -2129,7 +2138,7 @@ body.novaMusicAlive .novaParticles{
 </div>
 
 <!-- CENTER COLUMN -->
-<div class="centerColumn">
+<div class="rightColumn">
 
   <!-- TOP CENTER: NOVA CALENDAR + MEDIA CENTER -->
   <!-- NOVA CALENDAR -->
@@ -2305,12 +2314,6 @@ body.novaMusicAlive .novaParticles{
 
 
 
-
-
-</div>
-
-<!-- RIGHT COLUMN -->
-<div class="rightColumn">
 
   <!-- DESKTOP CAMERA MONITOR -->
   <div class="panel card cameraMonitor">
@@ -2507,7 +2510,6 @@ body.novaMusicAlive .novaParticles{
   </div>
 
 </div>
-
 
 
 
@@ -9712,7 +9714,7 @@ function getVisualColumns(){
   if(!mainGrid)return[];
   return[
     mainGrid.querySelector(":scope > .leftColumn"),
-    mainGrid.querySelector(":scope > .centerColumn")
+    mainGrid.querySelector(":scope > .rightColumn")
   ].filter(Boolean);
 }
 
