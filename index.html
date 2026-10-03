@@ -3748,6 +3748,38 @@ body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTicker{
   }
 }
 
+
+/* ============================================================
+   NOVA RUNNING LIST — IDLE FADE
+   Commands rise bottom-to-top and disappear naturally.
+   ============================================================ */
+.novaUnifiedConsole .novaVerticalSystemLine{
+  transition:
+    transform 240ms linear,
+    opacity 1800ms ease-out !important;
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine.novaVerticalSystemLineIn{
+  opacity:.82;
+  transform:translateY(0);
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine.novaVerticalSystemLineFade{
+  opacity:0 !important;
+  transform:translateY(-22px) !important;
+}
+
+/* Oldest visible messages become progressively softer near the top. */
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+7){
+  opacity:.58;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+10){
+  opacity:.38;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+13){
+  opacity:.22;
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -4502,7 +4534,24 @@ function novaPersistentTickerPush(message){
     Every new event is appended at the bottom.
     Flex layout automatically pushes all previous events upward.
   */
-  const maxLines=22;
+  /*
+    Every event starts at the bottom.
+    Existing lines are pushed upward by the flex layout.
+    Each line then fades naturally as it ages, so when NOVA is idle
+    the last command eventually disappears instead of staying forever.
+  */
+  const lifetime=9000;
+
+  setTimeout(()=>{
+    line.classList.add("novaVerticalSystemLineFade");
+  },lifetime-1800);
+
+  setTimeout(()=>{
+    try{line.remove();}catch(e){}
+  },lifetime);
+
+  /* Safety cap for bursts of rapid commands. */
+  const maxLines=18;
 
   while(
     lane.querySelectorAll(".novaVerticalSystemLine").length>maxLines
@@ -7736,11 +7785,26 @@ function speakCommands(){
 function ensureIrisMediaDisplay(){}
 function cleanMediaName(name){return String(name||"MEDIA").replace(/\.[^.]+$/,"").replace(/[_]+/g," ").trim()}
 function formatMediaClock(s){if(!Number.isFinite(s)||s<0)return"0:00";const t=Math.floor(s);return`${Math.floor(t/60)}:${String(t%60).padStart(2,"0")}`}
+let novaLastMusicTickerState="";
+
 function setIrisMediaMode(type,title,m,playing){
   if(type==="MUSIC"){
-    const musicTickerMessage=
-      `${playing ? "NOW PLAYING" : "MUSIC PAUSED"} • ${cleanMediaName(title)}`;
-    novaPersistentTickerPush(musicTickerMessage);
+    const cleanTitle=cleanMediaName(title);
+    const musicTickerState=
+      `${playing ? "PLAYING" : "PAUSED"}|${cleanTitle}`;
+
+    /*
+      timeupdate fires constantly while a song plays.
+      Only send a ticker event when the track or play/pause state changes.
+    */
+    if(musicTickerState!==novaLastMusicTickerState){
+      novaLastMusicTickerState=musicTickerState;
+
+      const musicTickerMessage=
+        `${playing ? "NOW PLAYING" : "MUSIC PAUSED"} • ${cleanTitle}`;
+
+      novaPersistentTickerPush(musicTickerMessage);
+    }
   }
 
   document.body.classList.toggle("irisMediaPlaying",!!playing);
