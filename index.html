@@ -1907,6 +1907,16 @@ body.columnResizing *{
         <button id="trainerLedButton7" class="control" onclick="toggleTrainerLed(7)" aria-pressed="false">LED 7</button>
       </div>
 
+      <div class="panelSection">
+        <div class="panelSubHeader">TRAINER COMMANDS</div>
+        <div class="buttonGrid">
+          <button id="trainerAllButton" class="control" onclick="toggleTrainerAll()" aria-pressed="false">ALL ON</button>
+          <button class="control warn" onclick="trainerBlink()">BLINK</button>
+          <button class="control warn" onclick="trainerSOS()">SOS</button>
+          <button class="control warn" onclick="trainerMorse()">MORSE</button>
+        </div>
+      </div>
+
       <div class="panelSection rsrPhysicalInputs">
         <div class="panelSubHeader">PHYSICAL INPUTS</div>
         <div class="rsrInputGrid">
@@ -2588,6 +2598,115 @@ function setTrainerLedUI(ledNumber, isOn){
     button.classList.toggle("electricGreen", trainerLedStates[ledNumber]);
     button.setAttribute("aria-pressed", trainerLedStates[ledNumber] ? "true" : "false");
   }
+
+  updateTrainerAllButton();
+}
+
+
+function updateTrainerAllButton(){
+
+  const button =
+    document.getElementById(
+      "trainerAllButton"
+    );
+
+  if(!button){
+    return;
+  }
+
+  const allOn =
+    trainerLedStates.every(
+      state => state
+    );
+
+  button.textContent =
+    allOn
+      ? "ALL OFF"
+      : "ALL ON";
+
+  button.classList.toggle(
+    "electricGreen",
+    allOn
+  );
+
+  button.setAttribute(
+    "aria-pressed",
+    allOn
+      ? "true"
+      : "false"
+  );
+
+}
+
+
+function toggleTrainerAll(){
+
+  const allOn =
+    trainerLedStates.every(
+      state => state
+    );
+
+  const nextState =
+    !allOn;
+
+  sendCloudCommand(
+    nextState
+      ? "trainer all on"
+      : "trainer all off"
+  );
+
+  trainerLedStates.forEach(
+    (_, index) =>
+      setTrainerLedUI(
+        index,
+        nextState
+      )
+  );
+
+  updateTrainerAllButton();
+
+}
+
+
+function trainerBlink(){
+
+  sendCloudCommand(
+    "trainer blink 5"
+  );
+
+  log(
+    "RSR Trainer blink 5.",
+    "success"
+  );
+
+}
+
+
+function trainerSOS(){
+
+  sendCloudCommand(
+    "trainer sos"
+  );
+
+  log(
+    "RSR Trainer SOS.",
+    "success"
+  );
+
+}
+
+
+function trainerMorse(){
+
+  sendCloudCommand(
+    "trainer morse sos"
+  );
+
+  log(
+    "RSR Trainer Morse SOS.",
+    "success"
+  );
+
 }
 
 function parseTrainerLedState(line){
@@ -4372,6 +4491,114 @@ if (/\bdisconnect\b/.test(command)) {
     sendCloudCommand("toggle");
 
     speak("Toggling the LED.");
+
+    return;
+  }
+
+
+  if(
+    /\btrainer all on\b|\brsr all on\b/.test(command)
+  ){
+
+    sendCloudCommand(
+      "trainer all on"
+    );
+
+    trainerLedStates.forEach(
+      (_, index) =>
+        setTrainerLedUI(
+          index,
+          true
+        )
+    );
+
+    speak(
+      "RSR Trainer all on."
+    );
+
+    return;
+  }
+
+
+  if(
+    /\btrainer all off\b|\brsr all off\b/.test(command)
+  ){
+
+    sendCloudCommand(
+      "trainer all off"
+    );
+
+    trainerLedStates.forEach(
+      (_, index) =>
+        setTrainerLedUI(
+          index,
+          false
+        )
+    );
+
+    speak(
+      "RSR Trainer all off."
+    );
+
+    return;
+  }
+
+
+  if(
+    /\btrainer blink\b|\brsr blink\b/.test(command)
+  ){
+
+    let count = 5;
+
+    const match =
+      command.match(
+        /\b(?:trainer|rsr)\s+blink\s+(\d+)\b/
+      );
+
+    if(match){
+      count =
+        Number(match[1]);
+    }
+
+    sendCloudCommand(
+      `trainer blink ${count}`
+    );
+
+    speak(
+      `RSR Trainer blinking ${count} times.`
+    );
+
+    return;
+  }
+
+
+  if(
+    /\btrainer sos\b|\brsr sos\b/.test(command)
+  ){
+
+    sendCloudCommand(
+      "trainer sos"
+    );
+
+    speak(
+      "Sending SOS on the RSR Trainer."
+    );
+
+    return;
+  }
+
+
+  if(
+    /\btrainer morse\b|\brsr morse\b/.test(command)
+  ){
+
+    sendCloudCommand(
+      "trainer morse sos"
+    );
+
+    speak(
+      "Sending Morse SOS on the RSR Trainer."
+    );
 
     return;
   }
@@ -6749,85 +6976,331 @@ function createEventFromNaturalLanguage(text){
   const raw =
     text.trim();
 
-  let title =
-    raw
-      .replace(
-        /^.*?\b(?:add|schedule|create)\b/i,
-        ""
-      )
-      .trim();
-
-  title =
-    title
-      .replace(
-        /^(an )?event\b/i,
-        ""
-      )
-      .trim();
+  let working =
+    raw;
 
   let date =
     new Date();
 
+  date.setHours(
+    12,0,0,0
+  );
+
+  let dateWasFound =
+    false;
+
+  /*
+    TODAY / TOMORROW / DAY AFTER TOMORROW
+  */
   if(
-    /\bday after tomorrow\b/i.test(raw)
+    /\bday after tomorrow\b/i.test(working)
   ){
 
     date.setDate(
       date.getDate() + 2
     );
 
+    working =
+      working.replace(
+        /\bday after tomorrow\b/ig,
+        " "
+      );
+
+    dateWasFound = true;
+
   }else if(
-    /\btomorrow\b/i.test(raw)
+    /\btomorrow\b/i.test(working)
   ){
 
     date.setDate(
       date.getDate() + 1
     );
 
+    working =
+      working.replace(
+        /\btomorrow\b/ig,
+        " "
+      );
+
+    dateWasFound = true;
+
+  }else if(
+    /\btoday\b/i.test(working)
+  ){
+
+    working =
+      working.replace(
+        /\btoday\b/ig,
+        " "
+      );
+
+    dateWasFound = true;
+
   }
 
-  const dateMatch =
-    raw.match(
-      /\b(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?\b/
+
+  /*
+    MONTH NAME DATES:
+    October 5
+    October 5th
+    October 5th 2026
+    Oct 5 at 5 PM
+  */
+  const monthNumbers = {
+    january:0,
+    jan:0,
+    february:1,
+    feb:1,
+    march:2,
+    mar:2,
+    april:3,
+    apr:3,
+    may:4,
+    june:5,
+    jun:5,
+    july:6,
+    jul:6,
+    august:7,
+    aug:7,
+    september:8,
+    sept:8,
+    sep:8,
+    october:9,
+    oct:9,
+    november:10,
+    nov:10,
+    december:11,
+    dec:11
+  };
+
+  const monthDateMatch =
+    working.match(
+      /\b(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)\s+(\d{1,2})(?:st|nd|rd|th)?(?:\s*,?\s*(\d{4}))?\b/i
     );
 
-  if(dateMatch){
+  if(monthDateMatch){
+
+    const month =
+      monthNumbers[
+        monthDateMatch[1]
+          .toLowerCase()
+      ];
+
+    const day =
+      Number(
+        monthDateMatch[2]
+      );
 
     let year =
-      dateMatch[3]
-        ? Number(dateMatch[3])
+      monthDateMatch[3]
+        ? Number(
+            monthDateMatch[3]
+          )
         : date.getFullYear();
 
-    if(year < 100){
-      year += 2000;
+    const candidate =
+      new Date(
+        year,
+        month,
+        day,
+        12,0,0,0
+      );
+
+    /*
+      If no year was spoken and that date has already
+      passed this year, use next year.
+    */
+    if(
+      !monthDateMatch[3] &&
+      candidate <
+        new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate(),
+          0,0,0,0
+        )
+    ){
+
+      candidate.setFullYear(
+        year + 1
+      );
+
     }
 
     date =
-      new Date(
-        year,
-        Number(dateMatch[1])-1,
-        Number(dateMatch[2])
+      candidate;
+
+    working =
+      working.replace(
+        monthDateMatch[0],
+        " "
       );
+
+    dateWasFound = true;
 
   }
 
+
+  /*
+    NUMERIC DATES:
+    10/5
+    10-5-2026
+  */
+  if(!dateWasFound){
+
+    const dateMatch =
+      working.match(
+        /\b(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?\b/
+      );
+
+    if(dateMatch){
+
+      let year =
+        dateMatch[3]
+          ? Number(
+              dateMatch[3]
+            )
+          : date.getFullYear();
+
+      if(year < 100){
+        year += 2000;
+      }
+
+      date =
+        new Date(
+          year,
+          Number(dateMatch[1])-1,
+          Number(dateMatch[2]),
+          12,0,0,0
+        );
+
+      working =
+        working.replace(
+          dateMatch[0],
+          " "
+        );
+
+      dateWasFound = true;
+
+    }
+
+  }
+
+
+  /*
+    WEEKDAY DATES:
+    Friday
+    this Friday
+    next Friday
+  */
+  if(!dateWasFound){
+
+    const weekdayNumbers = {
+      sunday:0,
+      monday:1,
+      tuesday:2,
+      wednesday:3,
+      thursday:4,
+      friday:5,
+      saturday:6
+    };
+
+    const weekdayMatch =
+      working.match(
+        /\b(?:(next|this)\s+)?(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i
+      );
+
+    if(weekdayMatch){
+
+      const qualifier =
+        (
+          weekdayMatch[1] ||
+          ""
+        ).toLowerCase();
+
+      const targetDay =
+        weekdayNumbers[
+          weekdayMatch[2]
+            .toLowerCase()
+        ];
+
+      const currentDay =
+        date.getDay();
+
+      let difference =
+        (
+          targetDay -
+          currentDay +
+          7
+        ) % 7;
+
+      if(
+        qualifier === "next"
+      ){
+
+        difference +=
+          difference === 0
+            ? 7
+            : 7;
+
+      }else if(
+        difference === 0
+      ){
+
+        difference = 7;
+
+      }
+
+      date.setDate(
+        date.getDate() +
+        difference
+      );
+
+      working =
+        working.replace(
+          weekdayMatch[0],
+          " "
+        );
+
+      dateWasFound = true;
+
+    }
+
+  }
+
+
+  /*
+    SPOKEN TIME:
+    5 PM
+    5:00 PM
+    5:00 p.m.
+    at 5:30 a.m.
+  */
   let time = "";
 
   const timeMatch =
-    raw.match(
-      /\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i
+    working.match(
+      /\b(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*(a\.?\s*m\.?|p\.?\s*m\.?)\b/i
     );
 
   if(timeMatch){
 
     let hour =
-      Number(timeMatch[1]);
+      Number(
+        timeMatch[1]
+      );
 
     const minute =
-      timeMatch[2] || "00";
+      timeMatch[2] ||
+      "00";
 
     const ampm =
-      timeMatch[3].toLowerCase();
+      timeMatch[3]
+        .toLowerCase()
+        .replace(
+          /[\s.]/g,
+          ""
+        );
 
     if(
       ampm === "pm" &&
@@ -6846,32 +7319,30 @@ function createEventFromNaturalLanguage(text){
     time =
       `${String(hour).padStart(2,"0")}:${minute}`;
 
+    working =
+      working.replace(
+        timeMatch[0],
+        " "
+      );
+
   }
 
-  title =
-    title
+
+  /*
+    REMOVE COMMAND WORDS AFTER DATE/TIME HAVE BEEN PARSED.
+  */
+  let title =
+    working
       .replace(
-        /\bday after tomorrow\b/i,
-        ""
+        /\b(?:add|schedule|create)\b/ig,
+        " "
       )
       .replace(
-        /\btomorrow\b/i,
-        ""
+        /\b(?:an\s+)?event\b/ig,
+        " "
       )
       .replace(
-        /\btoday\b/i,
-        ""
-      )
-      .replace(
-        /\b\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?\b/,
-        ""
-      )
-      .replace(
-        /\b\d{1,2}(?::\d{2})?\s*(am|pm)\b/i,
-        ""
-      )
-      .replace(
-        /\bat\s+/i,
+        /\b(?:on|for)\b(?=\s*$)/ig,
         " "
       )
       .replace(
@@ -6906,7 +7377,8 @@ function createEventFromNaturalLanguage(text){
     `I added ${created.title} for ${
       date.toLocaleDateString([],{
         month:"long",
-        day:"numeric"
+        day:"numeric",
+        year:"numeric"
       })
     }${
       time
