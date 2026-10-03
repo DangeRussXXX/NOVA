@@ -3822,6 +3822,20 @@ function startRecognition(){
     return;
   }
 
+  if(!recognition){
+    initializeVoice();
+  }
+
+  if(!recognition){
+
+    log(
+      "Recognition start skipped: speech recognition is not initialized.",
+      "warning"
+    );
+
+    return;
+  }
+
   try{
 
     recognition.start();
@@ -6909,11 +6923,29 @@ function voiceAddEvent(){
   awaitingEvent = true;
 
   /*
-    Calendar voice capture must work even when the main
-    voice toggle was OFF before the button was pressed.
-    Enable the recognition loop first; speak() will pause
-    recognition while NOVA talks, then resume it afterward.
+    Make sure the browser SpeechRecognition object actually
+    exists before the calendar enables the recognition loop.
   */
+  if(!recognition){
+    initializeVoice();
+  }
+
+  if(!recognition){
+
+    awaitingEvent = false;
+
+    log(
+      "Voice recognition could not be initialized.",
+      "error"
+    );
+
+    speak(
+      "Voice recognition is not available in this browser."
+    );
+
+    return;
+  }
+
   if(!voiceEnabled){
 
     voiceEnabled = true;
