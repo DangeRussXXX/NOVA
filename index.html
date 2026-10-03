@@ -2870,45 +2870,39 @@ function escapeHtml(text){
 
 function updateIdentityUI(){
 
-  document.getElementById(
-    "assistantTitle"
-  ).textContent =
-    assistantName;
+  const safeText = (id,value) => {
+    const element =
+      document.getElementById(id);
 
-  document.getElementById(
-    "voiceOrb"
-  ).textContent =
-    assistantName.substring(0,6);
+    if(element){
+      element.textContent = value;
+    }
+  };
 
-  const profileAssistantName =
-    document.getElementById(
-      "profileAssistantName"
-    );
+  safeText(
+    "assistantName",
+    assistantName
+  );
 
-  if(profileAssistantName){
-    profileAssistantName.textContent =
-      assistantName;
-  }
+  safeText(
+    "userName",
+    userName
+  );
 
-  const voiceEngineName =
-    document.getElementById(
-      "voiceEngineName"
-    );
+  safeText(
+    "profileAssistantName",
+    assistantName
+  );
 
-  if(voiceEngineName){
-    voiceEngineName.textContent =
-      assistantName;
-  }
+  safeText(
+    "profileUserName",
+    userName
+  );
 
-  const profileUserName =
-    document.getElementById(
-      "profileUserName"
-    );
-
-  if(profileUserName){
-    profileUserName.textContent =
-      userName;
-  }
+  safeText(
+    "voiceEngineName",
+    assistantName
+  );
 
 }
 
