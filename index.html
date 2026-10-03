@@ -5363,8 +5363,16 @@ function initializeMedia(){
 
   initializeMusicDropZone();
   restoreMusicDirectoryHandle();
+  requestNovaPersistentStorage();
   restoreSavedPlaylist(false);
   updateSavedPlaylistStatus();
+
+  if(location.protocol === "file:"){
+    log(
+      "Playlist persistence is browser-dependent when NOVA is opened directly as a local file. For reliable saving, open NOVA from the same local web address each time.",
+      "warning"
+    );
+  }
 
 
   document.getElementById(
@@ -5459,15 +5467,33 @@ let linkedMusicDirectoryHandle = null;
 const NOVA_PLAYLIST_DB="novaPersistentPlaylistDB";
 const NOVA_PLAYLIST_STORE="tracks";
 
+async function requestNovaPersistentStorage(){
+  try{
+    if(navigator.storage && navigator.storage.persist){
+      await navigator.storage.persist();
+    }
+  }catch(error){
+    console.warn("NOVA persistent storage request unavailable:",error);
+  }
+}
+
 function openNovaPlaylistDatabase(){
   return new Promise((resolve,reject)=>{
-    const request=indexedDB.open(NOVA_PLAYLIST_DB,1);
+    const request=indexedDB.open(NOVA_PLAYLIST_DB,2);
+
     request.onupgradeneeded=()=>{
       const db=request.result;
-      if(!db.objectStoreNames.contains(NOVA_PLAYLIST_STORE)){
-        db.createObjectStore(NOVA_PLAYLIST_STORE,{keyPath:"key"});
+
+      if(db.objectStoreNames.contains(NOVA_PLAYLIST_STORE)){
+        db.deleteObjectStore(NOVA_PLAYLIST_STORE);
       }
+
+      db.createObjectStore(
+        NOVA_PLAYLIST_STORE,
+        {keyPath:"key"}
+      );
     };
+
     request.onsuccess=()=>resolve(request.result);
     request.onerror=()=>reject(request.error);
   });
@@ -5478,89 +5504,269 @@ function novaTrackKey(file){
 }
 
 async function saveFilesToPersistentPlaylist(files,replaceLibrary=false){
-  const incoming=Array.from(files||[]).filter(isSupportedAudioFile);
+  const incoming=
+    Array.from(files||[])
+      .filter(isSupportedAudioFile);
+
   if(!incoming.length)return;
+
   try{
-    const db=await openNovaPlaylistDatabase();
-    const tx=db.transaction(NOVA_PLAYLIST_STORE,"readwrite");
-    const store=tx.objectStore(NOVA_PLAYLIST_STORE);
-    if(replaceLibrary)store.clear();
-    incoming.forEach(file=>store.put({
-      key:novaTrackKey(file),file,
-      name:file.name,size:file.size,lastModified:file.lastModified
-    }));
-    await new Promise((resolve,reject)=>{
-      tx.oncomplete=resolve;
-      tx.onerror=()=>reject(tx.error);
-      tx.onabort=()=>reject(tx.error);
+    await requestNovaPersistentStorage();
+
+    const db=
+      await openNovaPlaylistDatabase();
+
+    const tx=
+      db.transaction(
+        NOVA_PLAYLIST_STORE,
+        "readwrite"
+      );
+
+    const store=
+      tx.objectStore(
+        NOVA_PLAYLIST_STORE
+      );
+
+    if(replaceLibrary){
+      store.clear();
+    }
+
+    incoming.forEach(file=>{
+      store.put({
+        key:novaTrackKey(file),
+        name:file.name,
+        type:file.type || "audio/mpeg",
+        size:file.size,
+        lastModified:file.lastModified,
+        blob:file.slice(
+          0,
+          file.size,
+          file.type || "audio/mpeg"
+        )
+      });
     });
+
+    await new Promise(
+      (resolve,reject)=>{
+        tx.oncomplete=resolve;
+        tx.onerror=()=>reject(tx.error);
+        tx.onabort=()=>reject(tx.error);
+      }
+    );
+
     db.close();
-    updateSavedPlaylistStatus();
-  }catch(error){console.warn("NOVA playlist save failed:",error);}
+
+    await updateSavedPlaylistStatus();
+
+  }catch(error){
+    console.warn(
+      "NOVA playlist save failed:",
+      error
+    );
+
+    log(
+      "NOVA could not save the playlist in browser storage.",
+      "warning"
+    );
+  }
 }
 
 async function getSavedPlaylistFiles(){
   try{
-    const db=await openNovaPlaylistDatabase();
-    const tx=db.transaction(NOVA_PLAYLIST_STORE,"readonly");
-    const req=tx.objectStore(NOVA_PLAYLIST_STORE).getAll();
-    const rows=await new Promise((resolve,reject)=>{
-      req.onsuccess=()=>resolve(req.result||[]);
-      req.onerror=()=>reject(req.error);
-    });
+    const db=
+      await openNovaPlaylistDatabase();
+
+    const tx=
+      db.transaction(
+        NOVA_PLAYLIST_STORE,
+        "readonly"
+      );
+
+    const request=
+      tx.objectStore(
+        NOVA_PLAYLIST_STORE
+      ).getAll();
+
+    const rows=
+      await new Promise(
+        (resolve,reject)=>{
+          request.onsuccess=
+            ()=>resolve(
+              request.result || []
+            );
+
+          request.onerror=
+            ()=>reject(
+              request.error
+            );
+        }
+      );
+
     db.close();
-    return rows.map(row=>row.file).filter(isSupportedAudioFile);
+
+    return rows
+      .filter(row=>row && row.blob)
+      .map(row=>
+        new File(
+          [row.blob],
+          row.name,
+          {
+            type:
+              row.type ||
+              row.blob.type ||
+              "audio/mpeg",
+
+            lastModified:
+              row.lastModified ||
+              Date.now()
+          }
+        )
+      )
+      .filter(isSupportedAudioFile);
+
   }catch(error){
-    console.warn("NOVA playlist restore failed:",error);
+    console.warn(
+      "NOVA playlist restore failed:",
+      error
+    );
+
     return [];
   }
 }
 
 async function updateSavedPlaylistStatus(){
-  const el=document.getElementById("musicPlaylistStatus");
+  const el=
+    document.getElementById(
+      "musicPlaylistStatus"
+    );
+
   if(!el)return;
-  const files=await getSavedPlaylistFiles();
-  el.textContent=files.length
-    ? `PLAYLIST SAVED: ${files.length} TRACK${files.length===1?"":"S"}`
-    : "PLAYLIST: EMPTY";
-  el.classList.toggle("linked",files.length>0);
+
+  const files=
+    await getSavedPlaylistFiles();
+
+  el.textContent=
+    files.length
+      ? `PLAYLIST SAVED: ${files.length} TRACK${files.length===1?"":"S"}`
+      : "PLAYLIST: EMPTY";
+
+  el.classList.toggle(
+    "linked",
+    files.length > 0
+  );
 }
 
 async function restoreSavedPlaylist(announce=false){
-  const files=await getSavedPlaylistFiles();
+  const files=
+    await getSavedPlaylistFiles();
+
   if(!files.length){
-    if(announce)log("No saved music playlist was found.","warning");
+    if(announce){
+      log(
+        "No saved music playlist was found.",
+        "warning"
+      );
+    }
+
     updateSavedPlaylistStatus();
     return;
   }
-  addMusicFiles(files,false,false);
-  if(announce)log(`Restored ${files.length} saved music track${files.length===1?"":"s"}.`,"success");
+
+  addMusicFiles(
+    files,
+    false,
+    false
+  );
+
+  if(announce){
+    log(
+      `Restored ${files.length} saved music track${files.length===1?"":"s"}.`,
+      "success"
+    );
+  }
 }
 
 async function clearSavedPlaylist(){
   try{
-    const db=await openNovaPlaylistDatabase();
-    const tx=db.transaction(NOVA_PLAYLIST_STORE,"readwrite");
-    tx.objectStore(NOVA_PLAYLIST_STORE).clear();
-    await new Promise((resolve,reject)=>{
-      tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error); tx.onabort=()=>reject(tx.error);
-    });
+    const db=
+      await openNovaPlaylistDatabase();
+
+    const tx=
+      db.transaction(
+        NOVA_PLAYLIST_STORE,
+        "readwrite"
+      );
+
+    tx.objectStore(
+      NOVA_PLAYLIST_STORE
+    ).clear();
+
+    await new Promise(
+      (resolve,reject)=>{
+        tx.oncomplete=resolve;
+        tx.onerror=()=>reject(tx.error);
+        tx.onabort=()=>reject(tx.error);
+      }
+    );
+
     db.close();
 
-    musicLibrary.forEach(item=>{try{URL.revokeObjectURL(item.url)}catch(e){}});
-    musicLibrary=[]; musicIndex=-1;
+    musicLibrary.forEach(
+      item=>{
+        try{
+          URL.revokeObjectURL(
+            item.url
+          );
+        }catch(e){}
+      }
+    );
 
-    const audio=document.getElementById("audioPlayer");
-    if(audio){audio.pause();audio.removeAttribute("src");audio.load();}
+    musicLibrary=[];
+    musicIndex=-1;
+
+    const audio=
+      document.getElementById(
+        "audioPlayer"
+      );
+
+    if(audio){
+      audio.pause();
+      audio.removeAttribute(
+        "src"
+      );
+      audio.load();
+    }
+
     renderMusicList();
-    const count=document.getElementById("musicCount");
-    if(count)count.textContent="0 tracks";
+
+    const count=
+      document.getElementById(
+        "musicCount"
+      );
+
+    if(count){
+      count.textContent=
+        "0 tracks";
+    }
+
     setNovaMusicAlive(false);
     updateSavedPlaylistStatus();
-    log("Saved music playlist cleared.","system");
+
+    log(
+      "Saved music playlist cleared.",
+      "system"
+    );
+
   }catch(error){
-    console.warn("NOVA playlist clear failed:",error);
-    log("Could not clear the saved playlist.","error");
+    console.warn(
+      "NOVA playlist clear failed:",
+      error
+    );
+
+    log(
+      "Could not clear the saved playlist.",
+      "error"
+    );
   }
 }
 
