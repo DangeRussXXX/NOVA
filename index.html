@@ -181,6 +181,37 @@ header{
   padding:14px;
 }
 
+/* GENERIC PANEL EXPAND / COLLAPSE */
+
+.panel > .panelHeader.genericCollapseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  cursor:pointer;
+  user-select:none;
+}
+
+.genericCollapseArrow{
+  flex:0 0 auto;
+  color:var(--muted);
+  font-size:13px;
+  transition:transform .18s ease;
+}
+
+.panel > .panelHeader.genericCollapseHeader.expanded .genericCollapseArrow{
+  transform:rotate(90deg);
+  color:var(--cyan);
+}
+
+.panel > .panelBody.genericCollapseBody{
+  overflow:hidden;
+}
+
+.panel > .panelBody.genericCollapseBody.collapsed{
+  display:none;
+}
+
 /* BUTTONS */
 
 .buttonGrid{
@@ -7349,6 +7380,11 @@ function createEventFromNaturalLanguage(text){
         /\s+/g,
         " "
       )
+      .trim()
+      .replace(
+        /^[\s.,!?;:]+|[\s.,!?;:]+$/g,
+        ""
+      )
       .trim();
 
   if(
@@ -7636,6 +7672,140 @@ window.addEventListener(
   }
 );
 
+
+
+/* ============================================================
+   ALL STANDARD PANELS EXPAND / COLLAPSE
+   Existing specialized panels keep their own handlers.
+   ============================================================ */
+
+function toggleGenericPanel(header){
+
+  if(!header){
+    return;
+  }
+
+  const body =
+    header.nextElementSibling;
+
+  if(
+    !body ||
+    !body.classList.contains(
+      "genericCollapseBody"
+    )
+  ){
+    return;
+  }
+
+  const isCollapsed =
+    body.classList.toggle(
+      "collapsed"
+    );
+
+  header.classList.toggle(
+    "expanded",
+    !isCollapsed
+  );
+
+  const arrow =
+    header.querySelector(
+      ".genericCollapseArrow"
+    );
+
+  if(arrow){
+    arrow.textContent = "▸";
+  }
+
+}
+
+
+function initializeGenericPanelCollapsing(){
+
+  document
+    .querySelectorAll(
+      ".panel > .panelHeader"
+    )
+    .forEach(header => {
+
+      /*
+        Do not attach a second collapse handler to panels
+        that already use NOVA's specialized collapse code.
+      */
+      if(
+        header.hasAttribute(
+          "onclick"
+        ) ||
+        header.classList.contains(
+          "leftCollapseHeader"
+        ) ||
+        header.classList.contains(
+          "controllerHeader"
+        )
+      ){
+        return;
+      }
+
+      const body =
+        header.nextElementSibling;
+
+      if(
+        !body ||
+        !body.classList.contains(
+          "panelBody"
+        )
+      ){
+        return;
+      }
+
+      header.classList.add(
+        "genericCollapseHeader",
+        "expanded"
+      );
+
+      body.classList.add(
+        "genericCollapseBody"
+      );
+
+      if(
+        !header.querySelector(
+          ".genericCollapseArrow"
+        )
+      ){
+
+        const arrow =
+          document.createElement(
+            "span"
+          );
+
+        arrow.className =
+          "genericCollapseArrow";
+
+        arrow.textContent =
+          "▸";
+
+        header.appendChild(
+          arrow
+        );
+
+      }
+
+      header.addEventListener(
+        "click",
+        () =>
+          toggleGenericPanel(
+            header
+          )
+      );
+
+    });
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeGenericPanelCollapsing
+);
 
 
 /* ============================================================
