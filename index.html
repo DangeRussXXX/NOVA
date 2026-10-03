@@ -4709,7 +4709,7 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
 
 <div class="panel mediaPanel startExpandedPanel">
 <div class="panelHeader">MEDIA CENTER</div>
-<div class="panelBody novaLegacyMediaHidden">
+<div class="panelBody novaLegacyMediaHidden novaLegacyMediaPanel" id="novaLegacyMediaPanel">
 <div class="mediaTabs">
 <button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
 <button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
@@ -13543,7 +13543,37 @@ function openNovaInfoScreen(title,body){
   .screen{max-width:1100px;margin:auto;background:#0d1219;border:1px solid #263241;border-radius:14px;overflow:hidden}
   .head{padding:16px 18px;border-bottom:1px solid #263241;color:#36d9ff;font-weight:800;letter-spacing:2px;display:flex;justify-content:space-between;align-items:center}
   .body{padding:18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.item{padding:11px;border:1px solid #1c2732;border-radius:8px;background:#090e14;font-size:12px}.item b{color:#36d9ff}.section{margin:18px 0 8px;color:#39ff88;font-size:11px;font-weight:800;letter-spacing:1.5px}.note{color:#788899;font-size:11px;margin-bottom:12px}.historyItem{padding:9px 0;border-bottom:1px solid #1c2732}.time{color:#788899;margin-right:8px}.cmd{color:#36d9ff}.close{background:#111923;color:#d9e4ef;border:1px solid #263241;border-radius:8px;padding:8px 12px;cursor:pointer}@media(max-width:650px){.grid{grid-template-columns:1fr}}
-  </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
+  
+/* ============================================================
+   LEGACY MEDIA COLUMN PANEL — DEFINITIVELY REMOVED FROM LAYOUT
+   Its controls/data remain in DOM for compatibility only.
+   ============================================================ */
+.novaLegacyMediaPanel,
+#novaLegacyMediaPanel{
+  display:none !important;
+  position:absolute !important;
+  width:0 !important;
+  height:0 !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:0 !important;
+  max-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  overflow:hidden !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* NOVA integrated library is the visible media panel now. */
+.novaUnifiedConsole #novaIntegratedMediaLibrary.active{
+  display:flex !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+
+</style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
 function novaCommandReferenceHtml(){
@@ -14331,18 +14361,17 @@ function initializeNovaIntegratedLibrary(){
 
   if(mediaButton){
     /*
-      Replace the V1 MEDIA button behavior with NOVA's integrated library.
-      Capture phase stops the earlier fallback handler from opening a picker.
+      Make NOVA's integrated library the single MEDIA-button destination.
+      Cloning removes the earlier V1 fallback click listener while preserving
+      the same element ID, styling and location.
     */
-    mediaButton.addEventListener(
-      "click",
-      event=>{
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        openNovaIntegratedMediaLibrary();
-      },
-      true
-    );
+    const cleanMediaButton=mediaButton.cloneNode(true);
+    mediaButton.replaceWith(cleanMediaButton);
+
+    cleanMediaButton.addEventListener("click",event=>{
+      event.preventDefault();
+      openNovaIntegratedMediaLibrary();
+    });
   }
 
   if(close){
