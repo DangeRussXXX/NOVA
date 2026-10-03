@@ -5976,29 +5976,197 @@ function initializeMedia(){
   );
 
 
-  audio.addEventListener(
-    "ended",
-    async () => {
+  let novaAutoAdvanceLocked = false;
+
+  async function novaAdvanceAfterTrack(reason){
+
+    if(novaAutoAdvanceLocked){
+      return;
+    }
+
+    novaAutoAdvanceLocked = true;
+
+    try{
 
       if(!musicLibrary.length){
+        log(
+          "NOVA auto-play stopped because the playlist is empty.",
+          "warning"
+        );
         return;
       }
 
       if(musicRepeat){
+
         audio.currentTime = 0;
 
         try{
           await audio.play();
+
+          log(
+            "NOVA repeated the current song.",
+            "success"
+          );
+
         }catch(error){
-          console.warn("NOVA repeat playback could not start:",error);
+
+          console.error(
+            "NOVA repeat playback failed:",
+            error
+          );
+
+          log(
+            `NOVA could not repeat the song: ${error.name || "PLAYBACK ERROR"} ${error.message || ""}`,
+            "error"
+          );
+
+          speak(
+            "I could not restart the song. Check the media player for the playback error."
+          );
+
         }
 
         return;
       }
 
-      /* Advance the playlist automatically when a track finishes.
-         playMusic() loads the next track and starts it. */
-      nextMusic();
+      let nextIndex;
+
+      if(musicShuffle){
+
+        nextIndex = musicIndex;
+
+        if(musicLibrary.length > 1){
+          while(nextIndex === musicIndex){
+            nextIndex =
+              Math.floor(
+                Math.random() *
+                musicLibrary.length
+              );
+          }
+        }
+
+      }else{
+
+        nextIndex =
+          musicIndex + 1;
+
+        if(nextIndex >= musicLibrary.length){
+          nextIndex = 0;
+        }
+
+      }
+
+      const nextItem =
+        musicLibrary[nextIndex];
+
+      if(!nextItem || !nextItem.url){
+
+        log(
+          "NOVA could not find the next song in the playlist.",
+          "error"
+        );
+
+        speak(
+          "I could not find the next song in the playlist."
+        );
+
+        return;
+      }
+
+      musicIndex = nextIndex;
+
+      audio.pause();
+      audio.src = nextItem.url;
+      audio.load();
+
+      renderMusicList();
+
+      log(
+        `Auto-playing next song: ${nextItem.file.name}`,
+        "success"
+      );
+
+      try{
+
+        await audio.play();
+
+      }catch(error){
+
+        console.error(
+          "NOVA automatic next-song playback failed:",
+          error
+        );
+
+        log(
+          `NOVA selected ${nextItem.file.name}, but playback failed: ${error.name || "PLAYBACK ERROR"} ${error.message || ""}`,
+          "error"
+        );
+
+        speak(
+          `I selected the next song, ${nextItem.file.name}, but the browser would not start playback.`
+        );
+
+      }
+
+    }finally{
+
+      setTimeout(
+        () => {
+          novaAutoAdvanceLocked = false;
+        },
+        500
+      );
+
+    }
+
+  }
+
+  audio.addEventListener(
+    "ended",
+    () => {
+      novaAdvanceAfterTrack("ended");
+    }
+  );
+
+  /* Backup for browsers/files that reach the end without reliably
+     delivering an ended event. */
+  audio.addEventListener(
+    "timeupdate",
+    () => {
+
+      if(
+        !novaAutoAdvanceLocked &&
+        Number.isFinite(audio.duration) &&
+        audio.duration > 0 &&
+        audio.currentTime > 0 &&
+        audio.duration - audio.currentTime <= 0.20
+      ){
+        novaAdvanceAfterTrack("near-end");
+      }
+
+    }
+  );
+
+  audio.addEventListener(
+    "error",
+    () => {
+
+      const mediaError =
+        audio.error;
+
+      const code =
+        mediaError
+          ? mediaError.code
+          : "UNKNOWN";
+
+      log(
+        `NOVA music player error. Media error code: ${code}.`,
+        "error"
+      );
+
+      speak(
+        `The music player reported an error code ${code}.`
+      );
 
     }
   );
@@ -7332,10 +7500,18 @@ function playMusic(index){
 
   audio.play()
     .catch(error => {
-      console.warn("NOVA music playback could not start:",error);
+      console.error(
+        "NOVA music playback could not start:",
+        error
+      );
+
       log(
-        "The next song was selected but the browser blocked playback. Press PLAY once to resume.",
-        "warning"
+        `NOVA could not play ${item.file.name}: ${error.name || "PLAYBACK ERROR"} ${error.message || ""}`,
+        "error"
+      );
+
+      speak(
+        `I could not play ${item.file.name}. Check the media player for the playback error.`
       );
     });
 
@@ -10676,9 +10852,9 @@ function updateNovaIrisDashboard(){
   if(!p||!s||!r)return;
   const audio=document.getElementById("audioPlayer");
   const playing=audio&&!audio.paused&&!audio.ended&&audio.currentTime>0;
-  if(playing&&typeof musicLibrary!=="undefined"&&musicLibrary[currentMusicIndex]){
+  if(playing&&typeof musicLibrary!=="undefined"&&musicLibrary[musicIndex]){
     p.textContent="NOW PLAYING";
-    const track=musicLibrary[currentMusicIndex];
+    const track=musicLibrary[musicIndex];
     s.textContent=(typeof cleanMediaName==="function")?cleanMediaName(track.name||"MUSIC"):(track.name||"MUSIC");
   }else{
     const now=new Date();
