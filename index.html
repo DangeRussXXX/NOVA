@@ -1781,220 +1781,16 @@ body.columnResizing *{
 .cameraSnapshot{display:none;}
 
 
-/* ============================================================
-   NOVA STAGE 6 - AUDIO REACTIVE IRIS
-   ============================================================ */
-
-#novaCoreContainer{
-  --nova-energy:0;
-  --nova-bass:0;
-  --nova-mid:0;
-  --nova-high:0;
-  overflow:visible;
-}
-
-#novaOrb{
-  transform:scale(calc(1 + (var(--nova-bass) * .075)));
-  transition:transform 70ms linear;
-  will-change:transform,filter;
-}
-
-.novaOuterRing{
-  transform:scale(calc(1 + (var(--nova-bass) * .13)));
-  opacity:calc(.72 + (var(--nova-energy) * .28));
-  filter:brightness(calc(1 + (var(--nova-energy) * 1.25)));
-  transition:transform 65ms linear,filter 65ms linear,opacity 65ms linear;
-}
-
-.novaInnerRing{
-  transform:scale(calc(1 + (var(--nova-mid) * .16))) rotate(calc(var(--nova-high) * 12deg));
-  filter:brightness(calc(1 + (var(--nova-mid) * 1.4)));
-  transition:transform 65ms linear,filter 65ms linear;
-}
-
-.novaIris{
-  transform:scale(calc(1 + (var(--nova-bass) * .12)));
-  filter:brightness(calc(1 + (var(--nova-energy) * 1.55))) saturate(calc(1 + (var(--nova-high) * .9)));
-  transition:transform 55ms linear,filter 55ms linear;
-  will-change:transform,filter;
-}
-
-.novaWaveform{
-  transform:scale(calc(1 + (var(--nova-energy) * .20))) rotate(calc(var(--nova-high) * 18deg));
-  opacity:calc(.45 + (var(--nova-energy) * .55));
-  transition:transform 55ms linear,opacity 55ms linear;
-}
-
-.novaParticles{
-  transform:scale(calc(1 + (var(--nova-high) * .15))) rotate(calc(var(--nova-high) * -10deg));
-  opacity:calc(.28 + (var(--nova-energy) * .72));
-  filter:brightness(calc(1 + (var(--nova-energy) * 1.8)));
-  transition:transform 70ms linear,opacity 70ms linear,filter 70ms linear;
-}
-
-body.irisMediaPlaying #novaThroneRing{
-  animation-duration:calc(10s - (var(--nova-energy) * 6s));
-  filter:brightness(calc(1 + (var(--nova-energy) * 1.2)));
-}
-
-body.irisMediaPlaying #novaGlyphLayer{
-  opacity:calc(.45 + (var(--nova-mid) * .55));
-  filter:brightness(calc(1 + (var(--nova-energy) * 1.5)));
-}
-
-body.irisMediaPlaying #novaConduits::before,
-body.irisMediaPlaying #novaConduits::after{
-  opacity:calc(.55 + (var(--nova-bass) * .45));
-  filter:brightness(calc(1 + (var(--nova-bass) * 1.7)));
-}
-
-body.irisMediaPlaying .novaIris{
-  animation:none;
-  clip-path:ellipse(
-    calc(42% + (var(--nova-mid) * 18%))
-    calc(24% + (var(--nova-bass) * 28%))
-    at 50% 50%
-  );
-  box-shadow:
-    0 0 calc(22px + (var(--nova-energy) * 34px)) rgba(0,229,255,.98),
-    0 0 calc(48px + (var(--nova-bass) * 70px)) rgba(0,229,255,.72),
-    0 0 calc(75px + (var(--nova-high) * 70px)) rgba(255,0,255,.30);
-}
-
-body.irisMediaPaused #novaOrb{
-  transform:scale(.985);
-  opacity:.82;
-}
-
-.novaMusicVisualizer{
-  position:absolute;
-  inset:-36px;
-  border-radius:50%;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-
-body.irisMediaPlaying .novaMusicVisualizer{
-  opacity:1;
-}
-
-.novaMusicVisualizer span{
-  --bar:0;
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:3px;
-  height:22px;
-  margin-left:-1.5px;
-  margin-top:-108px;
-  border-radius:999px;
-  transform-origin:50% 108px;
-  transform:
-    rotate(var(--angle))
-    scaleY(calc(.25 + (var(--bar) * 2.7)));
-  background:linear-gradient(to top,rgba(0,229,255,.15),rgba(0,229,255,.95),rgba(255,0,255,.95));
-  box-shadow:0 0 calc(5px + (var(--bar) * 13px)) rgba(0,229,255,.9);
-  opacity:calc(.25 + (var(--bar) * .75));
-  will-change:transform,opacity;
-}
-
-.novaMusicVisualizer span:nth-child(1){--angle:0deg}
-.novaMusicVisualizer span:nth-child(2){--angle:15deg}
-.novaMusicVisualizer span:nth-child(3){--angle:30deg}
-.novaMusicVisualizer span:nth-child(4){--angle:45deg}
-.novaMusicVisualizer span:nth-child(5){--angle:60deg}
-.novaMusicVisualizer span:nth-child(6){--angle:75deg}
-.novaMusicVisualizer span:nth-child(7){--angle:90deg}
-.novaMusicVisualizer span:nth-child(8){--angle:105deg}
-.novaMusicVisualizer span:nth-child(9){--angle:120deg}
-.novaMusicVisualizer span:nth-child(10){--angle:135deg}
-.novaMusicVisualizer span:nth-child(11){--angle:150deg}
-.novaMusicVisualizer span:nth-child(12){--angle:165deg}
-.novaMusicVisualizer span:nth-child(13){--angle:180deg}
-.novaMusicVisualizer span:nth-child(14){--angle:195deg}
-.novaMusicVisualizer span:nth-child(15){--angle:210deg}
-.novaMusicVisualizer span:nth-child(16){--angle:225deg}
-.novaMusicVisualizer span:nth-child(17){--angle:240deg}
-.novaMusicVisualizer span:nth-child(18){--angle:255deg}
-.novaMusicVisualizer span:nth-child(19){--angle:270deg}
-.novaMusicVisualizer span:nth-child(20){--angle:285deg}
-.novaMusicVisualizer span:nth-child(21){--angle:300deg}
-.novaMusicVisualizer span:nth-child(22){--angle:315deg}
-.novaMusicVisualizer span:nth-child(23){--angle:330deg}
-.novaMusicVisualizer span:nth-child(24){--angle:345deg}
-
-#novaIrisMedia{
-  position:absolute;
-  left:50%;
-  top:232px;
-  transform:translateX(-50%) translateY(5px);
-  width:240px;
-  padding:7px 10px;
-  border:1px solid rgba(0,229,255,.30);
-  border-radius:9px;
-  background:rgba(2,9,18,.92);
-  box-shadow:0 0 20px rgba(0,229,255,.14);
-  text-align:center;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .2s ease,transform .2s ease;
-  z-index:20;
-}
-
-#novaIrisMedia.active{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
-
-.irisMediaType{
-  font-size:8px;
-  letter-spacing:1.5px;
-  color:var(--muted);
-}
-
-.irisMediaTitle{
-  margin-top:2px;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  font-size:11px;
-  font-weight:800;
-  color:var(--cyan);
-}
-
-.irisMediaProgress{
-  height:3px;
-  margin:5px 0 3px;
-  border-radius:999px;
-  overflow:hidden;
-  background:rgba(255,255,255,.12);
-}
-
-#irisMediaProgressFill{
-  width:0%;
-  height:100%;
-  background:linear-gradient(90deg,var(--cyan),#ff00ff);
-}
-
-.irisMediaMeta{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  font-size:8px;
-  color:var(--muted);
-}
-
-body.irisMediaPlaying .voiceHero,
-body.irisMediaPlaying .novaUnifiedConsole{
-  box-shadow:
-    0 0 calc(10px + (var(--nova-energy) * 22px)) rgba(0,229,255,.08);
-}
-
-@media(max-width:700px){
-  #novaIrisMedia{width:220px;top:228px}
-  .novaMusicVisualizer{inset:-28px}
-}
+/* NOVA IRIS MEDIA MODE */
+.novaIris{position:relative}
+#novaIrisMedia{position:absolute;left:50%;bottom:-68px;transform:translateX(-50%);width:min(360px,92%);padding:8px 12px;border:1px solid rgba(0,255,255,.28);border-radius:10px;background:rgba(3,10,18,.90);box-shadow:0 0 18px rgba(0,255,255,.12);text-align:center;opacity:0;pointer-events:none;transition:opacity .22s ease,bottom .22s ease;z-index:8}
+#novaIrisMedia.active{opacity:1;bottom:-78px}
+.irisMediaType{font-size:9px;letter-spacing:1.7px;color:var(--muted)}
+.irisMediaTitle{margin-top:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;font-weight:800;color:var(--cyan)}
+.irisMediaProgress{height:3px;margin:7px 0 4px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.12)}
+#irisMediaProgressFill{width:0%;height:100%;background:var(--cyan)}
+.irisMediaMeta{display:flex;justify-content:space-between;gap:10px;font-size:9px;color:var(--muted)}
+body.irisMediaPlaying .novaIris{filter:drop-shadow(0 0 14px rgba(0,255,255,.45))}
 
 
 /* NOVA MEDIA LIBRARY - DRAG/DROP + FOLDER LINK */
@@ -2021,6 +1817,87 @@ body.irisMediaPlaying .novaUnifiedConsole{
 }
 .musicFolderStatus.linked{
   color:var(--electricGreen, #55ff88);
+}
+
+
+/* ============================================================
+   NOVA STAGE 6B - REAL AUDIO REACTIVE IRIS
+   Built on confirmed-working Stage 5 media loader.
+   ============================================================ */
+
+#novaOrb{
+  overflow:visible;
+  will-change:transform,filter;
+}
+
+.novaOuterRing,
+.novaInnerRing,
+.novaIris,
+.novaWaveform,
+.novaParticles{
+  will-change:transform,filter,opacity;
+}
+
+.novaReactiveHalo{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:260px;
+  height:260px;
+  margin-left:-130px;
+  margin-top:-130px;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s ease;
+  z-index:4;
+}
+
+body.novaAudioAlive .novaReactiveHalo{
+  opacity:1;
+}
+
+.novaReactiveHalo i{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:4px;
+  height:24px;
+  margin-left:-2px;
+  margin-top:-130px;
+  border-radius:999px;
+  transform-origin:2px 130px;
+  background:linear-gradient(to top,rgba(0,229,255,.18),rgba(0,229,255,1),rgba(255,0,255,.95));
+  box-shadow:0 0 10px rgba(0,229,255,.8);
+}
+
+.novaReactiveHalo i:nth-child(1){transform:rotate(0deg)}
+.novaReactiveHalo i:nth-child(2){transform:rotate(15deg)}
+.novaReactiveHalo i:nth-child(3){transform:rotate(30deg)}
+.novaReactiveHalo i:nth-child(4){transform:rotate(45deg)}
+.novaReactiveHalo i:nth-child(5){transform:rotate(60deg)}
+.novaReactiveHalo i:nth-child(6){transform:rotate(75deg)}
+.novaReactiveHalo i:nth-child(7){transform:rotate(90deg)}
+.novaReactiveHalo i:nth-child(8){transform:rotate(105deg)}
+.novaReactiveHalo i:nth-child(9){transform:rotate(120deg)}
+.novaReactiveHalo i:nth-child(10){transform:rotate(135deg)}
+.novaReactiveHalo i:nth-child(11){transform:rotate(150deg)}
+.novaReactiveHalo i:nth-child(12){transform:rotate(165deg)}
+.novaReactiveHalo i:nth-child(13){transform:rotate(180deg)}
+.novaReactiveHalo i:nth-child(14){transform:rotate(195deg)}
+.novaReactiveHalo i:nth-child(15){transform:rotate(210deg)}
+.novaReactiveHalo i:nth-child(16){transform:rotate(225deg)}
+.novaReactiveHalo i:nth-child(17){transform:rotate(240deg)}
+.novaReactiveHalo i:nth-child(18){transform:rotate(255deg)}
+.novaReactiveHalo i:nth-child(19){transform:rotate(270deg)}
+.novaReactiveHalo i:nth-child(20){transform:rotate(285deg)}
+.novaReactiveHalo i:nth-child(21){transform:rotate(300deg)}
+.novaReactiveHalo i:nth-child(22){transform:rotate(315deg)}
+.novaReactiveHalo i:nth-child(23){transform:rotate(330deg)}
+.novaReactiveHalo i:nth-child(24){transform:rotate(345deg)}
+
+body.novaAudioAlive #novaCoreContainer{
+  filter:drop-shadow(0 0 14px rgba(0,229,255,.30));
 }
 
 </style>
@@ -2068,11 +1945,10 @@ body.irisMediaPlaying .novaUnifiedConsole{
           <div class="novaIris"><div class="novaName">NOVA</div></div>
           <div class="novaWaveform"></div>
           <div class="novaParticles"></div>
-          <div id="novaMusicVisualizer" class="novaMusicVisualizer" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span><span></span>
+          <div id="novaReactiveHalo" class="novaReactiveHalo" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
           </div>
         </div>
       </div>
@@ -5371,607 +5247,28 @@ function speakCommands(){
    ============================================================ */
 
 
-let novaAudioContext = null;
-let novaAnalyser = null;
-let novaAudioData = null;
-let novaAudioSources = new WeakMap();
-let novaReactiveMedia = null;
-let novaReactiveFrame = 0;
-let novaSmoothedEnergy = 0;
-let novaSmoothedBass = 0;
-let novaSmoothedMid = 0;
-let novaSmoothedHigh = 0;
-
-
 function ensureIrisMediaDisplay(){
-
-  const core =
-    document.getElementById(
-      "novaCoreContainer"
-    );
-
-  if(
-    !core ||
-    document.getElementById(
-      "novaIrisMedia"
-    )
-  ){
-    return;
-  }
-
-  const display =
-    document.createElement(
-      "div"
-    );
-
-  display.id =
-    "novaIrisMedia";
-
-  display.innerHTML = `
-    <div id="irisMediaType" class="irisMediaType">NOVA MEDIA</div>
-    <div id="irisMediaTitle" class="irisMediaTitle">READY</div>
-    <div class="irisMediaProgress">
-      <div id="irisMediaProgressFill"></div>
-    </div>
-    <div class="irisMediaMeta">
-      <span id="irisMediaTime">0:00 / 0:00</span>
-      <span id="irisMediaVolume">VOL 80%</span>
-    </div>
-  `;
-
-  core.appendChild(
-    display
-  );
-
+  const iris=document.querySelector(".novaIris");
+  if(!iris||document.getElementById("novaIrisMedia"))return;
+  const d=document.createElement("div");d.id="novaIrisMedia";
+  d.innerHTML=`<div id="irisMediaType" class="irisMediaType">NOVA MEDIA</div><div id="irisMediaTitle" class="irisMediaTitle">READY</div><div class="irisMediaProgress"><div id="irisMediaProgressFill"></div></div><div class="irisMediaMeta"><span id="irisMediaTime">0:00 / 0:00</span><span id="irisMediaVolume">VOL 80%</span></div>`;
+  iris.appendChild(d);
 }
-
-
-function cleanMediaName(name){
-
-  return String(
-    name || "MEDIA"
-  )
-    .replace(/\.[^.]+$/,"")
-    .replace(/[_]+/g," ")
-    .trim();
-
+function cleanMediaName(name){return String(name||"MEDIA").replace(/\.[^.]+$/,"").replace(/[_]+/g," ").trim()}
+function formatMediaClock(s){if(!Number.isFinite(s)||s<0)return"0:00";const t=Math.floor(s);return`${Math.floor(t/60)}:${String(t%60).padStart(2,"0")}`}
+function setIrisMediaMode(type,title,m,playing){
+  ensureIrisMediaDisplay();const d=document.getElementById("novaIrisMedia");if(!d)return;
+  d.classList.add("active");document.body.classList.toggle("irisMediaPlaying",!!playing);
+  document.getElementById("irisMediaType").textContent=playing?`NOW PLAYING • ${type}`:`${type} • PAUSED`;
+  document.getElementById("irisMediaTitle").textContent=cleanMediaName(title);
+  if(m){const dur=Number.isFinite(m.duration)?m.duration:0,cur=Number.isFinite(m.currentTime)?m.currentTime:0,p=dur>0?Math.min(100,Math.max(0,cur/dur*100)):0;
+  document.getElementById("irisMediaProgressFill").style.width=`${p}%`;
+  document.getElementById("irisMediaTime").textContent=`${formatMediaClock(cur)} / ${formatMediaClock(dur)}`;
+  document.getElementById("irisMediaVolume").textContent=m.muted?"MUTED":`VOL ${Math.round(m.volume*100)}%`;}
 }
-
-
-function formatMediaClock(seconds){
-
-  if(
-    !Number.isFinite(seconds) ||
-    seconds < 0
-  ){
-    return "0:00";
-  }
-
-  const total =
-    Math.floor(seconds);
-
-  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2,"0")}`;
-
-}
-
-
-function setIrisMediaMode(
-  type,
-  title,
-  mediaElement,
-  playing
-){
-
-  ensureIrisMediaDisplay();
-
-  const display =
-    document.getElementById(
-      "novaIrisMedia"
-    );
-
-  if(!display){
-    return;
-  }
-
-  display.classList.add(
-    "active"
-  );
-
-  document.body.classList.toggle(
-    "irisMediaPlaying",
-    !!playing
-  );
-
-  document.body.classList.toggle(
-    "irisMediaPaused",
-    !playing
-  );
-
-  document.getElementById(
-    "irisMediaType"
-  ).textContent =
-    playing
-      ? `NOW PLAYING • ${type}`
-      : `${type} • PAUSED`;
-
-  document.getElementById(
-    "irisMediaTitle"
-  ).textContent =
-    cleanMediaName(
-      title
-    );
-
-  if(mediaElement){
-
-    const duration =
-      Number.isFinite(
-        mediaElement.duration
-      )
-        ? mediaElement.duration
-        : 0;
-
-    const current =
-      Number.isFinite(
-        mediaElement.currentTime
-      )
-        ? mediaElement.currentTime
-        : 0;
-
-    const percent =
-      duration > 0
-        ? Math.min(
-            100,
-            Math.max(
-              0,
-              current /
-              duration *
-              100
-            )
-          )
-        : 0;
-
-    document.getElementById(
-      "irisMediaProgressFill"
-    ).style.width =
-      `${percent}%`;
-
-    document.getElementById(
-      "irisMediaTime"
-    ).textContent =
-      `${formatMediaClock(current)} / ${formatMediaClock(duration)}`;
-
-    document.getElementById(
-      "irisMediaVolume"
-    ).textContent =
-      mediaElement.muted
-        ? "MUTED"
-        : `VOL ${Math.round(mediaElement.volume * 100)}%`;
-
-  }
-
-}
-
-
-function resetNovaReactiveVisuals(){
-
-  const core =
-    document.getElementById(
-      "novaCoreContainer"
-    );
-
-  if(core){
-    core.style.setProperty(
-      "--nova-energy",
-      "0"
-    );
-    core.style.setProperty(
-      "--nova-bass",
-      "0"
-    );
-    core.style.setProperty(
-      "--nova-mid",
-      "0"
-    );
-    core.style.setProperty(
-      "--nova-high",
-      "0"
-    );
-  }
-
-  document
-    .querySelectorAll(
-      "#novaMusicVisualizer span"
-    )
-    .forEach(bar => {
-      bar.style.setProperty(
-        "--bar",
-        "0"
-      );
-    });
-
-  novaSmoothedEnergy = 0;
-  novaSmoothedBass = 0;
-  novaSmoothedMid = 0;
-  novaSmoothedHigh = 0;
-
-}
-
-
-function clearIrisMediaMode(){
-
-  const display =
-    document.getElementById(
-      "novaIrisMedia"
-    );
-
-  if(display){
-    display.classList.remove(
-      "active"
-    );
-  }
-
-  document.body.classList.remove(
-    "irisMediaPlaying",
-    "irisMediaPaused"
-  );
-
-  novaReactiveMedia = null;
-
-  resetNovaReactiveVisuals();
-
-}
-
-
-function averageNovaBins(
-  data,
-  start,
-  end
-){
-
-  const safeStart =
-    Math.max(
-      0,
-      Math.min(
-        data.length - 1,
-        start
-      )
-    );
-
-  const safeEnd =
-    Math.max(
-      safeStart + 1,
-      Math.min(
-        data.length,
-        end
-      )
-    );
-
-  let total = 0;
-
-  for(
-    let i = safeStart;
-    i < safeEnd;
-    i++
-  ){
-    total += data[i];
-  }
-
-  return (
-    total /
-    (safeEnd - safeStart) /
-    255
-  );
-
-}
-
-
-async function connectNovaAudioReactive(
-  mediaElement
-){
-
-  if(
-    !mediaElement ||
-    !(
-      window.AudioContext ||
-      window.webkitAudioContext
-    )
-  ){
-    return;
-  }
-
-  try{
-
-    if(!novaAudioContext){
-
-      const AudioContextClass =
-        window.AudioContext ||
-        window.webkitAudioContext;
-
-      novaAudioContext =
-        new AudioContextClass();
-
-      novaAnalyser =
-        novaAudioContext.createAnalyser();
-
-      novaAnalyser.fftSize = 256;
-      novaAnalyser.smoothingTimeConstant = .72;
-
-      novaAudioData =
-        new Uint8Array(
-          novaAnalyser.frequencyBinCount
-        );
-
-      novaAnalyser.connect(
-        novaAudioContext.destination
-      );
-
-    }
-
-    if(
-      novaAudioContext.state ===
-      "suspended"
-    ){
-      await novaAudioContext.resume();
-    }
-
-    let source =
-      novaAudioSources.get(
-        mediaElement
-      );
-
-    if(!source){
-
-      source =
-        novaAudioContext
-          .createMediaElementSource(
-            mediaElement
-          );
-
-      source.connect(
-        novaAnalyser
-      );
-
-      novaAudioSources.set(
-        mediaElement,
-        source
-      );
-
-    }
-
-    novaReactiveMedia =
-      mediaElement;
-
-    startNovaReactiveLoop();
-
-  }catch(error){
-
-    console.warn(
-      "NOVA audio reactive mode unavailable:",
-      error
-    );
-
-  }
-
-}
-
-
-function startNovaReactiveLoop(){
-
-  if(novaReactiveFrame){
-    return;
-  }
-
-  const animate =
-    () => {
-
-      novaReactiveFrame =
-        requestAnimationFrame(
-          animate
-        );
-
-      if(
-        !novaAnalyser ||
-        !novaAudioData ||
-        !novaReactiveMedia ||
-        novaReactiveMedia.paused ||
-        novaReactiveMedia.ended
-      ){
-
-        novaSmoothedEnergy *= .90;
-        novaSmoothedBass *= .88;
-        novaSmoothedMid *= .90;
-        novaSmoothedHigh *= .90;
-
-      }else{
-
-        novaAnalyser.getByteFrequencyData(
-          novaAudioData
-        );
-
-        const bass =
-          averageNovaBins(
-            novaAudioData,
-            1,
-            12
-          );
-
-        const mid =
-          averageNovaBins(
-            novaAudioData,
-            12,
-            45
-          );
-
-        const high =
-          averageNovaBins(
-            novaAudioData,
-            45,
-            110
-          );
-
-        const energy =
-          Math.min(
-            1,
-            bass * .48 +
-            mid * .34 +
-            high * .18
-          );
-
-        novaSmoothedEnergy =
-          novaSmoothedEnergy * .58 +
-          energy * .42;
-
-        novaSmoothedBass =
-          novaSmoothedBass * .52 +
-          bass * .48;
-
-        novaSmoothedMid =
-          novaSmoothedMid * .60 +
-          mid * .40;
-
-        novaSmoothedHigh =
-          novaSmoothedHigh * .64 +
-          high * .36;
-
-      }
-
-      const core =
-        document.getElementById(
-          "novaCoreContainer"
-        );
-
-      if(core){
-
-        core.style.setProperty(
-          "--nova-energy",
-          novaSmoothedEnergy.toFixed(3)
-        );
-
-        core.style.setProperty(
-          "--nova-bass",
-          novaSmoothedBass.toFixed(3)
-        );
-
-        core.style.setProperty(
-          "--nova-mid",
-          novaSmoothedMid.toFixed(3)
-        );
-
-        core.style.setProperty(
-          "--nova-high",
-          novaSmoothedHigh.toFixed(3)
-        );
-
-      }
-
-      const bars =
-        document.querySelectorAll(
-          "#novaMusicVisualizer span"
-        );
-
-      if(
-        novaAudioData &&
-        bars.length
-      ){
-
-        bars.forEach(
-          (bar,index) => {
-
-            const dataIndex =
-              Math.min(
-                novaAudioData.length - 1,
-                2 +
-                Math.floor(
-                  index /
-                  bars.length *
-                  95
-                )
-              );
-
-            const raw =
-              novaReactiveMedia &&
-              !novaReactiveMedia.paused
-                ? novaAudioData[dataIndex] / 255
-                : 0;
-
-            bar.style.setProperty(
-              "--bar",
-              raw.toFixed(3)
-            );
-
-          }
-        );
-
-      }
-
-    };
-
-  animate();
-
-}
-
-
-function updateIrisFromAudio(){
-
-  const audio =
-    document.getElementById(
-      "audioPlayer"
-    );
-
-  if(
-    !audio ||
-    musicIndex < 0 ||
-    !musicLibrary[musicIndex]
-  ){
-    return;
-  }
-
-  setIrisMediaMode(
-    "MUSIC",
-    musicLibrary[musicIndex].file.name,
-    audio,
-    !audio.paused
-  );
-
-  if(!audio.paused){
-    connectNovaAudioReactive(
-      audio
-    );
-  }
-
-}
-
-
-function updateIrisFromVideo(){
-
-  const video =
-    document.getElementById(
-      "videoPlayer"
-    );
-
-  if(
-    !video ||
-    videoIndex < 0 ||
-    !videoLibrary[videoIndex]
-  ){
-    return;
-  }
-
-  setIrisMediaMode(
-    "VIDEO",
-    videoLibrary[videoIndex].file.name,
-    video,
-    !video.paused
-  );
-
-  if(!video.paused){
-    connectNovaAudioReactive(
-      video
-    );
-  }
-
-}
-
+function clearIrisMediaMode(){const d=document.getElementById("novaIrisMedia");if(d)d.classList.remove("active");document.body.classList.remove("irisMediaPlaying")}
+function updateIrisFromAudio(){const a=document.getElementById("audioPlayer");if(!a||musicIndex<0||!musicLibrary[musicIndex])return;setIrisMediaMode("MUSIC",musicLibrary[musicIndex].file.name,a,!a.paused)}
+function updateIrisFromVideo(){const v=document.getElementById("videoPlayer");if(!v||videoIndex<0||!videoLibrary[videoIndex])return;setIrisMediaMode("VIDEO",videoLibrary[videoIndex].file.name,v,!v.paused)}
 
 function initializeMedia(){
 
@@ -6870,18 +6167,6 @@ function playMusic(index){
   const item =
     musicLibrary[musicIndex];
 
-  const otherVideo =
-    document.getElementById(
-      "videoPlayer"
-    );
-
-  if(
-    otherVideo &&
-    !otherVideo.paused
-  ){
-    otherVideo.pause();
-  }
-
   const audio =
     document.getElementById(
       "audioPlayer"
@@ -7219,18 +6504,6 @@ function playVideo(index){
 
   const item =
     videoLibrary[videoIndex];
-
-  const otherAudio =
-    document.getElementById(
-      "audioPlayer"
-    );
-
-  if(
-    otherAudio &&
-    !otherAudio.paused
-  ){
-    otherAudio.pause();
-  }
 
   const video =
     document.getElementById(
@@ -9740,6 +9013,431 @@ document.addEventListener("DOMContentLoaded", () => {
     <audio id="novaHumError" src="nova_hum_error.mp3" preload="auto"></audio>
 
     <!-- NOVA JS -->
-    <script src="nova.js"></script>
+    <script src="nova.js">
+
+/* ============================================================
+   NOVA STAGE 6B - AUDIO REACTIVE ENGINE
+   Isolated from the Stage 5 music library controls.
+   ============================================================ */
+
+let novaReactiveContext = null;
+let novaReactiveAnalyser = null;
+let novaReactiveData = null;
+let novaReactiveSource = null;
+let novaReactiveElement = null;
+let novaReactiveAnimation = 0;
+
+function novaAverageBand(data,start,end){
+  let total = 0;
+  let count = 0;
+
+  for(
+    let i = start;
+    i < end && i < data.length;
+    i++
+  ){
+    total += data[i];
+    count++;
+  }
+
+  return count
+    ? total / count / 255
+    : 0;
+}
+
+function novaResetReactiveLook(){
+
+  document.body.classList.remove(
+    "novaAudioAlive"
+  );
+
+  const orb =
+    document.getElementById(
+      "novaOrb"
+    );
+
+  const outer =
+    document.querySelector(
+      ".novaOuterRing"
+    );
+
+  const inner =
+    document.querySelector(
+      ".novaInnerRing"
+    );
+
+  const iris =
+    document.querySelector(
+      ".novaIris"
+    );
+
+  const wave =
+    document.querySelector(
+      ".novaWaveform"
+    );
+
+  const particles =
+    document.querySelector(
+      ".novaParticles"
+    );
+
+  if(orb){
+    orb.style.transform = "";
+    orb.style.filter = "";
+  }
+
+  if(outer){
+    outer.style.transform = "";
+    outer.style.filter = "";
+  }
+
+  if(inner){
+    inner.style.transform = "";
+    inner.style.filter = "";
+  }
+
+  if(iris){
+    iris.style.transform = "";
+    iris.style.filter = "";
+  }
+
+  if(wave){
+    wave.style.transform = "";
+    wave.style.opacity = "";
+  }
+
+  if(particles){
+    particles.style.transform = "";
+    particles.style.opacity = "";
+    particles.style.filter = "";
+  }
+
+  document
+    .querySelectorAll(
+      ".novaReactiveHalo i"
+    )
+    .forEach(
+      (bar,index) => {
+        bar.style.transform =
+          `rotate(${index * 15}deg) scaleY(1)`;
+        bar.style.opacity = ".25";
+      }
+    );
+}
+
+async function novaConnectReactiveMedia(media){
+
+  if(
+    !media ||
+    !(
+      window.AudioContext ||
+      window.webkitAudioContext
+    )
+  ){
+    return;
+  }
+
+  try{
+
+    if(
+      novaReactiveElement &&
+      novaReactiveElement !== media
+    ){
+      return;
+    }
+
+    if(!novaReactiveContext){
+
+      const AudioContextClass =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+      novaReactiveContext =
+        new AudioContextClass();
+
+      novaReactiveAnalyser =
+        novaReactiveContext
+          .createAnalyser();
+
+      novaReactiveAnalyser.fftSize =
+        256;
+
+      novaReactiveAnalyser
+        .smoothingTimeConstant =
+        .68;
+
+      novaReactiveData =
+        new Uint8Array(
+          novaReactiveAnalyser
+            .frequencyBinCount
+        );
+
+      novaReactiveElement =
+        media;
+
+      novaReactiveSource =
+        novaReactiveContext
+          .createMediaElementSource(
+            media
+          );
+
+      novaReactiveSource.connect(
+        novaReactiveAnalyser
+      );
+
+      novaReactiveAnalyser.connect(
+        novaReactiveContext.destination
+      );
+    }
+
+    if(
+      novaReactiveContext.state ===
+      "suspended"
+    ){
+      await novaReactiveContext.resume();
+    }
+
+    document.body.classList.add(
+      "novaAudioAlive"
+    );
+
+    novaStartReactiveAnimation();
+
+  }catch(error){
+
+    console.warn(
+      "NOVA reactive audio:",
+      error
+    );
+
+  }
+}
+
+function novaStartReactiveAnimation(){
+
+  if(novaReactiveAnimation){
+    return;
+  }
+
+  function frame(){
+
+    novaReactiveAnimation =
+      requestAnimationFrame(
+        frame
+      );
+
+    if(
+      !novaReactiveAnalyser ||
+      !novaReactiveData ||
+      !novaReactiveElement ||
+      novaReactiveElement.paused
+    ){
+      return;
+    }
+
+    novaReactiveAnalyser
+      .getByteFrequencyData(
+        novaReactiveData
+      );
+
+    const bass =
+      novaAverageBand(
+        novaReactiveData,
+        1,
+        12
+      );
+
+    const mid =
+      novaAverageBand(
+        novaReactiveData,
+        12,
+        42
+      );
+
+    const high =
+      novaAverageBand(
+        novaReactiveData,
+        42,
+        105
+      );
+
+    const energy =
+      Math.min(
+        1,
+        bass * .50 +
+        mid * .32 +
+        high * .18
+      );
+
+    const orb =
+      document.getElementById(
+        "novaOrb"
+      );
+
+    const outer =
+      document.querySelector(
+        ".novaOuterRing"
+      );
+
+    const inner =
+      document.querySelector(
+        ".novaInnerRing"
+      );
+
+    const iris =
+      document.querySelector(
+        ".novaIris"
+      );
+
+    const wave =
+      document.querySelector(
+        ".novaWaveform"
+      );
+
+    const particles =
+      document.querySelector(
+        ".novaParticles"
+      );
+
+    if(orb){
+      orb.style.transform =
+        `scale(${1 + bass * .10})`;
+
+      orb.style.filter =
+        `brightness(${1 + energy * .7})`;
+    }
+
+    if(outer){
+      outer.style.transform =
+        `scale(${1 + bass * .18}) rotate(${mid * 10}deg)`;
+
+      outer.style.filter =
+        `brightness(${1 + energy * 1.5})`;
+    }
+
+    if(inner){
+      inner.style.transform =
+        `scale(${1 + mid * .20}) rotate(${-high * 16}deg)`;
+
+      inner.style.filter =
+        `brightness(${1 + mid * 1.6})`;
+    }
+
+    if(iris){
+      iris.style.transform =
+        `scaleX(${1 + mid * .16}) scaleY(${1 + bass * .28})`;
+
+      iris.style.filter =
+        `brightness(${1 + energy * 1.8}) saturate(${1 + high})`;
+    }
+
+    if(wave){
+      wave.style.transform =
+        `scale(${1 + energy * .25}) rotate(${high * 16}deg)`;
+
+      wave.style.opacity =
+        String(
+          .45 + energy * .55
+        );
+    }
+
+    if(particles){
+      particles.style.transform =
+        `scale(${1 + high * .18}) rotate(${-high * 12}deg)`;
+
+      particles.style.opacity =
+        String(
+          .30 + energy * .70
+        );
+
+      particles.style.filter =
+        `brightness(${1 + energy * 2})`;
+    }
+
+    const bars =
+      document.querySelectorAll(
+        ".novaReactiveHalo i"
+      );
+
+    bars.forEach(
+      (bar,index) => {
+
+        const dataIndex =
+          Math.min(
+            novaReactiveData.length - 1,
+            2 +
+            Math.floor(
+              index /
+              bars.length *
+              100
+            )
+          );
+
+        const value =
+          novaReactiveData[dataIndex] /
+          255;
+
+        bar.style.transform =
+          `rotate(${index * 15}deg) scaleY(${.35 + value * 3.4})`;
+
+        bar.style.opacity =
+          String(
+            .22 + value * .78
+          );
+
+      }
+    );
+  }
+
+  frame();
+}
+
+function initializeNovaReactiveMedia(){
+
+  const audio =
+    document.getElementById(
+      "audioPlayer"
+    );
+
+  if(!audio){
+    return;
+  }
+
+  audio.addEventListener(
+    "play",
+    () => {
+      novaConnectReactiveMedia(
+        audio
+      );
+    }
+  );
+
+  audio.addEventListener(
+    "pause",
+    () => {
+
+      if(
+        audio.currentTime === 0 ||
+        audio.ended
+      ){
+        novaResetReactiveLook();
+      }
+
+    }
+  );
+
+  audio.addEventListener(
+    "ended",
+    novaResetReactiveLook
+  );
+
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeNovaReactiveMedia
+);
+
+</script>
 </body>
 </html>
