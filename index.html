@@ -3310,6 +3310,67 @@ body.novaMusicAlive .novaUnifiedConsole .novaIris{
   }
 }
 
+
+/* ============================================================
+   NOVA FULL-AREA REAL-TIME SCROLL
+   Smaller system messages move right->left AND bottom->top,
+   using the entire NOVA visual field.
+   ============================================================ */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:180 !important;
+  inset:18px 24px 18px 24px !important;
+  width:auto !important;
+  height:auto !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:block !important;
+  position:absolute !important;
+  z-index:181 !important;
+  left:100% !important;
+  top:100% !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:rgba(57,255,136,.82) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:.3px !important;
+  opacity:.88 !important;
+  visibility:visible !important;
+  filter:none !important;
+  text-shadow:0 0 6px rgba(57,255,136,.26) !important;
+  animation:none !important;
+  transform:none !important;
+}
+
+/* Live speech remains its own centered layer above the moving system feed. */
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:220 !important;
+  bottom:105px !important;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaHudTicker{
+    inset:14px !important;
+  }
+  .novaUnifiedConsole #novaIrisSpeechText{
+    font-size:10px !important;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -3917,13 +3978,13 @@ function novaQueueResponse(message){
   novaTickerLastQueued=clean;
   setTimeout(()=>{
     if(novaTickerLastQueued===clean)novaTickerLastQueued="";
-  },250);
+  },90);
 
   novaTickerQueue.push(clean);
 
   /* Do not let startup chatter create a huge backlog. */
-  if(novaTickerQueue.length>10){
-    novaTickerQueue.splice(0,novaTickerQueue.length-10);
+  if(novaTickerQueue.length>16){
+    novaTickerQueue.splice(0,novaTickerQueue.length-16);
   }
 
   novaRunNextResponse();
@@ -3952,28 +4013,58 @@ function novaRunNextResponse(){
 
   el.textContent=`[${stamp}] NOVA: ${message}`;
 
-  /* Force a stable visible baseline before measuring. */
+  el.getAnimations().forEach(animation=>animation.cancel());
   el.style.animation="none";
   el.style.left="0px";
-  el.style.transform="translateY(-50%)";
-  el.style.color="#39ff88";
-  el.style.opacity="1";
+  el.style.top="0px";
+  el.style.transform="none";
+  el.style.opacity=".88";
   el.style.visibility="visible";
 
   requestAnimationFrame(()=>{
     const laneWidth=Math.max(1,lane.clientWidth);
+    const laneHeight=Math.max(1,lane.clientHeight);
     const textWidth=Math.max(1,el.scrollWidth);
+    const textHeight=Math.max(1,el.scrollHeight);
 
+    /*
+      Faster real-time movement:
+      short messages cross in ~2.6s;
+      long messages can take up to ~5.2s.
+    */
     const duration=Math.max(
-      3200,
-      Math.min(7500,(laneWidth+textWidth)*4.2)
+      2600,
+      Math.min(
+        5200,
+        (laneWidth+textWidth)*2.9
+      )
     );
 
-    /* Start at right edge and move completely past left edge. */
+    /*
+      Start at the lower-right edge and finish beyond the upper-left.
+      This lets NOVA's system activity occupy the entire panel rather
+      than living in one horizontal strip.
+    */
     const animation=el.animate(
       [
-        {transform:`translate(${laneWidth}px,-50%)`},
-        {transform:`translate(${-textWidth}px,-50%)`}
+        {
+          transform:
+            `translate(${laneWidth}px,${laneHeight-textHeight}px)`,
+          opacity:.18
+        },
+        {
+          offset:.10,
+          opacity:.88
+        },
+        {
+          offset:.88,
+          opacity:.88
+        },
+        {
+          transform:
+            `translate(${-textWidth}px,${-textHeight}px)`,
+          opacity:.12
+        }
       ],
       {
         duration:duration,
@@ -3982,15 +4073,16 @@ function novaRunNextResponse(){
       }
     );
 
-    animation.onfinish=()=>{
+    const finish=()=>{
+      if(!novaTickerBusy)return;
       novaTickerBusy=false;
       novaRunNextResponse();
     };
 
-    animation.oncancel=()=>{
-      novaTickerBusy=false;
-      novaRunNextResponse();
-    };
+    animation.onfinish=finish;
+    animation.oncancel=finish;
+
+    setTimeout(finish,duration+250);
   });
 }
 
