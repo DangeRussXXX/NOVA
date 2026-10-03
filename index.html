@@ -3429,6 +3429,132 @@ body.novaMusicAlive .novaUnifiedConsole .novaIris{
   }
 }
 
+
+/* ============================================================
+   NOVA LIVE SYSTEM STREAM + MUSIC INFORMATION — FINAL OVERRIDE
+   ============================================================ */
+.novaUnifiedConsole .novaLeftHome{
+  position:relative !important;
+}
+
+/* System stream occupies the complete NOVA visual field. */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:230 !important;
+  left:12px !important;
+  right:12px !important;
+  top:12px !important;
+  bottom:12px !important;
+  width:auto !important;
+  height:auto !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:none !important;
+}
+.novaUnifiedConsole #novaHudTicker .novaSystemStreamMessage{
+  display:block !important;
+  position:absolute !important;
+  z-index:231 !important;
+  left:0 !important;
+  top:0 !important;
+  width:max-content !important;
+  max-width:none !important;
+  padding:0 !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  color:rgba(57,255,136,.90) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:.25px !important;
+  opacity:0;
+  visibility:visible !important;
+  text-shadow:0 0 6px rgba(57,255,136,.34) !important;
+  pointer-events:none !important;
+  will-change:transform,opacity !important;
+}
+
+/* Spoken response remains the highest-priority text. */
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:260 !important;
+  left:12% !important;
+  right:12% !important;
+  bottom:118px !important;
+}
+
+/* Music information appears directly below NOVA's spoken response. */
+.novaUnifiedConsole #novaMusicInfoDisplay{
+  display:none;
+  position:absolute;
+  z-index:255;
+  left:15%;
+  right:15%;
+  bottom:58px;
+  min-height:48px;
+  text-align:center;
+  pointer-events:none;
+}
+.novaUnifiedConsole #novaMusicInfoDisplay.active{
+  display:block;
+}
+.novaUnifiedConsole #novaMusicInfoStatus{
+  color:rgba(54,217,255,.72);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:1.6px;
+  line-height:1.2;
+}
+.novaUnifiedConsole #novaMusicInfoTitle{
+  margin-top:3px;
+  color:var(--cyan);
+  font-size:14px;
+  font-weight:700;
+  line-height:1.2;
+  text-shadow:0 0 8px rgba(54,217,255,.35);
+}
+.novaUnifiedConsole #novaMusicInfoMeta{
+  margin-top:3px;
+  color:rgba(57,255,136,.72);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.35px;
+}
+
+/* While music is active, the track information replaces the center NOVA label. */
+body.irisMediaPlaying .novaUnifiedConsole #novaIrisPrimary{
+  display:none !important;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaIrisSecondary,
+body.irisMediaPlaying .novaUnifiedConsole #novaIrisResponse{
+  visibility:hidden !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaHudTicker{
+    inset:8px !important;
+  }
+  .novaUnifiedConsole #novaHudTicker .novaSystemStreamMessage{
+    font-size:9px !important;
+  }
+  .novaUnifiedConsole #novaMusicInfoDisplay{
+    left:8%;
+    right:8%;
+    bottom:52px;
+  }
+  .novaUnifiedConsole #novaMusicInfoTitle{
+    font-size:12px;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -3476,6 +3602,11 @@ body.novaMusicAlive .novaUnifiedConsole .novaIris{
 </div>
 </div>
 <div id="novaLiveSpeechDisplay" aria-live="polite"></div>
+<div id="novaMusicInfoDisplay" aria-live="polite">
+  <div id="novaMusicInfoStatus"></div>
+  <div id="novaMusicInfoTitle"></div>
+  <div id="novaMusicInfoMeta"></div>
+</div>
 <div id="novaHudTicker" aria-live="polite">
   <span id="novaIrisSpeechText">NOVA READY.</span>
 </div>
@@ -4032,26 +4163,24 @@ function novaQueueResponse(message){
   const clean=String(message||"").replace(/\s+/g," ").trim();
   if(!clean)return;
 
-  /* Only suppress an immediate duplicate from overlapping legacy paths. */
   if(clean===novaTickerLastQueued)return;
+
   novaTickerLastQueued=clean;
   setTimeout(()=>{
     if(novaTickerLastQueued===clean){
       novaTickerLastQueued="";
     }
-  },80);
+  },70);
 
   novaLaunchSystemStream(clean);
 }
 
-/*
-  Each event launches immediately instead of waiting for the previous
-  message to finish. Rows begin near the bottom and rotate upward,
-  making the entire NOVA field look alive with current system traffic.
-*/
 function novaLaunchSystemStream(message){
   const lane=document.getElementById("novaHudTicker");
   if(!lane)return;
+
+  const item=document.createElement("div");
+  item.className="novaSystemStreamMessage";
 
   const now=new Date();
   const stamp=now.toLocaleTimeString(undefined,{
@@ -4060,60 +4189,54 @@ function novaLaunchSystemStream(message){
     second:"2-digit"
   });
 
-  const item=document.createElement("div");
-  item.className="novaSystemStreamMessage";
-  item.textContent=`[${stamp}] NOVA: ${message}`;
+  item.textContent=`[${stamp}] ${message}`;
   lane.appendChild(item);
 
   requestAnimationFrame(()=>{
-    const laneWidth=Math.max(1,lane.clientWidth);
-    const laneHeight=Math.max(1,lane.clientHeight);
-    const textWidth=Math.max(1,item.scrollWidth);
-    const textHeight=Math.max(1,item.scrollHeight);
+    const laneWidth=Math.max(300,lane.clientWidth);
+    const laneHeight=Math.max(220,lane.clientHeight);
+    const textWidth=Math.max(80,item.scrollWidth);
+    const textHeight=Math.max(10,item.scrollHeight);
 
-    /* 7 rotating vertical lanes, starting at the bottom. */
-    const rows=7;
+    /*
+      Rotate messages through the full height.
+      New messages begin lower and sweep toward different upper levels.
+    */
+    const rows=8;
     const row=novaSystemStreamRow++ % rows;
-    const bottomPadding=18;
-    const usableHeight=Math.max(40,laneHeight-36);
-    const endY=
-      Math.max(
-        0,
-        usableHeight-
-        (row*(usableHeight/(rows-1)))
-      );
+    const startY=Math.max(
+      8,
+      laneHeight-textHeight-12-(row*4)
+    );
+    const endY=Math.max(
+      8,
+      12+(row*((laneHeight-textHeight-24)/(rows-1)))
+    );
 
-    const startY=
-      Math.max(
-        0,
-        laneHeight-textHeight-bottomPadding
-      );
-
-    /* Real-time: ~2.2–4.2 seconds depending on message length. */
     const duration=Math.max(
-      2200,
+      2100,
       Math.min(
-        4200,
-        1800+(textWidth*.9)
+        3900,
+        1900+(textWidth*.72)
       )
     );
 
     const animation=item.animate(
       [
         {
-          transform:`translate(${laneWidth+20}px,${startY}px)`,
+          transform:`translate3d(${laneWidth+24}px,${startY}px,0)`,
           opacity:0
         },
         {
-          offset:.07,
-          opacity:.78
+          offset:.05,
+          opacity:.90
         },
         {
-          offset:.88,
-          opacity:.78
+          offset:.92,
+          opacity:.90
         },
         {
-          transform:`translate(${-textWidth-20}px,${endY}px)`,
+          transform:`translate3d(${-textWidth-24}px,${endY}px,0)`,
           opacity:0
         }
       ],
@@ -4124,17 +4247,19 @@ function novaLaunchSystemStream(message){
       }
     );
 
-    const remove=()=>{
+    let removed=false;
+    const cleanup=()=>{
+      if(removed)return;
+      removed=true;
       try{item.remove();}catch(e){}
     };
 
-    animation.onfinish=remove;
-    animation.oncancel=remove;
-    setTimeout(remove,duration+300);
+    animation.onfinish=cleanup;
+    setTimeout(cleanup,duration+350);
   });
 }
 
-/* Legacy callers can still call this safely. */
+/* Compatibility for older NOVA code paths. */
 function novaRunNextResponse(){}
 
 
@@ -7353,8 +7478,60 @@ function cleanMediaName(name){return String(name||"MEDIA").replace(/\.[^.]+$/,""
 function formatMediaClock(s){if(!Number.isFinite(s)||s<0)return"0:00";const t=Math.floor(s);return`${Math.floor(t/60)}:${String(t%60).padStart(2,"0")}`}
 function setIrisMediaMode(type,title,m,playing){
   document.body.classList.toggle("irisMediaPlaying",!!playing);
+
+  const display=document.getElementById("novaMusicInfoDisplay");
+  const status=document.getElementById("novaMusicInfoStatus");
+  const titleEl=document.getElementById("novaMusicInfoTitle");
+  const meta=document.getElementById("novaMusicInfoMeta");
+
+  if(!display || !status || !titleEl || !meta)return;
+
+  if(type!=="MUSIC"){
+    display.classList.remove("active");
+    return;
+  }
+
+  display.classList.add("active");
+
+  status.textContent=
+    playing
+      ? "NOW PLAYING"
+      : "MUSIC PAUSED";
+
+  titleEl.textContent=
+    cleanMediaName(title);
+
+  if(m){
+    const cur=
+      Number.isFinite(m.currentTime)
+        ? m.currentTime
+        : 0;
+
+    const dur=
+      Number.isFinite(m.duration)
+        ? m.duration
+        : 0;
+
+    const volume=
+      m.muted
+        ? "MUTED"
+        : `VOL ${Math.round(m.volume*100)}%`;
+
+    meta.textContent=
+      `${formatMediaClock(cur)} / ${formatMediaClock(dur)}  •  ${volume}`;
+  }else{
+    meta.textContent="";
+  }
 }
-function clearIrisMediaMode(){const d=document.getElementById("novaIrisMedia");if(d)d.classList.remove("active");document.body.classList.remove("irisMediaPlaying")}
+function clearIrisMediaMode(){
+  const d=document.getElementById("novaIrisMedia");
+  if(d)d.classList.remove("active");
+
+  const info=document.getElementById("novaMusicInfoDisplay");
+  if(info)info.classList.remove("active");
+
+  document.body.classList.remove("irisMediaPlaying");
+}
 function updateIrisFromAudio(){const a=document.getElementById("audioPlayer");if(!a||musicIndex<0||!musicLibrary[musicIndex])return;setIrisMediaMode("MUSIC",musicLibrary[musicIndex].file.name,a,!a.paused)}
 function updateIrisFromVideo(){const v=document.getElementById("videoPlayer");if(!v||videoIndex<0||!videoLibrary[videoIndex])return;setIrisMediaMode("VIDEO",videoLibrary[videoIndex].file.name,v,!v.paused)}
 
@@ -12619,6 +12796,27 @@ if(document.readyState==="loading"){
   initializeNovaAlwaysAliveDisplay();
 }
 
+
+
+function initializeNovaSystemStream(){
+  setTimeout(()=>{
+    novaQueueResponse("Command Center initialized.");
+  },180);
+
+  setTimeout(()=>{
+    novaQueueResponse("NOVA system stream online.");
+  },650);
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeNovaSystemStream,
+    {once:true}
+  );
+}else{
+  initializeNovaSystemStream();
+}
 
 </script>
 </body>
