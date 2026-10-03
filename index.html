@@ -1,10 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>DangeRuss Command Center</title>
-
 <style>
 :root{
   --bg:#070a0f;
@@ -2113,26 +2113,25 @@ body.novaMusicAlive .novaParticles{
   }
 }
 
+
+/* NOVA IRIS LIVE DASHBOARD */
+.novaIrisDashboard{width:82%;max-width:250px;text-align:center;line-height:1.15;pointer-events:none}
+#novaIrisPrimary{font-size:clamp(13px,1.25vw,19px);font-weight:800;letter-spacing:1.2px;color:var(--cyan);text-shadow:0 0 10px rgba(54,217,255,.8)}
+#novaIrisSecondary{margin-top:4px;font-size:clamp(8px,.72vw,11px);color:var(--text);white-space:normal}
+#novaIrisResponse{margin-top:5px;font-size:clamp(8px,.7vw,10px);color:var(--green);max-height:36px;overflow:hidden;white-space:normal}
+
 </style>
 </head>
-
 <body>
-
 <div class="app">
-
 <header>
-  <div class="brand">
-    <h1>NOVA COMMAND CENTER</h1>
-    <p>VOICE & TEXT COMMAND CENTER UI -  AMOMIII ONE CONTROLLER FOR RSR DIGITAL?ANALOG TRAINER</p>
-  </div>
-
-  <div class="headerStatus">
-  
-
-  
-  </div>
+<div class="brand">
+<h1>NOVA COMMAND CENTER</h1>
+<p>VOICE &amp; TEXT COMMAND CENTER UI -  AMOMIII ONE CONTROLLER FOR RSR DIGITAL?ANALOG TRAINER</p>
+</div>
+<div class="headerStatus">
+</div>
 </header>
-
 <div class="mainGrid novaSingleStack">
 <div class="novaTopStack">
 
@@ -2148,7 +2147,7 @@ body.novaMusicAlive .novaParticles{
 <div id="novaOrb">
 <div class="novaOuterRing"></div>
 <div class="novaInnerRing"></div>
-<div class="novaIris"><div class="novaName">NOVA</div></div>
+<div class="novaIris"><div class="novaName novaIrisDashboard"><div id="novaIrisPrimary">NOVA</div><div id="novaIrisSecondary"></div><div id="novaIrisResponse"></div></div></div>
 <div class="novaWaveform"></div>
 <div class="novaParticles"></div>
 <div class="novaMusicPulseRing" id="novaMusicPulseRing"></div>
@@ -2162,7 +2161,7 @@ body.novaMusicAlive .novaParticles{
 <button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
 <button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
 <button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
-<button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button>
+<button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button><button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
 </div>
 <div class="commandRow mergedCommandRow novaConsoleCommandRow">
 <input autocomplete="off" id="commandInput" placeholder="Enter commands for NOVA." type="text"/>
@@ -2172,20 +2171,13 @@ body.novaMusicAlive .novaParticles{
 <div class="console novaResponseConsole" id="console"></div>
 </div>
 </div>
-<div class="panel card leftCollapsePanel">
-<div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
-<div class="panelBody leftCollapseBody collapsed"><div class="statList">
-<div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
-</div></div>
-</div>
 <div class="history" id="commandHistory" style="display:none"></div>
-
 </div>
 <div class="novaPanelStack">
 
  TOP CENTER: NOVA CALENDAR + MEDIA CENTER 
  NOVA CALENDAR 
-<div class="panel mediaPanel startExpandedPanel">
+<div class="panel mediaPanel startExpandedPanel" id="novaCalendarPanelSource" style="display:none">
 <div class="panelHeader">NOVA CALENDAR</div>
 <div class="panelBody">
 <div class="calendarAccountBar">
@@ -2508,12 +2500,13 @@ body.novaMusicAlive .novaParticles{
 </div>
 </div>
 </div>
+</div><div class="panel card">
+<div class="panelHeader">PORTABLE TRAINER CONTROLLER</div>
+<div class="panelBody"><div class="browserHint">CONTROLLER RESERVED — COMING NEXT</div></div>
 </div>
-
 </div>
 </div>
 </div>
-
 <script>
 /* ============================================================
    AMOMII ONE COMMAND CENTER
@@ -10198,14 +10191,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 </script>
-
-    <!-- NOVA AUDIO -->
-    <audio id="novaHumSpeak" src="nova_hum_speak.mp3" preload="auto"></audio>
-    <audio id="novaHumListen" src="nova_hum_listen.mp3" preload="auto"></audio>
-    <audio id="novaHumError" src="nova_hum_error.mp3" preload="auto"></audio>
-
-    <!-- NOVA JS -->
-    <script src="nova.js"></script>
+<audio id="novaHumSpeak" preload="auto" src="nova_hum_speak.mp3"></audio>
+<audio id="novaHumListen" preload="auto" src="nova_hum_listen.mp3"></audio>
+<audio id="novaHumError" preload="auto" src="nova_hum_error.mp3"></audio>
+<script src="nova.js"></script>
 <script>
 
 /* ============================================================
@@ -10548,6 +10537,85 @@ function openNovaHelpScreen(){openNovaInfoScreen("NOVA HELP",`<div class="grid">
 function openNovaCommandsScreen(){openNovaInfoScreen("NOVA COMMANDS",novaCommandReferenceHtml());}
 function openNovaVoiceCommandsScreen(){openNovaInfoScreen("NOVA VOICE COMMANDS",novaCommandReferenceHtml());}
 function openNovaHistoryScreen(){const h=document.getElementById("commandHistory");const items=h?Array.from(h.children):[];openNovaInfoScreen("NOVA COMMAND HISTORY",items.length?items.map(x=>`<div class="historyItem">${x.innerHTML}</div>`).join(""):`<div class="note">No commands recorded this session yet.</div>`);}
+
+
+
+/* NOVA IRIS LIVE DASHBOARD + CALENDAR POPUP */
+let novaIrisLastResponse="",novaIrisResponseUntil=0,novaIrisWeatherText="";
+
+function novaIrisSetResponse(message,duration=9000){
+  const clean=String(message||"").replace(/\s+/g," ").trim();
+  if(!clean)return;
+  novaIrisLastResponse=clean;
+  novaIrisResponseUntil=Date.now()+duration;
+  updateNovaIrisDashboard();
+}
+
+function novaIrisUpcomingText(){
+  try{
+    const events=(typeof calendarEvents!=="undefined"&&Array.isArray(calendarEvents))?calendarEvents:[];
+    if(!events.length)return "NO UPCOMING EVENTS";
+    const now=new Date();
+    const upcoming=events.map(e=>({e,date:new Date(`${e.date||""}T${e.time||"00:00"}`)}))
+      .filter(x=>!Number.isNaN(x.date.getTime())&&x.date>=now).sort((a,b)=>a.date-b.date)[0];
+    if(!upcoming)return "NO UPCOMING EVENTS";
+    const d=upcoming.date;
+    return `NEXT: ${upcoming.e.title||"EVENT"} • ${d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}${upcoming.e.time?" "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}):""}`;
+  }catch(e){return "CALENDAR READY"}
+}
+
+function updateNovaIrisDashboard(){
+  const p=document.getElementById("novaIrisPrimary"),s=document.getElementById("novaIrisSecondary"),r=document.getElementById("novaIrisResponse");
+  if(!p||!s||!r)return;
+  const audio=document.getElementById("audioPlayer");
+  const playing=audio&&!audio.paused&&!audio.ended&&audio.currentTime>0;
+  if(playing&&typeof musicLibrary!=="undefined"&&musicLibrary[currentMusicIndex]){
+    p.textContent="NOW PLAYING";
+    const track=musicLibrary[currentMusicIndex];
+    s.textContent=(typeof cleanMediaName==="function")?cleanMediaName(track.name||"MUSIC"):(track.name||"MUSIC");
+  }else{
+    const now=new Date();
+    p.textContent=now.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+    s.textContent=[now.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}),novaIrisWeatherText,novaIrisUpcomingText()].filter(Boolean).join(" • ");
+  }
+  r.textContent=Date.now()<novaIrisResponseUntil?novaIrisLastResponse:"";
+}
+
+/* Weather can be supplied later by NOVA's weather source. */
+function setNovaIrisWeather(text){novaIrisWeatherText=String(text||"").trim();updateNovaIrisDashboard()}
+
+/* Capture NOVA spoken responses in the IRIS. */
+const novaOriginalSpeak=speak;
+speak=function(text){novaIrisSetResponse(text);return novaOriginalSpeak.apply(this,arguments)};
+
+function openNovaCalendarScreen(){
+  const panel=document.getElementById("novaCalendarPanelSource");
+  if(!panel)return;
+  const w=window.open("","nova_calendar_screen","width=1180,height=820,resizable=yes,scrollbars=yes");
+  if(!w){log("NOVA Calendar screen was blocked. Allow pop-ups for this page.","warning");return}
+  w.document.open();
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA CALENDAR</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CALENDAR</button></div><div id="calendarHost"></div></body></html>`);
+  w.document.close();
+  Array.from(document.querySelectorAll("style")).forEach(st=>{const c=w.document.createElement("style");c.textContent=st.textContent;w.document.head.appendChild(c)});
+  panel.style.display="block";
+  w.document.getElementById("calendarHost").appendChild(w.document.adoptNode(panel));
+  w.addEventListener("beforeunload",()=>{
+    const stack=document.querySelector(".novaPanelStack");
+    if(stack){
+      document.adoptNode(panel);
+      panel.style.display="none";
+      stack.insertBefore(panel,stack.firstChild);
+    }
+  },{once:true});
+  try{w.focus()}catch(e){}
+}
+
+setInterval(updateNovaIrisDashboard,1000);
+document.addEventListener("DOMContentLoaded",()=>{
+  updateNovaIrisDashboard();
+  const a=document.getElementById("audioPlayer");
+  if(a)["play","pause","ended","loadedmetadata"].forEach(evt=>a.addEventListener(evt,updateNovaIrisDashboard));
+});
 
 </script>
 </body>
