@@ -3621,6 +3621,43 @@ body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTickerTrack{
   }
 }
 
+
+/* ============================================================
+   NOVA SCROLL SYSTEM — CSS / WEB-ANIMATION CONFLICT FIX
+   Do NOT use !important on properties animated by JavaScript.
+   ============================================================ */
+
+/* Persistent ticker:
+   JS owns transform while the message is moving. */
+.novaUnifiedConsole #novaPersistentTickerTrack{
+  left:0 !important;
+  transform:translateY(-50%);
+  opacity:.92 !important;
+}
+
+/* Full-area system stream:
+   JS owns opacity + transform. The previous opacity:0 !important
+   made every stream message permanently invisible. */
+.novaUnifiedConsole #novaHudTicker .novaSystemStreamMessage,
+.novaUnifiedConsole .novaSystemStreamMessage{
+  opacity:0;
+  transform:none;
+}
+
+/* Keep both system layers above NOVA visuals but below live speech. */
+.novaUnifiedConsole #novaHudTicker{
+  z-index:245 !important;
+}
+.novaUnifiedConsole #novaPersistentTicker{
+  z-index:250 !important;
+}
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:270 !important;
+}
+.novaUnifiedConsole #novaMusicInfoDisplay{
+  z-index:265 !important;
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -4406,10 +4443,10 @@ function novaPersistentTickerNext(){
     const animation=track.animate(
       [
         {
-          transform:`translate(${laneWidth}px,-50%)`
+          transform:`translate3d(${laneWidth}px,-50%,0)`
         },
         {
-          transform:`translate(${-textWidth}px,-50%)`
+          transform:`translate3d(${-textWidth}px,-50%,0)`
         }
       ],
       {
@@ -13007,6 +13044,10 @@ function initializeNovaPersistentTicker(){
   setTimeout(()=>{
     novaPersistentTickerPush("NOVA system ticker online.");
   },850);
+
+  setTimeout(()=>{
+    novaPersistentTickerPush("SCROLL SYSTEM ACTIVE • COMMANDS • STATUS • RESPONSES • MUSIC");
+  },1450);
 }
 
 if(document.readyState==="loading"){
