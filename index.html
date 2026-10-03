@@ -2204,6 +2204,33 @@ body.novaMusicAlive .novaParticles{
   .novaUnifiedConsole #novaGlyphLayer{width:270px !important;height:270px !important}
 }
 
+
+/* ============================================================
+   NOVA MANUALLY REORDERABLE PANELS
+   Drag any visible panel by its header.
+   ============================================================ */
+.novaPanelStack > .panel > .panelHeader{
+  cursor:grab;
+  user-select:none;
+}
+.novaPanelStack > .panel > .panelHeader:active{
+  cursor:grabbing;
+}
+.novaPanelStack > .panel.novaPanelDragging{
+  opacity:.48;
+}
+.novaPanelStack > .panel.novaPanelDropTarget{
+  outline:1px solid var(--cyan);
+  box-shadow:0 0 16px rgba(54,217,255,.25);
+}
+.novaPanelStack > .panel > .panelHeader::after{
+  content:"⋮⋮";
+  float:right;
+  color:var(--muted);
+  letter-spacing:-2px;
+  opacity:.7;
+}
+
 </style>
 </head>
 <body>
@@ -5951,18 +5978,27 @@ function initializeMedia(){
 
   audio.addEventListener(
     "ended",
-    () => {
+    async () => {
+
+      if(!musicLibrary.length){
+        return;
+      }
 
       if(musicRepeat){
-
         audio.currentTime = 0;
-        audio.play();
 
-      }else{
+        try{
+          await audio.play();
+        }catch(error){
+          console.warn("NOVA repeat playback could not start:",error);
+        }
 
-        nextMusic();
-
+        return;
       }
+
+      /* Advance the playlist automatically when a track finishes.
+         playMusic() loads the next track and starts it. */
+      nextMusic();
 
     }
   );
@@ -7295,7 +7331,13 @@ function playMusic(index){
     item.url;
 
   audio.play()
-    .catch(() => {});
+    .catch(error => {
+      console.warn("NOVA music playback could not start:",error);
+      log(
+        "The next song was selected but the browser blocked playback. Press PLAY once to resume.",
+        "warning"
+      );
+    });
 
   renderMusicList();
 
@@ -10681,6 +10723,153 @@ document.addEventListener("DOMContentLoaded",()=>{
   const a=document.getElementById("audioPlayer");
   if(a)["play","pause","ended","loadedmetadata"].forEach(evt=>a.addEventListener(evt,updateNovaIrisDashboard));
 });
+
+
+
+/* ============================================================
+   NOVA PANEL ORDER
+   Drag panels by their headers. Order is saved locally.
+   ============================================================ */
+const NOVA_PANEL_ORDER_KEY="novaPanelOrderV1";
+let novaDraggedPanel=null;
+
+function novaPanelKey(panel){
+  if(!panel)return "";
+  if(panel.id)return `id:${panel.id}`;
+
+  const header=panel.querySelector(":scope > .panelHeader");
+  const title=header
+    ? header.textContent.replace(/⋮⋮/g,"").trim()
+    : "";
+
+  return title ? `title:${title}` : "";
+}
+
+function saveNovaPanelOrder(){
+  const stack=document.querySelector(".novaPanelStack");
+  if(!stack)return;
+
+  const order=Array.from(
+    stack.querySelectorAll(":scope > .panel")
+  )
+    .map(novaPanelKey)
+    .filter(Boolean);
+
+  localStorage.setItem(
+    NOVA_PANEL_ORDER_KEY,
+    JSON.stringify(order)
+  );
+}
+
+function restoreNovaPanelOrder(){
+  const stack=document.querySelector(".novaPanelStack");
+  if(!stack)return;
+
+  let order=[];
+  try{
+    order=JSON.parse(
+      localStorage.getItem(NOVA_PANEL_ORDER_KEY) || "[]"
+    );
+  }catch(error){
+    order=[];
+  }
+
+  if(!Array.isArray(order) || !order.length){
+    return;
+  }
+
+  const panels=Array.from(
+    stack.querySelectorAll(":scope > .panel")
+  );
+
+  const byKey=new Map(
+    panels.map(panel=>[novaPanelKey(panel),panel])
+  );
+
+  order.forEach(key=>{
+    const panel=byKey.get(key);
+    if(panel){
+      stack.appendChild(panel);
+      byKey.delete(key);
+    }
+  });
+
+  /* Any future/new panels not in the saved order remain available. */
+  byKey.forEach(panel=>stack.appendChild(panel));
+}
+
+function initializeNovaPanelReordering(){
+  const stack=document.querySelector(".novaPanelStack");
+  if(!stack)return;
+
+  restoreNovaPanelOrder();
+
+  const panels=Array.from(
+    stack.querySelectorAll(":scope > .panel")
+  );
+
+  panels.forEach(panel=>{
+    const header=panel.querySelector(":scope > .panelHeader");
+    if(!header)return;
+
+    header.draggable=true;
+    header.title="Drag to rearrange this panel";
+
+    header.addEventListener("dragstart",event=>{
+      novaDraggedPanel=panel;
+      panel.classList.add("novaPanelDragging");
+
+      if(event.dataTransfer){
+        event.dataTransfer.effectAllowed="move";
+        event.dataTransfer.setData("text/plain",novaPanelKey(panel));
+      }
+    });
+
+    header.addEventListener("dragend",()=>{
+      panel.classList.remove("novaPanelDragging");
+      panels.forEach(p=>p.classList.remove("novaPanelDropTarget"));
+      novaDraggedPanel=null;
+      saveNovaPanelOrder();
+    });
+
+    panel.addEventListener("dragover",event=>{
+      if(!novaDraggedPanel || novaDraggedPanel===panel)return;
+      event.preventDefault();
+      panel.classList.add("novaPanelDropTarget");
+
+      if(event.dataTransfer){
+        event.dataTransfer.dropEffect="move";
+      }
+    });
+
+    panel.addEventListener("dragleave",()=>{
+      panel.classList.remove("novaPanelDropTarget");
+    });
+
+    panel.addEventListener("drop",event=>{
+      if(!novaDraggedPanel || novaDraggedPanel===panel)return;
+      event.preventDefault();
+
+      panel.classList.remove("novaPanelDropTarget");
+
+      const rect=panel.getBoundingClientRect();
+      const after=event.clientY > rect.top + rect.height/2;
+
+      if(after){
+        panel.after(novaDraggedPanel);
+      }else{
+        panel.before(novaDraggedPanel);
+      }
+
+      saveNovaPanelOrder();
+    });
+  });
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeNovaPanelReordering
+);
 
 </script>
 </body>
