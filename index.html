@@ -1766,7 +1766,7 @@ body.columnResizing *{
 
 
 /* ============================================================
-   DESKTOP CAMERA MONITOR
+
    ============================================================ */
 .cameraMonitor{margin-bottom:16px;}
 .cameraViewport{position:relative;width:100%;aspect-ratio:16/9;background:#020406;border:1px solid #1c2732;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
@@ -2120,6 +2120,90 @@ body.novaMusicAlive .novaParticles{
 #novaIrisSecondary{margin-top:4px;font-size:clamp(8px,.72vw,11px);color:var(--text);white-space:normal}
 #novaIrisResponse{margin-top:5px;font-size:clamp(8px,.7vw,10px);color:var(--green);max-height:36px;overflow:hidden;white-space:normal}
 
+
+/* ============================================================
+   NOVA FULL-PANEL PRESENCE
+   ============================================================ */
+.novaUnifiedConsole .novaLeftHome{
+  width:100% !important;
+  min-height:430px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px 10px 8px !important;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(0,229,255,.10),transparent 34%),
+    radial-gradient(circle at 50% 52%,rgba(255,0,255,.06),transparent 48%);
+}
+.novaUnifiedConsole #novaCoreContainer{
+  width:min(100%,760px) !important;
+  height:400px !important;
+  margin:0 auto !important;
+}
+.novaUnifiedConsole #novaPedestal{
+  width:380px !important;
+  height:180px !important;
+  bottom:62px !important;
+}
+.novaUnifiedConsole #novaThroneRing,
+.novaUnifiedConsole #novaGlyphLayer{
+  width:330px !important;
+  height:330px !important;
+}
+.novaUnifiedConsole #novaConduits{
+  width:260px !important;
+  height:180px !important;
+}
+.novaUnifiedConsole #novaOrb{
+  width:350px !important;
+  height:350px !important;
+}
+.novaUnifiedConsole .novaOuterRing,
+.novaUnifiedConsole .novaParticles{
+  width:350px !important;
+  height:350px !important;
+}
+.novaUnifiedConsole .novaInnerRing{
+  width:270px !important;
+  height:270px !important;
+}
+.novaUnifiedConsole .novaIris{
+  width:245px !important;
+  height:205px !important;
+}
+.novaUnifiedConsole .novaWaveform{
+  width:300px !important;
+  height:300px !important;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  width:88% !important;
+  max-width:220px !important;
+}
+.novaUnifiedConsole #novaIrisPrimary{
+  font-size:22px !important;
+}
+.novaUnifiedConsole #novaIrisSecondary{
+  font-size:11px !important;
+  line-height:1.3 !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  font-size:11px !important;
+  line-height:1.3 !important;
+  max-height:58px !important;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole .novaLeftHome{min-height:340px !important}
+  .novaUnifiedConsole #novaCoreContainer{height:320px !important}
+  .novaUnifiedConsole #novaOrb,
+  .novaUnifiedConsole .novaOuterRing,
+  .novaUnifiedConsole .novaParticles{width:280px !important;height:280px !important}
+  .novaUnifiedConsole .novaInnerRing{width:215px !important;height:215px !important}
+  .novaUnifiedConsole .novaIris{width:205px !important;height:170px !important}
+  .novaUnifiedConsole .novaWaveform{width:240px !important;height:240px !important}
+  .novaUnifiedConsole #novaThroneRing,
+  .novaUnifiedConsole #novaGlyphLayer{width:270px !important;height:270px !important}
+}
+
 </style>
 </head>
 <body>
@@ -2135,7 +2219,7 @@ body.novaMusicAlive .novaParticles{
 <div class="mainGrid novaSingleStack">
 <div class="novaTopStack">
 
- NOVA COMMAND CONSOLE - ALWAYS VISIBLE 
+
 <div class="panel card novaUnifiedConsole">
 <div class="novaLeftHome">
 <div id="novaCoreContainer">
@@ -2175,8 +2259,8 @@ body.novaMusicAlive .novaParticles{
 </div>
 <div class="novaPanelStack">
 
- TOP CENTER: NOVA CALENDAR + MEDIA CENTER 
- NOVA CALENDAR 
+
+
 <div class="panel mediaPanel startExpandedPanel" id="novaCalendarPanelSource" style="display:none">
 <div class="panelHeader">NOVA CALENDAR</div>
 <div class="panelBody">
@@ -2258,7 +2342,7 @@ body.novaMusicAlive .novaParticles{
 </div>
 </div>
 </div>
- MEDIA CENTER 
+
 <div class="panel mediaPanel startExpandedPanel">
 <div class="panelHeader">MEDIA CENTER</div>
 <div class="panelBody">
@@ -2332,7 +2416,7 @@ body.novaMusicAlive .novaParticles{
 </div>
 </div>
 </div>
- DESKTOP CAMERA MONITOR 
+
 <div class="panel card cameraMonitor">
 <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
 <div class="panelBody">
@@ -2354,7 +2438,7 @@ body.novaMusicAlive .novaParticles{
 <canvas class="cameraSnapshot" id="desktopCameraSnapshot"></canvas>
 </div>
 </div>
- NOVA BROWSER 
+
 <div class="panel card">
 <div class="panelHeader">NOVA BROWSER</div>
 <div class="panelBody">
@@ -2380,7 +2464,7 @@ body.novaMusicAlive .novaParticles{
         VOICE: “SEARCH GOOGLE FOR ARDUINO MEGA” • “OPEN GOOGLE” • “OPEN GMAIL” • “OPEN YOUTUBE”
       </div>
 </div>
-</div> AMOMII ONE CONTROLLER 
+</div>
 <div class="panel card">
 <div class="panelHeader controllerHeader" onclick="toggleController()">
 <span>AMOMII ONE CONTROLLER</span>
@@ -2431,7 +2515,7 @@ body.novaMusicAlive .novaParticles{
 </div>
 </div>
 </div>
- RSR TRAINER ONE CONTROLLER 
+
 <div class="panel card rsrTrainerController">
 <div class="panelHeader">RSR TRAINER ONE CONTROLLER</div>
 <div class="panelBody">
@@ -4021,10 +4105,7 @@ function initializeVoice(){
 
     recognitionRunning = true;
 
-    document.getElementById(
-      "recognitionState"
-    ).textContent =
-      "LISTENING";
+    (()=>{const el=document.getElementById("recognitionState");if(el)el.textContent="LISTENING";})();
 
     document.getElementById(
       "voiceText"
@@ -4047,10 +4128,7 @@ function initializeVoice(){
 
     recognitionRunning = false;
 
-    document.getElementById(
-      "recognitionState"
-    ).textContent =
-      "OFF";
+    (()=>{const el=document.getElementById("recognitionState");if(el)el.textContent="OFF";})();
 
     voiceOrb.classList.remove(
       "listening"
@@ -4281,10 +4359,7 @@ function updateVoiceUI(){
         "OFF";
     }
 
-    document.getElementById(
-      "recognitionState"
-    ).textContent =
-      "OFF";
+    (()=>{const el=document.getElementById("recognitionState");if(el)el.textContent="OFF";})();
 
   }
 
@@ -4440,10 +4515,7 @@ function speakNext(){
 
     isSpeaking = false;
 
-    document.getElementById(
-      "speakingState"
-    ).textContent =
-      "NO";
+    (()=>{const el=document.getElementById("speakingState");if(el)el.textContent="NO";})();
 
     resumeRecognitionAfterSpeech();
 
@@ -4458,18 +4530,15 @@ function speakNext(){
 
   isSpeaking = true;
 
-  document.getElementById(
-    "speakingState"
-  ).textContent =
-    "YES";
+  (()=>{const el=document.getElementById("speakingState");if(el)el.textContent="YES";})();
 
   stopRecognitionForSpeech();
 
  const utterance =
   new SpeechSynthesisUtterance(text);
 
-utterance.rate = 0.88;
-utterance.pitch = 1.04;
+utterance.rate = 0.86;
+utterance.pitch = 1.08;
 utterance.volume = 1;
 
   const voices =
@@ -4479,12 +4548,12 @@ utterance.volume = 1;
   voices.find(v =>
     v.lang &&
     v.lang.toLowerCase().startsWith("en-us") &&
-    /female|woman|zira|samantha|karen|victoria|ava|allison|susan/i.test(v.name)
+    /aria|jenny|zira|samantha|ava|allison|victoria|karen|susan|female|woman/i.test(v.name)
   ) ||
   voices.find(v =>
     v.lang &&
     v.lang.toLowerCase().startsWith("en") &&
-    /female|woman|zira|samantha|karen|victoria|ava|allison|susan/i.test(v.name)
+    /aria|jenny|zira|samantha|ava|allison|victoria|karen|susan|female|woman/i.test(v.name)
   ) ||
   voices.find(v =>
     v.lang &&
@@ -4514,10 +4583,7 @@ if(preferred){
 
     isSpeaking = false;
 
-    document.getElementById(
-      "speakingState"
-    ).textContent =
-      "NO";
+    (()=>{const el=document.getElementById("speakingState");if(el)el.textContent="NO";})();
 
     speakNext();
 
@@ -4551,8 +4617,7 @@ function handleVoiceInput(rawText){
 
   lastVoiceCommand = text;
 
-  document.getElementById("voiceLastShort").textContent =
-    text.slice(0, 45);
+  (()=>{const el=document.getElementById("voiceLastShort");if(el)el.textContent=text.slice(0, 45);})();
 
   log(`Voice: "${text}"`, "voice");
 
@@ -9857,7 +9922,7 @@ requestAnimationFrame(restoreColumnLayout);
 
 
 /* ============================================================
-   DESKTOP CAMERA MONITOR
+
    Local USB / built-in cameras via browser MediaDevices API.
    ============================================================ */
 let desktopCameraStream = null;
