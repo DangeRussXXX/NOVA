@@ -1821,83 +1821,106 @@ body.irisMediaPlaying .novaIris{filter:drop-shadow(0 0 14px rgba(0,255,255,.45))
 
 
 /* ============================================================
-   NOVA STAGE 6B - REAL AUDIO REACTIVE IRIS
-   Built on confirmed-working Stage 5 media loader.
+   STAGE 6C - MEDIA UNDER NOVA + GUARANTEED MUSIC LIFE MODE
    ============================================================ */
 
-#novaOrb{
-  overflow:visible;
-  will-change:transform,filter;
+.mediaNativePicker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
 }
 
-.novaOuterRing,
-.novaInnerRing,
-.novaIris,
-.novaWaveform,
-.novaParticles{
-  will-change:transform,filter,opacity;
+#musicDropZone{
+  min-height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.novaReactiveHalo{
+#musicDropZone.dragOver,
+.mediaPanel.musicDragActive{
+  border-color:var(--cyan) !important;
+  box-shadow:0 0 22px rgba(0,229,255,.22);
+}
+
+.novaMusicPulseRing{
   position:absolute;
-  left:50%;
-  top:50%;
-  width:260px;
-  height:260px;
-  margin-left:-130px;
-  margin-top:-130px;
+  width:205px;
+  height:205px;
   border-radius:50%;
-  pointer-events:none;
+  border:2px solid rgba(0,229,255,.65);
+  box-shadow:
+    0 0 18px rgba(0,229,255,.65),
+    inset 0 0 18px rgba(255,0,255,.18);
   opacity:0;
-  transition:opacity .2s ease;
-  z-index:4;
+  pointer-events:none;
+  z-index:2;
 }
 
-body.novaAudioAlive .novaReactiveHalo{
+body.novaMusicAlive .novaMusicPulseRing{
   opacity:1;
+  animation:novaMusicPulse 650ms ease-in-out infinite alternate;
 }
 
-.novaReactiveHalo i{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:4px;
-  height:24px;
-  margin-left:-2px;
-  margin-top:-130px;
-  border-radius:999px;
-  transform-origin:2px 130px;
-  background:linear-gradient(to top,rgba(0,229,255,.18),rgba(0,229,255,1),rgba(255,0,255,.95));
-  box-shadow:0 0 10px rgba(0,229,255,.8);
+body.novaMusicAlive .novaOuterRing{
+  animation:novaOuterMusic 780ms ease-in-out infinite alternate !important;
 }
 
-.novaReactiveHalo i:nth-child(1){transform:rotate(0deg)}
-.novaReactiveHalo i:nth-child(2){transform:rotate(15deg)}
-.novaReactiveHalo i:nth-child(3){transform:rotate(30deg)}
-.novaReactiveHalo i:nth-child(4){transform:rotate(45deg)}
-.novaReactiveHalo i:nth-child(5){transform:rotate(60deg)}
-.novaReactiveHalo i:nth-child(6){transform:rotate(75deg)}
-.novaReactiveHalo i:nth-child(7){transform:rotate(90deg)}
-.novaReactiveHalo i:nth-child(8){transform:rotate(105deg)}
-.novaReactiveHalo i:nth-child(9){transform:rotate(120deg)}
-.novaReactiveHalo i:nth-child(10){transform:rotate(135deg)}
-.novaReactiveHalo i:nth-child(11){transform:rotate(150deg)}
-.novaReactiveHalo i:nth-child(12){transform:rotate(165deg)}
-.novaReactiveHalo i:nth-child(13){transform:rotate(180deg)}
-.novaReactiveHalo i:nth-child(14){transform:rotate(195deg)}
-.novaReactiveHalo i:nth-child(15){transform:rotate(210deg)}
-.novaReactiveHalo i:nth-child(16){transform:rotate(225deg)}
-.novaReactiveHalo i:nth-child(17){transform:rotate(240deg)}
-.novaReactiveHalo i:nth-child(18){transform:rotate(255deg)}
-.novaReactiveHalo i:nth-child(19){transform:rotate(270deg)}
-.novaReactiveHalo i:nth-child(20){transform:rotate(285deg)}
-.novaReactiveHalo i:nth-child(21){transform:rotate(300deg)}
-.novaReactiveHalo i:nth-child(22){transform:rotate(315deg)}
-.novaReactiveHalo i:nth-child(23){transform:rotate(330deg)}
-.novaReactiveHalo i:nth-child(24){transform:rotate(345deg)}
+body.novaMusicAlive .novaInnerRing{
+  animation:novaInnerMusic 520ms ease-in-out infinite alternate !important;
+}
 
-body.novaAudioAlive #novaCoreContainer{
-  filter:drop-shadow(0 0 14px rgba(0,229,255,.30));
+body.novaMusicAlive .novaIris{
+  animation:novaIrisMusic 430ms ease-in-out infinite alternate !important;
+  clip-path:ellipse(62% 58% at 50% 50%);
+}
+
+body.novaMusicAlive .novaWaveform{
+  animation:novaWaveMusic 360ms ease-in-out infinite alternate !important;
+}
+
+body.novaMusicAlive .novaParticles{
+  animation:novaParticlesMusic 900ms linear infinite !important;
+}
+
+@keyframes novaMusicPulse{
+  from{
+    transform:scale(.92);
+    opacity:.35;
+    filter:brightness(1);
+  }
+  to{
+    transform:scale(1.14);
+    opacity:1;
+    filter:brightness(1.8);
+  }
+}
+
+@keyframes novaOuterMusic{
+  from{transform:scale(.96) rotate(-4deg);filter:brightness(1)}
+  to{transform:scale(1.12) rotate(4deg);filter:brightness(1.8)}
+}
+
+@keyframes novaInnerMusic{
+  from{transform:scale(.92) rotate(5deg)}
+  to{transform:scale(1.15) rotate(-5deg)}
+}
+
+@keyframes novaIrisMusic{
+  from{transform:scaleX(.92) scaleY(.86);filter:brightness(1.1) saturate(1)}
+  to{transform:scaleX(1.12) scaleY(1.20);filter:brightness(2) saturate(1.7)}
+}
+
+@keyframes novaWaveMusic{
+  from{transform:scale(.88);opacity:.35}
+  to{transform:scale(1.22);opacity:1}
+}
+
+@keyframes novaParticlesMusic{
+  from{transform:rotate(0deg) scale(.95);filter:brightness(1)}
+  50%{transform:rotate(180deg) scale(1.12);filter:brightness(2)}
+  to{transform:rotate(360deg) scale(.95);filter:brightness(1)}
 }
 
 </style>
@@ -1945,11 +1968,7 @@ body.novaAudioAlive #novaCoreContainer{
           <div class="novaIris"><div class="novaName">NOVA</div></div>
           <div class="novaWaveform"></div>
           <div class="novaParticles"></div>
-          <div id="novaReactiveHalo" class="novaReactiveHalo" aria-hidden="true">
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
+          <div id="novaMusicPulseRing" class="novaMusicPulseRing"></div>
         </div>
       </div>
     </div>
@@ -1988,6 +2007,82 @@ body.novaAudioAlive #novaCoreContainer{
       <div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
     </div></div>
   </div>
+  <!-- MEDIA CENTER -->
+  <div class="panel mediaPanel">
+    <div class="panelHeader">MEDIA CENTER</div>
+    <div class="panelBody">
+      <div class="mediaTabs">
+        <button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
+        <button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
+        <button class="tab" data-tab="youtube" onclick="showMediaTab('youtube')">YOUTUBE</button>
+      </div>
+
+      <div id="musicSection" class="mediaSection active">
+        <div class="mediaFileRow">
+          <label class="control primary mediaNativePicker" for="musicFiles">ADD MUSIC</label>
+          <button class="control" type="button" onclick="linkMusicFolder()">LINK MUSIC FOLDER</button>
+          <button id="refreshMusicFolderButton" class="control" type="button" onclick="refreshLinkedMusicFolder()" style="display:none">REFRESH FOLDER</button>
+          <input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple hidden>
+          <input id="musicFolderFallback" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" webkitdirectory directory multiple hidden>
+          <span id="musicCount" class="voiceSubtitle">0 tracks</span>
+        </div>
+        <div id="musicFolderStatus" class="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
+        <div id="musicDropZone" class="musicDropZone">
+          DRAG &amp; DROP MUSIC FILES OR A MUSIC FOLDER HERE
+        </div>
+        <audio id="audioPlayer" controls></audio>
+        <div class="mediaControls">
+          <button onclick="previousMusic()">PREVIOUS</button>
+          <button onclick="toggleMusic()">PLAY / PAUSE</button>
+          <button onclick="stopMusic()">STOP</button>
+          <button onclick="nextMusic()">NEXT</button>
+          <button onclick="toggleShuffle()">SHUFFLE: <span id="shuffleText">OFF</span></button>
+          <button onclick="toggleRepeat()">REPEAT: <span id="repeatText">OFF</span></button>
+        </div>
+        <div style="margin-top:10px">
+          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
+          <input id="musicVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
+        </div>
+        <div id="musicList" class="mediaList"></div>
+      </div>
+
+      <div id="videoSection" class="mediaSection">
+        <div class="mediaFileRow">
+          <label class="fileButton">ADD VIDEOS<input id="videoFiles" type="file" accept="video/*" multiple></label>
+          <span id="videoCount" class="voiceSubtitle">0 videos</span>
+        </div>
+        <video id="videoPlayer" controls></video>
+        <div class="mediaControls">
+          <button onclick="previousVideo()">PREVIOUS</button>
+          <button onclick="toggleVideo()">PLAY / PAUSE</button>
+          <button onclick="stopVideo()">STOP</button>
+          <button onclick="nextVideo()">NEXT</button>
+        </div>
+        <div style="margin-top:10px">
+          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
+          <input id="videoVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
+        </div>
+        <div id="videoList" class="mediaList"></div>
+      </div>
+
+      <div id="youtubeSection" class="mediaSection">
+        <div class="youtubeRow">
+          <input id="youtubeInput" type="text" placeholder="Paste YouTube URL or video ID">
+          <button class="control primary" onclick="loadYouTube()">LOAD</button>
+        </div>
+        <div class="videoWrap" style="margin-top:10px">
+          <iframe id="youtubeFrame" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="mediaControls">
+          <button onclick="youtubeCommand('playVideo')">PLAY</button>
+          <button onclick="youtubeCommand('pauseVideo')">PAUSE</button>
+          <button onclick="youtubeCommand('stopVideo')">STOP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <!-- CENTER COLUMN -->
@@ -2161,81 +2256,6 @@ body.novaAudioAlive #novaCoreContainer{
       <div class="profileRow"><span>Assistant</span><span id="profileAssistantName">NOVA</span></div>
       <div class="profileRow"><span>Board</span><span>AMOMII ONE</span></div>
       <div class="profileRow"><span>Voice</span><span id="profileVoice">READY</span></div>
-    </div>
-  </div>
-
-  <!-- MEDIA CENTER -->
-  <div class="panel mediaPanel">
-    <div class="panelHeader">MEDIA CENTER</div>
-    <div class="panelBody">
-      <div class="mediaTabs">
-        <button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
-        <button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
-        <button class="tab" data-tab="youtube" onclick="showMediaTab('youtube')">YOUTUBE</button>
-      </div>
-
-      <div id="musicSection" class="mediaSection active">
-        <div class="mediaFileRow">
-          <button class="control primary" type="button" onclick="openMusicFilePicker()">ADD MUSIC</button>
-          <button class="control" type="button" onclick="linkMusicFolder()">LINK MUSIC FOLDER</button>
-          <button id="refreshMusicFolderButton" class="control" type="button" onclick="refreshLinkedMusicFolder()" style="display:none">REFRESH FOLDER</button>
-          <input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple hidden>
-          <input id="musicFolderFallback" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" webkitdirectory directory multiple hidden>
-          <span id="musicCount" class="voiceSubtitle">0 tracks</span>
-        </div>
-        <div id="musicFolderStatus" class="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
-        <div id="musicDropZone" class="musicDropZone">
-          DRAG &amp; DROP MUSIC FILES OR A MUSIC FOLDER HERE
-        </div>
-        <audio id="audioPlayer" controls></audio>
-        <div class="mediaControls">
-          <button onclick="previousMusic()">PREVIOUS</button>
-          <button onclick="toggleMusic()">PLAY / PAUSE</button>
-          <button onclick="stopMusic()">STOP</button>
-          <button onclick="nextMusic()">NEXT</button>
-          <button onclick="toggleShuffle()">SHUFFLE: <span id="shuffleText">OFF</span></button>
-          <button onclick="toggleRepeat()">REPEAT: <span id="repeatText">OFF</span></button>
-        </div>
-        <div style="margin-top:10px">
-          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
-          <input id="musicVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
-        </div>
-        <div id="musicList" class="mediaList"></div>
-      </div>
-
-      <div id="videoSection" class="mediaSection">
-        <div class="mediaFileRow">
-          <label class="fileButton">ADD VIDEOS<input id="videoFiles" type="file" accept="video/*" multiple></label>
-          <span id="videoCount" class="voiceSubtitle">0 videos</span>
-        </div>
-        <video id="videoPlayer" controls></video>
-        <div class="mediaControls">
-          <button onclick="previousVideo()">PREVIOUS</button>
-          <button onclick="toggleVideo()">PLAY / PAUSE</button>
-          <button onclick="stopVideo()">STOP</button>
-          <button onclick="nextVideo()">NEXT</button>
-        </div>
-        <div style="margin-top:10px">
-          <label style="font-size:10px;color:var(--muted)">VOLUME</label>
-          <input id="videoVolume" type="range" min="0" max="1" step=".01" value=".8" style="width:100%">
-        </div>
-        <div id="videoList" class="mediaList"></div>
-      </div>
-
-      <div id="youtubeSection" class="mediaSection">
-        <div class="youtubeRow">
-          <input id="youtubeInput" type="text" placeholder="Paste YouTube URL or video ID">
-          <button class="control primary" onclick="loadYouTube()">LOAD</button>
-        </div>
-        <div class="videoWrap" style="margin-top:10px">
-          <iframe id="youtubeFrame" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <div class="mediaControls">
-          <button onclick="youtubeCommand('playVideo')">PLAY</button>
-          <button onclick="youtubeCommand('pauseVideo')">PAUSE</button>
-          <button onclick="youtubeCommand('stopVideo')">STOP</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -9016,119 +9036,50 @@ document.addEventListener("DOMContentLoaded", () => {
     <script src="nova.js">
 
 /* ============================================================
-   NOVA STAGE 6B - AUDIO REACTIVE ENGINE
-   Isolated from the Stage 5 music library controls.
+   STAGE 6C - NOVA MUSIC LIFE HOOKS
    ============================================================ */
 
-let novaReactiveContext = null;
-let novaReactiveAnalyser = null;
-let novaReactiveData = null;
-let novaReactiveSource = null;
-let novaReactiveElement = null;
-let novaReactiveAnimation = 0;
+let novaLifeAudioContext = null;
+let novaLifeAnalyser = null;
+let novaLifeSource = null;
+let novaLifeData = null;
+let novaLifeFrame = 0;
 
-function novaAverageBand(data,start,end){
-  let total = 0;
-  let count = 0;
+function setNovaMusicAlive(alive){
 
-  for(
-    let i = start;
-    i < end && i < data.length;
-    i++
-  ){
-    total += data[i];
-    count++;
-  }
-
-  return count
-    ? total / count / 255
-    : 0;
-}
-
-function novaResetReactiveLook(){
-
-  document.body.classList.remove(
-    "novaAudioAlive"
+  document.body.classList.toggle(
+    "novaMusicAlive",
+    !!alive
   );
 
-  const orb =
-    document.getElementById(
-      "novaOrb"
-    );
+  if(!alive){
 
-  const outer =
-    document.querySelector(
-      ".novaOuterRing"
-    );
+    const orb =
+      document.getElementById(
+        "novaOrb"
+      );
 
-  const inner =
-    document.querySelector(
-      ".novaInnerRing"
-    );
+    if(orb){
+      orb.style.filter = "";
+    }
 
-  const iris =
-    document.querySelector(
-      ".novaIris"
-    );
+    const pulse =
+      document.getElementById(
+        "novaMusicPulseRing"
+      );
 
-  const wave =
-    document.querySelector(
-      ".novaWaveform"
-    );
+    if(pulse){
+      pulse.style.boxShadow = "";
+    }
 
-  const particles =
-    document.querySelector(
-      ".novaParticles"
-    );
-
-  if(orb){
-    orb.style.transform = "";
-    orb.style.filter = "";
   }
-
-  if(outer){
-    outer.style.transform = "";
-    outer.style.filter = "";
-  }
-
-  if(inner){
-    inner.style.transform = "";
-    inner.style.filter = "";
-  }
-
-  if(iris){
-    iris.style.transform = "";
-    iris.style.filter = "";
-  }
-
-  if(wave){
-    wave.style.transform = "";
-    wave.style.opacity = "";
-  }
-
-  if(particles){
-    particles.style.transform = "";
-    particles.style.opacity = "";
-    particles.style.filter = "";
-  }
-
-  document
-    .querySelectorAll(
-      ".novaReactiveHalo i"
-    )
-    .forEach(
-      (bar,index) => {
-        bar.style.transform =
-          `rotate(${index * 15}deg) scaleY(1)`;
-        bar.style.opacity = ".25";
-      }
-    );
 }
 
-async function novaConnectReactiveMedia(media){
+async function startNovaAudioLife(audio){
+
+  setNovaMusicAlive(true);
 
   if(
-    !media ||
     !(
       window.AudioContext ||
       window.webkitAudioContext
@@ -9139,260 +9090,147 @@ async function novaConnectReactiveMedia(media){
 
   try{
 
-    if(
-      novaReactiveElement &&
-      novaReactiveElement !== media
-    ){
-      return;
-    }
-
-    if(!novaReactiveContext){
+    if(!novaLifeAudioContext){
 
       const AudioContextClass =
         window.AudioContext ||
         window.webkitAudioContext;
 
-      novaReactiveContext =
+      novaLifeAudioContext =
         new AudioContextClass();
 
-      novaReactiveAnalyser =
-        novaReactiveContext
+      novaLifeAnalyser =
+        novaLifeAudioContext
           .createAnalyser();
 
-      novaReactiveAnalyser.fftSize =
-        256;
+      novaLifeAnalyser.fftSize =
+        128;
 
-      novaReactiveAnalyser
+      novaLifeAnalyser
         .smoothingTimeConstant =
-        .68;
+        .78;
 
-      novaReactiveData =
+      novaLifeData =
         new Uint8Array(
-          novaReactiveAnalyser
+          novaLifeAnalyser
             .frequencyBinCount
         );
 
-      novaReactiveElement =
-        media;
-
-      novaReactiveSource =
-        novaReactiveContext
+      novaLifeSource =
+        novaLifeAudioContext
           .createMediaElementSource(
-            media
+            audio
           );
 
-      novaReactiveSource.connect(
-        novaReactiveAnalyser
+      novaLifeSource.connect(
+        novaLifeAnalyser
       );
 
-      novaReactiveAnalyser.connect(
-        novaReactiveContext.destination
+      novaLifeAnalyser.connect(
+        novaLifeAudioContext.destination
       );
+
     }
 
     if(
-      novaReactiveContext.state ===
+      novaLifeAudioContext.state ===
       "suspended"
     ){
-      await novaReactiveContext.resume();
+      await novaLifeAudioContext.resume();
     }
 
-    document.body.classList.add(
-      "novaAudioAlive"
-    );
+    if(!novaLifeFrame){
 
-    novaStartReactiveAnimation();
+      const animate =
+        () => {
+
+          novaLifeFrame =
+            requestAnimationFrame(
+              animate
+            );
+
+          if(
+            audio.paused ||
+            !novaLifeAnalyser ||
+            !novaLifeData
+          ){
+            return;
+          }
+
+          novaLifeAnalyser
+            .getByteFrequencyData(
+              novaLifeData
+            );
+
+          let bassTotal = 0;
+
+          for(
+            let i = 1;
+            i < 10;
+            i++
+          ){
+            bassTotal +=
+              novaLifeData[i];
+          }
+
+          const bass =
+            bassTotal /
+            9 /
+            255;
+
+          let total = 0;
+
+          for(
+            let i = 0;
+            i < novaLifeData.length;
+            i++
+          ){
+            total +=
+              novaLifeData[i];
+          }
+
+          const energy =
+            total /
+            novaLifeData.length /
+            255;
+
+          const orb =
+            document.getElementById(
+              "novaOrb"
+            );
+
+          if(orb){
+            orb.style.filter =
+              `brightness(${1 + energy * 1.25}) drop-shadow(0 0 ${8 + bass * 28}px rgba(0,229,255,.85))`;
+          }
+
+          const pulse =
+            document.getElementById(
+              "novaMusicPulseRing"
+            );
+
+          if(pulse){
+            pulse.style.boxShadow =
+              `0 0 ${18 + bass * 45}px rgba(0,229,255,.9), inset 0 0 ${10 + energy * 25}px rgba(255,0,255,.45)`;
+          }
+
+        };
+
+      animate();
+
+    }
 
   }catch(error){
 
     console.warn(
-      "NOVA reactive audio:",
+      "NOVA audio analyser unavailable; visual life mode remains active.",
       error
     );
 
   }
 }
 
-function novaStartReactiveAnimation(){
-
-  if(novaReactiveAnimation){
-    return;
-  }
-
-  function frame(){
-
-    novaReactiveAnimation =
-      requestAnimationFrame(
-        frame
-      );
-
-    if(
-      !novaReactiveAnalyser ||
-      !novaReactiveData ||
-      !novaReactiveElement ||
-      novaReactiveElement.paused
-    ){
-      return;
-    }
-
-    novaReactiveAnalyser
-      .getByteFrequencyData(
-        novaReactiveData
-      );
-
-    const bass =
-      novaAverageBand(
-        novaReactiveData,
-        1,
-        12
-      );
-
-    const mid =
-      novaAverageBand(
-        novaReactiveData,
-        12,
-        42
-      );
-
-    const high =
-      novaAverageBand(
-        novaReactiveData,
-        42,
-        105
-      );
-
-    const energy =
-      Math.min(
-        1,
-        bass * .50 +
-        mid * .32 +
-        high * .18
-      );
-
-    const orb =
-      document.getElementById(
-        "novaOrb"
-      );
-
-    const outer =
-      document.querySelector(
-        ".novaOuterRing"
-      );
-
-    const inner =
-      document.querySelector(
-        ".novaInnerRing"
-      );
-
-    const iris =
-      document.querySelector(
-        ".novaIris"
-      );
-
-    const wave =
-      document.querySelector(
-        ".novaWaveform"
-      );
-
-    const particles =
-      document.querySelector(
-        ".novaParticles"
-      );
-
-    if(orb){
-      orb.style.transform =
-        `scale(${1 + bass * .10})`;
-
-      orb.style.filter =
-        `brightness(${1 + energy * .7})`;
-    }
-
-    if(outer){
-      outer.style.transform =
-        `scale(${1 + bass * .18}) rotate(${mid * 10}deg)`;
-
-      outer.style.filter =
-        `brightness(${1 + energy * 1.5})`;
-    }
-
-    if(inner){
-      inner.style.transform =
-        `scale(${1 + mid * .20}) rotate(${-high * 16}deg)`;
-
-      inner.style.filter =
-        `brightness(${1 + mid * 1.6})`;
-    }
-
-    if(iris){
-      iris.style.transform =
-        `scaleX(${1 + mid * .16}) scaleY(${1 + bass * .28})`;
-
-      iris.style.filter =
-        `brightness(${1 + energy * 1.8}) saturate(${1 + high})`;
-    }
-
-    if(wave){
-      wave.style.transform =
-        `scale(${1 + energy * .25}) rotate(${high * 16}deg)`;
-
-      wave.style.opacity =
-        String(
-          .45 + energy * .55
-        );
-    }
-
-    if(particles){
-      particles.style.transform =
-        `scale(${1 + high * .18}) rotate(${-high * 12}deg)`;
-
-      particles.style.opacity =
-        String(
-          .30 + energy * .70
-        );
-
-      particles.style.filter =
-        `brightness(${1 + energy * 2})`;
-    }
-
-    const bars =
-      document.querySelectorAll(
-        ".novaReactiveHalo i"
-      );
-
-    bars.forEach(
-      (bar,index) => {
-
-        const dataIndex =
-          Math.min(
-            novaReactiveData.length - 1,
-            2 +
-            Math.floor(
-              index /
-              bars.length *
-              100
-            )
-          );
-
-        const value =
-          novaReactiveData[dataIndex] /
-          255;
-
-        bar.style.transform =
-          `rotate(${index * 15}deg) scaleY(${.35 + value * 3.4})`;
-
-        bar.style.opacity =
-          String(
-            .22 + value * .78
-          );
-
-      }
-    );
-  }
-
-  frame();
-}
-
-function initializeNovaReactiveMedia(){
+function initializeNovaMusicLife(){
 
   const audio =
     document.getElementById(
@@ -9405,37 +9243,89 @@ function initializeNovaReactiveMedia(){
 
   audio.addEventListener(
     "play",
-    () => {
-      novaConnectReactiveMedia(
-        audio
-      );
-    }
+    () => startNovaAudioLife(audio)
   );
 
   audio.addEventListener(
     "pause",
-    () => {
-
-      if(
-        audio.currentTime === 0 ||
-        audio.ended
-      ){
-        novaResetReactiveLook();
-      }
-
-    }
+    () => setNovaMusicAlive(false)
   );
 
   audio.addEventListener(
     "ended",
-    novaResetReactiveLook
+    () => setNovaMusicAlive(false)
   );
+
+  /* Make dropping anywhere on Media Center feed the existing
+     Stage 5 drop handler, while keeping the dedicated drop zone. */
+  const mediaPanel =
+    document.querySelector(
+      ".mediaPanel"
+    );
+
+  if(mediaPanel){
+
+    mediaPanel.addEventListener(
+      "dragover",
+      event => {
+        if(
+          event.dataTransfer &&
+          Array.from(
+            event.dataTransfer.types || []
+          ).includes("Files")
+        ){
+          event.preventDefault();
+          mediaPanel.classList.add(
+            "musicDragActive"
+          );
+        }
+      }
+    );
+
+    mediaPanel.addEventListener(
+      "dragleave",
+      event => {
+        if(
+          !mediaPanel.contains(
+            event.relatedTarget
+          )
+        ){
+          mediaPanel.classList.remove(
+            "musicDragActive"
+          );
+        }
+      }
+    );
+
+    mediaPanel.addEventListener(
+      "drop",
+      async event => {
+
+        event.preventDefault();
+
+        mediaPanel.classList.remove(
+          "musicDragActive"
+        );
+
+        if(
+          typeof handleMusicDrop ===
+          "function"
+        ){
+          await handleMusicDrop(
+            event
+          );
+        }
+
+      }
+    );
+
+  }
 
 }
 
 document.addEventListener(
   "DOMContentLoaded",
-  initializeNovaReactiveMedia
+  initializeNovaMusicLife
 );
 
 </script>
