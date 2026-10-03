@@ -1923,6 +1923,22 @@ body.novaMusicAlive .novaParticles{
   to{transform:rotate(360deg) scale(.95);filter:brightness(1)}
 }
 
+
+/* ============================================================
+   NOVA TWO-COLUMN CENTER WORKSPACE
+   ============================================================ */
+.mainGrid{
+  grid-template-columns:340px minmax(0,1fr);
+  gap:16px;
+}
+#columnResizer2{display:none !important;}
+.centerColumn{min-width:0;}
+.centerColumn > .panel{margin-bottom:16px;}
+@media(max-width:750px){
+  .mainGrid{grid-template-columns:1fr;}
+  #columnResizer1,#columnResizer2{display:none !important;}
+}
+
 </style>
 </head>
 
@@ -1989,8 +2005,126 @@ body.novaMusicAlive .novaParticles{
     </div>
   </div>
 
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE COMMANDS</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div class="helpList">
+      <div><b>“Connect”</b> — connect AMOMII ONE</div><div><b>“Status”</b> — board status</div><div><b>“System test”</b> — diagnostics</div><div><b>“LED on/off”</b> — LED control</div><div><b>“Blink five”</b> — blink LED</div><div><b>“SOS”</b> — SOS pattern</div><div><b>“Play music”</b> — music</div><div><b>“Next song”</b> — next track</div><div><b>“Play video”</b> — video</div><div><b>“Add event…”</b> — calendar</div><div><b>“What can you do?”</b> — help</div><div><b>“Change your name”</b> — rename assistant</div>
+    </div></div>
+  </div>
+
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA COMMAND HISTORY</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div id="commandHistory" class="history"></div></div>
+  </div>
+
+  <div class="panel card leftCollapsePanel">
+    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
+    <div class="panelBody leftCollapseBody collapsed"><div class="statList">
+      <div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
+    </div></div>
+  </div>
+
+</div>
+
+<!-- CENTER COLUMN -->
+<div class="centerColumn">
+
+  <!-- TOP CENTER: NOVA CALENDAR + MEDIA CENTER -->
+  <!-- NOVA CALENDAR -->
+  <div class="panel mediaPanel startExpandedPanel">
+    <div class="panelHeader">NOVA CALENDAR</div>
+    <div class="panelBody">
+      <div class="calendarAccountBar">
+        <div class="calendarAccountStatus">
+          <span id="calendarAccountDot" class="dot yellow"></span>
+          <span id="calendarAccountText">LOCAL CALENDAR • OUTLOOK READY</span>
+        </div>
+        <button class="control" onclick="calendarOutlookInfo()">OUTLOOK ACCOUNT</button>
+      </div>
+
+      <div class="calendarToolbar">
+        <div class="calendarToolbarGroup">
+          <button class="control primary" onclick="calendarToday()">TODAY</button>
+          <button class="control good" onclick="openCalendarEditor()">+ NEW EVENT</button>
+          <button class="control" onclick="refreshCalendar()">REFRESH</button>
+        </div>
+        <div class="calendarToolbarGroup">
+          <button id="calendarViewDay" class="control" onclick="setCalendarView('day')">DAY</button>
+          <button id="calendarViewWeek" class="control" onclick="setCalendarView('week')">WEEK</button>
+          <button id="calendarViewMonth" class="control active" onclick="setCalendarView('month')">MONTH</button>
+          <button id="calendarViewAgenda" class="control" onclick="setCalendarView('agenda')">AGENDA</button>
+        </div>
+      </div>
+
+      <div class="calendarHeader">
+        <button onclick="changeCalendarPeriod(-1)">‹</button>
+        <div id="calendarMonth" class="calendarMonth"></div>
+        <button onclick="changeCalendarPeriod(1)">›</button>
+      </div>
+
+      <div id="calendarGrid" class="calendarGrid"></div>
+      <div id="eventList" class="eventList"></div>
+
+      <div class="mediaControls">
+        <button class="control primary" onclick="voiceAddEvent()">ADD EVENT BY VOICE</button>
+        <button class="control" onclick="speakTodaysEvents()">READ TODAY</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="calendarModal" class="calendarModal" onclick="calendarModalBackdrop(event)">
+    <div class="calendarEditor" role="dialog" aria-modal="true" aria-labelledby="calendarEditorTitle">
+      <div id="calendarEditorTitle" class="panelHeader">NEW CALENDAR EVENT</div>
+      <div class="calendarEditorBody">
+        <input id="calendarEventId" type="hidden">
+
+        <label>
+          TITLE
+          <input id="calendarEventTitle" type="text" placeholder="Event title">
+        </label>
+
+        <div class="calendarEditorRow">
+          <label>
+            DATE
+            <input id="calendarEventDate" type="date">
+          </label>
+          <label>
+            START TIME
+            <input id="calendarEventTime" type="time">
+          </label>
+        </div>
+
+        <div class="calendarEditorRow">
+          <label>
+            END TIME
+            <input id="calendarEventEndTime" type="time">
+          </label>
+          <label>
+            CALENDAR
+            <input id="calendarEventCalendar" type="text" value="NOVA" disabled>
+          </label>
+        </div>
+
+        <label>
+          NOTES
+          <textarea id="calendarEventNotes" placeholder="Notes"></textarea>
+        </label>
+
+        <div class="calendarEditorActions">
+          <div>
+            <button id="calendarDeleteButton" class="control danger" onclick="deleteCalendarEventFromEditor()" style="display:none">DELETE</button>
+          </div>
+          <div>
+            <button class="control" onclick="closeCalendarEditor()">CANCEL</button>
+            <button class="control primary" onclick="saveCalendarEventFromEditor()">SAVE EVENT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
     <!-- MEDIA CENTER -->
-  <div class="panel mediaPanel">
+  <div class="panel mediaPanel startExpandedPanel">
     <div class="panelHeader">MEDIA CENTER</div>
     <div class="panelBody">
       <div class="mediaTabs">
@@ -2069,29 +2203,42 @@ body.novaMusicAlive .novaParticles{
 
 
 
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE COMMANDS</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed"><div class="helpList">
-      <div><b>“Connect”</b> — connect AMOMII ONE</div><div><b>“Status”</b> — board status</div><div><b>“System test”</b> — diagnostics</div><div><b>“LED on/off”</b> — LED control</div><div><b>“Blink five”</b> — blink LED</div><div><b>“SOS”</b> — SOS pattern</div><div><b>“Play music”</b> — music</div><div><b>“Next song”</b> — next track</div><div><b>“Play video”</b> — video</div><div><b>“Add event…”</b> — calendar</div><div><b>“What can you do?”</b> — help</div><div><b>“Change your name”</b> — rename assistant</div>
-    </div></div>
+
+  <!-- DESKTOP CAMERA MONITOR -->
+  <div class="panel card cameraMonitor">
+    <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
+    <div class="panelBody">
+      <div class="cameraViewport" id="cameraViewport">
+        <video id="desktopCameraVideo" autoplay playsinline muted></video>
+        <div id="cameraPlaceholder" class="cameraPlaceholder">CAMERA OFFLINE</div>
+      </div>
+      <select id="desktopCameraSelect" class="cameraSelect" aria-label="Desktop camera selector">
+        <option value="">DEFAULT CAMERA</option>
+      </select>
+      <div class="cameraControls">
+        <button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
+        <button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
+        <button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
+        <button class="control primary" onclick="fullscreenDesktopCamera()">FULLSCREEN</button>
+      </div>
+      <div class="cameraStatusRow"><span id="cameraStatusDot" class="dot red"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
+      <canvas id="desktopCameraSnapshot" class="cameraSnapshot"></canvas>
+    </div>
   </div>
 
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA COMMAND HISTORY</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed"><div id="commandHistory" class="history"></div></div>
+
+  <!-- PROFILE -->
+  <div class="panel card">
+    <div class="panelHeader">PROFILE</div>
+    <div class="panelBody">
+      <div class="profileName" id="profileUserName">DangeRuss</div>
+      <div class="profileRow"><span>Assistant</span><span id="profileAssistantName">NOVA</span></div>
+      <div class="profileRow"><span>Board</span><span>AMOMII ONE</span></div>
+      <div class="profileRow"><span>Voice</span><span id="profileVoice">READY</span></div>
+    </div>
   </div>
 
-  <div class="panel card leftCollapsePanel">
-    <div class="panelHeader leftCollapseHeader" onclick="toggleLeftPanel(this)"><span>NOVA VOICE ENGINE</span><span class="collapseArrow">▸</span></div>
-    <div class="panelBody leftCollapseBody collapsed"><div class="statList">
-      <div class="stat"><span>Assistant</span><span id="voiceEngineName">NOVA</span></div><div class="stat"><span>Recognition</span><span id="recognitionState">OFF</span></div><div class="stat"><span>Speaking</span><span id="speakingState">NO</span></div><div class="stat"><span>Last heard</span><span id="voiceLastShort">—</span></div>
-    </div></div>
-  </div>
 
-</div>
-
-<!-- CENTER COLUMN -->
-<div class="centerColumn">
   <!-- AMOMII ONE CONTROLLER -->
   <div class="panel card">
     <div class="panelHeader controllerHeader" onclick="toggleController()">
@@ -2102,7 +2249,7 @@ body.novaMusicAlive .novaParticles{
       </div>
     </div>
 
-    <div class="panelBody">
+    <div class="panelBody collapsed">
       <div class="buttonGrid">
         <button id="connectionButton" class="control primary full" onclick="toggleConnection()">CONNECT</button>
         <button id="boardLedButton" class="control full" onclick="toggleBoardLed()">LED</button>
@@ -2227,137 +2374,7 @@ body.novaMusicAlive .novaParticles{
 
 </div>
 
-<!-- RIGHT COLUMN -->
 
-<div class="rightColumn">
-
-  <!-- DESKTOP CAMERA MONITOR -->
-  <div class="panel card cameraMonitor">
-    <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
-    <div class="panelBody">
-      <div class="cameraViewport" id="cameraViewport">
-        <video id="desktopCameraVideo" autoplay playsinline muted></video>
-        <div id="cameraPlaceholder" class="cameraPlaceholder">CAMERA OFFLINE</div>
-      </div>
-      <select id="desktopCameraSelect" class="cameraSelect" aria-label="Desktop camera selector">
-        <option value="">DEFAULT CAMERA</option>
-      </select>
-      <div class="cameraControls">
-        <button class="control good" onclick="startDesktopCamera()">START CAMERA</button>
-        <button class="control danger" onclick="stopDesktopCamera()">STOP CAMERA</button>
-        <button class="control" onclick="snapshotDesktopCamera()">SNAPSHOT</button>
-        <button class="control primary" onclick="fullscreenDesktopCamera()">FULLSCREEN</button>
-      </div>
-      <div class="cameraStatusRow"><span id="cameraStatusDot" class="dot red"></span><span id="cameraStatusText">CAMERA OFFLINE</span></div>
-      <canvas id="desktopCameraSnapshot" class="cameraSnapshot"></canvas>
-    </div>
-  </div>
-
-  <!-- PROFILE -->
-  <div class="panel card">
-    <div class="panelHeader">PROFILE</div>
-    <div class="panelBody">
-      <div class="profileName" id="profileUserName">DangeRuss</div>
-      <div class="profileRow"><span>Assistant</span><span id="profileAssistantName">NOVA</span></div>
-      <div class="profileRow"><span>Board</span><span>AMOMII ONE</span></div>
-      <div class="profileRow"><span>Voice</span><span id="profileVoice">READY</span></div>
-    </div>
-  </div>
-
-  <!-- NOVA CALENDAR -->
-  <div class="panel mediaPanel">
-    <div class="panelHeader">NOVA CALENDAR</div>
-    <div class="panelBody">
-      <div class="calendarAccountBar">
-        <div class="calendarAccountStatus">
-          <span id="calendarAccountDot" class="dot yellow"></span>
-          <span id="calendarAccountText">LOCAL CALENDAR • OUTLOOK READY</span>
-        </div>
-        <button class="control" onclick="calendarOutlookInfo()">OUTLOOK ACCOUNT</button>
-      </div>
-
-      <div class="calendarToolbar">
-        <div class="calendarToolbarGroup">
-          <button class="control primary" onclick="calendarToday()">TODAY</button>
-          <button class="control good" onclick="openCalendarEditor()">+ NEW EVENT</button>
-          <button class="control" onclick="refreshCalendar()">REFRESH</button>
-        </div>
-        <div class="calendarToolbarGroup">
-          <button id="calendarViewDay" class="control" onclick="setCalendarView('day')">DAY</button>
-          <button id="calendarViewWeek" class="control" onclick="setCalendarView('week')">WEEK</button>
-          <button id="calendarViewMonth" class="control active" onclick="setCalendarView('month')">MONTH</button>
-          <button id="calendarViewAgenda" class="control" onclick="setCalendarView('agenda')">AGENDA</button>
-        </div>
-      </div>
-
-      <div class="calendarHeader">
-        <button onclick="changeCalendarPeriod(-1)">‹</button>
-        <div id="calendarMonth" class="calendarMonth"></div>
-        <button onclick="changeCalendarPeriod(1)">›</button>
-      </div>
-
-      <div id="calendarGrid" class="calendarGrid"></div>
-      <div id="eventList" class="eventList"></div>
-
-      <div class="mediaControls">
-        <button class="control primary" onclick="voiceAddEvent()">ADD EVENT BY VOICE</button>
-        <button class="control" onclick="speakTodaysEvents()">READ TODAY</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="calendarModal" class="calendarModal" onclick="calendarModalBackdrop(event)">
-    <div class="calendarEditor" role="dialog" aria-modal="true" aria-labelledby="calendarEditorTitle">
-      <div id="calendarEditorTitle" class="panelHeader">NEW CALENDAR EVENT</div>
-      <div class="calendarEditorBody">
-        <input id="calendarEventId" type="hidden">
-
-        <label>
-          TITLE
-          <input id="calendarEventTitle" type="text" placeholder="Event title">
-        </label>
-
-        <div class="calendarEditorRow">
-          <label>
-            DATE
-            <input id="calendarEventDate" type="date">
-          </label>
-          <label>
-            START TIME
-            <input id="calendarEventTime" type="time">
-          </label>
-        </div>
-
-        <div class="calendarEditorRow">
-          <label>
-            END TIME
-            <input id="calendarEventEndTime" type="time">
-          </label>
-          <label>
-            CALENDAR
-            <input id="calendarEventCalendar" type="text" value="NOVA" disabled>
-          </label>
-        </div>
-
-        <label>
-          NOTES
-          <textarea id="calendarEventNotes" placeholder="Notes"></textarea>
-        </label>
-
-        <div class="calendarEditorActions">
-          <div>
-            <button id="calendarDeleteButton" class="control danger" onclick="deleteCalendarEventFromEditor()" style="display:none">DELETE</button>
-          </div>
-          <div>
-            <button class="control" onclick="closeCalendarEditor()">CANCEL</button>
-            <button class="control primary" onclick="saveCalendarEventFromEditor()">SAVE EVENT</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
 
 </div>
 </div>
@@ -8946,13 +8963,27 @@ function initializeGenericPanelCollapsing(){
         return;
       }
 
+      const startExpanded =
+        header.parentElement.classList.contains(
+          "startExpandedPanel"
+        );
+
       header.classList.add(
-        "genericCollapseHeader",
-        "expanded"
+        "genericCollapseHeader"
+      );
+
+      header.classList.toggle(
+        "expanded",
+        startExpanded
       );
 
       body.classList.add(
         "genericCollapseBody"
+      );
+
+      body.classList.toggle(
+        "collapsed",
+        !startExpanded
       );
 
       if(
@@ -9012,245 +9043,134 @@ function toggleLeftPanel(header){
 }
 
 /* ============================================================
-   DRAGGABLE COLUMN WIDTHS
-   Works with the page's VISUAL column order.
-   Desktop order is LEFT -> CENTER -> RIGHT.
+   TWO COLUMN WIDTHS
    ============================================================ */
 
-const mainGrid = document.querySelector(".mainGrid");
-const columnResizer1 = document.getElementById("columnResizer1");
-const columnResizer2 = document.getElementById("columnResizer2");
-
-const COLUMN_MIN_WIDTH = 220;
-const COLUMN_LAYOUT_KEY = "novaColumnWidthsV5";
-
-let activeColumnResize = null;
-let savedDesktopWidths = null;
+const mainGrid=document.querySelector(".mainGrid");
+const columnResizer1=document.getElementById("columnResizer1");
+const columnResizer2=document.getElementById("columnResizer2");
+const COLUMN_MIN_WIDTH=260;
+const COLUMN_LAYOUT_KEY="novaTwoColumnWidthsV1";
+let activeColumnResize=null;
 
 function getVisualColumns(){
-  if(!mainGrid) return [];
-
-  return [
+  if(!mainGrid)return[];
+  return[
     mainGrid.querySelector(":scope > .leftColumn"),
-    mainGrid.querySelector(":scope > .centerColumn"),
-    mainGrid.querySelector(":scope > .rightColumn")
-  ]
-  .filter(Boolean)
-  .sort((a,b) =>
-    a.getBoundingClientRect().left -
-    b.getBoundingClientRect().left
-  );
+    mainGrid.querySelector(":scope > .centerColumn")
+  ].filter(Boolean);
 }
 
-function getCurrentColumnWidths(){
-  return getVisualColumns().map(column =>
-    Math.round(column.getBoundingClientRect().width)
-  );
-}
+function applyColumnWidths(widths,save=false){
+  if(!mainGrid||window.innerWidth<=750)return;
+  if(!Array.isArray(widths)||widths.length!==2)return;
 
-function applyColumnWidths(widths, save = false){
-  if(!mainGrid || window.innerWidth <= 1100) return;
-  if(!Array.isArray(widths) || widths.length !== 3) return;
+  const available=mainGrid.clientWidth-16;
+  let left=Math.max(COLUMN_MIN_WIDTH,Number(widths[0])||340);
+  left=Math.min(left,Math.max(COLUMN_MIN_WIDTH,available-COLUMN_MIN_WIDTH));
+  const center=Math.max(COLUMN_MIN_WIDTH,available-left);
 
-  const available = mainGrid.clientWidth - 32; // two 16px grid gaps
-  if(available <= 0) return;
-
-  let next = widths.map(value => Math.max(COLUMN_MIN_WIDTH, Number(value) || 0));
-  const total = next[0] + next[1] + next[2];
-
-  // Keep the three columns inside the available grid width.
-  if(total > available){
-    const excess = total - available;
-    const shrinkable = next.map(v => Math.max(0, v - COLUMN_MIN_WIDTH));
-    const shrinkTotal = shrinkable.reduce((a,b) => a+b, 0);
-
-    if(shrinkTotal > 0){
-      next = next.map((v,i) =>
-        v - excess * (shrinkable[i] / shrinkTotal)
-      );
-    }
-  }
-
-  mainGrid.style.gridTemplateColumns =
-    `${next[0]}px ${next[1]}px ${next[2]}px`;
-
-  savedDesktopWidths = next;
+  mainGrid.style.gridTemplateColumns=`${left}px ${center}px`;
 
   if(save){
-    localStorage.setItem(
-      COLUMN_LAYOUT_KEY,
-      JSON.stringify(next.map(v => Math.round(v)))
-    );
+    localStorage.setItem(COLUMN_LAYOUT_KEY,JSON.stringify([Math.round(left),Math.round(center)]));
   }
 
   requestAnimationFrame(updateColumnResizerPositions);
 }
 
 function updateColumnResizerPositions(){
-  if(!mainGrid || !columnResizer1 || !columnResizer2) return;
+  if(columnResizer2)columnResizer2.style.display="none";
+  if(!mainGrid||!columnResizer1)return;
 
-  if(window.innerWidth <= 1100){
-    columnResizer1.style.display = "none";
-    columnResizer2.style.display = "none";
+  if(window.innerWidth<=750){
+    columnResizer1.style.display="none";
     return;
   }
 
-  const columns = getVisualColumns();
-  if(columns.length !== 3) return;
+  const columns=getVisualColumns();
+  if(columns.length!==2)return;
 
-  columnResizer1.style.display = "block";
-  columnResizer2.style.display = "block";
-
-  const gridRect = mainGrid.getBoundingClientRect();
-  const first = columns[0].getBoundingClientRect();
-  const second = columns[1].getBoundingClientRect();
-  const third = columns[2].getBoundingClientRect();
-
-  // Put each grip in the middle of the actual gap.
-  columnResizer1.style.left =
-    `${((first.right + second.left) / 2) - gridRect.left}px`;
-
-  columnResizer2.style.left =
-    `${((second.right + third.left) / 2) - gridRect.left}px`;
+  columnResizer1.style.display="block";
+  const gridRect=mainGrid.getBoundingClientRect();
+  const a=columns[0].getBoundingClientRect();
+  const b=columns[1].getBoundingClientRect();
+  columnResizer1.style.left=`${((a.right+b.left)/2)-gridRect.left}px`;
 }
 
-function beginColumnResize(event, boundaryIndex, grip){
-  if(window.innerWidth <= 1100) return;
+function beginColumnResize(event){
+  if(window.innerWidth<=750)return;
+  const columns=getVisualColumns();
+  if(columns.length!==2)return;
 
   event.preventDefault();
-
-  const columns = getVisualColumns();
-  if(columns.length !== 3) return;
-
-  const widths = columns.map(column =>
-    column.getBoundingClientRect().width
-  );
-
-  // Freeze the currently rendered widths before dragging.
-  applyColumnWidths(widths, false);
-
-  activeColumnResize = {
-    pointerId: event.pointerId,
-    boundaryIndex,
-    startX: event.clientX,
-    startWidths: widths,
-    grip
+  activeColumnResize={
+    pointerId:event.pointerId,
+    startX:event.clientX,
+    startWidths:columns.map(c=>c.getBoundingClientRect().width)
   };
 
-  grip.classList.add("dragging");
+  columnResizer1.classList.add("dragging");
   document.body.classList.add("columnResizing");
-
-  try{
-    grip.setPointerCapture(event.pointerId);
-  }catch(e){}
+  try{columnResizer1.setPointerCapture(event.pointerId)}catch(e){}
 }
 
 function moveColumnResize(event){
-  if(!activeColumnResize) return;
-  if(event.pointerId !== activeColumnResize.pointerId) return;
-
+  if(!activeColumnResize||event.pointerId!==activeColumnResize.pointerId)return;
   event.preventDefault();
 
-  const i = activeColumnResize.boundaryIndex;
-  const delta = event.clientX - activeColumnResize.startX;
-  const widths = [...activeColumnResize.startWidths];
-
-  // Dragging a boundary grows the column on its left and
-  // shrinks the column on its right by the same amount.
-  let leftWidth = widths[i] + delta;
-  let rightWidth = widths[i + 1] - delta;
-
-  if(leftWidth < COLUMN_MIN_WIDTH){
-    rightWidth -= COLUMN_MIN_WIDTH - leftWidth;
-    leftWidth = COLUMN_MIN_WIDTH;
-  }
-
-  if(rightWidth < COLUMN_MIN_WIDTH){
-    leftWidth -= COLUMN_MIN_WIDTH - rightWidth;
-    rightWidth = COLUMN_MIN_WIDTH;
-  }
-
-  widths[i] = leftWidth;
-  widths[i + 1] = rightWidth;
-
-  applyColumnWidths(widths, false);
+  const total=activeColumnResize.startWidths[0]+activeColumnResize.startWidths[1];
+  let left=activeColumnResize.startWidths[0]+(event.clientX-activeColumnResize.startX);
+  left=Math.max(COLUMN_MIN_WIDTH,Math.min(total-COLUMN_MIN_WIDTH,left));
+  applyColumnWidths([left,total-left],false);
 }
 
 function endColumnResize(event){
-  if(!activeColumnResize) return;
+  if(!activeColumnResize)return;
+  if(event&&event.pointerId!==undefined&&event.pointerId!==activeColumnResize.pointerId)return;
 
-  if(
-    event &&
-    event.pointerId !== undefined &&
-    event.pointerId !== activeColumnResize.pointerId
-  ) return;
-
-  activeColumnResize.grip.classList.remove("dragging");
+  columnResizer1.classList.remove("dragging");
   document.body.classList.remove("columnResizing");
 
-  const widths = getCurrentColumnWidths();
-  activeColumnResize = null;
-
-  if(window.innerWidth > 1100 && widths.length === 3){
-    applyColumnWidths(widths, true);
+  const columns=getVisualColumns();
+  if(columns.length===2){
+    applyColumnWidths(columns.map(c=>c.getBoundingClientRect().width),true);
   }
+  activeColumnResize=null;
 }
 
-if(columnResizer1 && columnResizer2){
-  columnResizer1.addEventListener(
-    "pointerdown",
-    event => beginColumnResize(event, 0, columnResizer1)
-  );
-
-  columnResizer2.addEventListener(
-    "pointerdown",
-    event => beginColumnResize(event, 1, columnResizer2)
-  );
-
-  document.addEventListener("pointermove", moveColumnResize);
-  document.addEventListener("pointerup", endColumnResize);
-  document.addEventListener("pointercancel", endColumnResize);
+if(columnResizer1){
+  columnResizer1.addEventListener("pointerdown",beginColumnResize);
+  document.addEventListener("pointermove",moveColumnResize);
+  document.addEventListener("pointerup",endColumnResize);
+  document.addEventListener("pointercancel",endColumnResize);
 }
 
 function restoreColumnLayout(){
-  if(!mainGrid) return;
+  if(!mainGrid)return;
 
-  if(window.innerWidth <= 1100){
-    // Allow the existing responsive media queries to control the grid.
+  if(window.innerWidth<=750){
     mainGrid.style.removeProperty("grid-template-columns");
     updateColumnResizerPositions();
     return;
   }
 
-  let stored = null;
+  let stored=null;
+  try{stored=JSON.parse(localStorage.getItem(COLUMN_LAYOUT_KEY))}catch(e){}
 
-  try{
-    stored = JSON.parse(localStorage.getItem(COLUMN_LAYOUT_KEY));
-  }catch(e){}
-
-  if(Array.isArray(stored) && stored.length === 3){
-    applyColumnWidths(stored, false);
-  }else if(savedDesktopWidths){
-    applyColumnWidths(savedDesktopWidths, false);
+  if(Array.isArray(stored)&&stored.length===2){
+    applyColumnWidths(stored,false);
   }else{
-    // New default layout: LEFT is wide enough for its panel titles,
-    // CENTER gets the remaining workspace, RIGHT keeps a practical width.
-    requestAnimationFrame(() => {
-      const available = mainGrid.clientWidth - 32;
-      const leftPanelWidth = 340;
-      const rightPanelWidth = 320;
-      const centerWorkspaceWidth = Math.max(420, available - leftPanelWidth - rightPanelWidth);
-      applyColumnWidths([leftPanelWidth, centerWorkspaceWidth, rightPanelWidth], false);
+    requestAnimationFrame(()=>{
+      const available=mainGrid.clientWidth-16;
+      applyColumnWidths([340,Math.max(COLUMN_MIN_WIDTH,available-340)],false);
     });
   }
-
-  requestAnimationFrame(updateColumnResizerPositions);
 }
 
-window.addEventListener("resize", restoreColumnLayout);
-window.addEventListener("load", restoreColumnLayout);
+window.addEventListener("resize",restoreColumnLayout);
+window.addEventListener("load",restoreColumnLayout);
 requestAnimationFrame(restoreColumnLayout);
-
 
 
 /* ============================================================
