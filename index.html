@@ -2243,6 +2243,19 @@ body.novaMusicAlive .novaParticles{
   font-size:12px !important;
   line-height:1.45 !important;
 }
+
+.headerNovaControls{
+  margin-top:12px;
+  width:100%;
+}
+.headerNovaControls .buttonGrid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.headerNovaControls .control{
+  flex:0 1 auto;
+}
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -2252,6 +2265,17 @@ body.novaMusicAlive .novaParticles{
 <div class="brand">
 <h1>NOVA COMMAND CENTER</h1>
 <p>VOICE &amp; TEXT COMMAND CENTER UI -  AMOMIII ONE CONTROLLER FOR RSR DIGITAL?ANALOG TRAINER</p>
+<div class="headerNovaControls">
+  <div class="buttonGrid">
+    <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
+    <button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
+    <button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
+    <button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
+    <button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button>
+    <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
+    <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
+  </div>
+</div>
 </div>
 <div class="headerStatus">
 </div>
@@ -2289,19 +2313,7 @@ body.novaMusicAlive .novaParticles{
 <div class="console novaResponseConsole" id="console"></div>
 </div>
 </div>
-<div class="panel card" id="novaCommandCenterPanel">
-  <div class="panelHeader">NOVA COMMAND CENTER</div>
-  <div class="panelBody">
-<div class="buttonGrid voiceButtons">
-<button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
-<button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
-<button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
-<button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
-<button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button><button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
-  <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
-</div>
-  </div>
-</div>
+
 
 <div class="history" id="commandHistory" style="display:none"></div>
 </div>
