@@ -3906,8 +3906,8 @@ function novaRunNextResponse(){
     const textWidth=Math.max(1,el.scrollWidth);
 
     const duration=Math.max(
-      7000,
-      Math.min(18000,(laneWidth+textWidth)*10)
+      3200,
+      Math.min(7500,(laneWidth+textWidth)*4.2)
     );
 
     /* Start at right edge and move completely past left edge. */
@@ -12310,7 +12310,7 @@ function novaDirectResponseBootTest(){
 
     setTimeout(()=>{
       novaQueueResponse("Command Center initialized.");
-    },800);
+    },250);
   }else{
     console.error(
       "NOVA RESPONSE DISPLAY ERROR:",
