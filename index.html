@@ -2648,6 +2648,180 @@ body.novaMusicAlive .novaParticles{
   }
 }
 
+
+/* ============================================================
+   NOVA REFINED ALWAYS-ALIVE HUD
+   Calm idle presence, readable ticker, music adds energy instead
+   of creating the visual system.
+   ============================================================ */
+.novaUnifiedConsole{
+  min-height:390px !important;
+  background:
+    radial-gradient(ellipse at 50% 46%,rgba(54,217,255,.055),transparent 43%),
+    linear-gradient(180deg,rgba(4,15,24,.98),rgba(2,7,13,.98)) !important;
+}
+.novaUnifiedConsole .novaLeftHome{
+  min-height:390px !important;
+}
+.novaUnifiedConsole #novaCoreContainer{
+  overflow:hidden !important;
+}
+.novaUnifiedConsole #novaOrb{
+  inset:0 !important;
+  opacity:1 !important;
+}
+.novaUnifiedConsole .novaOuterRing{
+  inset:16px !important;
+  border-radius:14px !important;
+  border:1px solid rgba(54,217,255,.28) !important;
+  box-shadow:
+    inset 0 0 24px rgba(54,217,255,.035),
+    0 0 12px rgba(54,217,255,.055) !important;
+  opacity:.68 !important;
+  animation:novaIdleFramePulse 4.6s ease-in-out infinite !important;
+}
+.novaUnifiedConsole .novaInnerRing{
+  inset:34px !important;
+  border-radius:12px !important;
+  border:1px solid rgba(181,140,255,.14) !important;
+  box-shadow:none !important;
+  opacity:.42 !important;
+  animation:novaIdleFramePulse 6.2s ease-in-out infinite reverse !important;
+}
+.novaUnifiedConsole #novaThroneRing{
+  inset:26px !important;
+  border-radius:13px !important;
+  border:1px solid rgba(54,217,255,.10) !important;
+  box-shadow:none !important;
+  background:none !important;
+  opacity:.34 !important;
+  animation:novaIdleFramePulse 7s ease-in-out infinite !important;
+}
+.novaUnifiedConsole #novaGlyphLayer{
+  inset:0 !important;
+  border-radius:0 !important;
+  background:
+    linear-gradient(90deg,transparent 0 7%,rgba(54,217,255,.035) 7% 7.2%,transparent 7.2% 92.8%,rgba(54,217,255,.035) 92.8% 93%,transparent 93%) !important;
+  opacity:.45 !important;
+  animation:novaIdleScan 7s ease-in-out infinite !important;
+}
+.novaUnifiedConsole #novaPedestal{
+  display:none !important;
+}
+.novaUnifiedConsole #novaConduits{
+  left:8% !important;
+  right:8% !important;
+  bottom:16px !important;
+  width:84% !important;
+  height:30px !important;
+  opacity:.24 !important;
+}
+.novaUnifiedConsole #novaConduits::before,
+.novaUnifiedConsole #novaConduits::after{
+  height:28px !important;
+  width:2px !important;
+  box-shadow:0 0 7px rgba(54,217,255,.35) !important;
+}
+.novaUnifiedConsole .novaIris{
+  left:50% !important;
+  top:47% !important;
+  width:min(56%,700px) !important;
+  height:185px !important;
+  transform:translate(-50%,-50%) !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(54,217,255,.10) 0%,
+      rgba(181,140,255,.045) 34%,
+      transparent 68%) !important;
+  box-shadow:none !important;
+}
+.novaUnifiedConsole .novaIris::before{
+  inset:-18px !important;
+  border-radius:50% !important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(54,217,255,.10),
+      rgba(54,217,255,.035) 38%,
+      transparent 70%) !important;
+  opacity:.42 !important;
+  animation:novaIrisBackgroundBreath 5.4s ease-in-out infinite !important;
+}
+.novaUnifiedConsole #novaIrisPrimary{
+  font-size:25px !important;
+  letter-spacing:8px !important;
+  opacity:.82 !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  max-height:68px !important;
+  max-width:560px !important;
+  font-size:10px !important;
+  line-height:1.35 !important;
+  opacity:.58 !important;
+  background:transparent !important;
+  border:0 !important;
+  overflow:hidden !important;
+  text-align:center !important;
+}
+.novaUnifiedConsole #novaIrisSpeech{
+  position:absolute !important;
+  left:4% !important;
+  right:4% !important;
+  top:auto !important;
+  bottom:42px !important;
+  width:auto !important;
+  height:42px !important;
+  transform:none !important;
+  overflow:hidden !important;
+  border-top:1px solid rgba(54,217,255,.12) !important;
+  border-bottom:1px solid rgba(54,217,255,.12) !important;
+  background:rgba(1,8,14,.22) !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  top:50% !important;
+  color:var(--green) !important;
+  font-size:14px !important;
+  letter-spacing:.6px !important;
+  text-shadow:0 0 8px rgba(57,255,136,.22) !important;
+}
+.novaUnifiedConsole .novaWaveform{
+  left:8% !important;
+  right:8% !important;
+  bottom:18px !important;
+  width:84% !important;
+  height:22px !important;
+  opacity:.18 !important;
+}
+.novaUnifiedConsole .novaParticles{
+  opacity:.28 !important;
+}
+.novaUnifiedConsole #novaMusicPulseRing{
+  inset:10px !important;
+  border-radius:15px !important;
+  opacity:.18;
+}
+.novaUnifiedConsole.novaSystemListening::before{
+  opacity:1 !important;
+  box-shadow:
+    inset 0 0 32px rgba(54,217,255,.10),
+    inset 0 0 75px rgba(54,217,255,.035) !important;
+}
+.novaUnifiedConsole.novaSystemSpeaking::before{
+  opacity:1 !important;
+  box-shadow:
+    inset 0 0 38px rgba(181,140,255,.11),
+    inset 0 0 80px rgba(54,217,255,.035) !important;
+}
+@keyframes novaIdleFramePulse{
+  0%,100%{opacity:.38}
+  50%{opacity:.72}
+}
+@keyframes novaIdleScan{
+  0%,100%{opacity:.20}
+  50%{opacity:.48}
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -11638,6 +11812,29 @@ log=function(message,type){
   return result;
 };
 const novaIrisLogWrapped=true;
+
+
+function initializeNovaAlwaysAliveDisplay(){
+  updateNovaIrisDashboard();
+
+  setTimeout(()=>{
+    showNovaResponse(
+      voiceEnabled
+        ? "Voice control enabled. Listening for voice input..."
+        : "Command Center initialized. NOVA ready."
+    );
+  },250);
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeNovaAlwaysAliveDisplay,
+    {once:true}
+  );
+}else{
+  initializeNovaAlwaysAliveDisplay();
+}
 
 </script>
 </body>
