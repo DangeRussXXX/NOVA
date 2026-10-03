@@ -2256,6 +2256,214 @@ body.novaMusicAlive .novaParticles{
 .headerNovaControls .control{
   flex:0 1 auto;
 }
+
+/* ============================================================
+   NOVA FULL-PANEL SYSTEM CORE
+   NOVA now inhabits the entire panel instead of a center circle.
+   ============================================================ */
+.novaUnifiedConsole{
+  position:relative !important;
+  overflow:hidden !important;
+  min-height:470px !important;
+  isolation:isolate;
+  border:1px solid rgba(54,217,255,.55) !important;
+  background:
+    radial-gradient(ellipse at center,rgba(0,229,255,.10),transparent 42%),
+    linear-gradient(180deg,rgba(4,15,24,.98),rgba(2,7,13,.98)) !important;
+}
+.novaUnifiedConsole::before,
+.novaUnifiedConsole::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+}
+.novaUnifiedConsole::before{
+  border:2px solid rgba(54,217,255,.28);
+  box-shadow:
+    inset 0 0 34px rgba(54,217,255,.12),
+    inset 0 0 90px rgba(54,217,255,.06);
+  animation:novaPanelBorderBreathe 3.2s ease-in-out infinite;
+}
+.novaUnifiedConsole::after{
+  background:
+    linear-gradient(90deg,transparent 0 8%,rgba(54,217,255,.20) 8% 9%,transparent 9% 91%,rgba(54,217,255,.20) 91% 92%,transparent 92%),
+    linear-gradient(0deg,transparent 0 10%,rgba(54,217,255,.12) 10% 10.5%,transparent 10.5% 89.5%,rgba(54,217,255,.12) 89.5% 90%,transparent 90%);
+  opacity:.5;
+}
+.novaUnifiedConsole .novaLeftHome{
+  position:relative !important;
+  z-index:2;
+  width:100% !important;
+  min-height:470px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+.novaUnifiedConsole #novaCoreContainer{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+}
+.novaUnifiedConsole #novaOrb{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  transform:none !important;
+  border-radius:0 !important;
+}
+.novaUnifiedConsole .novaOuterRing{
+  position:absolute !important;
+  inset:12px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:18px !important;
+  transform:none !important;
+  border:1px solid rgba(54,217,255,.45) !important;
+  animation:novaPanelOuterPulse 2.6s ease-in-out infinite !important;
+}
+.novaUnifiedConsole .novaInnerRing{
+  position:absolute !important;
+  inset:42px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:14px !important;
+  transform:none !important;
+  border:1px solid rgba(54,217,255,.18) !important;
+  animation:novaPanelInnerPulse 3.4s ease-in-out infinite reverse !important;
+}
+.novaUnifiedConsole .novaIris{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(72%,760px) !important;
+  height:235px !important;
+  transform:translate(-50%,-50%) !important;
+  border-radius:24px !important;
+  background:
+    radial-gradient(ellipse at center,rgba(54,217,255,.14),rgba(3,12,20,.62) 58%,rgba(3,9,15,.88)) !important;
+  border:1px solid rgba(54,217,255,.42) !important;
+  box-shadow:
+    0 0 30px rgba(54,217,255,.15),
+    inset 0 0 35px rgba(54,217,255,.08) !important;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  width:90% !important;
+  max-width:680px !important;
+}
+.novaUnifiedConsole #novaIrisPrimary{
+  font-size:30px !important;
+  letter-spacing:10px !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  width:100% !important;
+  max-width:640px !important;
+  max-height:125px !important;
+  overflow:auto !important;
+  text-align:center !important;
+  font-size:14px !important;
+  line-height:1.55 !important;
+}
+.novaUnifiedConsole .novaWaveform{
+  position:absolute !important;
+  left:4% !important;
+  right:4% !important;
+  bottom:34px !important;
+  top:auto !important;
+  width:92% !important;
+  height:70px !important;
+  transform:none !important;
+  border-radius:0 !important;
+}
+.novaUnifiedConsole .novaParticles{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaMusicPulseRing{
+  position:absolute !important;
+  inset:5px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:20px !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaPedestal{
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:100% !important;
+  height:100% !important;
+  opacity:.38;
+  pointer-events:none;
+}
+.novaUnifiedConsole #novaThroneRing,
+.novaUnifiedConsole #novaGlyphLayer{
+  position:absolute !important;
+  inset:22px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:16px !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaConduits{
+  position:absolute !important;
+  left:5% !important;
+  right:5% !important;
+  bottom:18px !important;
+  width:90% !important;
+  height:55px !important;
+  transform:none !important;
+}
+.novaUnifiedConsole.novaSystemListening{
+  box-shadow:inset 0 0 55px rgba(54,217,255,.16),0 0 18px rgba(54,217,255,.12) !important;
+}
+.novaUnifiedConsole.novaSystemSpeaking{
+  box-shadow:inset 0 0 75px rgba(255,0,255,.13),0 0 22px rgba(54,217,255,.14) !important;
+}
+.novaUnifiedConsole.novaSystemError{
+  animation:novaPanelErrorFlash .55s ease-out 1;
+}
+@keyframes novaPanelBorderBreathe{
+  0%,100%{opacity:.55}
+  50%{opacity:1}
+}
+@keyframes novaPanelOuterPulse{
+  0%,100%{opacity:.38;box-shadow:inset 0 0 18px rgba(54,217,255,.05)}
+  50%{opacity:.95;box-shadow:inset 0 0 42px rgba(54,217,255,.14)}
+}
+@keyframes novaPanelInnerPulse{
+  0%,100%{opacity:.25}
+  50%{opacity:.7}
+}
+@keyframes novaPanelErrorFlash{
+  0%{box-shadow:inset 0 0 0 rgba(255,60,60,0)}
+  35%{box-shadow:inset 0 0 95px rgba(255,60,60,.28)}
+  100%{box-shadow:inset 0 0 0 rgba(255,60,60,0)}
+}
+@media(max-width:650px){
+  .novaUnifiedConsole,
+  .novaUnifiedConsole .novaLeftHome{min-height:390px !important}
+  .novaUnifiedConsole .novaIris{
+    width:84% !important;
+    height:220px !important;
+  }
+  .novaUnifiedConsole #novaIrisPrimary{
+    font-size:24px !important;
+    letter-spacing:7px !important;
+  }
+  .novaUnifiedConsole #novaIrisResponse{
+    font-size:12px !important;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -2295,7 +2503,7 @@ body.novaMusicAlive .novaParticles{
 <div id="novaOrb">
 <div class="novaOuterRing"></div>
 <div class="novaInnerRing"></div>
-<div class="novaIris"><div class="novaName novaIrisDashboard"><div id="novaIrisPrimary">NOVA</div><div id="novaIrisSecondary"></div><div id="novaIrisResponse"></div></div></div>
+<div class="novaIris"><div class="novaName novaIrisDashboard"><div id="novaIrisPrimary">NOVA</div><div id="novaIrisSecondary"></div><div id="novaIrisResponse">NOVA READY.</div></div></div>
 <div class="novaWaveform"></div>
 <div class="novaParticles"></div>
 <div class="novaMusicPulseRing" id="novaMusicPulseRing"></div>
@@ -4141,6 +4349,22 @@ function stopBoard(){
    VOICE INITIALIZATION
    ============================================================ */
 
+
+function novaSetSystemVisualState(state,enabled){
+  const panel=document.querySelector(".novaUnifiedConsole");
+  if(!panel)return;
+
+  const className=
+    state==="listening"
+      ? "novaSystemListening"
+      : state==="speaking"
+        ? "novaSystemSpeaking"
+        : "";
+
+  if(!className)return;
+  panel.classList.toggle(className,!!enabled);
+}
+
 function initializeVoice(){
 
   if(!speechSupported){
@@ -4156,6 +4380,7 @@ function initializeVoice(){
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
+    novaSetSystemVisualState("listening",true);
 
     recognitionRunning = true;
 
@@ -4179,6 +4404,7 @@ function initializeVoice(){
 
 
   recognition.onend = () => {
+    novaSetSystemVisualState("listening",false);
 
     recognitionRunning = false;
 
@@ -4202,6 +4428,7 @@ function initializeVoice(){
 
 
   recognition.onerror = event => {
+    novaSetSystemVisualState("listening",false);
 
     recognitionRunning = false;
 
@@ -4623,6 +4850,7 @@ if(preferred){
 }
 
   utterance.onend = () => {
+    novaSetSystemVisualState("speaking",false);
 
     log(
       "Speech complete.",
@@ -4634,6 +4862,7 @@ if(preferred){
   };
 
   utterance.onerror = () => {
+    novaSetSystemVisualState("speaking",false);
 
     isSpeaking = false;
 
@@ -10851,10 +11080,15 @@ function openNovaHistoryScreen(){const h=document.getElementById("commandHistory
 
 /* NOVA IRIS LIVE DASHBOARD + CALENDAR POPUP */
 let novaIrisLastResponse="NOVA READY.";
+const novaSystemFeed=[];
+const NOVA_SYSTEM_FEED_LIMIT=8;
 
-function novaIrisSetResponse(message,duration=0){
-  const clean=String(message||"").replace(/\s+/g," ").trim();
-  if(!clean)return;
+function novaFormatSystemLine(message){
+  let clean=String(message||"").replace(/\s+/g," ").trim();
+  if(!clean)return "";
+
+  /* NOVA is the system, so fold old Assistant/System-style identity into NOVA. */
+  clean=clean.replace(/^Assistant:\s*/i,"Assistant: ");
 
   const now=new Date();
   const stamp=now.toLocaleTimeString(undefined,{
@@ -10863,20 +11097,64 @@ function novaIrisSetResponse(message,duration=0){
     second:"2-digit"
   });
 
-  novaIrisLastResponse=`[${stamp}] NOVA: ${clean}`;
+  return `[${stamp}] ${clean}`;
+}
 
+function novaRenderSystemFeed(){
   const response=document.getElementById("novaIrisResponse");
-  if(response){
-    response.textContent=novaIrisLastResponse;
+  if(!response)return;
+
+  response.innerHTML=novaSystemFeed
+    .map(line=>{
+      const div=document.createElement("div");
+      div.textContent=line;
+      return div.outerHTML;
+    })
+    .join("");
+
+  response.scrollTop=response.scrollHeight;
+}
+
+function novaIrisSetResponse(message,duration=0){
+  const clean=String(message||"").replace(/\s+/g," ").trim();
+  if(!clean)return;
+
+  const line=novaFormatSystemLine(
+    /^NOVA:/i.test(clean)
+      ? clean
+      : `NOVA: ${clean}`
+  );
+
+  novaIrisLastResponse=line;
+  novaSystemFeed.push(line);
+
+  while(novaSystemFeed.length>NOVA_SYSTEM_FEED_LIMIT){
+    novaSystemFeed.shift();
   }
+
+  novaRenderSystemFeed();
+}
+
+function novaSystemLog(message){
+  const clean=String(message||"").replace(/\s+/g," ").trim();
+  if(!clean)return;
+
+  const line=novaFormatSystemLine(clean);
+  novaSystemFeed.push(line);
+
+  while(novaSystemFeed.length>NOVA_SYSTEM_FEED_LIMIT){
+    novaSystemFeed.shift();
+  }
+
+  novaRenderSystemFeed();
 }
 
 function updateNovaIrisDashboard(){
   const primary=document.getElementById("novaIrisPrimary");
-  const response=document.getElementById("novaIrisResponse");
   if(primary)primary.textContent="NOVA";
-  if(response && !response.textContent.trim()){
-    response.textContent=novaIrisLastResponse;
+
+  if(!novaSystemFeed.length){
+    novaSystemLog("NOVA: System ready.");
   }
 }
 
@@ -11105,14 +11383,23 @@ document.addEventListener(
 );
 
 
-/* NOVA response display also mirrors NOVA/system log messages. */
+/* NOVA is the system: mirror Command Center activity inside NOVA. */
 const novaOriginalLogForIris=log;
 log=function(message,type){
   const result=novaOriginalLogForIris.apply(this,arguments);
   const clean=String(message||"").trim();
+
   if(clean){
-    novaIrisSetResponse(clean);
+    novaSystemLog(clean);
+
+    const panel=document.querySelector(".novaUnifiedConsole");
+    if(panel && String(type||"").toLowerCase()==="error"){
+      panel.classList.remove("novaSystemError");
+      void panel.offsetWidth;
+      panel.classList.add("novaSystemError");
+    }
   }
+
   return result;
 };
 const novaIrisLogWrapped=true;
