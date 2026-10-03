@@ -3129,6 +3129,80 @@ body.irisMediaPlaying .novaUnifiedConsole #novaIrisMedia{
   display:none !important;
 }
 
+
+/* ============================================================
+   NOVA RESPONSE SYSTEM — CLEAN REBUILD
+   Direct log -> queue -> right-to-left NOVA speech.
+   ============================================================ */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:200 !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:58px !important;
+  width:100% !important;
+  height:42px !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:block !important;
+  position:absolute !important;
+  z-index:201 !important;
+  left:100% !important;
+  top:50% !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:var(--green) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:16px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  letter-spacing:.45px !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  filter:none !important;
+  text-shadow:0 0 9px rgba(57,255,136,.38) !important;
+  transform:translate(0,-50%) !important;
+  animation:none !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText.novaTickerRun{
+  animation:novaCleanTicker var(--nova-ticker-time,10s) linear 1 forwards !important;
+}
+@keyframes novaCleanTicker{
+  0%{left:100%;transform:translate(0,-50%)}
+  100%{left:0;transform:translate(-100%,-50%)}
+}
+
+/* Absolutely suppress the old media text UI. */
+#novaIrisMedia,
+.novaIrisMedia,
+body.irisMediaPlaying #novaIrisMedia{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+}
+
+/* Music may energize NOVA, but it may not distort/move the IRIS. */
+body.novaMusicAlive .novaUnifiedConsole .novaIris{
+  transform:translate(-50%,-50%) !important;
+  filter:none !important;
+  clip-path:none !important;
+  animation:novaHudIris 1.8s ease-in-out infinite !important;
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -3721,6 +3795,82 @@ function timestamp(){
 }
 
 
+
+const novaTickerQueue=[];
+let novaTickerBusy=false;
+let novaTickerLastQueued="";
+
+function novaQueueResponse(message){
+  const clean=String(message||"").replace(/\s+/g," ").trim();
+  if(!clean)return;
+
+  /* Prevent the same event from being queued twice by overlapping legacy paths. */
+  if(clean===novaTickerLastQueued)return;
+  novaTickerLastQueued=clean;
+  setTimeout(()=>{
+    if(novaTickerLastQueued===clean)novaTickerLastQueued="";
+  },250);
+
+  novaTickerQueue.push(clean);
+
+  /* Do not let startup chatter create a huge backlog. */
+  if(novaTickerQueue.length>10){
+    novaTickerQueue.splice(0,novaTickerQueue.length-10);
+  }
+
+  novaRunNextResponse();
+}
+
+function novaRunNextResponse(){
+  if(novaTickerBusy || !novaTickerQueue.length)return;
+
+  const el=document.getElementById("novaIrisSpeechText");
+  if(!el)return;
+
+  novaTickerBusy=true;
+
+  const message=novaTickerQueue.shift();
+  const now=new Date();
+  const stamp=now.toLocaleTimeString(undefined,{
+    hour:"numeric",
+    minute:"2-digit",
+    second:"2-digit"
+  });
+
+  el.textContent=`[${stamp}] NOVA: ${message}`;
+
+  const duration=Math.max(
+    7,
+    Math.min(16,el.textContent.length*.065)
+  );
+
+  el.style.setProperty(
+    "--nova-ticker-time",
+    `${duration}s`
+  );
+
+  el.classList.remove("novaTickerRun");
+  void el.offsetWidth;
+  el.classList.add("novaTickerRun");
+
+  const finish=()=>{
+    el.removeEventListener("animationend",finish);
+    el.classList.remove("novaTickerRun");
+    novaTickerBusy=false;
+    novaRunNextResponse();
+  };
+
+  el.addEventListener("animationend",finish,{once:true});
+
+  /* Fallback in case the browser suppresses animationend. */
+  setTimeout(()=>{
+    if(novaTickerBusy && el.textContent.includes(message)){
+      finish();
+    }
+  },duration*1000+300);
+}
+
+
 function log(message, type="system"){
 
   const line =
@@ -3736,6 +3886,8 @@ function log(message, type="system"){
 
   consoleEl.scrollTop =
     consoleEl.scrollHeight;
+
+  novaQueueResponse(message);
 
 }
 
@@ -4400,44 +4552,7 @@ function toggleConsole(){
       lastHeardEl.textContent=value;
     }
 
-    const novaSpeechText=
-      document.getElementById("novaIrisSpeechText");
-
-    if(novaSpeechText && value){
-      const now=new Date();
-      const stamp=now.toLocaleTimeString(undefined,{
-        hour:"numeric",
-        minute:"2-digit",
-        second:"2-digit"
-      });
-
-      novaSpeechText.textContent=
-        `[${stamp}] NOVA: ${value}`;
-
-      const characters=
-        novaSpeechText.textContent.length;
-
-      const duration=
-        Math.max(
-          9,
-          Math.min(20,characters * 0.075)
-        );
-
-      novaSpeechText.style.setProperty(
-        "--nova-marquee-duration",
-        `${duration}s`
-      );
-
-      novaSpeechText.classList.remove(
-        "novaMarqueeRunning"
-      );
-
-      void novaSpeechText.offsetWidth;
-
-      novaSpeechText.classList.add(
-        "novaMarqueeRunning"
-      );
-    }
+    novaQueueResponse(value);
   }
 
 
@@ -6846,24 +6961,11 @@ function speakCommands(){
    ============================================================ */
 
 
-function ensureIrisMediaDisplay(){
-  const iris=document.querySelector(".novaIris");
-  if(!iris||document.getElementById("novaIrisMedia"))return;
-  const d=document.createElement("div");d.id="novaIrisMedia";
-  d.innerHTML=`<div id="irisMediaType" class="irisMediaType">NOVA MEDIA</div><div id="irisMediaTitle" class="irisMediaTitle">READY</div><div class="irisMediaProgress"><div id="irisMediaProgressFill"></div></div><div class="irisMediaMeta"><span id="irisMediaTime">0:00 / 0:00</span><span id="irisMediaVolume">VOL 80%</span></div>`;
-  iris.appendChild(d);
-}
+function ensureIrisMediaDisplay(){}
 function cleanMediaName(name){return String(name||"MEDIA").replace(/\.[^.]+$/,"").replace(/[_]+/g," ").trim()}
 function formatMediaClock(s){if(!Number.isFinite(s)||s<0)return"0:00";const t=Math.floor(s);return`${Math.floor(t/60)}:${String(t%60).padStart(2,"0")}`}
 function setIrisMediaMode(type,title,m,playing){
-  ensureIrisMediaDisplay();const d=document.getElementById("novaIrisMedia");if(!d)return;
-  d.classList.add("active");document.body.classList.toggle("irisMediaPlaying",!!playing);
-  document.getElementById("irisMediaType").textContent=playing?`NOW PLAYING • ${type}`:`${type} • PAUSED`;
-  document.getElementById("irisMediaTitle").textContent=cleanMediaName(title);
-  if(m){const dur=Number.isFinite(m.duration)?m.duration:0,cur=Number.isFinite(m.currentTime)?m.currentTime:0,p=dur>0?Math.min(100,Math.max(0,cur/dur*100)):0;
-  document.getElementById("irisMediaProgressFill").style.width=`${p}%`;
-  document.getElementById("irisMediaTime").textContent=`${formatMediaClock(cur)} / ${formatMediaClock(dur)}`;
-  document.getElementById("irisMediaVolume").textContent=m.muted?"MUTED":`VOL ${Math.round(m.volume*100)}%`;}
+  document.body.classList.toggle("irisMediaPlaying",!!playing);
 }
 function clearIrisMediaMode(){const d=document.getElementById("novaIrisMedia");if(d)d.classList.remove("active");document.body.classList.remove("irisMediaPlaying")}
 function updateIrisFromAudio(){const a=document.getElementById("audioPlayer");if(!a||musicIndex<0||!musicLibrary[musicIndex])return;setIrisMediaMode("MUSIC",musicLibrary[musicIndex].file.name,a,!a.paused)}
@@ -12108,34 +12210,11 @@ document.addEventListener(
 );
 
 
-/* NOVA is the system: mirror Command Center activity inside NOVA. */
-const novaOriginalLogForIris=log;
-log=function(message,type){
-  const result=novaOriginalLogForIris.apply(this,arguments);
-  const clean=String(message||"").trim();
-
-  if(clean){
-    novaSystemLog(clean);
-    showNovaResponse(clean);
-
-    const panel=document.querySelector(".novaUnifiedConsole");
-    if(panel && String(type||"").toLowerCase()==="error"){
-      panel.classList.remove("novaSystemError");
-      void panel.offsetWidth;
-      panel.classList.add("novaSystemError");
-    }
-  }
-
-  return result;
-};
-const novaIrisLogWrapped=true;
-
-
 function initializeNovaAlwaysAliveDisplay(){
   updateNovaIrisDashboard();
 
   setTimeout(()=>{
-    showNovaResponse(
+    novaQueueResponse(
       voiceEnabled
         ? "Voice control enabled. Listening for voice input..."
         : "Command Center initialized. NOVA ready."
