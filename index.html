@@ -2464,6 +2464,67 @@ body.novaMusicAlive .novaParticles{
   }
 }
 
+
+/* ============================================================
+   NOVA CORE REFINEMENT
+   Keep the IRIS alive, but behind the readable system feed.
+   ============================================================ */
+.novaUnifiedConsole .novaIris{
+  overflow:visible !important;
+  background:rgba(3,12,20,.42) !important;
+  animation:none !important;
+  opacity:1 !important;
+}
+.novaUnifiedConsole .novaIris::before{
+  content:"";
+  position:absolute;
+  inset:-38px;
+  z-index:0;
+  pointer-events:none;
+  border-radius:40px;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(54,217,255,.14) 0%,
+      rgba(54,217,255,.07) 35%,
+      rgba(54,217,255,.025) 56%,
+      transparent 72%);
+  opacity:.42;
+  animation:novaIrisBackgroundBreath 4.8s ease-in-out infinite;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  position:relative !important;
+  z-index:4 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  animation:none !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaIrisPrimary,
+.novaUnifiedConsole #novaIrisResponse{
+  position:relative !important;
+  z-index:5 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  animation:none !important;
+  filter:none !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  background:rgba(1,8,14,.46);
+  border:1px solid rgba(54,217,255,.13);
+  border-radius:10px;
+  padding:10px 12px;
+  text-shadow:0 0 8px rgba(54,217,255,.20);
+}
+@keyframes novaIrisBackgroundBreath{
+  0%,100%{opacity:.26;transform:scale(.97)}
+  50%{opacity:.52;transform:scale(1.025)}
+}
+@media(prefers-reduced-motion:reduce){
+  .novaUnifiedConsole .novaIris::before{
+    animation:none !important;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
