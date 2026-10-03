@@ -2231,6 +2231,18 @@ body.novaMusicAlive .novaParticles{
   opacity:.7;
 }
 
+
+.novaUnifiedConsole #novaIrisResponse{
+  width:92% !important;
+  max-width:260px !important;
+  max-height:105px !important;
+  overflow:auto;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  text-align:center;
+  font-size:12px !important;
+  line-height:1.45 !important;
+}
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -2268,13 +2280,7 @@ body.novaMusicAlive .novaParticles{
 </div>
 <div class="panelBody novaUnifiedBody">
 <div class="voiceStatus novaConsoleVoiceStatus"><span class="dot red" id="voiceDot"></span><span id="voiceText">VOICE OFF</span></div>
-<div class="buttonGrid voiceButtons">
-<button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
-<button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
-<button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
-<button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
-<button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button><button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
-</div>
+
 <div class="commandRow mergedCommandRow novaConsoleCommandRow">
 <input autocomplete="off" id="commandInput" placeholder="Enter commands for NOVA." type="text"/>
 <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
@@ -2283,6 +2289,20 @@ body.novaMusicAlive .novaParticles{
 <div class="console novaResponseConsole" id="console"></div>
 </div>
 </div>
+<div class="panel card" id="novaCommandCenterPanel">
+  <div class="panelHeader">NOVA COMMAND CENTER</div>
+  <div class="panelBody">
+<div class="buttonGrid voiceButtons">
+<button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
+<button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
+<button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
+<button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
+<button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button><button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
+  <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
+</div>
+  </div>
+</div>
+
 <div class="history" id="commandHistory" style="display:none"></div>
 </div>
 <div class="novaPanelStack">
@@ -2445,7 +2465,7 @@ body.novaMusicAlive .novaParticles{
 </div>
 </div>
 
-<div class="panel card cameraMonitor">
+<div class="panel card cameraMonitor" id="novaCameraPanelSource" style="display:none">
 <div class="panelHeader">DESKTOP CAMERA MONITOR</div>
 <div class="panelBody">
 <div class="cameraViewport" id="cameraViewport">
@@ -10818,52 +10838,83 @@ function openNovaHistoryScreen(){const h=document.getElementById("commandHistory
 
 
 /* NOVA IRIS LIVE DASHBOARD + CALENDAR POPUP */
-let novaIrisLastResponse="",novaIrisResponseUntil=0,novaIrisWeatherText="";
+let novaIrisLastResponse="NOVA READY.";
 
-function novaIrisSetResponse(message,duration=9000){
+function novaIrisSetResponse(message,duration=0){
   const clean=String(message||"").replace(/\s+/g," ").trim();
   if(!clean)return;
-  novaIrisLastResponse=clean;
-  novaIrisResponseUntil=Date.now()+duration;
-  updateNovaIrisDashboard();
-}
 
-function novaIrisUpcomingText(){
-  try{
-    const events=(typeof calendarEvents!=="undefined"&&Array.isArray(calendarEvents))?calendarEvents:[];
-    if(!events.length)return "NO UPCOMING EVENTS";
-    const now=new Date();
-    const upcoming=events.map(e=>({e,date:new Date(`${e.date||""}T${e.time||"00:00"}`)}))
-      .filter(x=>!Number.isNaN(x.date.getTime())&&x.date>=now).sort((a,b)=>a.date-b.date)[0];
-    if(!upcoming)return "NO UPCOMING EVENTS";
-    const d=upcoming.date;
-    return `NEXT: ${upcoming.e.title||"EVENT"} • ${d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}${upcoming.e.time?" "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}):""}`;
-  }catch(e){return "CALENDAR READY"}
+  const now=new Date();
+  const stamp=now.toLocaleTimeString(undefined,{
+    hour:"numeric",
+    minute:"2-digit",
+    second:"2-digit"
+  });
+
+  novaIrisLastResponse=`[${stamp}] NOVA: ${clean}`;
+
+  const response=document.getElementById("novaIrisResponse");
+  if(response){
+    response.textContent=novaIrisLastResponse;
+  }
 }
 
 function updateNovaIrisDashboard(){
-  const p=document.getElementById("novaIrisPrimary"),s=document.getElementById("novaIrisSecondary"),r=document.getElementById("novaIrisResponse");
-  if(!p||!s||!r)return;
-  const audio=document.getElementById("audioPlayer");
-  const playing=audio&&!audio.paused&&!audio.ended&&audio.currentTime>0;
-  if(playing&&typeof musicLibrary!=="undefined"&&musicLibrary[musicIndex]){
-    p.textContent="NOW PLAYING";
-    const track=musicLibrary[musicIndex];
-    s.textContent=(typeof cleanMediaName==="function")?cleanMediaName(track.name||"MUSIC"):(track.name||"MUSIC");
-  }else{
-    const now=new Date();
-    p.textContent=now.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
-    s.textContent=[now.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}),novaIrisWeatherText,novaIrisUpcomingText()].filter(Boolean).join(" • ");
+  const primary=document.getElementById("novaIrisPrimary");
+  const response=document.getElementById("novaIrisResponse");
+  if(primary)primary.textContent="NOVA";
+  if(response && !response.textContent.trim()){
+    response.textContent=novaIrisLastResponse;
   }
-  r.textContent=Date.now()<novaIrisResponseUntil?novaIrisLastResponse:"";
 }
 
-/* Weather can be supplied later by NOVA's weather source. */
-function setNovaIrisWeather(text){novaIrisWeatherText=String(text||"").trim();updateNovaIrisDashboard()}
+function setNovaIrisWeather(text){}
 
 /* Capture NOVA spoken responses in the IRIS. */
 const novaOriginalSpeak=speak;
 speak=function(text){novaIrisSetResponse(text);return novaOriginalSpeak.apply(this,arguments)};
+
+
+function openNovaCameraScreen(){
+  const panel=document.getElementById("novaCameraPanelSource");
+  if(!panel)return;
+
+  const w=window.open("","nova_camera_screen","width=1180,height=820,resizable=yes,scrollbars=yes");
+  if(!w){
+    log("NOVA Camera screen was blocked. Allow pop-ups for this page.","warning");
+    return;
+  }
+
+  w.document.open();
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA DESKTOP CAMERA</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CAMERA</button></div><div id="cameraHost"></div></body></html>`);
+  w.document.close();
+
+  Array.from(document.querySelectorAll("style")).forEach(st=>{
+    const copy=w.document.createElement("style");
+    copy.textContent=st.textContent;
+    w.document.head.appendChild(copy);
+  });
+
+  ["snapshotDesktopCamera","toggleDesktopCameraRecording","fullscreenDesktopCamera"].forEach(name=>{
+    if(typeof window[name]==="function"){
+      w[name]=window[name];
+    }
+  });
+
+  panel.style.display="block";
+  w.document.getElementById("cameraHost").appendChild(w.document.adoptNode(panel));
+
+  w.addEventListener("beforeunload",()=>{
+    const stack=document.querySelector(".novaPanelStack");
+    if(stack){
+      document.adoptNode(panel);
+      panel.style.display="none";
+      stack.appendChild(panel);
+    }
+  },{once:true});
+
+  try{w.focus()}catch(e){}
+}
 
 function openNovaCalendarScreen(){
   const panel=document.getElementById("novaCalendarPanelSource");
@@ -11040,6 +11091,19 @@ document.addEventListener(
   "DOMContentLoaded",
   initializeNovaPanelReordering
 );
+
+
+/* NOVA response display also mirrors NOVA/system log messages. */
+const novaOriginalLogForIris=log;
+log=function(message,type){
+  const result=novaOriginalLogForIris.apply(this,arguments);
+  const clean=String(message||"").trim();
+  if(clean){
+    novaIrisSetResponse(clean);
+  }
+  return result;
+};
+const novaIrisLogWrapped=true;
 
 </script>
 </body>
