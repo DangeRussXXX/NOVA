@@ -2525,6 +2525,59 @@ body.novaMusicAlive .novaParticles{
   }
 }
 
+
+/* ============================================================
+   NOVA INTEGRATED COMMAND RESPONSE
+   NOVA visually speaks command responses; old response panel is gone.
+   ============================================================ */
+.novaUnifiedConsole .novaIris{
+  background:rgba(3,12,20,.22) !important;
+  border-color:rgba(54,217,255,.24) !important;
+  box-shadow:
+    0 0 28px rgba(54,217,255,.08),
+    inset 0 0 34px rgba(54,217,255,.05) !important;
+}
+.novaUnifiedConsole #novaIrisSpeech{
+  position:relative;
+  z-index:7;
+  width:100%;
+  max-width:660px;
+  margin:8px auto 10px;
+  padding:10px 14px;
+  color:var(--green);
+  font-size:clamp(13px,1.1vw,17px);
+  line-height:1.45;
+  font-weight:600;
+  text-align:center;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  text-shadow:0 0 10px rgba(57,255,136,.24);
+}
+.novaUnifiedConsole #novaIrisSpeech.novaSpeechActive{
+  animation:novaSpeechArrival .34s ease-out 1;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  width:100% !important;
+  max-width:660px !important;
+  max-height:82px !important;
+  margin:0 auto !important;
+  padding:7px 10px !important;
+  overflow:auto !important;
+  color:var(--muted) !important;
+  background:rgba(1,8,14,.18) !important;
+  border:0 !important;
+  border-top:1px solid rgba(54,217,255,.10) !important;
+  border-radius:0 !important;
+  font-size:11px !important;
+  line-height:1.4 !important;
+  text-align:left !important;
+  text-shadow:none !important;
+}
+@keyframes novaSpeechArrival{
+  0%{opacity:.45;transform:scale(.985)}
+  100%{opacity:1;transform:scale(1)}
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -2564,7 +2617,8 @@ body.novaMusicAlive .novaParticles{
 <div id="novaOrb">
 <div class="novaOuterRing"></div>
 <div class="novaInnerRing"></div>
-<div class="novaIris"><div class="novaName novaIrisDashboard"><div id="novaIrisPrimary">NOVA</div><div id="novaIrisSecondary"></div><div id="novaIrisResponse">NOVA READY.</div></div></div>
+<div class="novaIris"><div class="novaName novaIrisDashboard"><div id="novaIrisPrimary">NOVA</div><div id="novaIrisSecondary"></div><div id="novaIrisSpeech" aria-live="polite">NOVA READY.</div>
+<div id="novaIrisResponse" aria-live="polite"></div></div></div>
 <div class="novaWaveform"></div>
 <div class="novaParticles"></div>
 <div class="novaMusicPulseRing" id="novaMusicPulseRing"></div>
@@ -2578,12 +2632,16 @@ body.novaMusicAlive .novaParticles{
 <input autocomplete="off" id="commandInput" placeholder="Enter commands for NOVA." type="text"/>
 <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
 </div>
-<div class="lastHeard novaResponseLine" id="lastHeard">READY</div>
-<div class="console novaResponseConsole" id="console"></div>
+
 </div>
 </div>
 
 
+
+<div id="novaInternalResponseStores" style="display:none">
+  <div id="lastHeard"></div>
+  <div id="console"></div>
+</div>
 <div class="history" id="commandHistory" style="display:none"></div>
 </div>
 <div class="novaPanelStack">
@@ -3782,7 +3840,30 @@ function toggleConsole(){
   }
 
   function showNovaResponse(text){
-    if(lastHeardEl) lastHeardEl.textContent = String(text || "");
+    const value=String(text || "").trim();
+
+    if(lastHeardEl){
+      lastHeardEl.textContent=value;
+    }
+
+    const novaSpeech=
+      document.getElementById("novaIrisSpeech");
+
+    if(novaSpeech && value){
+      const now=new Date();
+      const stamp=now.toLocaleTimeString(undefined,{
+        hour:"numeric",
+        minute:"2-digit",
+        second:"2-digit"
+      });
+
+      novaSpeech.textContent=
+        `[${stamp}] NOVA: ${value}`;
+
+      novaSpeech.classList.remove("novaSpeechActive");
+      void novaSpeech.offsetWidth;
+      novaSpeech.classList.add("novaSpeechActive");
+    }
   }
 
   function showMorseResponse(value){
