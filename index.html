@@ -3932,6 +3932,232 @@ body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome{
       rgba(57,255,136,.035);
 }
 
+
+/* ============================================================
+   NOVA FUTURE ALIVE V2
+   Holographic AI presence + real audio-reactive energy.
+   ============================================================ */
+.novaUnifiedConsole .novaFutureField{
+  position:absolute;
+  z-index:4;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  perspective:700px;
+}
+
+/* Fine futuristic HUD grid */
+.novaUnifiedConsole .novaFutureField::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.18;
+  background-image:
+    linear-gradient(rgba(54,217,255,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(54,217,255,.055) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:radial-gradient(circle at 50% 50%,black,transparent 76%);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,black,transparent 76%);
+  animation:novaGridDrift 16s linear infinite;
+}
+
+/* Scan line sweeps NOVA's whole visual field */
+.novaUnifiedConsole .novaScanBeam{
+  position:absolute;
+  left:4%;
+  right:4%;
+  height:1px;
+  top:-4%;
+  opacity:.28;
+  background:linear-gradient(90deg,transparent,#36d9ff 20%,#39ff88 50%,#36d9ff 80%,transparent);
+  box-shadow:0 0 13px rgba(54,217,255,.55);
+  animation:novaScanSweep 7s linear infinite;
+}
+
+/* Floating holographic horizon bands */
+.novaUnifiedConsole .novaHorizon{
+  position:absolute;
+  left:50%;
+  top:50%;
+  border:1px solid rgba(54,217,255,.13);
+  border-radius:50%;
+  transform:translate(-50%,-50%) rotateX(72deg);
+  box-shadow:0 0 16px rgba(54,217,255,.06);
+}
+.novaUnifiedConsole .novaHorizonOne{
+  width:72%;
+  height:72%;
+  animation:novaHorizonPulse 5s ease-in-out infinite;
+}
+.novaUnifiedConsole .novaHorizonTwo{
+  width:92%;
+  height:92%;
+  border-color:rgba(57,255,136,.08);
+  animation:novaHorizonPulse 7s ease-in-out infinite reverse;
+}
+
+/* Energy arcs around NOVA — not rigid circles */
+.novaUnifiedConsole .novaEnergyArc{
+  position:absolute;
+  left:50%;
+  top:50%;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  border-style:solid;
+  pointer-events:none;
+}
+.novaUnifiedConsole .novaEnergyArcA{
+  width:48%;
+  aspect-ratio:1;
+  border-width:1px;
+  border-color:#36d9ff transparent rgba(54,217,255,.12) transparent;
+  opacity:.42;
+  animation:novaArcSpin 11s linear infinite;
+}
+.novaUnifiedConsole .novaEnergyArcB{
+  width:59%;
+  aspect-ratio:1;
+  border-width:1px;
+  border-color:transparent rgba(57,255,136,.45) transparent rgba(54,217,255,.12);
+  opacity:.28;
+  animation:novaArcSpinReverse 17s linear infinite;
+}
+.novaUnifiedConsole .novaEnergyArcC{
+  width:69%;
+  aspect-ratio:1;
+  border-width:1px;
+  border-color:rgba(54,217,255,.09) transparent transparent rgba(57,255,136,.18);
+  opacity:.25;
+  animation:novaArcSpin 26s linear infinite;
+}
+
+/* Autonomous particles imply NOVA is thinking/alive */
+.novaUnifiedConsole .novaOrbitParticle{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#36d9ff;
+  box-shadow:0 0 8px #36d9ff,0 0 18px rgba(54,217,255,.45);
+  transform-origin:0 0;
+}
+.novaUnifiedConsole .novaOrbitParticle1{animation:novaParticleOrbit1 9s linear infinite}
+.novaUnifiedConsole .novaOrbitParticle2{animation:novaParticleOrbit2 13s linear infinite reverse;background:#39ff88}
+.novaUnifiedConsole .novaOrbitParticle3{animation:novaParticleOrbit3 17s linear infinite}
+.novaUnifiedConsole .novaOrbitParticle4{animation:novaParticleOrbit4 21s linear infinite reverse}
+
+/* Real music spectrum lives across the bottom and grows upward. */
+.novaUnifiedConsole #novaMusicSpectrum{
+  position:absolute;
+  z-index:8;
+  left:5%;
+  right:5%;
+  bottom:0;
+  height:31%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:3px;
+  opacity:0;
+  mask-image:linear-gradient(to top,black 0%,rgba(0,0,0,.8) 58%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to top,black 0%,rgba(0,0,0,.8) 58%,transparent 100%);
+  transition:opacity .5s ease;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
+  opacity:.48;
+}
+.novaUnifiedConsole .novaSpectrumBar{
+  flex:1 1 0;
+  max-width:10px;
+  min-width:2px;
+  height:4%;
+  border-radius:4px 4px 0 0;
+  background:linear-gradient(to top,rgba(57,255,136,.28),rgba(54,217,255,.72));
+  box-shadow:0 0 7px rgba(54,217,255,.22);
+  transform-origin:bottom;
+  transition:height 70ms linear,opacity 100ms linear;
+}
+
+/* Music turns ambient geometry into an energy system */
+body.irisMediaPlaying .novaUnifiedConsole .novaEnergyArcA{
+  opacity:calc(.42 + (var(--nova-energy,0) * .35));
+  filter:drop-shadow(0 0 calc(4px + (var(--nova-highs,0) * 9px)) rgba(54,217,255,.55));
+  animation-duration:calc(9s - (var(--nova-energy,0) * 4s));
+}
+body.irisMediaPlaying .novaUnifiedConsole .novaEnergyArcB{
+  opacity:calc(.30 + (var(--nova-mids,0) * .42));
+  filter:drop-shadow(0 0 calc(3px + (var(--nova-mids,0) * 8px)) rgba(57,255,136,.38));
+}
+body.irisMediaPlaying .novaUnifiedConsole .novaScanBeam{
+  opacity:calc(.25 + (var(--nova-highs,0) * .50));
+  animation-duration:calc(5s - (var(--nova-energy,0) * 2s));
+}
+
+/* NOVA's full panel breathes with bass */
+body.irisMediaPlaying .novaUnifiedConsole .novaFutureField{
+  filter:brightness(calc(1 + (var(--nova-energy,0) * .34)));
+}
+
+/* Speaking wakes up the surrounding arcs too */
+.novaUnifiedConsole .novaLeftHome:has(#novaLiveSpeechDisplay.novaLiveSpeechVisible) .novaEnergyArcA{
+  opacity:.72;
+  filter:drop-shadow(0 0 10px rgba(54,217,255,.55));
+}
+.novaUnifiedConsole .novaLeftHome:has(#novaLiveSpeechDisplay.novaLiveSpeechVisible) .novaScanBeam{
+  opacity:.58;
+}
+
+/* Animations */
+@keyframes novaGridDrift{
+  from{background-position:0 0,0 0}
+  to{background-position:34px 34px,34px 34px}
+}
+@keyframes novaScanSweep{
+  0%{top:-3%;opacity:0}
+  8%{opacity:.35}
+  92%{opacity:.35}
+  100%{top:103%;opacity:0}
+}
+@keyframes novaHorizonPulse{
+  0%,100%{opacity:.15;transform:translate(-50%,-50%) rotateX(72deg) scale(.94)}
+  50%{opacity:.38;transform:translate(-50%,-50%) rotateX(72deg) scale(1.05)}
+}
+@keyframes novaArcSpin{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes novaArcSpinReverse{
+  to{transform:translate(-50%,-50%) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit1{
+  from{transform:rotate(0deg) translateX(145px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(145px) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit2{
+  from{transform:rotate(0deg) translateX(190px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(190px) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit3{
+  from{transform:rotate(0deg) translateX(225px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(225px) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit4{
+  from{transform:rotate(0deg) translateX(265px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(265px) rotate(-360deg)}
+}
+
+/* Keep information readable above holographics. */
+.novaUnifiedConsole #novaCoreContainer{z-index:18 !important}
+.novaUnifiedConsole #novaPersistentTicker{z-index:30 !important}
+.novaUnifiedConsole #novaMusicInfoDisplay{z-index:35 !important}
+.novaUnifiedConsole #novaLiveSpeechDisplay{z-index:40 !important}
+
+@media(max-width:650px){
+  .novaUnifiedConsole .novaFutureField::before{background-size:24px 24px}
+  .novaUnifiedConsole #novaMusicSpectrum{left:3%;right:3%;gap:2px}
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -3962,6 +4188,19 @@ body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome{
 
 <div class="panel card novaUnifiedConsole">
 <div class="novaLeftHome">
+      <div class="novaFutureField" aria-hidden="true">
+        <div class="novaScanBeam"></div>
+        <div class="novaHorizon novaHorizonOne"></div>
+        <div class="novaHorizon novaHorizonTwo"></div>
+        <div class="novaEnergyArc novaEnergyArcA"></div>
+        <div class="novaEnergyArc novaEnergyArcB"></div>
+        <div class="novaEnergyArc novaEnergyArcC"></div>
+        <div class="novaOrbitParticle novaOrbitParticle1"></div>
+        <div class="novaOrbitParticle novaOrbitParticle2"></div>
+        <div class="novaOrbitParticle novaOrbitParticle3"></div>
+        <div class="novaOrbitParticle novaOrbitParticle4"></div>
+        <div class="novaMusicSpectrum" id="novaMusicSpectrum" aria-hidden="true"></div>
+      </div>
       <div id="novaPersistentTicker" aria-live="polite">
         <div id="novaPersistentTickerTrack">NOVA SYSTEM ONLINE</div>
       </div>
@@ -13323,6 +13562,135 @@ if(document.readyState==="loading"){
   );
 }else{
   initializeNovaPersistentTicker();
+}
+
+
+/* ============================================================
+   NOVA FUTURE VISUAL ENGINE
+   Uses the existing audio analyser if available.
+   Never creates a second audio path and never changes playback.
+   ============================================================ */
+let novaFutureVisualFrame=null;
+
+function initializeNovaFutureVisuals(){
+  const spectrum=document.getElementById("novaMusicSpectrum");
+  if(!spectrum)return;
+
+  if(!spectrum.children.length){
+    for(let i=0;i<42;i++){
+      const bar=document.createElement("span");
+      bar.className="novaSpectrumBar";
+      spectrum.appendChild(bar);
+    }
+  }
+
+  if(!novaFutureVisualFrame){
+    novaFutureVisualLoop();
+  }
+}
+
+function novaFutureVisualLoop(){
+  novaFutureVisualFrame=requestAnimationFrame(novaFutureVisualLoop);
+
+  const spectrum=document.getElementById("novaMusicSpectrum");
+  if(!spectrum)return;
+
+  const bars=spectrum.children;
+  const playing=document.body.classList.contains("irisMediaPlaying");
+
+  /*
+    Read the analyser already used by NOVA when it is available.
+    The variable names are discovered safely at runtime so this visual
+    layer cannot break music if the analyser implementation changes.
+  */
+  let analyserRef=null;
+  let dataRef=null;
+
+  try{
+    if(typeof novaAnalyser!=="undefined")analyserRef=novaAnalyser;
+  }catch(e){}
+  try{
+    if(typeof analyser!=="undefined" && !analyserRef)analyserRef=analyser;
+  }catch(e){}
+
+  if(playing && analyserRef && analyserRef.frequencyBinCount){
+    if(
+      !window.__novaFutureFreqData ||
+      window.__novaFutureFreqData.length!==analyserRef.frequencyBinCount
+    ){
+      window.__novaFutureFreqData=
+        new Uint8Array(analyserRef.frequencyBinCount);
+    }
+
+    dataRef=window.__novaFutureFreqData;
+
+    try{
+      analyserRef.getByteFrequencyData(dataRef);
+    }catch(e){
+      dataRef=null;
+    }
+  }
+
+  let energy=0;
+  let bass=0;
+  let mids=0;
+  let highs=0;
+
+  if(playing && dataRef && dataRef.length){
+    const usable=Math.min(dataRef.length,128);
+
+    for(let i=0;i<bars.length;i++){
+      const index=Math.min(
+        usable-1,
+        Math.floor((i/bars.length)*usable)
+      );
+
+      const value=dataRef[index]/255;
+      const shaped=Math.pow(value,.78);
+
+      bars[i].style.height=
+        `${Math.max(3,shaped*100)}%`;
+
+      bars[i].style.opacity=
+        `${.28+(shaped*.72)}`;
+    }
+
+    const avg=(a,b)=>{
+      let sum=0,count=0;
+      for(let i=a;i<b && i<usable;i++){
+        sum+=dataRef[i];
+        count++;
+      }
+      return count ? (sum/count)/255 : 0;
+    };
+
+    bass=avg(0,10);
+    mids=avg(10,45);
+    highs=avg(45,usable);
+    energy=(bass*.45)+(mids*.35)+(highs*.20);
+  }else{
+    for(let i=0;i<bars.length;i++){
+      const idle=3+((i%7)*.35);
+      bars[i].style.height=`${idle}%`;
+      bars[i].style.opacity=".22";
+    }
+  }
+
+  const root=document.documentElement;
+  root.style.setProperty("--nova-bass",bass.toFixed(3));
+  root.style.setProperty("--nova-mids",mids.toFixed(3));
+  root.style.setProperty("--nova-highs",highs.toFixed(3));
+  root.style.setProperty("--nova-energy",energy.toFixed(3));
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeNovaFutureVisuals,
+    {once:true}
+  );
+}else{
+  initializeNovaFutureVisuals();
 }
 
 </script>
