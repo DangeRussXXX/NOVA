@@ -2004,11 +2004,14 @@ body.novaMusicAlive .novaParticles{
           <button class="control primary" type="button" onclick="openMusicFilePicker()">ADD MUSIC</button>
           <button class="control" type="button" onclick="linkMusicFolder()">LINK MUSIC FOLDER</button>
           <button id="refreshMusicFolderButton" class="control" type="button" onclick="refreshLinkedMusicFolder()" style="display:none">REFRESH FOLDER</button>
+          <button class="control" type="button" onclick="restoreSavedPlaylist(true)">RESTORE PLAYLIST</button>
+          <button class="control danger" type="button" onclick="clearSavedPlaylist()">CLEAR PLAYLIST</button>
           <input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple hidden onchange="handleMusicFiles(event)">
           <input id="musicFolderFallback" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" webkitdirectory directory multiple hidden>
           <span id="musicCount" class="voiceSubtitle">0 tracks</span>
         </div>
         <div id="musicFolderStatus" class="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
+        <div id="musicPlaylistStatus" class="musicFolderStatus">PLAYLIST: CHECKING...</div>
         <div id="musicDropZone" class="musicDropZone">
           DRAG &amp; DROP MUSIC FILES OR A MUSIC FOLDER HERE
         </div>
@@ -5360,6 +5363,8 @@ function initializeMedia(){
 
   initializeMusicDropZone();
   restoreMusicDirectoryHandle();
+  restoreSavedPlaylist(false);
+  updateSavedPlaylistStatus();
 
 
   document.getElementById(
@@ -5451,6 +5456,114 @@ function showMediaTab(tab){
 
 let linkedMusicDirectoryHandle = null;
 
+const NOVA_PLAYLIST_DB="novaPersistentPlaylistDB";
+const NOVA_PLAYLIST_STORE="tracks";
+
+function openNovaPlaylistDatabase(){
+  return new Promise((resolve,reject)=>{
+    const request=indexedDB.open(NOVA_PLAYLIST_DB,1);
+    request.onupgradeneeded=()=>{
+      const db=request.result;
+      if(!db.objectStoreNames.contains(NOVA_PLAYLIST_STORE)){
+        db.createObjectStore(NOVA_PLAYLIST_STORE,{keyPath:"key"});
+      }
+    };
+    request.onsuccess=()=>resolve(request.result);
+    request.onerror=()=>reject(request.error);
+  });
+}
+
+function novaTrackKey(file){
+  return `${file.name}|${file.size}|${file.lastModified}`;
+}
+
+async function saveFilesToPersistentPlaylist(files,replaceLibrary=false){
+  const incoming=Array.from(files||[]).filter(isSupportedAudioFile);
+  if(!incoming.length)return;
+  try{
+    const db=await openNovaPlaylistDatabase();
+    const tx=db.transaction(NOVA_PLAYLIST_STORE,"readwrite");
+    const store=tx.objectStore(NOVA_PLAYLIST_STORE);
+    if(replaceLibrary)store.clear();
+    incoming.forEach(file=>store.put({
+      key:novaTrackKey(file),file,
+      name:file.name,size:file.size,lastModified:file.lastModified
+    }));
+    await new Promise((resolve,reject)=>{
+      tx.oncomplete=resolve;
+      tx.onerror=()=>reject(tx.error);
+      tx.onabort=()=>reject(tx.error);
+    });
+    db.close();
+    updateSavedPlaylistStatus();
+  }catch(error){console.warn("NOVA playlist save failed:",error);}
+}
+
+async function getSavedPlaylistFiles(){
+  try{
+    const db=await openNovaPlaylistDatabase();
+    const tx=db.transaction(NOVA_PLAYLIST_STORE,"readonly");
+    const req=tx.objectStore(NOVA_PLAYLIST_STORE).getAll();
+    const rows=await new Promise((resolve,reject)=>{
+      req.onsuccess=()=>resolve(req.result||[]);
+      req.onerror=()=>reject(req.error);
+    });
+    db.close();
+    return rows.map(row=>row.file).filter(isSupportedAudioFile);
+  }catch(error){
+    console.warn("NOVA playlist restore failed:",error);
+    return [];
+  }
+}
+
+async function updateSavedPlaylistStatus(){
+  const el=document.getElementById("musicPlaylistStatus");
+  if(!el)return;
+  const files=await getSavedPlaylistFiles();
+  el.textContent=files.length
+    ? `PLAYLIST SAVED: ${files.length} TRACK${files.length===1?"":"S"}`
+    : "PLAYLIST: EMPTY";
+  el.classList.toggle("linked",files.length>0);
+}
+
+async function restoreSavedPlaylist(announce=false){
+  const files=await getSavedPlaylistFiles();
+  if(!files.length){
+    if(announce)log("No saved music playlist was found.","warning");
+    updateSavedPlaylistStatus();
+    return;
+  }
+  addMusicFiles(files,false,false);
+  if(announce)log(`Restored ${files.length} saved music track${files.length===1?"":"s"}.`,"success");
+}
+
+async function clearSavedPlaylist(){
+  try{
+    const db=await openNovaPlaylistDatabase();
+    const tx=db.transaction(NOVA_PLAYLIST_STORE,"readwrite");
+    tx.objectStore(NOVA_PLAYLIST_STORE).clear();
+    await new Promise((resolve,reject)=>{
+      tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error); tx.onabort=()=>reject(tx.error);
+    });
+    db.close();
+
+    musicLibrary.forEach(item=>{try{URL.revokeObjectURL(item.url)}catch(e){}});
+    musicLibrary=[]; musicIndex=-1;
+
+    const audio=document.getElementById("audioPlayer");
+    if(audio){audio.pause();audio.removeAttribute("src");audio.load();}
+    renderMusicList();
+    const count=document.getElementById("musicCount");
+    if(count)count.textContent="0 tracks";
+    setNovaMusicAlive(false);
+    updateSavedPlaylistStatus();
+    log("Saved music playlist cleared.","system");
+  }catch(error){
+    console.warn("NOVA playlist clear failed:",error);
+    log("Could not clear the saved playlist.","error");
+  }
+}
+
 function isSupportedAudioFile(file){
   if(!file) return false;
 
@@ -5480,11 +5593,15 @@ function openMusicFilePicker(){
 }
 
 
-function addMusicFiles(files, replaceLibrary = false){
+function addMusicFiles(files, replaceLibrary = false, persistPlaylist = true){
 
   const incoming =
     Array.from(files || [])
       .filter(isSupportedAudioFile);
+
+  if(persistPlaylist && incoming.length){
+    saveFilesToPersistentPlaylist(incoming,replaceLibrary);
+  }
 
   if(!incoming.length){
     log(
@@ -9086,7 +9203,20 @@ function setNovaMusicAlive(alive){
 
     if(pulse){
       pulse.style.boxShadow = "";
+      pulse.style.transform = "";
+      pulse.style.opacity = "";
     }
+
+    [".novaOuterRing",".novaInnerRing",".novaIris",".novaWaveform",".novaParticles"]
+      .forEach(selector=>{
+        const element=document.querySelector(selector);
+        if(element){
+          element.style.transform="";
+          element.style.filter="";
+          element.style.opacity="";
+          element.style.clipPath="";
+        }
+      });
 
   }
 }
@@ -9120,7 +9250,7 @@ async function startNovaAudioLife(audio){
           .createAnalyser();
 
       novaLifeAnalyser.fftSize =
-        128;
+        256;
 
       novaLifeAnalyser
         .smoothingTimeConstant =
@@ -9178,56 +9308,57 @@ async function startNovaAudioLife(audio){
               novaLifeData
             );
 
-          let bassTotal = 0;
+          const length=novaLifeData.length;
+          const bassEnd=Math.max(2,Math.floor(length*.16));
+          const midEnd=Math.max(bassEnd+1,Math.floor(length*.55));
 
-          for(
-            let i = 1;
-            i < 10;
-            i++
-          ){
-            bassTotal +=
-              novaLifeData[i];
-          }
+          let bassTotal=0;
+          let midTotal=0;
+          let highTotal=0;
 
-          const bass =
-            bassTotal /
-            9 /
-            255;
+          for(let i=0;i<bassEnd;i++)bassTotal+=novaLifeData[i];
+          for(let i=bassEnd;i<midEnd;i++)midTotal+=novaLifeData[i];
+          for(let i=midEnd;i<length;i++)highTotal+=novaLifeData[i];
 
-          let total = 0;
+          const bass=(bassTotal/bassEnd)/255;
+          const mids=(midTotal/(midEnd-bassEnd))/255;
+          const highs=(highTotal/(length-midEnd))/255;
+          const energy=Math.min(1,bass*.48+mids*.34+highs*.18);
 
-          for(
-            let i = 0;
-            i < novaLifeData.length;
-            i++
-          ){
-            total +=
-              novaLifeData[i];
-          }
-
-          const energy =
-            total /
-            novaLifeData.length /
-            255;
-
-          const orb =
-            document.getElementById(
-              "novaOrb"
-            );
+          const orb=document.getElementById("novaOrb");
+          const outer=document.querySelector(".novaOuterRing");
+          const inner=document.querySelector(".novaInnerRing");
+          const iris=document.querySelector(".novaIris");
+          const wave=document.querySelector(".novaWaveform");
+          const particles=document.querySelector(".novaParticles");
+          const pulse=document.getElementById("novaMusicPulseRing");
 
           if(orb){
-            orb.style.filter =
-              `brightness(${1 + energy * 1.25}) drop-shadow(0 0 ${8 + bass * 28}px rgba(0,229,255,.85))`;
+            orb.style.filter=`brightness(${1+energy*1.25}) drop-shadow(0 0 ${8+bass*32}px rgba(0,229,255,.85))`;
           }
-
-          const pulse =
-            document.getElementById(
-              "novaMusicPulseRing"
-            );
-
+          if(outer){
+            outer.style.transform=`scale(${1+bass*.16})`;
+          }
+          if(inner){
+            inner.style.transform=`scale(${1+mids*.17}) rotate(${(mids-.5)*8}deg)`;
+          }
+          if(iris){
+            iris.style.transform=`scaleX(${.94+mids*.18}) scaleY(${.88+bass*.28})`;
+            iris.style.filter=`brightness(${1.05+energy*1.8}) saturate(${1+mids})`;
+            iris.style.clipPath=`ellipse(${48+mids*18}% ${40+bass*20}% at 50% 50%)`;
+          }
+          if(wave){
+            wave.style.transform=`scale(${.94+highs*.34})`;
+            wave.style.opacity=String(.35+highs*.65);
+          }
+          if(particles){
+            particles.style.filter=`brightness(${1+highs*2})`;
+            particles.style.opacity=String(.35+energy*.6);
+          }
           if(pulse){
-            pulse.style.boxShadow =
-              `0 0 ${18 + bass * 45}px rgba(0,229,255,.9), inset 0 0 ${10 + energy * 25}px rgba(255,0,255,.45)`;
+            pulse.style.transform=`scale(${.96+bass*.28})`;
+            pulse.style.opacity=String(.25+energy*.75);
+            pulse.style.boxShadow=`0 0 ${18+bass*55}px rgba(0,229,255,.95), inset 0 0 ${8+mids*32}px rgba(255,0,255,.5)`;
           }
 
         };
