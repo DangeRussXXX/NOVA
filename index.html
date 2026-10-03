@@ -1979,6 +1979,28 @@ body.novaMusicAlive .novaParticles{
   box-shadow:0 0 10px rgba(57,255,136,.25);
 }
 
+
+.novaBookmarkList{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:7px;
+}
+.novaBookmarkItem{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:6px;
+}
+.novaBookmarkItem .control:first-child{
+  text-align:left;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.browserQuickLaunch{
+  margin-top:8px;
+}
+
 </style>
 </head>
 
@@ -2272,12 +2294,35 @@ body.novaMusicAlive .novaParticles{
   <div class="panel card">
     <div class="panelHeader">NOVA BROWSER</div>
     <div class="panelBody">
+
       <div class="browserSearchRow">
-        <input id="novaGoogleSearch" type="text" placeholder="Search Google with text or ask NOVA..." autocomplete="off">
-        <button class="control primary" type="button" onclick="searchGoogleFromBrowser()">SEARCH</button>
+        <input id="novaGoogleSearch" type="text" placeholder="Search Google or enter a website..." autocomplete="off">
+        <button class="control primary" type="button" onclick="novaBrowserGo()">GO</button>
+        <button class="control" type="button" onclick="startNovaBrowserVoiceSearch()">🎙 VOICE</button>
       </div>
-      <div class="browserHint">VOICE: “NOVA, SEARCH GOOGLE FOR …”</div>
+
+      <div class="buttonGrid browserQuickLaunch">
+        <button class="control primary" type="button" onclick="openNovaBrowserPage('https://www.google.com/')">GOOGLE</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://mail.google.com/')">GMAIL</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://www.youtube.com/')">YOUTUBE</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://maps.google.com/')">MAPS</button>
+        <button class="control" type="button" onclick="openNovaBrowserPage('https://drive.google.com/')">DRIVE</button>
+        <button class="control" type="button" onclick="addNovaBookmark()">+ BOOKMARK</button>
+      </div>
+
+      <div class="browserHint">
+        OPENS IN A REAL BROWSER WINDOW • GOOGLE LOGIN + NORMAL BROWSER BOOKMARKS WORK THERE
+      </div>
+
+      <div class="panelSubHeader" style="margin-top:10px">NOVA BOOKMARKS</div>
+      <div id="novaBookmarkList" class="novaBookmarkList"></div>
+
+      <div class="browserHint">
+        VOICE: “SEARCH GOOGLE FOR ARDUINO MEGA” • “OPEN GOOGLE” • “OPEN GMAIL” • “OPEN YOUTUBE”
+      </div>
+
     </div>
+  </div>
   </div>
   </div>
 
@@ -4497,58 +4542,252 @@ function looksLikeCommand(text){
 
 
 /* ============================================================
-   NOVA GOOGLE BROWSER
+   NOVA REAL BROWSER LAUNCHER
    ============================================================ */
 
-function searchGoogle(query){
-  const clean=String(query||"").trim();
-  if(!clean)return;
+let novaBrowserWindow=null;
+const NOVA_BOOKMARKS_KEY="novaBrowserBookmarksV1";
 
-  const url=
-    "https://www.google.com/search?q="+
+function normalizeNovaBrowserTarget(value){
+  const clean=String(value||"").trim();
+
+  if(!clean){
+    return "https://www.google.com/";
+  }
+
+  if(/^https?:\/\//i.test(clean)){
+    return clean;
+  }
+
+  if(
+    /^[a-z0-9.-]+\.[a-z]{2,}(?:\/.*)?$/i.test(clean) &&
+    !/\s/.test(clean)
+  ){
+    return "https://"+clean;
+  }
+
+  return "https://www.google.com/search?q="+
     encodeURIComponent(clean);
+}
 
-  const win=window.open(
+function openNovaBrowserPage(target){
+  const url=normalizeNovaBrowserTarget(target);
+
+  novaBrowserWindow=window.open(
     url,
-    "novaGoogleSearchWindow"
+    "novaRealBrowserWindow"
   );
 
-  if(!win){
+  if(!novaBrowserWindow){
     log(
-      "Google search window was blocked by the browser. Allow pop-ups for NOVA.",
+      "NOVA browser window was blocked. Allow pop-ups for this page.",
       "warning"
     );
-  }else{
+    return false;
+  }
+
+  try{
+    novaBrowserWindow.focus();
+  }catch(e){}
+
+  return true;
+}
+
+function novaBrowserGo(){
+  const input=document.getElementById("novaGoogleSearch");
+  if(!input)return;
+
+  const value=input.value.trim();
+  if(!value)return;
+
+  if(openNovaBrowserPage(value)){
     log(
-      `Google search: ${clean}`,
+      `NOVA Browser: ${value}`,
       "success"
     );
   }
 }
 
+function searchGoogle(query){
+  const clean=String(query||"").trim();
+  if(!clean)return;
+
+  const input=document.getElementById("novaGoogleSearch");
+  if(input)input.value=clean;
+
+  openNovaBrowserPage(
+    "https://www.google.com/search?q="+
+    encodeURIComponent(clean)
+  );
+
+  log(
+    `Google search: ${clean}`,
+    "success"
+  );
+}
+
 function searchGoogleFromBrowser(){
-  const input=
-    document.getElementById(
-      "novaGoogleSearch"
+  novaBrowserGo();
+}
+
+function startNovaBrowserVoiceSearch(){
+  const Recognition=
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!Recognition){
+    log(
+      "Browser voice search is not supported by this browser.",
+      "error"
+    );
+    return;
+  }
+
+  const recognition=new Recognition();
+  recognition.lang="en-US";
+  recognition.interimResults=false;
+  recognition.maxAlternatives=1;
+
+  recognition.onresult=event=>{
+    const query=
+      event.results[0][0].transcript.trim();
+
+    const input=
+      document.getElementById("novaGoogleSearch");
+
+    if(input){
+      input.value=query;
+    }
+
+    searchGoogle(query);
+  };
+
+  recognition.onerror=event=>{
+    log(
+      `Browser voice search error: ${event.error}`,
+      "error"
+    );
+  };
+
+  recognition.start();
+}
+
+function getNovaBookmarks(){
+  try{
+    const value=JSON.parse(
+      localStorage.getItem(NOVA_BOOKMARKS_KEY) || "[]"
     );
 
-  if(!input)return;
+    return Array.isArray(value)
+      ? value
+      : [];
+  }catch(error){
+    return [];
+  }
+}
 
-  const query=
-    input.value.trim();
+function saveNovaBookmarks(bookmarks){
+  localStorage.setItem(
+    NOVA_BOOKMARKS_KEY,
+    JSON.stringify(bookmarks)
+  );
 
-  if(!query)return;
+  renderNovaBookmarks();
+}
 
-  searchGoogle(query);
+function addNovaBookmark(){
+  const input=document.getElementById("novaGoogleSearch");
+
+  const raw=
+    input && input.value.trim()
+      ? input.value.trim()
+      : "";
+
+  if(!raw){
+    log(
+      "Enter a website or search in the NOVA Browser field first.",
+      "warning"
+    );
+    return;
+  }
+
+  const url=normalizeNovaBrowserTarget(raw);
+  const bookmarks=getNovaBookmarks();
+
+  if(bookmarks.some(item=>item.url===url)){
+    log(
+      "That NOVA bookmark already exists.",
+      "warning"
+    );
+    return;
+  }
+
+  bookmarks.push({
+    title:raw,
+    url
+  });
+
+  saveNovaBookmarks(bookmarks);
+
+  log(
+    `NOVA bookmark saved: ${raw}`,
+    "success"
+  );
+}
+
+function removeNovaBookmark(index){
+  const bookmarks=getNovaBookmarks();
+
+  if(index<0 || index>=bookmarks.length){
+    return;
+  }
+
+  bookmarks.splice(index,1);
+  saveNovaBookmarks(bookmarks);
+}
+
+function renderNovaBookmarks(){
+  const list=document.getElementById("novaBookmarkList");
+  if(!list)return;
+
+  const bookmarks=getNovaBookmarks();
+  list.innerHTML="";
+
+  if(!bookmarks.length){
+    const empty=document.createElement("div");
+    empty.className="browserHint";
+    empty.textContent="NO NOVA BOOKMARKS SAVED";
+    list.appendChild(empty);
+    return;
+  }
+
+  bookmarks.forEach((item,index)=>{
+    const row=document.createElement("div");
+    row.className="novaBookmarkItem";
+
+    const open=document.createElement("button");
+    open.className="control";
+    open.type="button";
+    open.textContent=item.title;
+    open.onclick=()=>openNovaBrowserPage(item.url);
+
+    const remove=document.createElement("button");
+    remove.className="control danger";
+    remove.type="button";
+    remove.textContent="×";
+    remove.title="Remove bookmark";
+    remove.onclick=()=>removeNovaBookmark(index);
+
+    row.appendChild(open);
+    row.appendChild(remove);
+    list.appendChild(row);
+  });
 }
 
 document.addEventListener(
   "DOMContentLoaded",
   ()=>{
-    const input=
-      document.getElementById(
-        "novaGoogleSearch"
-      );
+    const input=document.getElementById("novaGoogleSearch");
 
     if(input){
       input.addEventListener(
@@ -4556,11 +4795,13 @@ document.addEventListener(
         event=>{
           if(event.key==="Enter"){
             event.preventDefault();
-            searchGoogleFromBrowser();
+            novaBrowserGo();
           }
         }
       );
     }
+
+    renderNovaBookmarks();
   }
 );
 
@@ -4571,29 +4812,62 @@ document.addEventListener(
 
 function routeVoiceCommand(command,raw){
 
-  const googleSearchMatch=
-    raw.match(
-      /^(?:nova[,\s]*)?(?:search google for|google|search for|search)\s+(.+)$/i
+  const normalizedCommand=
+    String(command||raw||"")
+      .trim()
+      .replace(/\s+/g," ");
+
+  const browserVoiceText=
+    normalizedCommand
+      .replace(/^nova[\s,]+/i,"")
+      .trim();
+
+  let browserMatch=
+    browserVoiceText.match(
+      /^(?:search google for|google search for|search for)\s+(.+)$/i
     );
 
-  if(googleSearchMatch){
-    const query=
-      googleSearchMatch[1].trim();
+  if(browserMatch){
+    const query=browserMatch[1].trim();
 
-    const input=
-      document.getElementById(
-        "novaGoogleSearch"
-      );
-
-    if(input){
-      input.value=query;
-    }
+    const input=document.getElementById("novaGoogleSearch");
+    if(input)input.value=query;
 
     speak(
       `Searching Google for ${query}.`
     );
 
     searchGoogle(query);
+    return;
+  }
+
+  if(/^open google$/i.test(browserVoiceText)){
+    speak("Opening Google.");
+    openNovaBrowserPage("https://www.google.com/");
+    return;
+  }
+
+  if(/^open gmail$/i.test(browserVoiceText)){
+    speak("Opening Gmail.");
+    openNovaBrowserPage("https://mail.google.com/");
+    return;
+  }
+
+  if(/^open youtube$/i.test(browserVoiceText)){
+    speak("Opening YouTube.");
+    openNovaBrowserPage("https://www.youtube.com/");
+    return;
+  }
+
+  if(/^open google maps$/i.test(browserVoiceText) || /^open maps$/i.test(browserVoiceText)){
+    speak("Opening Google Maps.");
+    openNovaBrowserPage("https://maps.google.com/");
+    return;
+  }
+
+  if(/^open google drive$/i.test(browserVoiceText) || /^open drive$/i.test(browserVoiceText)){
+    speak("Opening Google Drive.");
+    openNovaBrowserPage("https://drive.google.com/");
     return;
   }
 
