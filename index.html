@@ -3271,6 +3271,45 @@ body.novaMusicAlive .novaUnifiedConsole .novaIris{
   font-size:17px !important;
 }
 
+
+/* ============================================================
+   NOVA DUAL RESPONSE DISPLAY
+   Bottom ticker always scrolls. Live speech appears only while
+   NOVA is actually speaking aloud.
+   ============================================================ */
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  display:none;
+  position:absolute;
+  z-index:210;
+  left:12%;
+  right:12%;
+  bottom:112px;
+  min-height:44px;
+  padding:7px 12px;
+  align-items:center;
+  justify-content:center;
+  color:var(--cyan);
+  font-size:17px;
+  line-height:1.35;
+  font-weight:600;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  text-shadow:0 0 9px rgba(54,217,255,.32);
+  pointer-events:none;
+}
+.novaUnifiedConsole #novaLiveSpeechDisplay.novaLiveSpeechVisible{
+  display:flex;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaLiveSpeechDisplay{
+    left:6%;
+    right:6%;
+    bottom:98px;
+    font-size:14px;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -3317,6 +3356,7 @@ body.novaMusicAlive .novaUnifiedConsole .novaIris{
 <div class="novaMusicPulseRing" id="novaMusicPulseRing"></div>
 </div>
 </div>
+<div id="novaLiveSpeechDisplay" aria-live="polite"></div>
 <div id="novaHudTicker" aria-live="polite">
   <span id="novaIrisSpeechText">NOVA READY.</span>
 </div>
@@ -5722,59 +5762,91 @@ function novaEndLiveSpeech(){
     clearInterval(novaLiveSpeechTimer);
     novaLiveSpeechTimer=null;
   }
-  const lane=document.getElementById("novaHudTicker");
-  if(lane)lane.classList.remove("novaLiveSpeaking");
+
+  const display=
+    document.getElementById("novaLiveSpeechDisplay");
+
+  if(display){
+    display.classList.remove("novaLiveSpeechVisible");
+    display.textContent="";
+  }
 }
 
 function novaBeginLiveSpeech(message,rate){
-  const lane=document.getElementById("novaHudTicker");
-  const el=document.getElementById("novaIrisSpeechText");
-  if(!lane || !el)return null;
+  const display=
+    document.getElementById("novaLiveSpeechDisplay");
+
+  if(!display)return null;
 
   novaEndLiveSpeech();
 
-  /* Stop the scrolling animation while NOVA is talking. */
-  el.getAnimations().forEach(a=>a.cancel());
-  el.classList.remove("novaMarqueeRunning","novaTickerRun");
-  lane.classList.add("novaLiveSpeaking");
+  const clean=
+    String(message||"")
+      .replace(/\s+/g," ")
+      .trim();
 
-  const clean=String(message||"").replace(/\s+/g," ").trim();
-  const words=clean.split(" ").filter(Boolean);
+  const words=
+    clean.split(" ").filter(Boolean);
+
   let shown=0;
 
-  el.textContent="";
+  display.textContent="";
+  display.classList.add("novaLiveSpeechVisible");
+
+  if(!words.length)return null;
 
   const render=count=>{
-    shown=Math.max(shown,Math.min(words.length,count));
-    el.textContent=words.slice(0,shown).join(" ");
+    shown=Math.max(
+      shown,
+      Math.min(words.length,count)
+    );
+
+    display.textContent=
+      words.slice(0,shown).join(" ");
   };
 
-  /* Fallback timing for browsers/voices that do not emit word boundaries. */
-  const interval=Math.max(145,Math.min(330,245/Math.max(.55,rate||.86)));
+  const interval=
+    Math.max(
+      145,
+      Math.min(
+        330,
+        245/Math.max(.55,rate||.86)
+      )
+    );
+
   render(1);
 
-  novaLiveSpeechTimer=setInterval(()=>{
-    if(shown>=words.length){
-      clearInterval(novaLiveSpeechTimer);
-      novaLiveSpeechTimer=null;
-      return;
-    }
-    render(shown+1);
-  },interval);
+  novaLiveSpeechTimer=
+    setInterval(()=>{
+      if(shown>=words.length){
+        clearInterval(novaLiveSpeechTimer);
+        novaLiveSpeechTimer=null;
+        return;
+      }
+
+      render(shown+1);
+    },interval);
 
   return {
     boundary(charIndex){
-      const count=clean.slice(0,charIndex).trim()
-        ? clean.slice(0,charIndex).trim().split(/\s+/).length+1
-        : 1;
+      const spoken=
+        clean.slice(0,charIndex).trim();
+
+      const count=
+        spoken
+          ? spoken.split(/\s+/).length+1
+          : 1;
+
       render(count);
     },
+
     finish(){
       if(novaLiveSpeechTimer){
         clearInterval(novaLiveSpeechTimer);
         novaLiveSpeechTimer=null;
       }
-      el.textContent=clean;
+
+      display.textContent=clean;
     }
   };
 }
