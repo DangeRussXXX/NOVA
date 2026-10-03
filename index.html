@@ -1328,6 +1328,41 @@ button.control.electricGreen{
   margin-top:12px;
 }
 
+/* RSR TRAINER PHYSICAL INPUTS */
+.rsrInputGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.rsrInputIndicator{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#090e14;
+  font-size:11px;
+}
+
+.rsrInputIndicator .rsrInputState{
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:1px;
+}
+
+.rsrInputIndicator.active{
+  border-color:#39ff88;
+  box-shadow:0 0 10px rgba(57,255,136,.45), inset 0 0 12px rgba(57,255,136,.08);
+}
+
+.rsrInputIndicator.active .rsrInputState{
+  color:#39ff88;
+  text-shadow:0 0 8px rgba(57,255,136,.75);
+}
+
 .rsrSystemPanel{
   margin-top:14px;
 }
@@ -1669,6 +1704,16 @@ body.columnResizing *{
         <button id="trainerLedButton5" class="control" onclick="toggleTrainerLed(5)" aria-pressed="false">LED 5</button>
         <button id="trainerLedButton6" class="control" onclick="toggleTrainerLed(6)" aria-pressed="false">LED 6</button>
         <button id="trainerLedButton7" class="control" onclick="toggleTrainerLed(7)" aria-pressed="false">LED 7</button>
+      </div>
+
+      <div class="panelSection rsrPhysicalInputs">
+        <div class="panelSubHeader">PHYSICAL INPUTS</div>
+        <div class="rsrInputGrid">
+          <div id="rsrSwitchIndicator0" class="rsrInputIndicator">
+            <span>SWITCH 0</span>
+            <span id="rsrSwitchState0" class="rsrInputState">UNKNOWN</span>
+          </div>
+        </div>
       </div>
 
       <div class="panelSection rsrPatternControls">
@@ -2277,6 +2322,31 @@ function parseTrainerLedState(line){
   setTrainerLedUI(Number(match[1]), match[2].toLowerCase() === "on");
 }
 
+function setRSRSwitchUI(switchNumber, isHigh){
+  if(switchNumber !== 0) return;
+
+  const indicator = document.getElementById(`rsrSwitchIndicator${switchNumber}`);
+  const state = document.getElementById(`rsrSwitchState${switchNumber}`);
+
+  if(state){
+    state.textContent = isHigh ? "HI" : "LO";
+  }
+
+  if(indicator){
+    indicator.classList.toggle("active", isHigh);
+  }
+}
+
+function parseRSRSwitchState(line){
+  const match = String(line).match(/^\s*RSR\s+SWITCH\s+([0-7])\s*:\s*(HI|LO)\s*$/i);
+  if(!match) return;
+
+  const switchNumber = Number(match[1]);
+  const isHigh = match[2].toUpperCase() === "HI";
+
+  setRSRSwitchUI(switchNumber, isHigh);
+}
+
 function setTrainerPatternButton(name){
   document.querySelectorAll(".trainerPatternButton").forEach(button => {
     button.classList.toggle(
@@ -2789,6 +2859,7 @@ function processSerialLine(line){
   parseBoardStatus(line);
   parseLedState(line);
   parseTrainerLedState(line);
+  parseRSRSwitchState(line);
   parseTrainerSystemLine(line);
 
   if(
