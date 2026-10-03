@@ -3658,6 +3658,96 @@ body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTickerTrack{
   z-index:265 !important;
 }
 
+
+/* ============================================================
+   NOVA VERTICAL RUNNING SYSTEM LIST
+   New events enter at the bottom and the list rises toward top.
+   ============================================================ */
+.novaUnifiedConsole #novaPersistentTicker{
+  display:flex !important;
+  position:absolute !important;
+  z-index:250 !important;
+  left:14px !important;
+  right:14px !important;
+  top:14px !important;
+  bottom:14px !important;
+  height:auto !important;
+  overflow:hidden !important;
+  flex-direction:column !important;
+  justify-content:flex-end !important;
+  gap:5px !important;
+  pointer-events:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  background:transparent !important;
+  mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 100%);
+}
+
+/* Old horizontal track is no longer used visually. */
+.novaUnifiedConsole #novaPersistentTickerTrack{
+  display:none !important;
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine{
+  display:block;
+  position:relative;
+  flex:0 0 auto;
+  width:100%;
+  box-sizing:border-box;
+  padding:2px 5px;
+  color:rgba(57,255,136,.82);
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  font-size:10px;
+  line-height:1.2;
+  font-weight:600;
+  letter-spacing:.25px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-shadow:0 0 5px rgba(57,255,136,.28);
+  opacity:0;
+  transform:translateY(18px);
+  transition:
+    transform 220ms linear,
+    opacity 220ms linear;
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine.novaVerticalSystemLineIn{
+  opacity:.82;
+  transform:translateY(0);
+}
+
+/* Older lines fade as they approach the top. */
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+8){
+  opacity:.56;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+12){
+  opacity:.36;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+16){
+  opacity:.20;
+}
+
+body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTicker{
+  display:flex !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaPersistentTicker{
+    left:8px !important;
+    right:8px !important;
+    top:8px !important;
+    bottom:8px !important;
+    gap:3px !important;
+  }
+  .novaUnifiedConsole .novaVerticalSystemLine{
+    font-size:8px;
+  }
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -4378,7 +4468,6 @@ function novaPersistentTickerPush(message){
   const clean=String(message||"").replace(/\s+/g," ").trim();
   if(!clean)return;
 
-  /* Avoid only immediate duplicate echoes. */
   if(clean===novaPersistentTickerLast)return;
   novaPersistentTickerLast=clean;
 
@@ -4388,34 +4477,9 @@ function novaPersistentTickerPush(message){
     }
   },90);
 
-  novaPersistentTickerQueue.push(clean);
-
-  if(novaPersistentTickerQueue.length>30){
-    novaPersistentTickerQueue.splice(
-      0,
-      novaPersistentTickerQueue.length-30
-    );
-  }
-
-  novaPersistentTickerNext();
-}
-
-function novaPersistentTickerNext(){
-  if(
-    novaPersistentTickerRunning ||
-    !novaPersistentTickerQueue.length
-  ){
-    return;
-  }
-
   const lane=document.getElementById("novaPersistentTicker");
-  const track=document.getElementById("novaPersistentTickerTrack");
+  if(!lane)return;
 
-  if(!lane || !track)return;
-
-  novaPersistentTickerRunning=true;
-
-  const message=novaPersistentTickerQueue.shift();
   const now=new Date();
   const stamp=now.toLocaleTimeString(undefined,{
     hour:"numeric",
@@ -4423,52 +4487,37 @@ function novaPersistentTickerNext(){
     second:"2-digit"
   });
 
-  track.textContent=`[${stamp}] ${message}`;
+  const line=document.createElement("div");
+  line.className="novaVerticalSystemLine";
+  line.textContent=`[${stamp}] ${clean}`;
+
+  lane.appendChild(line);
 
   requestAnimationFrame(()=>{
-    const laneWidth=Math.max(1,lane.clientWidth);
-    const textWidth=Math.max(1,track.scrollWidth);
-
-    /* Fast enough to feel live, but readable. */
-    const duration=Math.max(
-      2400,
-      Math.min(
-        4800,
-        1800+(textWidth*1.7)
-      )
-    );
-
-    track.getAnimations().forEach(a=>a.cancel());
-
-    const animation=track.animate(
-      [
-        {
-          transform:`translate3d(${laneWidth}px,-50%,0)`
-        },
-        {
-          transform:`translate3d(${-textWidth}px,-50%,0)`
-        }
-      ],
-      {
-        duration,
-        easing:"linear",
-        fill:"forwards"
-      }
-    );
-
-    let finished=false;
-
-    const finish=()=>{
-      if(finished)return;
-      finished=true;
-      novaPersistentTickerRunning=false;
-      novaPersistentTickerNext();
-    };
-
-    animation.onfinish=finish;
-    setTimeout(finish,duration+200);
+    line.classList.add("novaVerticalSystemLineIn");
   });
+
+  /*
+    Keep a real running history on screen.
+    Every new event is appended at the bottom.
+    Flex layout automatically pushes all previous events upward.
+  */
+  const maxLines=22;
+
+  while(
+    lane.querySelectorAll(".novaVerticalSystemLine").length>maxLines
+  ){
+    const oldest=lane.querySelector(".novaVerticalSystemLine");
+    if(oldest){
+      oldest.remove();
+    }else{
+      break;
+    }
+  }
 }
+
+/* Legacy compatibility — no horizontal queue is needed now. */
+function novaPersistentTickerNext(){}
 
 function log(message, type="system"){
   novaPersistentTickerPush(message);
@@ -13046,7 +13095,7 @@ function initializeNovaPersistentTicker(){
   },850);
 
   setTimeout(()=>{
-    novaPersistentTickerPush("SCROLL SYSTEM ACTIVE • COMMANDS • STATUS • RESPONSES • MUSIC");
+    novaPersistentTickerPush("RUNNING SYSTEM LIST ACTIVE • COMMANDS • STATUS • RESPONSES • MUSIC");
   },1450);
 }
 
