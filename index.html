@@ -4078,11 +4078,12 @@ function handleVoiceInput(rawText){
   }
 
   if (awaitingEvent) {
-    if (!looksLikeCommand(normalized)) {
-      createEventFromNaturalLanguage(text);
-      return;
-    }
+
     awaitingEvent = false;
+
+    createEventFromNaturalLanguage(text);
+
+    return;
   }
 
   // Route the voice command through your existing logic
@@ -6906,6 +6907,24 @@ function createEventFromNaturalLanguage(text){
 function voiceAddEvent(){
 
   awaitingEvent = true;
+
+  /*
+    Calendar voice capture must work even when the main
+    voice toggle was OFF before the button was pressed.
+    Enable the recognition loop first; speak() will pause
+    recognition while NOVA talks, then resume it afterward.
+  */
+  if(!voiceEnabled){
+
+    voiceEnabled = true;
+    updateVoiceUI();
+
+    log(
+      "Voice control enabled for calendar event capture.",
+      "success"
+    );
+
+  }
 
   speak(
     "Tell me the event, date, and time."
