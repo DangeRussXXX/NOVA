@@ -3252,6 +3252,25 @@ body.novaMusicAlive .novaUnifiedConsole .novaIris{
   animation:none !important;
 }
 
+
+/* NOVA LIVE SPEECH — subtitle mode while NOVA is actually talking */
+.novaUnifiedConsole #novaHudTicker.novaLiveSpeaking{
+  height:58px !important;
+}
+.novaUnifiedConsole #novaHudTicker.novaLiveSpeaking #novaIrisSpeechText{
+  left:50% !important;
+  top:50% !important;
+  width:90% !important;
+  min-width:0 !important;
+  max-width:90% !important;
+  white-space:normal !important;
+  text-align:center !important;
+  line-height:1.35 !important;
+  transform:translate(-50%,-50%) !important;
+  animation:none !important;
+  font-size:17px !important;
+}
+
 </style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 </head>
@@ -5695,6 +5714,71 @@ function speak(text){
 }
 
 
+
+let novaLiveSpeechTimer=null;
+
+function novaEndLiveSpeech(){
+  if(novaLiveSpeechTimer){
+    clearInterval(novaLiveSpeechTimer);
+    novaLiveSpeechTimer=null;
+  }
+  const lane=document.getElementById("novaHudTicker");
+  if(lane)lane.classList.remove("novaLiveSpeaking");
+}
+
+function novaBeginLiveSpeech(message,rate){
+  const lane=document.getElementById("novaHudTicker");
+  const el=document.getElementById("novaIrisSpeechText");
+  if(!lane || !el)return null;
+
+  novaEndLiveSpeech();
+
+  /* Stop the scrolling animation while NOVA is talking. */
+  el.getAnimations().forEach(a=>a.cancel());
+  el.classList.remove("novaMarqueeRunning","novaTickerRun");
+  lane.classList.add("novaLiveSpeaking");
+
+  const clean=String(message||"").replace(/\s+/g," ").trim();
+  const words=clean.split(" ").filter(Boolean);
+  let shown=0;
+
+  el.textContent="";
+
+  const render=count=>{
+    shown=Math.max(shown,Math.min(words.length,count));
+    el.textContent=words.slice(0,shown).join(" ");
+  };
+
+  /* Fallback timing for browsers/voices that do not emit word boundaries. */
+  const interval=Math.max(145,Math.min(330,245/Math.max(.55,rate||.86)));
+  render(1);
+
+  novaLiveSpeechTimer=setInterval(()=>{
+    if(shown>=words.length){
+      clearInterval(novaLiveSpeechTimer);
+      novaLiveSpeechTimer=null;
+      return;
+    }
+    render(shown+1);
+  },interval);
+
+  return {
+    boundary(charIndex){
+      const count=clean.slice(0,charIndex).trim()
+        ? clean.slice(0,charIndex).trim().split(/\s+/).length+1
+        : 1;
+      render(count);
+    },
+    finish(){
+      if(novaLiveSpeechTimer){
+        clearInterval(novaLiveSpeechTimer);
+        novaLiveSpeechTimer=null;
+      }
+      el.textContent=clean;
+    }
+  };
+}
+
 function speakNext(){
 
   if(!speechQueue.length){
@@ -5722,6 +5806,8 @@ function speakNext(){
 
  const utterance =
   new SpeechSynthesisUtterance(text);
+
+let novaLiveSpeech=null;
 
 utterance.rate = 0.86;
 utterance.pitch = 1.08;
@@ -5754,8 +5840,28 @@ if(preferred){
   utterance.voice = preferred;
 }
 
+  utterance.onstart = () => {
+    novaSetSystemVisualState("speaking",true);
+    novaLiveSpeech=novaBeginLiveSpeech(text,utterance.rate);
+  };
+
+  utterance.onboundary = event => {
+    if(
+      novaLiveSpeech &&
+      Number.isFinite(event.charIndex)
+    ){
+      novaLiveSpeech.boundary(event.charIndex);
+    }
+  };
+
   utterance.onend = () => {
     novaSetSystemVisualState("speaking",false);
+
+    if(novaLiveSpeech)novaLiveSpeech.finish();
+
+    setTimeout(()=>{
+      novaEndLiveSpeech();
+    },500);
 
     log(
       "Speech complete.",
@@ -5768,6 +5874,7 @@ if(preferred){
 
   utterance.onerror = () => {
     novaSetSystemVisualState("speaking",false);
+    novaEndLiveSpeech();
 
     isSpeaking = false;
 
