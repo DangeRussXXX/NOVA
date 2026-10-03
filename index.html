@@ -1792,6 +1792,33 @@ body.columnResizing *{
 .irisMediaMeta{display:flex;justify-content:space-between;gap:10px;font-size:9px;color:var(--muted)}
 body.irisMediaPlaying .novaIris{filter:drop-shadow(0 0 14px rgba(0,255,255,.45))}
 
+
+/* NOVA MEDIA LIBRARY - DRAG/DROP + FOLDER LINK */
+.musicDropZone{
+  margin-top:10px;
+  padding:16px 12px;
+  border:1px dashed rgba(0,255,255,.38);
+  border-radius:10px;
+  text-align:center;
+  color:var(--muted);
+  background:rgba(0,255,255,.025);
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.musicDropZone.dragOver{
+  border-color:var(--cyan);
+  background:rgba(0,255,255,.08);
+  box-shadow:0 0 18px rgba(0,255,255,.12);
+  color:var(--cyan);
+}
+.musicFolderStatus{
+  margin-top:8px;
+  font-size:10px;
+  color:var(--muted);
+}
+.musicFolderStatus.linked{
+  color:var(--electricGreen, #55ff88);
+}
+
 </style>
 </head>
 
@@ -2063,8 +2090,16 @@ body.irisMediaPlaying .novaIris{filter:drop-shadow(0 0 14px rgba(0,255,255,.45))
 
       <div id="musicSection" class="mediaSection active">
         <div class="mediaFileRow">
-          <label class="fileButton">ADD MUSIC<input id="musicFiles" type="file" accept="audio/*" multiple></label>
+          <button class="control primary" type="button" onclick="openMusicFilePicker()">ADD MUSIC</button>
+          <button class="control" type="button" onclick="linkMusicFolder()">LINK MUSIC FOLDER</button>
+          <button id="refreshMusicFolderButton" class="control" type="button" onclick="refreshLinkedMusicFolder()" style="display:none">REFRESH FOLDER</button>
+          <input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple hidden>
+          <input id="musicFolderFallback" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" webkitdirectory directory multiple hidden>
           <span id="musicCount" class="voiceSubtitle">0 tracks</span>
+        </div>
+        <div id="musicFolderStatus" class="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
+        <div id="musicDropZone" class="musicDropZone">
+          DRAG &amp; DROP MUSIC FILES OR A MUSIC FOLDER HERE
         </div>
         <audio id="audioPlayer" controls></audio>
         <div class="mediaControls">
@@ -5197,6 +5232,27 @@ function initializeMedia(){
     handleMusicFiles
   );
 
+  document.getElementById(
+    "musicFolderFallback"
+  ).addEventListener(
+    "change",
+    event => {
+      addMusicFiles(
+        event.target.files || [],
+        true
+      );
+
+      updateMusicFolderStatus(
+        "SELECTED FOLDER",
+        true,
+        "LOADED"
+      );
+    }
+  );
+
+  initializeMusicDropZone();
+  restoreMusicDirectoryHandle();
+
 
   document.getElementById(
     "videoFiles"
@@ -5285,30 +5341,84 @@ function showMediaTab(tab){
    MUSIC
    ============================================================ */
 
-function handleMusicFiles(event){
+let linkedMusicDirectoryHandle = null;
 
-  const files =
-    Array.from(
-      event.target.files || []
+function isSupportedAudioFile(file){
+  if(!file) return false;
+
+  if(
+    file.type &&
+    file.type.toLowerCase().startsWith("audio/")
+  ){
+    return true;
+  }
+
+  return /\.(mp3|wav|m4a|aac|ogg|oga|flac|opus|weba|webm)$/i.test(
+    file.name || ""
+  );
+}
+
+
+function openMusicFilePicker(){
+  const input =
+    document.getElementById(
+      "musicFiles"
     );
 
-  musicLibrary.forEach(
-    item => {
-      try{
-        URL.revokeObjectURL(
-          item.url
-        );
-      }catch(e){}
-    }
-  );
+  if(input){
+    input.value = "";
+    input.click();
+  }
+}
 
-  musicLibrary =
-    files.map(file => ({
+
+function addMusicFiles(files, replaceLibrary = false){
+
+  const incoming =
+    Array.from(files || [])
+      .filter(isSupportedAudioFile);
+
+  if(!incoming.length){
+    log(
+      "No supported audio files were found.",
+      "warning"
+    );
+    return;
+  }
+
+  if(replaceLibrary){
+    musicLibrary.forEach(item => {
+      try{
+        URL.revokeObjectURL(item.url);
+      }catch(e){}
+    });
+
+    musicLibrary = [];
+    musicIndex = -1;
+  }
+
+  const existingKeys =
+    new Set(
+      musicLibrary.map(item =>
+        `${item.file.name}|${item.file.size}|${item.file.lastModified}`
+      )
+    );
+
+  incoming.forEach(file => {
+    const key =
+      `${file.name}|${file.size}|${file.lastModified}`;
+
+    if(existingKeys.has(key)){
+      return;
+    }
+
+    existingKeys.add(key);
+
+    musicLibrary.push({
       file,
       url:URL.createObjectURL(file)
-    }));
-
-  musicIndex = -1;
+    });
+  });
 
   renderMusicList();
 
@@ -5320,19 +5430,585 @@ function handleMusicFiles(event){
     }`;
 
   if(musicLibrary.length){
-
     showMediaTab("music");
 
-    speak(
-      `${musicLibrary.length} music ${
-        musicLibrary.length === 1
-          ? "track is"
-          : "tracks are"
-      } loaded.`
+    log(
+      `${musicLibrary.length} music track${
+        musicLibrary.length === 1 ? "" : "s"
+      } loaded.`,
+      "success"
+    );
+  }
+}
+
+
+function handleMusicFiles(event){
+  addMusicFiles(
+    event.target.files || [],
+    false
+  );
+}
+
+
+async function collectAudioFilesFromDirectory(directoryHandle){
+
+  const files = [];
+
+  async function walk(handle){
+
+    for await(
+      const entry of handle.values()
+    ){
+
+      if(entry.kind === "file"){
+        const file =
+          await entry.getFile();
+
+        if(isSupportedAudioFile(file)){
+          files.push(file);
+        }
+
+      }else if(entry.kind === "directory"){
+        await walk(entry);
+      }
+
+    }
+
+  }
+
+  await walk(directoryHandle);
+
+  return files;
+}
+
+
+function openMusicLibraryDatabase(){
+
+  return new Promise(
+    (resolve,reject) => {
+
+      const request =
+        indexedDB.open(
+          "NOVA_MEDIA_LIBRARY",
+          1
+        );
+
+      request.onupgradeneeded =
+        () => {
+          const db =
+            request.result;
+
+          if(
+            !db.objectStoreNames.contains(
+              "handles"
+            )
+          ){
+            db.createObjectStore(
+              "handles"
+            );
+          }
+        };
+
+      request.onsuccess =
+        () => resolve(
+          request.result
+        );
+
+      request.onerror =
+        () => reject(
+          request.error
+        );
+
+    }
+  );
+}
+
+
+async function saveMusicDirectoryHandle(handle){
+
+  try{
+
+    const db =
+      await openMusicLibraryDatabase();
+
+    await new Promise(
+      (resolve,reject) => {
+
+        const transaction =
+          db.transaction(
+            "handles",
+            "readwrite"
+          );
+
+        transaction
+          .objectStore("handles")
+          .put(
+            handle,
+            "musicDirectory"
+          );
+
+        transaction.oncomplete =
+          () => resolve();
+
+        transaction.onerror =
+          () => reject(
+            transaction.error
+          );
+
+      }
+    );
+
+    db.close();
+
+  }catch(error){
+    console.warn(
+      "Could not save music folder handle:",
+      error
+    );
+  }
+}
+
+
+async function restoreMusicDirectoryHandle(){
+
+  if(!("indexedDB" in window)){
+    return;
+  }
+
+  try{
+
+    const db =
+      await openMusicLibraryDatabase();
+
+    const handle =
+      await new Promise(
+        (resolve,reject) => {
+
+          const transaction =
+            db.transaction(
+              "handles",
+              "readonly"
+            );
+
+          const request =
+            transaction
+              .objectStore("handles")
+              .get(
+                "musicDirectory"
+              );
+
+          request.onsuccess =
+            () => resolve(
+              request.result || null
+            );
+
+          request.onerror =
+            () => reject(
+              request.error
+            );
+
+        }
+      );
+
+    db.close();
+
+    if(handle){
+
+      linkedMusicDirectoryHandle =
+        handle;
+
+      updateMusicFolderStatus(
+        handle.name,
+        true,
+        "CLICK REFRESH FOLDER TO RECONNECT"
+      );
+
+    }
+
+  }catch(error){
+    console.warn(
+      "Could not restore music folder:",
+      error
+    );
+  }
+}
+
+
+function updateMusicFolderStatus(
+  name,
+  linked,
+  message = ""
+){
+
+  const status =
+    document.getElementById(
+      "musicFolderStatus"
+    );
+
+  const refresh =
+    document.getElementById(
+      "refreshMusicFolderButton"
+    );
+
+  if(status){
+
+    status.textContent =
+      linked
+        ? `MUSIC FOLDER: ${name}${
+            message
+              ? ` • ${message}`
+              : ""
+          }`
+        : "NO MUSIC FOLDER LINKED";
+
+    status.classList.toggle(
+      "linked",
+      !!linked
     );
 
   }
 
+  if(refresh){
+    refresh.style.display =
+      linked
+        ? ""
+        : "none";
+  }
+}
+
+
+async function linkMusicFolder(){
+
+  if(
+    !("showDirectoryPicker" in window)
+  ){
+
+    const fallback =
+      document.getElementById(
+        "musicFolderFallback"
+      );
+
+    if(fallback){
+      fallback.value = "";
+      fallback.click();
+    }else{
+      speak(
+        "Folder linking is not supported in this browser. You can still drag and drop your music folder."
+      );
+    }
+
+    return;
+  }
+
+  try{
+
+    const handle =
+      await window.showDirectoryPicker({
+        mode:"read"
+      });
+
+    linkedMusicDirectoryHandle =
+      handle;
+
+    await saveMusicDirectoryHandle(
+      handle
+    );
+
+    updateMusicFolderStatus(
+      handle.name,
+      true,
+      "LINKED"
+    );
+
+    const files =
+      await collectAudioFilesFromDirectory(
+        handle
+      );
+
+    addMusicFiles(
+      files,
+      true
+    );
+
+    speak(
+      `${files.length} music ${
+        files.length === 1
+          ? "track"
+          : "tracks"
+      } loaded from ${handle.name}.`
+    );
+
+  }catch(error){
+
+    if(
+      error &&
+      error.name !== "AbortError"
+    ){
+      console.error(
+        "Music folder error:",
+        error
+      );
+
+      log(
+        "Could not open the music folder.",
+        "error"
+      );
+    }
+
+  }
+}
+
+
+async function refreshLinkedMusicFolder(){
+
+  if(!linkedMusicDirectoryHandle){
+    await restoreMusicDirectoryHandle();
+  }
+
+  const handle =
+    linkedMusicDirectoryHandle;
+
+  if(!handle){
+    linkMusicFolder();
+    return;
+  }
+
+  try{
+
+    let permission =
+      await handle.queryPermission({
+        mode:"read"
+      });
+
+    if(permission !== "granted"){
+      permission =
+        await handle.requestPermission({
+          mode:"read"
+        });
+    }
+
+    if(permission !== "granted"){
+      log(
+        "Music folder permission was not granted.",
+        "warning"
+      );
+      return;
+    }
+
+    const files =
+      await collectAudioFilesFromDirectory(
+        handle
+      );
+
+    addMusicFiles(
+      files,
+      true
+    );
+
+    updateMusicFolderStatus(
+      handle.name,
+      true,
+      "CONNECTED"
+    );
+
+    speak(
+      `Music library refreshed. ${files.length} ${
+        files.length === 1
+          ? "track"
+          : "tracks"
+      } loaded.`
+    );
+
+  }catch(error){
+
+    console.error(
+      "Music folder refresh error:",
+      error
+    );
+
+    log(
+      "Could not refresh the linked music folder.",
+      "error"
+    );
+
+  }
+}
+
+
+function readDroppedEntry(entry){
+
+  return new Promise(
+    resolve => {
+
+      if(!entry){
+        resolve([]);
+        return;
+      }
+
+      if(entry.isFile){
+
+        entry.file(
+          file => resolve(
+            isSupportedAudioFile(file)
+              ? [file]
+              : []
+          ),
+          () => resolve([])
+        );
+
+        return;
+      }
+
+      if(entry.isDirectory){
+
+        const reader =
+          entry.createReader();
+
+        const allEntries = [];
+
+        const readBatch =
+          () => {
+            reader.readEntries(
+              async entries => {
+
+                if(!entries.length){
+
+                  const nested =
+                    await Promise.all(
+                      allEntries.map(
+                        readDroppedEntry
+                      )
+                    );
+
+                  resolve(
+                    nested.flat()
+                  );
+
+                  return;
+                }
+
+                allEntries.push(
+                  ...entries
+                );
+
+                readBatch();
+
+              },
+              () => resolve([])
+            );
+          };
+
+        readBatch();
+        return;
+      }
+
+      resolve([]);
+
+    }
+  );
+}
+
+
+async function handleMusicDrop(event){
+
+  event.preventDefault();
+
+  const zone =
+    document.getElementById(
+      "musicDropZone"
+    );
+
+  if(zone){
+    zone.classList.remove(
+      "dragOver"
+    );
+  }
+
+  const items =
+    Array.from(
+      event.dataTransfer.items || []
+    );
+
+  const entries =
+    items
+      .map(item =>
+        item.webkitGetAsEntry
+          ? item.webkitGetAsEntry()
+          : null
+      )
+      .filter(Boolean);
+
+  let files = [];
+
+  if(entries.length){
+
+    const groups =
+      await Promise.all(
+        entries.map(
+          readDroppedEntry
+        )
+      );
+
+    files =
+      groups.flat();
+
+  }else{
+
+    files =
+      Array.from(
+        event.dataTransfer.files || []
+      );
+
+  }
+
+  addMusicFiles(
+    files,
+    false
+  );
+}
+
+
+function initializeMusicDropZone(){
+
+  const zone =
+    document.getElementById(
+      "musicDropZone"
+    );
+
+  if(!zone){
+    return;
+  }
+
+  ["dragenter","dragover"]
+    .forEach(eventName => {
+      zone.addEventListener(
+        eventName,
+        event => {
+          event.preventDefault();
+          zone.classList.add(
+            "dragOver"
+          );
+        }
+      );
+    });
+
+  ["dragleave","drop"]
+    .forEach(eventName => {
+      zone.addEventListener(
+        eventName,
+        event => {
+          event.preventDefault();
+          zone.classList.remove(
+            "dragOver"
+          );
+        }
+      );
+    });
+
+  zone.addEventListener(
+    "drop",
+    handleMusicDrop
+  );
 }
 
 
