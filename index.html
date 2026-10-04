@@ -14946,230 +14946,96 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 let novaMediaPopoutWindow=null;
 
 function openNovaMediaPopout(){
-  if(novaMediaPopoutWindow && !novaMediaPopoutWindow.closed){
-    novaMediaPopoutWindow.focus();
-    return;
-  }
-
-  novaMediaPopoutWindow=window.open(
-    "",
-    "NOVA_MEDIA_CENTER",
-    "popup=yes,width=980,height=760,resizable=yes,scrollbars=yes"
-  );
-
-  if(!novaMediaPopoutWindow){
-    try{log("Media window blocked by browser. Allow pop-ups for NOVA.","warn");}catch(e){}
-    return;
-  }
-
-  const w=novaMediaPopoutWindow;
-  w.document.open();
-  w.document.write(`<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>NOVA MEDIA</title>
+ if(novaMediaPopoutWindow&&!novaMediaPopoutWindow.closed){novaMediaPopoutWindow.focus();return}
+ novaMediaPopoutWindow=window.open("","NOVA_MEDIA_CENTER","popup=yes,width=980,height=760,resizable=yes,scrollbars=yes");
+ if(!novaMediaPopoutWindow){try{log("Media window blocked. Allow pop-ups for NOVA.","warn")}catch(e){}return}
+ const w=novaMediaPopoutWindow;
+ w.document.open();
+ w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA MEDIA</title>
 <style>
-html,body{margin:0;min-height:100%;background:#020a10;color:#d9f8ff;font-family:Inter,Segoe UI,Arial,sans-serif}
-*{box-sizing:border-box}
-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:8px;padding:12px 14px;background:#07121b;border-bottom:1px solid rgba(54,217,255,.22)}
+html,body{margin:0;min-height:100%;background:#020a10;color:#d9f8ff;font-family:Inter,Segoe UI,Arial,sans-serif}*{box-sizing:border-box}
+header{display:flex;align-items:center;gap:8px;padding:12px 14px;background:#07121b;border-bottom:1px solid rgba(54,217,255,.22)}
 header strong{margin-right:auto;color:#36d9ff;letter-spacing:2px}
-button{border:1px solid rgba(54,217,255,.28);border-radius:12px;background:#06121b;color:#36d9ff;padding:8px 12px;font-weight:700;cursor:pointer}
-button:hover,.tab.active{color:#39ff88;border-color:rgba(57,255,136,.5)}
-main{padding:14px}
-#now{padding:10px 12px;margin-bottom:10px;border:1px solid rgba(54,217,255,.12);border-radius:10px;color:#39ff88}
-section{display:none}section.active{display:block}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
-.track{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;text-align:left;margin:3px 0}
-.track span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-input[type=text]{flex:1;min-width:260px;background:#02080d;color:white;border:1px solid rgba(54,217,255,.25);border-radius:8px;padding:9px}
-video,iframe{width:100%;aspect-ratio:16/9;max-height:58vh;background:#000;border:1px solid rgba(54,217,255,.18);border-radius:10px}
-#musicProgress{width:100%}
-.list{margin-top:10px;max-height:48vh;overflow:auto}
-.small{font-size:9px;color:rgba(54,217,255,.65);letter-spacing:1px}
-
-/* MEDIA is now a top NOVA command-center button. */
-#novaMediaPopoutButton.control{
-  min-width:0 !important;
-}
-
-</style>
-</head>
-<body>
-<header>
-<strong>NOVA MEDIA</strong>
-<button class="tab active" id="musicTab" onclick="showPage('music')">MUSIC</button>
-<button class="tab" id="videoTab" onclick="showPage('video')">VIDEOS</button>
-<button class="tab" id="youtubeTab" onclick="showPage('youtube')">YOUTUBE</button>
-</header>
+button{border:1px solid rgba(54,217,255,.28);border-radius:10px;background:#06121b;color:#36d9ff;padding:8px 12px;font-weight:700;cursor:pointer}
+button:hover,.active{color:#39ff88;border-color:rgba(57,255,136,.5)}
+main{padding:14px}.tabs{display:flex;gap:8px;margin-bottom:12px}.page{display:none}.page.active{display:block}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:9px 0}
+input[type=text]{flex:1;min-width:300px;background:#02080d;color:white;border:1px solid rgba(54,217,255,.25);border-radius:8px;padding:10px}
+#stage{width:100%;aspect-ratio:16/9;max-height:56vh;background:#000;border:1px solid rgba(54,217,255,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;color:rgba(54,217,255,.4)}
+#stage video,#stage iframe{width:100%;height:100%;border:0;border-radius:10px;background:#000}
+.list{max-height:45vh;overflow:auto;margin-top:10px}.item{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;width:100%;align-items:center;text-align:left;margin:3px 0}
+.item span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#musicSeek{width:100%}.muted{font-size:9px;color:rgba(54,217,255,.6);letter-spacing:1px}
+</style></head><body>
+<header><strong>NOVA MEDIA</strong><button onclick="window.close()">CLOSE</button></header>
 <main>
-<div id="now">NOVA MEDIA READY</div>
+<div class="tabs"><button id="musicTab" class="active" onclick="page('music')">MUSIC</button><button id="watchTab" onclick="page('watch')">VIDEOS + YOUTUBE</button></div>
 
-<section id="music" class="active">
-  <div class="row">
-    <button onclick="addMusic()">ADD MUSIC</button>
-    <button onclick="addFolder()">ADD FOLDER</button>
-    <span class="small" id="musicCount"></span>
-  </div>
-  <input id="musicProgress" type="range" min="0" max="100" value="0" oninput="seekMusic(this.value)">
-  <div class="row">
-    <button onclick="previousMusic()">PREVIOUS</button>
-    <button onclick="toggleMusic()">PLAY / PAUSE</button>
-    <button onclick="nextMusic()">NEXT</button>
-  </div>
-  <div id="musicList" class="list"></div>
-</section>
+<div id="music" class="page active">
+ <div class="row">
+  <button onclick="pickMusic()">ADD MUSIC</button>
+  <button onclick="pickFolder()">ADD FOLDER</button>
+  <button onclick="restoreMusic()">RESTORE PLAYLIST</button>
+  <button onclick="clearMusic()">CLEAR PLAYLIST</button>
+  <span id="musicCount" class="muted"></span>
+ </div>
+ <input id="musicSeek" type="range" min="0" max="100" value="0" oninput="seekMusic(this.value)">
+ <div class="row"><button onclick="prevMusic()">PREVIOUS</button><button onclick="toggleMusic()">PLAY / PAUSE</button><button onclick="stopMusic()">STOP</button><button onclick="nextMusic()">NEXT</button></div>
+ <div id="musicList" class="list"></div>
+</div>
 
-<section id="video">
-  <div class="row">
-    <button onclick="addVideos()">ADD VIDEOS</button>
-    <button onclick="clearVideos()">CLEAR PLAYLIST</button>
-    <span class="small" id="videoCount"></span>
-  </div>
-  <video id="popVideo" controls></video>
-  <div class="row">
-    <button onclick="opener.previousVideo()">PREVIOUS</button>
-    <button onclick="opener.toggleVideo()">PLAY / PAUSE</button>
-    <button onclick="opener.stopVideo()">STOP</button>
-    <button onclick="opener.nextVideo()">NEXT</button>
-  </div>
-  <div id="videoList" class="list"></div>
-</section>
-
-<section id="youtube">
-  <div class="row">
-    <input id="yt" type="text" placeholder="Paste YouTube URL or video ID">
-    <button onclick="loadYT()">LOAD</button>
-    <button onclick="saveYT()">SAVE TO PLAYLIST</button>
-  </div>
-  <div id="ytStage" style="width:100%;aspect-ratio:16/9;background:#000;border:1px solid rgba(54,217,255,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;color:rgba(54,217,255,.38);font-size:11px;letter-spacing:1px">PASTE A YOUTUBE LINK ABOVE</div>
-  <div class="row">
-    <button onclick="ytCommand('playVideo')">PLAY</button>
-    <button onclick="ytCommand('pauseVideo')">PAUSE</button>
-    <button onclick="ytCommand('stopVideo')">STOP</button>
-  </div>
-  <div id="ytList" class="list"></div>
-</section>
+<div id="watch" class="page">
+ <div class="row">
+  <button onclick="pickVideos()">ADD VIDEO FILES</button>
+  <input id="link" type="text" placeholder="Paste a YouTube link">
+  <button onclick="loadLink()">LOAD LINK</button>
+  <button onclick="saveLink()">SAVE LINK</button>
+  <button onclick="clearWatch()">CLEAR PLAYLIST</button>
+ </div>
+ <div id="stage">LOAD A VIDEO FILE OR YOUTUBE LINK</div>
+ <div class="row"><button onclick="prevWatch()">PREVIOUS</button><button onclick="toggleWatch()">PLAY / PAUSE</button><button onclick="stopWatch()">STOP</button><button onclick="nextWatch()">NEXT</button></div>
+ <div id="watchList" class="list"></div>
+</div>
 </main>
-
 <script>
-function showPage(name){
- document.querySelectorAll('section').forEach(x=>x.classList.toggle('active',x.id===name));
- ['music','video','youtube'].forEach(x=>document.getElementById(x+'Tab').classList.toggle('active',x===name));
- refresh();
-}
-function addMusic(){
- const el=opener.document.getElementById('musicFiles')||opener.document.getElementById('musicFileInput');
- if(el)el.click();
-}
-function addFolder(){
- const el=opener.document.getElementById('musicFolderFallback')||opener.document.getElementById('musicFolderInput');
- if(el)el.click();
-}
-function addVideos(){const el=opener.document.getElementById('videoFiles');if(el)el.click()}
-function clearVideos(){if(opener.novaClearVideos)opener.novaClearVideos();refresh()}
-function previousMusic(){
- const lib=opener.musicLibrary||[];if(!lib.length)return;
- const i=opener.musicIndex<=0?lib.length-1:opener.musicIndex-1;opener.playMusic(i);refresh();
-}
-function nextMusic(){
- const lib=opener.musicLibrary||[];if(!lib.length)return;
- const i=opener.musicIndex<0?0:(opener.musicIndex+1)%lib.length;opener.playMusic(i);refresh();
-}
-function toggleMusic(){
- const a=opener.document.getElementById('audioPlayer');if(!a)return;
- if(opener.musicIndex<0){if((opener.musicLibrary||[]).length)opener.playMusic(0);return}
- if(a.paused)a.play();else a.pause();
-}
-function seekMusic(v){
- const a=opener.document.getElementById('audioPlayer');
- if(a&&Number.isFinite(a.duration)&&a.duration>0)a.currentTime=a.duration*(Number(v)/100);
-}
-function parseYT(value){
- value=String(value||'').trim();
- try{
-  const u=new URL(value);
-  if(u.hostname.includes('youtu.be'))return {id:u.pathname.split('/').filter(Boolean)[0]||'',start:Number(u.searchParams.get('t')||0)||0};
-  if(u.hostname.includes('youtube.com')){
-   const id=u.searchParams.get('v')||(u.pathname.startsWith('/shorts/')?u.pathname.split('/')[2]:'')||(u.pathname.startsWith('/embed/')?u.pathname.split('/')[2]:'');
-   let raw=u.searchParams.get('t')||u.searchParams.get('start')||'0';
-   let start=Number(raw)||0;
-   if(!start && /[hms]/i.test(raw)){const h=Number((raw.match(/(\d+)h/i)||[])[1]||0),m=Number((raw.match(/(\d+)m/i)||[])[1]||0),s=Number((raw.match(/(\d+)s/i)||[])[1]||0);start=h*3600+m*60+s}
-   return {id,start};
-  }
- }catch(e){}
- return /^[A-Za-z0-9_-]{11}$/.test(value)?{id:value,start:0}:null;
-}
-let currentYTId='';
-function loadYT(){
- const raw=document.getElementById('yt').value;
- const parsed=parseYT(raw);
- if(!parsed||!parsed.id){document.getElementById('now').textContent='INVALID YOUTUBE LINK';return}
- currentYTId=parsed.id;
- const stage=document.getElementById('ytStage');
- const frame=document.createElement('iframe');
- frame.id='ytFrame';
- frame.allow='autoplay; encrypted-media; picture-in-picture';
- frame.allowFullscreen=true;
- frame.style.cssText='width:100%;height:100%;border:0;border-radius:10px';
- frame.src='https://www.youtube.com/embed/'+encodeURIComponent(parsed.id)+'?enablejsapi=1&playsinline=1'+(parsed.start?'&start='+parsed.start:'');
- stage.textContent='';stage.appendChild(frame);
- document.getElementById('now').textContent='YOUTUBE • '+parsed.id;
-}
+let watchIndex=-1,currentType='',currentYTId='';
 
-function saveYT(){
- const raw=document.getElementById('yt').value;
- const parsed=parseYT(raw);
- if(!parsed||!parsed.id)return;
- const input=opener.document.getElementById('youtubeInput');
- if(input)input.value='https://www.youtube.com/watch?v='+parsed.id;
- if(opener.novaAddCurrentYt)opener.novaAddCurrentYt();
- refresh();
-}
-function ytCommand(cmd){
- const frame=document.getElementById('ytFrame');
- if(!frame||!frame.contentWindow)return;
- frame.contentWindow.postMessage(JSON.stringify({event:'command',func:cmd,args:[]}), '*');
-}
+function page(n){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===n));musicTab.classList.toggle('active',n==='music');watchTab.classList.toggle('active',n==='watch');refresh()}
+function clickMain(ids){for(const id of ids){const e=opener.document.getElementById(id);if(e){e.click();return true}}return false}
+function pickMusic(){clickMain(['musicFiles','musicFileInput'])}
+function pickFolder(){clickMain(['musicFolderFallback','musicFolderInput'])}
+function pickVideos(){clickMain(['videoFiles'])}
+function restoreMusic(){if(opener.restoreSavedPlaylist)opener.restoreSavedPlaylist(true);refresh()}
+function clearMusic(){if(opener.clearMusicPlaylist)opener.clearMusicPlaylist();else if(opener.clearPlaylist)opener.clearPlaylist();refresh()}
+function prevMusic(){const a=opener.musicLibrary||[];if(!a.length)return;opener.playMusic(opener.musicIndex<=0?a.length-1:opener.musicIndex-1)}
+function nextMusic(){const a=opener.musicLibrary||[];if(!a.length)return;opener.playMusic(opener.musicIndex<0?0:(opener.musicIndex+1)%a.length)}
+function toggleMusic(){const a=opener.document.getElementById('audioPlayer');if(!a)return;if(opener.musicIndex<0){if((opener.musicLibrary||[]).length)opener.playMusic(0)}else if(a.paused)a.play();else a.pause()}
+function stopMusic(){const a=opener.document.getElementById('audioPlayer');if(a){a.pause();a.currentTime=0}}
+function seekMusic(v){const a=opener.document.getElementById('audioPlayer');if(a&&isFinite(a.duration)&&a.duration)a.currentTime=a.duration*(+v/100)}
+
+function parseYT(v){v=String(v||'').trim();try{const u=new URL(v);if(u.hostname.includes('youtu.be'))return {id:u.pathname.split('/').filter(Boolean)[0],start:+(u.searchParams.get('t')||0)||0};if(u.hostname.includes('youtube.com')){const id=u.searchParams.get('v')||(u.pathname.startsWith('/shorts/')?u.pathname.split('/')[2]:'');return id?{id,start:+(u.searchParams.get('t')||u.searchParams.get('start')||0)||0}:null}}catch(e){}return /^[\\w-]{11}$/.test(v)?{id:v,start:0}:null}
+function showLocal(i){const x=(opener.videoLibrary||[])[i];if(!x)return;watchIndex=i;currentType='local';const s=document.getElementById('stage');s.innerHTML='';const v=document.createElement('video');v.id='watchVideo';v.controls=true;v.autoplay=true;v.src=x.url;v.onended=nextWatch;s.appendChild(v)}
+function showYT(url){const p=parseYT(url);if(!p)return;currentType='youtube';currentYTId=p.id;const s=document.getElementById('stage');s.innerHTML='';const f=document.createElement('iframe');f.id='watchYT';f.allow='autoplay; encrypted-media; picture-in-picture';f.allowFullscreen=true;f.src='https://www.youtube.com/embed/'+p.id+'?enablejsapi=1&playsinline=1'+(p.start?'&start='+p.start:'');s.appendChild(f)}
+function loadLink(){showYT(document.getElementById('link').value)}
+function saveLink(){const raw=document.getElementById('link').value,p=parseYT(raw);if(!p)return;const input=opener.document.getElementById('youtubeInput');if(input)input.value='https://www.youtube.com/watch?v='+p.id;if(opener.novaAddCurrentYt)opener.novaAddCurrentYt();refresh()}
+function watchItems(){return [...(opener.videoLibrary||[]).map((x,i)=>({type:'local',i,name:x.file?.name||'Video'})),...(opener.novaYtSaved||[]).map((x,i)=>({type:'youtube',i,name:x.url,url:x.url}))]}
+function playWatch(i){const a=watchItems();if(!a.length)return;watchIndex=(i+a.length)%a.length;const x=a[watchIndex];if(x.type==='local')showLocal(x.i);else showYT(x.url);refresh()}
+function prevWatch(){playWatch(watchIndex<=0?watchItems().length-1:watchIndex-1)}
+function nextWatch(){playWatch(watchIndex<0?0:watchIndex+1)}
+function toggleWatch(){if(currentType==='local'){const v=document.getElementById('watchVideo');if(v)v.paused?v.play():v.pause()}else{const f=document.getElementById('watchYT');if(f)f.contentWindow.postMessage(JSON.stringify({event:'command',func:'playVideo',args:[]}), '*')}}
+function stopWatch(){if(currentType==='local'){const v=document.getElementById('watchVideo');if(v){v.pause();v.currentTime=0}}else{const f=document.getElementById('watchYT');if(f)f.contentWindow.postMessage(JSON.stringify({event:'command',func:'stopVideo',args:[]}), '*')}}
+function clearWatch(){if(opener.novaClearVideos)opener.novaClearVideos();if(opener.novaYtSaved){opener.novaYtSaved=[];if(opener.novaSaveYt)opener.novaSaveYt()}watchIndex=-1;document.getElementById('stage').textContent='LOAD A VIDEO FILE OR YOUTUBE LINK';refresh()}
+
 function refresh(){
  if(!opener||opener.closed)return;
- const lib=opener.musicLibrary||[],ml=document.getElementById('musicList');
- ml.innerHTML='';document.getElementById('musicCount').textContent=lib.length+' TRACKS';
- lib.forEach((x,i)=>{
-  const b=document.createElement('button');b.className='track';
-  b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span><span>'+(i===opener.musicIndex?'ACTIVE':'')+'</span>';
-  b.children[1].textContent=opener.novaCleanIntegratedTrackName?opener.novaCleanIntegratedTrackName(x):(x.file?.name||'Track');
-  b.onclick=()=>{opener.playMusic(i);refresh()};ml.appendChild(b);
- });
- const a=opener.document.getElementById('audioPlayer');
- if(a&&Number.isFinite(a.duration)&&a.duration>0)document.getElementById('musicProgress').value=(a.currentTime/a.duration)*100;
-
- const vids=opener.videoLibrary||[],vl=document.getElementById('videoList');
- vl.innerHTML='';document.getElementById('videoCount').textContent=vids.length+' VIDEOS';
- vids.forEach((x,i)=>{
-  const b=document.createElement('button');b.className='track';
-  b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span><span>'+(i===opener.videoIndex?'ACTIVE':'')+'</span>';
-  b.children[1].textContent=x.file?.name||'Video';
-  b.onclick=()=>{opener.playVideo(i);refresh()};vl.appendChild(b);
- });
-
- const saved=opener.novaYtSaved||[],yl=document.getElementById('ytList');yl.innerHTML='';
- saved.forEach((x,i)=>{
-  const b=document.createElement('button');b.className='track';
-  b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span><span>PLAY</span>';
-  b.children[1].textContent=x.url;b.onclick=()=>{document.getElementById('yt').value=x.url;loadYT()};yl.appendChild(b);
- });
-
-
- if(lib[opener.musicIndex]){
-  document.getElementById('now').textContent='NOW PLAYING • '+(lib[opener.musicIndex].file?.name||'Track');
- }else document.getElementById('now').textContent='NOVA MEDIA READY';
+ const ml=document.getElementById('musicList'),music=opener.musicLibrary||[];ml.innerHTML='';musicCount.textContent=music.length+' TRACKS';
+ music.forEach((x,i)=>{const b=document.createElement('button');b.className='item';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span><span>'+(i===opener.musicIndex?'PLAYING':'PLAY')+'</span>';b.children[1].textContent=x.file?.name||'Track';b.onclick=()=>opener.playMusic(i);ml.appendChild(b)});
+ const au=opener.document.getElementById('audioPlayer');if(au&&isFinite(au.duration)&&au.duration)musicSeek.value=au.currentTime/au.duration*100;
+ const wl=document.getElementById('watchList');wl.innerHTML='';watchItems().forEach((x,i)=>{const b=document.createElement('button');b.className='item';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span><span>PLAY</span>';b.children[1].textContent=(x.type==='youtube'?'YOUTUBE • ':'VIDEO • ')+x.name;b.onclick=()=>playWatch(i);wl.appendChild(b)});
 }
-setInterval(refresh,800);refresh();
-<\/script>
-</body>
-</html>`);
-  w.document.close();
+setInterval(refresh,1000);refresh();
+<\/script></body></html>`);
+ w.document.close();
 }
 
 function initializeNovaMediaPopout(){
