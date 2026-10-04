@@ -4642,6 +4642,7 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
     <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaMediaLibraryButton" title="Media Library">MEDIA</button>
     <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaVideoLibraryButton" title="Video Library">VIDEOS</button>
     <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaYouTubeButton" title="YouTube">YOUTUBE</button>
+    <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaMediaPopoutButton" title="Open Media Center in a separate browser window">POP OUT</button>
   </div>
 </div>
 <div id="novaHudTicker" aria-live="polite">
@@ -4754,7 +4755,7 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
 </div>
 
 <div class="panel mediaPanel startExpandedPanel">
-<div class="panelHeader">MEDIA CENTER</div>
+
 <div id="novaMediaCompatibilityHost" aria-hidden="true" style="display:none !important">
 <audio controls="" id="audioPlayer"></audio>
 <input accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" hidden="" id="musicFiles" multiple="" onchange="handleMusicFiles(event)" type="file"/>
@@ -13762,6 +13763,48 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
 .novaUnifiedConsole .novaYouTubePlaylistTools{display:flex;gap:7px;margin-top:8px}
 @media(max-width:800px){.novaUnifiedConsole #novaIntegratedMediaLibrary{width:92vw!important;height:72vh!important}}
 
+
+/* ============================================================
+   CLEAN MEDIA + CAMERA WORKSPACE UPDATE
+   ============================================================ */
+
+/* The old column Media Center is gone. */
+.novaLegacyMediaPanel,
+#novaLegacyMediaPanel{
+  display:none !important;
+}
+
+/* Camera controls are pinned to the TOP of the camera panel. */
+#novaCameraPanelSource .cameraControls,
+#novaCameraPanelSource .cameraButtonRow,
+#novaCameraPanelSource .buttonGrid,
+.novaCameraScreen .cameraControls,
+.novaCameraScreen .cameraButtonRow,
+.novaCameraScreen .buttonGrid{
+  order:-20 !important;
+}
+
+/* Camera viewing area defaults large/expanded. */
+#novaCameraPanelSource,
+.novaCameraScreen{
+  min-height:560px !important;
+}
+#novaCameraPanelSource video,
+#novaCameraPanelSource canvas,
+.novaCameraScreen video,
+.novaCameraScreen canvas{
+  width:100% !important;
+  max-height:72vh !important;
+  object-fit:contain !important;
+}
+
+/* POP OUT sits with the permanent NOVA media controls. */
+.novaUnifiedConsole #novaMediaPopoutButton{
+  min-width:72px !important;
+  color:#39ff88 !important;
+  border-color:rgba(57,255,136,.38) !important;
+}
+
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
@@ -14898,6 +14941,106 @@ function novaHubV2Init(){
  novaRenderYtSaved();novaRestoreVideos();novaMakeMediaMovable();
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",novaHubV2Init,{once:true});else novaHubV2Init();
+
+
+/* ============================================================
+   NOVA MEDIA — TRUE SECOND-MONITOR POP-OUT
+   ============================================================ */
+let novaMediaPopoutWindow=null;
+
+function openNovaMediaPopout(){
+  if(novaMediaPopoutWindow && !novaMediaPopoutWindow.closed){
+    novaMediaPopoutWindow.focus();
+    return;
+  }
+
+  novaMediaPopoutWindow=window.open(
+    "",
+    "NOVA_MEDIA_CENTER",
+    "popup=yes,width=900,height=720,resizable=yes,scrollbars=yes"
+  );
+
+  if(!novaMediaPopoutWindow){
+    try{log("Media pop-out blocked by browser. Allow pop-ups for NOVA.","warn");}catch(e){}
+    return;
+  }
+
+  const w=novaMediaPopoutWindow;
+  w.document.open();
+  w.document.write(`<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NOVA MEDIA CENTER</title>
+<style>
+html,body{margin:0;min-height:100%;background:#020a10;color:#d9f8ff;font-family:Inter,Segoe UI,Arial,sans-serif}
+*{box-sizing:border-box}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:12px 14px;background:#07121b;border-bottom:1px solid rgba(54,217,255,.22)}
+header strong{margin-right:auto;color:#36d9ff;letter-spacing:2px}
+button{border:1px solid rgba(54,217,255,.28);border-radius:12px;background:#06121b;color:#36d9ff;padding:8px 12px;font-weight:700;cursor:pointer}
+button:hover{color:#39ff88;border-color:rgba(57,255,136,.5)}
+main{padding:14px}
+#now{padding:10px;margin-bottom:10px;border:1px solid rgba(54,217,255,.12);border-radius:10px;color:#39ff88}
+.track{display:grid;grid-template-columns:36px minmax(0,1fr);width:100%;text-align:left;margin:3px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+input{flex:1;min-width:260px;background:#02080d;color:white;border:1px solid rgba(54,217,255,.25);border-radius:8px;padding:9px}
+video,iframe{width:100%;aspect-ratio:16/9;background:#000;border:1px solid rgba(54,217,255,.18);border-radius:10px}
+section{display:none}section.active{display:block}
+</style>
+</head>
+<body>
+<header>
+<strong>NOVA MEDIA CENTER</strong>
+<button onclick="showPage('music')">MUSIC</button>
+<button onclick="showPage('video')">VIDEOS</button>
+<button onclick="showPage('youtube')">YOUTUBE</button>
+</header>
+<main>
+<div id="now">NOVA MEDIA READY</div>
+<section id="music" class="active"><div class="row"><button onclick="opener.novaMediaPrevious()">PREVIOUS</button><button onclick="opener.novaMediaTogglePlay()">PLAY / PAUSE</button><button onclick="opener.novaMediaNext()">NEXT</button></div><div id="musicList"></div></section>
+<section id="video"><video id="popVideo" controls></video><div class="row"><button onclick="opener.previousVideo()">PREVIOUS</button><button onclick="opener.toggleVideo()">PLAY / PAUSE</button><button onclick="opener.nextVideo()">NEXT</button></div><div id="videoList"></div></section>
+<section id="youtube"><div class="row"><input id="yt" placeholder="Paste YouTube URL"><button onclick="loadYT()">LOAD</button><button onclick="saveYT()">SAVE</button></div><iframe id="ytFrame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe><div id="ytList"></div></section>
+</main>
+<script>
+function showPage(name){document.querySelectorAll('section').forEach(x=>x.classList.toggle('active',x.id===name));refresh()}
+function loadYT(){opener.document.getElementById('youtubeInput').value=document.getElementById('yt').value;opener.loadYouTube();setTimeout(refresh,100)}
+function saveYT(){opener.document.getElementById('youtubeInput').value=document.getElementById('yt').value;opener.novaAddCurrentYt();refresh()}
+function refresh(){
+ if(!opener||opener.closed)return;
+ const ml=document.getElementById('musicList');ml.innerHTML='';
+ (opener.musicLibrary||[]).forEach((x,i)=>{const b=document.createElement('button');b.className='track';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span>';b.children[1].textContent=opener.novaCleanIntegratedTrackName?opener.novaCleanIntegratedTrackName(x):(x.file?.name||'Track');b.onclick=()=>{opener.playMusic(i);refresh()};ml.appendChild(b)});
+ const vl=document.getElementById('videoList');vl.innerHTML='';
+ (opener.videoLibrary||[]).forEach((x,i)=>{const b=document.createElement('button');b.className='track';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span>';b.children[1].textContent=x.file?.name||'Video';b.onclick=()=>{opener.playVideo(i);refresh()};vl.appendChild(b)});
+ const yl=document.getElementById('ytList');yl.innerHTML='';
+ (opener.novaYtSaved||[]).forEach((x,i)=>{const b=document.createElement('button');b.className='track';b.textContent=x.url;b.onclick=()=>{document.getElementById('yt').value=x.url;loadYT()};yl.appendChild(b)});
+ const frame=opener.document.getElementById('youtubeFrame');if(frame&&frame.src)document.getElementById('ytFrame').src=frame.src;
+ const a=opener.document.getElementById('audioPlayer');if(a&&opener.musicLibrary?.[opener.musicIndex])document.getElementById('now').textContent='NOW PLAYING • '+(opener.musicLibrary[opener.musicIndex].file?.name||'Track');
+}
+setInterval(refresh,1000);refresh();
+<\/script>
+</body>
+</html>`);
+  w.document.close();
+}
+
+function initializeNovaMediaPopout(){
+  document.getElementById("novaMediaPopoutButton")?.addEventListener("click",openNovaMediaPopout);
+}
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",initializeNovaMediaPopout,{once:true});
+}else initializeNovaMediaPopout();
+
+/* Camera defaults expanded when its existing screen is opened. */
+function novaDefaultCameraExpanded(){
+  const source=document.getElementById("novaCameraPanelSource");
+  if(source){
+    source.classList.remove("collapsed");
+    source.setAttribute("data-default-expanded","true");
+  }
+}
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",novaDefaultCameraExpanded,{once:true});
+}else novaDefaultCameraExpanded();
 
 </script>
 </body>
