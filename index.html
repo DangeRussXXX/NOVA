@@ -4543,7 +4543,12 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
           <button type="button" class="novaMediaLibraryAction" id="novaMediaAddFolder">ADD FOLDER</button>
           <button type="button" class="novaMediaLibraryAction" id="novaMediaLibraryClose" title="Close">×</button>
         </div>
-        <div id="novaMediaLibraryNow">
+        <div class="novaHubTabs">
+<button id="novaHubMusicTab" type="button">MUSIC PLAYLIST</button>
+<button id="novaHubVideoTab" type="button">VIDEO PLAYLIST</button>
+<button id="novaHubYouTubeTab" type="button">YOUTUBE PLAYLIST</button>
+</div>
+<div id="novaMediaLibraryNow">
           <div id="novaMediaLibraryNowTitle">NO TRACK SELECTED</div>
           <div id="novaMediaLibraryCount">0 TRACKS</div>
         </div>
@@ -4551,6 +4556,7 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
         <div id="novaIntegratedVideoLibrary" class="novaIntegratedMediaPage">
           <div class="novaMediaPageToolbar">
             <button type="button" class="novaMediaLibraryAction" id="novaAddVideosButton">ADD VIDEOS</button>
+<button type="button" class="novaMediaLibraryAction" id="novaClearVideosButton">CLEAR VIDEO PLAYLIST</button>
             <span id="novaVideoCount">0 VIDEOS</span>
           </div>
           <video id="videoPlayer" controls playsinline></video>
@@ -4579,6 +4585,11 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
             <button type="button" onclick="youtubeCommand('pauseVideo')">PAUSE</button>
             <button type="button" onclick="youtubeCommand('stopVideo')">STOP</button>
           </div>
+<div class="novaYouTubePlaylistTools">
+<button type="button" class="novaMediaLibraryAction" id="novaSaveYouTubeButton">SAVE CURRENT</button>
+<button type="button" class="novaMediaLibraryAction" id="novaClearYouTubeButton">CLEAR PLAYLIST</button>
+</div>
+<div id="novaYouTubeSavedList"></div>
         </div>
 
       </div>
@@ -13731,6 +13742,26 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
  .novaUnifiedConsole #novaVideoLibraryButton,.novaUnifiedConsole #novaYouTubeButton{min-width:58px !important;font-size:8px}
 }
 
+
+/* NOVA MEDIA HUB — movable workspace */
+.novaUnifiedConsole #novaIntegratedMediaLibrary{
+ position:fixed!important;z-index:5000!important;left:50%!important;top:10%!important;
+ right:auto!important;bottom:auto!important;width:min(780px,76vw)!important;height:min(640px,76vh)!important;
+ transform:translateX(-50%)!important;resize:both!important;overflow:hidden!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaLibrary.novaDragged{transform:none!important}
+.novaUnifiedConsole .novaMediaLibraryHeader{cursor:move!important;user-select:none!important}
+.novaUnifiedConsole .novaHubTabs{display:flex;gap:7px;padding:8px 14px;border-bottom:1px solid rgba(54,217,255,.12)}
+.novaUnifiedConsole .novaHubTabs button{border:1px solid rgba(54,217,255,.2);border-radius:12px;background:rgba(0,10,18,.6);color:#36d9ff;padding:6px 11px;font-size:9px;font-weight:800;cursor:pointer}
+.novaUnifiedConsole .novaHubTabs button.active{color:#39ff88;border-color:rgba(57,255,136,.45)}
+.novaUnifiedConsole #novaMediaLibraryList{overflow:auto!important;min-height:120px}
+.novaUnifiedConsole #novaYouTubeSavedList{max-height:170px;overflow:auto;margin-top:8px}
+.novaUnifiedConsole .novaYtRow{display:flex;gap:7px;align-items:center;padding:6px;border-bottom:1px solid rgba(54,217,255,.08)}
+.novaUnifiedConsole .novaYtRow span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:rgba(255,255,255,.75)}
+.novaUnifiedConsole .novaYtRow button{font-size:8px}
+.novaUnifiedConsole .novaYouTubePlaylistTools{display:flex;gap:7px;margin-top:8px}
+@media(max-width:800px){.novaUnifiedConsole #novaIntegratedMediaLibrary{width:92vw!important;height:72vh!important}}
+
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
@@ -14772,6 +14803,102 @@ if(document.readyState==="loading"){
   document.addEventListener("DOMContentLoaded",initializeNovaFullMediaHub,{once:true});
 }else initializeNovaFullMediaHub();
 
+
+/* NOVA MEDIA HUB FIX: visible music list, fixed YouTube, movable popup, saved video/YouTube lists */
+const NOVA_VIDEO_DB2="novaVideoPlaylistV2", NOVA_VIDEO_STORE2="videos";
+const NOVA_YT_KEY2="novaYouTubePlaylistV2";
+let novaYtSaved=[];
+
+function novaSetHubPage(page){
+ const shell=document.getElementById("novaIntegratedMediaLibrary");
+ const music=document.getElementById("novaMediaLibraryList");
+ const video=document.getElementById("novaIntegratedVideoLibrary");
+ const yt=document.getElementById("novaIntegratedYouTube");
+ if(!shell)return;
+ shell.classList.add("active");
+ shell.classList.toggle("novaMediaPageMode",page!=="music");
+ if(music)music.style.setProperty("display",page==="music"?"block":"none","important");
+ if(video)video.classList.toggle("active",page==="video");
+ if(yt)yt.classList.toggle("active",page==="youtube");
+ ["Music","Video","YouTube"].forEach(n=>document.getElementById("novaHub"+n+"Tab")?.classList.toggle("active",page===n.toLowerCase()));
+ const title=shell.querySelector(".novaMediaLibraryTitle");
+ if(title)title.textContent=page==="music"?"MUSIC PLAYLIST":page==="video"?"VIDEO PLAYLIST":"YOUTUBE PLAYLIST";
+ if(page==="music")try{renderNovaIntegratedMediaLibrary()}catch(e){}
+ if(page==="video")try{novaRenderVideoList()}catch(e){}
+ if(page==="youtube")novaRenderYtSaved();
+}
+novaOpenMediaPage=novaSetHubPage;
+
+function novaLoadYouTubeV2(){
+ const input=document.getElementById("youtubeInput"), id=extractYouTubeId(input?.value||"");
+ if(!id){try{speak("I couldn't find a valid YouTube video ID.")}catch(e){} return}
+ youtubeVideoId=id;
+ const frame=document.getElementById("youtubeFrame");
+ if(!frame)return;
+ let url=`https://www.youtube.com/embed/${id}?enablejsapi=1&playsinline=1`;
+ if(location.protocol==="http:"||location.protocol==="https:")url+=`&origin=${encodeURIComponent(location.origin)}`;
+ frame.src=url;
+ novaSetHubPage("youtube");
+}
+loadYouTube=novaLoadYouTubeV2;
+
+function novaRenderYtSaved(){
+ const box=document.getElementById("novaYouTubeSavedList");if(!box)return;box.innerHTML="";
+ novaYtSaved.forEach((x,i)=>{
+  const row=document.createElement("div");row.className="novaYtRow";
+  const name=document.createElement("span");name.textContent=x.url;
+  const play=document.createElement("button");play.textContent="PLAY";play.onclick=()=>{document.getElementById("youtubeInput").value=x.url;loadYouTube()};
+  const del=document.createElement("button");del.textContent="REMOVE";del.onclick=()=>{novaYtSaved.splice(i,1);novaSaveYt();novaRenderYtSaved()};
+  row.append(name,play,del);box.appendChild(row);
+ });
+}
+function novaSaveYt(){localStorage.setItem(NOVA_YT_KEY2,JSON.stringify(novaYtSaved))}
+function novaAddCurrentYt(){
+ const raw=document.getElementById("youtubeInput")?.value.trim()||"",id=extractYouTubeId(raw);
+ if(!id)return;const url=`https://www.youtube.com/watch?v=${id}`;
+ if(!novaYtSaved.some(x=>x.id===id)){novaYtSaved.push({id,url});novaSaveYt();novaRenderYtSaved()}
+}
+
+function novaVideoDB(){
+ return new Promise((ok,no)=>{const q=indexedDB.open(NOVA_VIDEO_DB2,1);
+ q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains(NOVA_VIDEO_STORE2))q.result.createObjectStore(NOVA_VIDEO_STORE2,{keyPath:"key"})};
+ q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)});
+}
+async function novaPersistVideo(file){
+ try{const db=await novaVideoDB(),tx=db.transaction(NOVA_VIDEO_STORE2,"readwrite");
+ tx.objectStore(NOVA_VIDEO_STORE2).put({key:`${file.name}|${file.size}|${file.lastModified}`,file});db.close()}catch(e){}
+}
+async function novaRestoreVideos(){
+ try{const db=await novaVideoDB(),q=db.transaction(NOVA_VIDEO_STORE2).objectStore(NOVA_VIDEO_STORE2).getAll();
+ q.onsuccess=()=>{if(q.result.length){videoLibrary.length=0;q.result.forEach(x=>videoLibrary.push({file:x.file,url:URL.createObjectURL(x.file)}));novaRenderVideoList()}db.close()}}catch(e){}
+}
+async function novaClearVideos(){
+ videoLibrary.forEach(x=>{try{URL.revokeObjectURL(x.url)}catch(e){}});videoLibrary.length=0;videoIndex=-1;novaRenderVideoList();
+ try{const db=await novaVideoDB();db.transaction(NOVA_VIDEO_STORE2,"readwrite").objectStore(NOVA_VIDEO_STORE2).clear();db.close()}catch(e){}
+}
+
+function novaMakeMediaMovable(){
+ const shell=document.getElementById("novaIntegratedMediaLibrary"),head=shell?.querySelector(".novaMediaLibraryHeader");if(!shell||!head)return;
+ let drag=false,dx=0,dy=0;
+ head.addEventListener("pointerdown",e=>{if(e.target.closest("button,input"))return;const r=shell.getBoundingClientRect();shell.classList.add("novaDragged");shell.style.left=r.left+"px";shell.style.top=r.top+"px";dx=e.clientX-r.left;dy=e.clientY-r.top;drag=true;head.setPointerCapture?.(e.pointerId)});
+ head.addEventListener("pointermove",e=>{if(!drag)return;shell.style.left=Math.max(0,Math.min(innerWidth-shell.offsetWidth,e.clientX-dx))+"px";shell.style.top=Math.max(0,Math.min(innerHeight-shell.offsetHeight,e.clientY-dy))+"px"});
+ head.addEventListener("pointerup",()=>drag=false);head.addEventListener("pointercancel",()=>drag=false);
+}
+
+function novaHubV2Init(){
+ document.getElementById("novaHubMusicTab")?.addEventListener("click",()=>novaSetHubPage("music"));
+ document.getElementById("novaHubVideoTab")?.addEventListener("click",()=>novaSetHubPage("video"));
+ document.getElementById("novaHubYouTubeTab")?.addEventListener("click",()=>novaSetHubPage("youtube"));
+ document.getElementById("novaSaveYouTubeButton")?.addEventListener("click",novaAddCurrentYt);
+ document.getElementById("novaClearYouTubeButton")?.addEventListener("click",()=>{novaYtSaved=[];novaSaveYt();novaRenderYtSaved()});
+ document.getElementById("novaClearVideosButton")?.addEventListener("click",novaClearVideos);
+ const vf=document.getElementById("videoFiles");
+ vf?.addEventListener("change",e=>Array.from(e.target.files||[]).filter(f=>f.type.startsWith("video/")).forEach(novaPersistVideo));
+ try{novaYtSaved=JSON.parse(localStorage.getItem(NOVA_YT_KEY2)||"[]")}catch(e){novaYtSaved=[]}
+ novaRenderYtSaved();novaRestoreVideos();novaMakeMediaMovable();
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",novaHubV2Init,{once:true});else novaHubV2Init();
+
 </script>
-</body>d
+</body>
 </html>
