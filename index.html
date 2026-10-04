@@ -4709,75 +4709,18 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
 
 <div class="panel mediaPanel startExpandedPanel">
 <div class="panelHeader">MEDIA CENTER</div>
-<div class="panelBody novaLegacyMediaHidden novaLegacyMediaPanel" id="novaLegacyMediaPanel">
-<div class="mediaTabs">
-<button class="tab active" data-tab="music" onclick="showMediaTab('music')">MUSIC LIBRARY</button>
-<button class="tab" data-tab="video" onclick="showMediaTab('video')">VIDEO LIBRARY</button>
-<button class="tab" data-tab="youtube" onclick="showMediaTab('youtube')">YOUTUBE</button>
-</div>
-<div class="mediaSection active" id="musicSection">
-<div class="mediaFileRow">
-<button class="control primary" onclick="openMusicFilePicker()" type="button">ADD MUSIC</button>
-<button class="control" onclick="linkMusicFolder()" type="button">LINK MUSIC FOLDER</button>
-<button class="control" id="refreshMusicFolderButton" onclick="refreshLinkedMusicFolder()" style="display:none" type="button">REFRESH FOLDER</button>
-<button class="control" onclick="restoreSavedPlaylist(true)" type="button">RESTORE PLAYLIST</button>
-<button class="control danger" onclick="clearSavedPlaylist()" type="button">CLEAR PLAYLIST</button>
+<div id="novaMediaCompatibilityHost" aria-hidden="true" style="display:none !important">
+<audio controls="" id="audioPlayer"></audio>
 <input accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" hidden="" id="musicFiles" multiple="" onchange="handleMusicFiles(event)" type="file"/>
 <input accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" directory="" hidden="" id="musicFolderFallback" multiple="" type="file" webkitdirectory=""/>
-<span class="voiceSubtitle" id="musicCount">0 tracks</span>
-</div>
-<div class="musicFolderStatus" id="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
-<div class="musicFolderStatus" id="musicPlaylistStatus">PLAYLIST: CHECKING...</div>
+<div class="mediaList" id="musicList"></div>
 <div class="musicDropZone" id="musicDropZone">
           DRAG &amp; DROP MUSIC FILES OR A MUSIC FOLDER HERE
         </div>
-<audio controls="" id="audioPlayer"></audio>
-<div class="mediaControls">
-<button onclick="previousMusic()">PREVIOUS</button>
-<button onclick="toggleMusic()">PLAY / PAUSE</button>
-<button onclick="stopMusic()">STOP</button>
-<button onclick="nextMusic()">NEXT</button>
-<button onclick="toggleShuffle()">SHUFFLE: <span id="shuffleText">OFF</span></button>
-<button onclick="toggleRepeat()">REPEAT: <span id="repeatText">OFF</span></button>
-</div>
-<div style="margin-top:10px">
-<label style="font-size:10px;color:var(--muted)">VOLUME</label>
 <input id="musicVolume" max="1" min="0" step=".01" style="width:100%" type="range" value=".8"/>
-</div>
-<div class="mediaList" id="musicList"></div>
-</div>
-<div class="mediaSection" id="videoSection">
-<div class="mediaFileRow">
-<label class="fileButton">ADD VIDEOS<input accept="video/*" id="videoFiles" multiple="" type="file"/></label>
-<span class="voiceSubtitle" id="videoCount">0 videos</span>
-</div>
-<video controls="" id="videoPlayer"></video>
-<div class="mediaControls">
-<button onclick="previousVideo()">PREVIOUS</button>
-<button onclick="toggleVideo()">PLAY / PAUSE</button>
-<button onclick="stopVideo()">STOP</button>
-<button onclick="nextVideo()">NEXT</button>
-</div>
-<div style="margin-top:10px">
-<label style="font-size:10px;color:var(--muted)">VOLUME</label>
-<input id="videoVolume" max="1" min="0" step=".01" style="width:100%" type="range" value=".8"/>
-</div>
-<div class="mediaList" id="videoList"></div>
-</div>
-<div class="mediaSection" id="youtubeSection">
-<div class="youtubeRow">
-<input id="youtubeInput" placeholder="Paste YouTube URL or video ID" type="text"/>
-<button class="control primary" onclick="loadYouTube()">LOAD</button>
-</div>
-<div class="videoWrap" style="margin-top:10px">
-<iframe allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen="" id="youtubeFrame" src=""></iframe>
-</div>
-<div class="mediaControls">
-<button onclick="youtubeCommand('playVideo')">PLAY</button>
-<button onclick="youtubeCommand('pauseVideo')">PAUSE</button>
-<button onclick="youtubeCommand('stopVideo')">STOP</button>
-</div>
-</div>
+<span class="voiceSubtitle" id="musicCount">0 tracks</span>
+<div class="musicFolderStatus" id="musicPlaylistStatus">PLAYLIST: CHECKING...</div>
+<div class="musicFolderStatus" id="musicFolderStatus">NO MUSIC FOLDER LINKED</div>
 </div>
 </div>
 
@@ -13573,6 +13516,80 @@ function openNovaInfoScreen(title,body){
   pointer-events:auto !important;
 }
 
+
+/* ============================================================
+   NOVA MEDIA — SINGLE INTEGRATED EXPERIENCE
+   Old column panel removed. Media now lives only inside NOVA.
+   ============================================================ */
+#novaMediaCompatibilityHost{display:none !important}
+
+.novaUnifiedConsole #novaIntegratedMediaControls{
+  display:block !important;
+  position:absolute !important;
+  z-index:290 !important;
+  left:20% !important;
+  right:20% !important;
+  bottom:18px !important;
+  opacity:.86 !important;
+  visibility:visible !important;
+  transform:none !important;
+  pointer-events:auto !important;
+}
+.novaUnifiedConsole .novaLeftHome:hover #novaIntegratedMediaControls{
+  opacity:1 !important;
+}
+.novaUnifiedConsole #novaMediaProgressWrap{
+  height:3px !important;
+}
+.novaUnifiedConsole .novaMediaControlRow{
+  gap:12px !important;
+}
+.novaUnifiedConsole #novaMediaLibraryButton{
+  min-width:72px !important;
+  color:#39ff88 !important;
+  border-color:rgba(57,255,136,.35) !important;
+}
+
+/* Show a compact MEDIA READY identity before a song is selected. */
+body:not(.novaMediaLoaded) .novaUnifiedConsole #novaMusicInfoDisplay{
+  display:block !important;
+  bottom:61px !important;
+  opacity:.62 !important;
+}
+body:not(.novaMediaLoaded) .novaUnifiedConsole #novaMusicInfoStatus::before{
+  content:"NOVA MEDIA";
+}
+body:not(.novaMediaLoaded) .novaUnifiedConsole #novaMusicInfoTitle::before{
+  content:"MEDIA READY";
+}
+body:not(.novaMediaLoaded) .novaUnifiedConsole #novaMusicInfoMeta::before{
+  content:"OPEN MEDIA TO SELECT MUSIC";
+}
+
+/* The library is a true NOVA overlay. */
+.novaUnifiedConsole #novaIntegratedMediaLibrary{
+  z-index:1000 !important;
+}
+.novaUnifiedConsole #novaIntegratedMediaLibrary.active{
+  display:flex !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+
+/* Player remains present when library is open, underneath the library overlay. */
+.novaUnifiedConsole #novaIntegratedMediaLibrary.active ~ #novaIntegratedMediaControls{
+  display:block !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaIntegratedMediaControls{
+    left:7% !important;
+    right:7% !important;
+    bottom:12px !important;
+  }
+}
+
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
@@ -14438,6 +14455,34 @@ if(document.readyState==="loading"){
 }else{
   initializeNovaIntegratedLibrary();
 }
+
+
+/* NOVA MEDIA FINAL INTEGRATION */
+function novaEnsureIntegratedMediaVisible(){
+  const controls=document.getElementById("novaIntegratedMediaControls");
+  if(controls){
+    controls.style.display="block";
+    controls.style.visibility="visible";
+  }
+
+  try{
+    renderNovaIntegratedMediaLibrary();
+  }catch(e){}
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  novaEnsureIntegratedMediaVisible();
+
+  const media=document.getElementById("novaMediaLibraryButton");
+  if(media){
+    const clean=media.cloneNode(true);
+    media.replaceWith(clean);
+    clean.addEventListener("click",()=>{
+      novaEnsureIntegratedMediaVisible();
+      openNovaIntegratedMediaLibrary();
+    });
+  }
+},{once:true});
 
 </script>
 </body>
