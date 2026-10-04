@@ -4548,6 +4548,39 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
           <div id="novaMediaLibraryCount">0 TRACKS</div>
         </div>
         <div id="novaMediaLibraryList"></div>
+        <div id="novaIntegratedVideoLibrary" class="novaIntegratedMediaPage">
+          <div class="novaMediaPageToolbar">
+            <button type="button" class="novaMediaLibraryAction" id="novaAddVideosButton">ADD VIDEOS</button>
+            <span id="novaVideoCount">0 VIDEOS</span>
+          </div>
+          <video id="videoPlayer" controls playsinline></video>
+          <div class="novaMediaPageControls">
+            <button type="button" onclick="previousVideo()">PREVIOUS</button>
+            <button type="button" onclick="toggleVideo()">PLAY / PAUSE</button>
+            <button type="button" onclick="stopVideo()">STOP</button>
+            <button type="button" onclick="nextVideo()">NEXT</button>
+          </div>
+          <label class="novaMediaVolumeLabel">VOLUME
+            <input id="videoVolume" type="range" min="0" max="1" step=".01" value=".8">
+          </label>
+          <div id="videoList" class="novaMediaVideoList"></div>
+        </div>
+
+        <div id="novaIntegratedYouTube" class="novaIntegratedMediaPage">
+          <div class="novaYouTubeRow">
+            <input id="youtubeInput" type="text" placeholder="Paste YouTube URL or video ID">
+            <button type="button" class="novaMediaLibraryAction" onclick="loadYouTube()">LOAD</button>
+          </div>
+          <div class="novaYouTubeFrameWrap">
+            <iframe id="youtubeFrame" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="novaMediaPageControls">
+            <button type="button" onclick="youtubeCommand('playVideo')">PLAY</button>
+            <button type="button" onclick="youtubeCommand('pauseVideo')">PAUSE</button>
+            <button type="button" onclick="youtubeCommand('stopVideo')">STOP</button>
+          </div>
+        </div>
+
       </div>
       <div class="novaFutureField" aria-hidden="true">
         <div class="novaScanBeam"></div>
@@ -4596,6 +4629,8 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
     <button type="button" class="novaMediaGlyph novaMediaPlayGlyph" id="novaMediaPlayPause" title="Play / Pause">▶</button>
     <button type="button" class="novaMediaGlyph" id="novaMediaNext" title="Next track">▶▶</button>
     <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaMediaLibraryButton" title="Media Library">MEDIA</button>
+    <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaVideoLibraryButton" title="Video Library">VIDEOS</button>
+    <button type="button" class="novaMediaGlyph novaMediaLibraryGlyph" id="novaYouTubeButton" title="YouTube">YOUTUBE</button>
   </div>
 </div>
 <div id="novaHudTicker" aria-live="polite">
@@ -4713,7 +4748,8 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
 <audio controls="" id="audioPlayer"></audio>
 <input accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" hidden="" id="musicFiles" multiple="" onchange="handleMusicFiles(event)" type="file"/>
 <input accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" directory="" hidden="" id="musicFolderFallback" multiple="" type="file" webkitdirectory=""/>
-<div class="mediaList" id="musicList"></div>
+<div class="mediaList" id="musicList"><input id="videoFiles" type="file" accept="video/*" multiple hidden>
+</div>
 <div class="musicDropZone" id="musicDropZone">
           DRAG &amp; DROP MUSIC FILES OR A MUSIC FOLDER HERE
         </div>
@@ -13620,6 +13656,81 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
  .novaUnifiedConsole #novaMusicInfoDisplay{bottom:120px !important;width:84% !important;max-width:84% !important}
 }
 
+
+/* ============================================================
+   NOVA FULL MEDIA HUB — MUSIC / VIDEOS / YOUTUBE
+   ============================================================ */
+.novaUnifiedConsole #novaIntegratedMediaControls{
+  width:590px !important;
+  max-width:78% !important;
+}
+.novaUnifiedConsole #novaVideoLibraryButton,
+.novaUnifiedConsole #novaYouTubeButton{
+  min-width:70px !important;
+}
+.novaUnifiedConsole #novaIntegratedMediaLibrary.novaMediaPageMode #novaMediaLibraryList{
+  display:none !important;
+}
+.novaUnifiedConsole .novaIntegratedMediaPage{
+  display:none;
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:12px 14px 16px;
+}
+.novaUnifiedConsole .novaIntegratedMediaPage.active{
+  display:block;
+}
+.novaUnifiedConsole .novaMediaPageToolbar{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.novaUnifiedConsole #novaVideoCount{
+  color:rgba(57,255,136,.65);font-size:9px;letter-spacing:1px;
+}
+.novaUnifiedConsole #videoPlayer{
+  display:block;width:100%;max-height:48vh;background:#000;border-radius:10px;
+  border:1px solid rgba(54,217,255,.18);
+}
+.novaUnifiedConsole .novaMediaPageControls{
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0;
+}
+.novaUnifiedConsole .novaMediaPageControls button{
+  border:1px solid rgba(54,217,255,.22);border-radius:13px;background:rgba(0,10,18,.7);
+  color:#36d9ff;padding:7px 12px;font-size:9px;font-weight:700;cursor:pointer;
+}
+.novaUnifiedConsole .novaMediaPageControls button:hover{
+  color:#39ff88;border-color:rgba(57,255,136,.42);
+}
+.novaUnifiedConsole .novaMediaVolumeLabel{
+  display:block;color:rgba(54,217,255,.58);font-size:9px;letter-spacing:1px;
+}
+.novaUnifiedConsole .novaMediaVolumeLabel input{width:100%;margin-top:6px}
+.novaUnifiedConsole .novaMediaVideoList{margin-top:10px}
+.novaUnifiedConsole .novaVideoTrack{
+  display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:8px;align-items:center;
+  width:100%;padding:8px;margin:3px 0;border:1px solid transparent;border-radius:8px;
+  background:transparent;color:rgba(255,255,255,.72);cursor:pointer;text-align:left;
+}
+.novaUnifiedConsole .novaVideoTrack:hover,
+.novaUnifiedConsole .novaVideoTrack.active{
+  background:rgba(54,217,255,.045);border-color:rgba(54,217,255,.16);
+}
+.novaUnifiedConsole .novaYouTubeRow{display:flex;gap:8px;margin-bottom:10px}
+.novaUnifiedConsole .novaYouTubeRow input{
+  flex:1;min-width:0;border:1px solid rgba(54,217,255,.20);border-radius:8px;
+  background:rgba(0,8,14,.75);color:#fff;padding:9px 10px;outline:none;
+}
+.novaUnifiedConsole .novaYouTubeFrameWrap{
+  position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;
+  border:1px solid rgba(54,217,255,.18);
+}
+.novaUnifiedConsole .novaYouTubeFrameWrap iframe{width:100%;height:100%;border:0}
+@media(max-width:700px){
+ .novaUnifiedConsole #novaIntegratedMediaControls{width:94% !important;max-width:94% !important}
+ .novaUnifiedConsole .novaMediaControlRow{gap:5px !important}
+ .novaUnifiedConsole #novaVideoLibraryButton,.novaUnifiedConsole #novaYouTubeButton{min-width:58px !important;font-size:8px}
+}
+
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
@@ -14527,6 +14638,140 @@ if(document.readyState==="loading"){
 }else{novaPinMediaPlayer();}
 window.addEventListener("load",novaPinMediaPlayer,{once:true});
 
+
+/* ============================================================
+   NOVA FULL MEDIA HUB — VIDEO + YOUTUBE RESTORED
+   ============================================================ */
+
+function novaOpenMediaPage(page){
+  const shell=document.getElementById("novaIntegratedMediaLibrary");
+  const videoPage=document.getElementById("novaIntegratedVideoLibrary");
+  const youtubePage=document.getElementById("novaIntegratedYouTube");
+  const list=document.getElementById("novaMediaLibraryList");
+  if(!shell)return;
+
+  shell.classList.add("active");
+  shell.classList.toggle("novaMediaPageMode",page!=="music");
+  if(videoPage)videoPage.classList.toggle("active",page==="video");
+  if(youtubePage)youtubePage.classList.toggle("active",page==="youtube");
+  if(list)list.style.display=page==="music"?"":"none";
+
+  const title=shell.querySelector(".novaMediaLibraryTitle");
+  if(title){
+    title.textContent=page==="video"?"VIDEO LIBRARY":page==="youtube"?"YOUTUBE":"MEDIA LIBRARY";
+  }
+  if(page==="music"){
+    try{renderNovaIntegratedMediaLibrary();}catch(e){}
+  }
+  if(page==="video")novaRenderVideoList();
+}
+
+function novaRenderVideoList(){
+  const list=document.getElementById("videoList");
+  const count=document.getElementById("novaVideoCount");
+  if(!list)return;
+  if(count)count.textContent=`${videoLibrary.length} ${videoLibrary.length===1?"VIDEO":"VIDEOS"}`;
+  list.innerHTML="";
+  videoLibrary.forEach((item,index)=>{
+    const row=document.createElement("button");
+    row.type="button";
+    row.className=`novaVideoTrack${index===videoIndex?" active":""}`;
+    const name=item.file&&item.file.name?item.file.name:`Video ${index+1}`;
+    row.innerHTML=`<span>${String(index+1).padStart(2,"0")}</span><span></span><span>${index===videoIndex?"ACTIVE":""}</span>`;
+    row.children[1].textContent=name;
+    row.addEventListener("click",()=>playVideo(index));
+    list.appendChild(row);
+  });
+}
+
+function novaHandleVideoFiles(event){
+  const files=Array.from(event.target.files||[]).filter(file=>file.type.startsWith("video/"));
+  for(const file of files){
+    videoLibrary.push({file,url:URL.createObjectURL(file)});
+  }
+  novaRenderVideoList();
+  if(files.length && videoIndex<0)videoIndex=0;
+}
+
+function playVideo(index){
+  if(!videoLibrary.length){try{speak("No videos are loaded.");}catch(e){} return;}
+  if(typeof index==="number")videoIndex=index;
+  if(videoIndex<0)videoIndex=0;
+  const item=videoLibrary[videoIndex];
+  const video=document.getElementById("videoPlayer");
+  if(!video||!item)return;
+  video.src=item.url;
+  video.play().catch(()=>{});
+  novaRenderVideoList();
+  try{log(`Playing video: ${item.file.name}`,"success");}catch(e){}
+}
+function pauseVideo(){const v=document.getElementById("videoPlayer");if(v)v.pause();}
+function toggleVideo(){
+  const v=document.getElementById("videoPlayer");if(!v)return;
+  if(v.paused){if(!v.src)playVideo();else v.play().catch(()=>{});}else v.pause();
+}
+function stopVideo(){const v=document.getElementById("videoPlayer");if(v){v.pause();v.currentTime=0;}}
+function nextVideo(){
+  if(!videoLibrary.length){try{speak("No videos are loaded.");}catch(e){} return;}
+  videoIndex=(videoIndex+1)%videoLibrary.length;playVideo(videoIndex);
+}
+function previousVideo(){
+  if(!videoLibrary.length){try{speak("No videos are loaded.");}catch(e){} return;}
+  videoIndex=(videoIndex-1+videoLibrary.length)%videoLibrary.length;playVideo(videoIndex);
+}
+
+function extractYouTubeId(value){
+  value=String(value||"").trim();
+  if(/^[a-zA-Z0-9_-]{11}$/.test(value))return value;
+  const patterns=[
+    /[?&]v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/
+  ];
+  for(const pattern of patterns){const match=value.match(pattern);if(match)return match[1];}
+  return null;
+}
+function loadYouTube(){
+  const input=document.getElementById("youtubeInput");
+  const id=extractYouTubeId(input?input.value:"");
+  if(!id){try{speak("I couldn't find a valid YouTube video ID.");}catch(e){} return;}
+  youtubeVideoId=id;
+  const frame=document.getElementById("youtubeFrame");
+  if(frame)frame.src=`https://www.youtube.com/embed/${id}?enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+  novaOpenMediaPage("youtube");
+  try{log(`YouTube video loaded: ${id}`,"success");}catch(e){}
+}
+function youtubeCommand(command){
+  const frame=document.getElementById("youtubeFrame");
+  if(!youtubeVideoId||!frame||!frame.src){try{speak("No YouTube video is loaded.");}catch(e){} return;}
+  frame.contentWindow.postMessage(JSON.stringify({event:"command",func:command,args:[]}),"*");
+}
+
+function initializeNovaFullMediaHub(){
+  const videoButton=document.getElementById("novaVideoLibraryButton");
+  const youtubeButton=document.getElementById("novaYouTubeButton");
+  const mediaButton=document.getElementById("novaMediaLibraryButton");
+  const addVideos=document.getElementById("novaAddVideosButton");
+  const videoFiles=document.getElementById("videoFiles");
+  const video=document.getElementById("videoPlayer");
+  const videoVolume=document.getElementById("videoVolume");
+
+  if(videoButton)videoButton.addEventListener("click",()=>novaOpenMediaPage("video"));
+  if(youtubeButton)youtubeButton.addEventListener("click",()=>novaOpenMediaPage("youtube"));
+  if(mediaButton)mediaButton.addEventListener("click",()=>novaOpenMediaPage("music"));
+  if(addVideos)addVideos.addEventListener("click",()=>videoFiles&&videoFiles.click());
+  if(videoFiles)videoFiles.addEventListener("change",novaHandleVideoFiles);
+  if(videoVolume&&video){
+    video.volume=Number(videoVolume.value||.8);
+    videoVolume.addEventListener("input",e=>video.volume=Number(e.target.value));
+  }
+  if(video)video.addEventListener("ended",nextVideo);
+}
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",initializeNovaFullMediaHub,{once:true});
+}else initializeNovaFullMediaHub();
+
 </script>
-</body>
+</body>d
 </html>
