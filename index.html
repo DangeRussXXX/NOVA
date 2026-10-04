@@ -13590,6 +13590,36 @@ body:not(.novaMediaLoaded) .novaUnifiedConsole #novaMusicInfoMeta::before{
   }
 }
 
+
+/* NOVA MEDIA PLAYER — PERMANENT CENTER-LOWER HUD */
+.novaUnifiedConsole #novaIntegratedMediaControls{
+ display:block !important;position:absolute !important;z-index:900 !important;
+ left:50% !important;right:auto !important;top:auto !important;bottom:78px !important;
+ width:420px !important;max-width:58% !important;opacity:1 !important;
+ visibility:visible !important;transform:translateX(-50%) !important;pointer-events:auto !important;
+}
+.novaUnifiedConsole #novaMediaProgressWrap{
+ display:block !important;width:100% !important;height:4px !important;margin:0 0 11px !important;
+ background:rgba(54,217,255,.16) !important;border:1px solid rgba(54,217,255,.18) !important;
+}
+.novaUnifiedConsole .novaMediaControlRow{display:flex !important;justify-content:center !important;align-items:center !important;gap:13px !important}
+.novaUnifiedConsole .novaMediaGlyph{display:inline-flex !important;align-items:center !important;justify-content:center !important;opacity:1 !important;visibility:visible !important}
+.novaUnifiedConsole #novaMediaLibraryButton{min-width:72px !important;color:#39ff88 !important;border-color:rgba(57,255,136,.45) !important}
+.novaUnifiedConsole #novaMusicInfoDisplay{
+ left:50% !important;right:auto !important;bottom:126px !important;width:520px !important;
+ max-width:68% !important;transform:translateX(-50%) !important;text-align:center !important;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaIntegratedMediaControls,
+body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
+.novaUnifiedConsole .novaLeftHome:hover #novaIntegratedMediaControls{
+ display:block !important;opacity:1 !important;visibility:visible !important;
+}
+.novaUnifiedConsole #novaIntegratedMediaLibrary{bottom:132px !important}
+@media(max-width:700px){
+ .novaUnifiedConsole #novaIntegratedMediaControls{bottom:72px !important;width:84% !important;max-width:84% !important}
+ .novaUnifiedConsole #novaMusicInfoDisplay{bottom:120px !important;width:84% !important;max-width:84% !important}
+}
+
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
@@ -14483,6 +14513,19 @@ document.addEventListener("DOMContentLoaded",()=>{
     });
   }
 },{once:true});
+
+
+function novaPinMediaPlayer(){
+ const controls=document.getElementById("novaIntegratedMediaControls");
+ if(!controls)return;
+ controls.style.setProperty("display","block","important");
+ controls.style.setProperty("visibility","visible","important");
+ controls.style.setProperty("opacity","1","important");
+}
+if(document.readyState==="loading"){
+ document.addEventListener("DOMContentLoaded",novaPinMediaPlayer,{once:true});
+}else{novaPinMediaPlayer();}
+window.addEventListener("load",novaPinMediaPlayer,{once:true});
 
 </script>
 </body>
