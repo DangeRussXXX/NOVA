@@ -2553,6 +2553,18 @@ if (trainerMatch) {
 
 
 
+/* ============================================================
+   NOVA INTELLIGENCE FALLBACK
+   ============================================================ */
+
+if (
+  typeof novaTryIntelligence === "function" &&
+  novaTryIntelligence(raw)
+) {
+  return;
+}
+
+
 /* UNKNOWN */
 
 log(
