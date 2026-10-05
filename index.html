@@ -321,7 +321,7 @@
 </div>
 </div>
 <div class="panel card">
-<div class="panelHeader controllerHeader" onclick="toggleController()">
+<div class="panelHeader controllerHeader">
 <span>AMOMII ONE CONTROLLER</span>
 <div class="connectionStatus">
 <span class="dot red" id="connectionDot"></span>
@@ -2796,9 +2796,6 @@ function initializeGenericPanelCollapsing(){
         ) ||
         header.classList.contains(
           "leftCollapseHeader"
-        ) ||
-        header.classList.contains(
-          "controllerHeader"
         )
       ){
         return;
