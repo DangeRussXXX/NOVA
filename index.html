@@ -6323,6 +6323,18 @@ function youtubeCommand(command){
    CALENDAR
    ============================================================ */
 
+let novaCalendarPopupWindow = null;
+
+function novaCalendarDocument(){
+  try{
+    if(novaCalendarPopupWindow && !novaCalendarPopupWindow.closed){
+      return novaCalendarPopupWindow.document;
+    }
+  }catch(e){}
+  return document;
+}
+
+
 function saveEvents(){
 
   localStorage.setItem(
@@ -6395,7 +6407,7 @@ function setCalendarView(view){
   ].forEach(name => {
 
     const button =
-      document.getElementById(
+      novaCalendarDocument().getElementById(
         `calendarView${name}`
       );
 
@@ -6475,7 +6487,7 @@ function startOfWeek(date){
 function renderCalendar(){
 
   const grid =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarGrid"
     );
 
@@ -6506,7 +6518,7 @@ function renderCalendar(){
 function updateCalendarHeading(text){
 
   const heading =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarMonth"
     );
 
@@ -6546,7 +6558,7 @@ function renderCalendarMonth(grid){
   ].forEach(day => {
 
     const label =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     label.className =
       "dayLabel";
@@ -6579,7 +6591,7 @@ function renderCalendarMonth(grid){
   ){
 
     grid.appendChild(
-      document.createElement("div")
+      novaCalendarDocument().createElement("div")
     );
 
   }
@@ -6645,7 +6657,7 @@ function renderCalendarWeek(grid){
     );
 
     const label =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     label.className =
       "dayLabel";
@@ -6724,7 +6736,7 @@ function renderCalendarAgenda(grid){
   );
 
   const wrapper =
-    document.createElement("div");
+    novaCalendarDocument().createElement("div");
 
   wrapper.className =
     "calendarListView";
@@ -6760,13 +6772,13 @@ function renderCalendarAgenda(grid){
     rendered++;
 
     const day =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     day.className =
       "calendarListDay";
 
     const title =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     title.className =
       "calendarListDayTitle";
@@ -6786,7 +6798,7 @@ function renderCalendarAgenda(grid){
     events.forEach(event => {
 
       const item =
-        document.createElement("div");
+        novaCalendarDocument().createElement("div");
 
       item.className =
         "event";
@@ -6813,7 +6825,7 @@ function renderCalendarAgenda(grid){
   if(!rendered){
 
     const empty =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     empty.style.color =
       "var(--muted)";
@@ -6840,7 +6852,7 @@ function appendCalendarDayCell(
 ){
 
   const cell =
-    document.createElement("div");
+    novaCalendarDocument().createElement("div");
 
   cell.className =
     "day";
@@ -6888,7 +6900,7 @@ function appendCalendarDayCell(
   };
 
   const number =
-    document.createElement("div");
+    novaCalendarDocument().createElement("div");
 
   number.className =
     "dayNumber";
@@ -6915,7 +6927,7 @@ function appendCalendarDayCell(
     .forEach(event => {
 
       const eventDiv =
-        document.createElement("div");
+        novaCalendarDocument().createElement("div");
 
       eventDiv.className =
         "eventDot";
@@ -6941,7 +6953,7 @@ function appendCalendarDayCell(
   if(events.length > 4){
 
     const more =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     more.className =
       "eventDot";
@@ -7004,7 +7016,7 @@ function compareCalendarEvents(a,b){
 function renderEventList(){
 
   const list =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "eventList"
     );
 
@@ -7019,7 +7031,7 @@ function renderEventList(){
     new Date();
 
   const heading =
-    document.createElement("div");
+    novaCalendarDocument().createElement("div");
 
   heading.className =
     "eventListHeading";
@@ -7040,7 +7052,7 @@ function renderEventList(){
   if(!events.length){
 
     const empty =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     empty.style.color =
       "var(--muted)";
@@ -7059,7 +7071,7 @@ function renderEventList(){
   events.forEach(event => {
 
     const div =
-      document.createElement("div");
+      novaCalendarDocument().createElement("div");
 
     div.className =
       "event";
@@ -7149,7 +7161,7 @@ function addEvent(
 function openCalendarEditor(eventId=null){
 
   const modal =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarModal"
     );
 
@@ -7162,28 +7174,28 @@ function openCalendarEditor(eventId=null){
         )
       : null;
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarEditorTitle"
   ).textContent =
     event
       ? "EDIT CALENDAR EVENT"
       : "NEW CALENDAR EVENT";
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarEventId"
   ).value =
     event
       ? event.id
       : "";
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarEventTitle"
   ).value =
     event
       ? event.title || ""
       : "";
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarEventDate"
   ).value =
     event
@@ -7193,28 +7205,28 @@ function openCalendarEditor(eventId=null){
           new Date()
         );
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarEventTime"
   ).value =
     event
       ? event.time || ""
       : "";
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarEventEndTime"
   ).value =
     event
       ? event.endTime || ""
       : "";
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarEventNotes"
   ).value =
     event
       ? event.notes || ""
       : "";
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarDeleteButton"
   ).style.display =
     event
@@ -7227,7 +7239,7 @@ function openCalendarEditor(eventId=null){
 
   setTimeout(
     () =>
-      document.getElementById(
+      novaCalendarDocument().getElementById(
         "calendarEventTitle"
       ).focus(),
     0
@@ -7238,7 +7250,7 @@ function openCalendarEditor(eventId=null){
 
 function closeCalendarEditor(){
 
-  document.getElementById(
+  novaCalendarDocument().getElementById(
     "calendarModal"
   ).classList.remove(
     "open"
@@ -7262,32 +7274,32 @@ function calendarModalBackdrop(event){
 function saveCalendarEventFromEditor(){
 
   const id =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarEventId"
     ).value;
 
   const title =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarEventTitle"
     ).value.trim();
 
   const date =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarEventDate"
     ).value;
 
   const time =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarEventTime"
     ).value;
 
   const endTime =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarEventEndTime"
     ).value;
 
   const notes =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarEventNotes"
     ).value.trim();
 
@@ -7356,7 +7368,7 @@ function saveCalendarEventFromEditor(){
 function deleteCalendarEventFromEditor(){
 
   const id =
-    document.getElementById(
+    novaCalendarDocument().getElementById(
       "calendarEventId"
     ).value;
 
@@ -8374,15 +8386,26 @@ requestAnimationFrame(restoreColumnLayout);
 
    Local USB / built-in cameras via browser MediaDevices API.
    ============================================================ */
+let novaCameraPopupWindow = null;
+
+function novaCameraDocument(){
+  try{
+    if(novaCameraPopupWindow && !novaCameraPopupWindow.closed){
+      return novaCameraPopupWindow.document;
+    }
+  }catch(e){}
+  return document;
+}
+
 let desktopCameraStream = null;
 let desktopCameraRecorder = null;
 let desktopCameraRecordedChunks = [];
 let desktopCameraPopup = null;
 
 function setDesktopCameraStatus(online, text){
-  const dot = document.getElementById("cameraStatusDot");
-  const label = document.getElementById("cameraStatusText");
-  const placeholder = document.getElementById("cameraPlaceholder");
+  const dot = novaCameraDocument().getElementById("cameraStatusDot");
+  const label = novaCameraDocument().getElementById("cameraStatusText");
+  const placeholder = novaCameraDocument().getElementById("cameraPlaceholder");
   if(dot){ dot.classList.toggle("green", !!online); dot.classList.toggle("red", !online); }
   if(label){ label.textContent = text || (online ? "CAMERA ONLINE" : "CAMERA OFFLINE"); }
   if(placeholder){ placeholder.style.display = online ? "none" : "flex"; }
@@ -8390,20 +8413,20 @@ function setDesktopCameraStatus(online, text){
 
 async function refreshDesktopCameraList(){
   if(!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
-  const select = document.getElementById("desktopCameraSelect");
+  const select = novaCameraDocument().getElementById("desktopCameraSelect");
   if(!select) return;
   const previous = select.value;
   const devices = await navigator.mediaDevices.enumerateDevices();
   const cameras = devices.filter(device => device.kind === "videoinput");
   select.innerHTML = "";
   cameras.forEach((camera, index) => {
-    const option = document.createElement("option");
+    const option = novaCameraDocument().createElement("option");
     option.value = camera.deviceId;
     option.textContent = camera.label || `CAMERA ${index + 1}`;
     select.appendChild(option);
   });
   if(!cameras.length){
-    const option = document.createElement("option");
+    const option = novaCameraDocument().createElement("option");
     option.value = "";
     option.textContent = "NO CAMERA FOUND";
     select.appendChild(option);
@@ -8413,8 +8436,8 @@ async function refreshDesktopCameraList(){
 }
 
 async function startDesktopCamera(){
-  const video = document.getElementById("desktopCameraVideo");
-  const select = document.getElementById("desktopCameraSelect");
+  const video = novaCameraDocument().getElementById("desktopCameraVideo");
+  const select = novaCameraDocument().getElementById("desktopCameraSelect");
   if(!video) return;
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
     setDesktopCameraStatus(false, "CAMERA NOT SUPPORTED");
@@ -8440,7 +8463,7 @@ async function startDesktopCamera(){
 }
 
 function stopDesktopCamera(){
-  const video = document.getElementById("desktopCameraVideo");
+  const video = novaCameraDocument().getElementById("desktopCameraVideo");
 
   if(
     desktopCameraRecorder &&
@@ -8486,8 +8509,8 @@ function fullscreenDesktopCamera(){
     return;
   }
 
-  desktopCameraPopup.document.open();
-  desktopCameraPopup.document.write(
+  desktopCameraPopup.novaCameraDocument().open();
+  desktopCameraPopup.novaCameraDocument().write(
     `<!DOCTYPE html>
     <html>
     <head>
@@ -8502,10 +8525,10 @@ function fullscreenDesktopCamera(){
     </body>
     </html>`
   );
-  desktopCameraPopup.document.close();
+  desktopCameraPopup.novaCameraDocument().close();
 
   const popupVideo=
-    desktopCameraPopup.document.getElementById(
+    desktopCameraPopup.novaCameraDocument().getElementById(
       "novaPopupCamera"
     );
 
@@ -8528,7 +8551,7 @@ function fullscreenDesktopCamera(){
 function toggleDesktopCameraRecording(){
 
   const button=
-    document.getElementById(
+    novaCameraDocument().getElementById(
       "cameraRecordButton"
     );
 
@@ -8626,7 +8649,7 @@ function toggleDesktopCameraRecording(){
         );
 
       const link=
-        document.createElement(
+        novaCameraDocument().createElement(
           "a"
         );
 
@@ -8634,7 +8657,7 @@ function toggleDesktopCameraRecording(){
       link.download=
         `nova-camera-${new Date().toISOString().replace(/[:.]/g,"-")}.webm`;
 
-      document.body.appendChild(
+      novaCameraDocument().body.appendChild(
         link
       );
 
@@ -8680,23 +8703,23 @@ function toggleDesktopCameraRecording(){
 }
 
 function snapshotDesktopCamera(){
-  const video = document.getElementById("desktopCameraVideo");
-  const canvas = document.getElementById("desktopCameraSnapshot");
+  const video = novaCameraDocument().getElementById("desktopCameraVideo");
+  const canvas = novaCameraDocument().getElementById("desktopCameraSnapshot");
   if(!video || !canvas || !desktopCameraStream || !video.videoWidth){
     if(typeof log === "function") log("Start the camera before taking a snapshot.", "warning");
     return;
   }
   canvas.width = video.videoWidth; canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-  const link = document.createElement("a");
+  const link = novaCameraDocument().createElement("a");
   link.download = `amomii-camera-${new Date().toISOString().replace(/[:.]/g,"-")}.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
   if(typeof log === "function") log("Camera snapshot captured.", "success");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const select = document.getElementById("desktopCameraSelect");
+novaCameraDocument().addEventListener("DOMContentLoaded", () => {
+  const select = novaCameraDocument().getElementById("desktopCameraSelect");
   if(select) select.addEventListener("change", changeDesktopCamera);
   if(navigator.mediaDevices && navigator.mediaDevices.addEventListener){
     navigator.mediaDevices.addEventListener("devicechange", refreshDesktopCameraList);
@@ -9414,64 +9437,59 @@ speak=function(text){novaIrisSetResponse(text);return novaOriginalSpeak.apply(th
 function openNovaCameraScreen(){
   const panel=document.getElementById("novaCameraPanelSource");
   if(!panel)return;
-
   const w=window.open("","nova_camera_screen","width=1180,height=820,resizable=yes,scrollbars=yes");
-  if(!w){
-    log("NOVA Camera screen was blocked. Allow pop-ups for this page.","warning");
-    return;
-  }
-
+  if(!w){log("NOVA Camera screen was blocked. Allow pop-ups for this page.","warning");return;}
+  novaCameraPopupWindow=w;
   w.document.open();
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA DESKTOP CAMERA</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CAMERA</button></div><div id="cameraHost"></div></body></html>`);
   w.document.close();
-
   const novaCssLink=w.document.createElement("link");
   novaCssLink.rel="stylesheet";
   novaCssLink.href=new URL("nova.css",window.location.href).href;
   w.document.head.appendChild(novaCssLink);
-
-  ["snapshotDesktopCamera","toggleDesktopCameraRecording","fullscreenDesktopCamera"].forEach(name=>{
-    if(typeof window[name]==="function"){
-      w[name]=window[name];
-    }
-  });
-
+  ["startDesktopCamera","stopDesktopCamera","snapshotDesktopCamera","toggleDesktopCameraRecording","fullscreenDesktopCamera","changeDesktopCamera","refreshDesktopCameraList"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
   panel.style.display="block";
   w.document.getElementById("cameraHost").appendChild(w.document.adoptNode(panel));
 
-  w.addEventListener("beforeunload",()=>{
-    const stack=document.querySelector(".novaPanelStack");
-    if(stack){
-      document.adoptNode(panel);
-      panel.style.display="none";
-      stack.appendChild(panel);
-    }
-  },{once:true});
+  /* Keep camera controls at the top of the camera popup for quick access. */
+  const cameraBody=panel.querySelector(".panelBody");
+  const cameraControls=panel.querySelector(".cameraControls");
+  if(cameraBody && cameraControls){
+    cameraBody.insertBefore(cameraControls,cameraBody.firstChild);
+  }
 
+  w.addEventListener("beforeunload",()=>{
+    novaCameraPopupWindow=null;
+    const stack=document.querySelector(".novaPanelStack");
+    if(stack){document.adoptNode(panel);panel.style.display="none";stack.appendChild(panel);}
+  },{once:true});
   try{w.focus()}catch(e){}
 }
 
 function openNovaCalendarScreen(){
   const panel=document.getElementById("novaCalendarPanelSource");
+  const modal=document.getElementById("calendarModal");
   if(!panel)return;
   const w=window.open("","nova_calendar_screen","width=1180,height=820,resizable=yes,scrollbars=yes");
-  if(!w){log("NOVA Calendar screen was blocked. Allow pop-ups for this page.","warning");return}
+  if(!w){log("NOVA Calendar screen was blocked. Allow pop-ups for this page.","warning");return;}
+  novaCalendarPopupWindow=w;
   w.document.open();
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA CALENDAR</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CALENDAR</button></div><div id="calendarHost"></div></body></html>`);
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA CALENDAR</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CALENDAR</button></div><div id="calendarHost"></div><div id="calendarModalHost"></div></body></html>`);
   w.document.close();
   const novaCssLink=w.document.createElement("link");
   novaCssLink.rel="stylesheet";
   novaCssLink.href=new URL("nova.css",window.location.href).href;
   w.document.head.appendChild(novaCssLink);
+  ["calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
   panel.style.display="block";
   w.document.getElementById("calendarHost").appendChild(w.document.adoptNode(panel));
+  if(modal)w.document.getElementById("calendarModalHost").appendChild(w.document.adoptNode(modal));
+  renderCalendar();
   w.addEventListener("beforeunload",()=>{
+    novaCalendarPopupWindow=null;
     const stack=document.querySelector(".novaPanelStack");
-    if(stack){
-      document.adoptNode(panel);
-      panel.style.display="none";
-      stack.insertBefore(panel,stack.firstChild);
-    }
+    if(stack){document.adoptNode(panel);panel.style.display="none";stack.insertBefore(panel,stack.firstChild);}
+    if(modal){document.adoptNode(modal);const app=document.querySelector(".app");if(app)app.appendChild(modal);}
   },{once:true});
   try{w.focus()}catch(e){}
 }
