@@ -546,9 +546,6 @@ const commandInput =
 const lastHeardEl =
   document.getElementById("lastHeard");
 
-const voiceOrb =
-  document.getElementById("novaOrb");
-
 
 /* ============================================================
    INITIALIZATION
@@ -1048,10 +1045,6 @@ function initializeVoice(){
     ).className =
       "dot green";
 
-    voiceOrb.classList.add(
-      "listening"
-    );
-
   };
 
 
@@ -1061,10 +1054,6 @@ function initializeVoice(){
     recognitionRunning = false;
 
     (()=>{const el=document.getElementById("recognitionState");if(el)el.textContent="OFF";})();
-
-    voiceOrb.classList.remove(
-      "listening"
-    );
 
     if(
       voiceEnabled &&
