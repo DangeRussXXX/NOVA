@@ -1,0 +1,4496 @@
+:root{
+  --bg:#070a0f;
+  --panel:#0d1219;
+  --panel2:#101721;
+  --border:#263241;
+  --text:#d9e4ef;
+  --muted:#788899;
+  --green:#39ff88;
+  --cyan:#36d9ff;
+  --yellow:#ffd84d;
+  --red:#ff5570;
+  --purple:#b58cff;
+  --shadow:0 12px 35px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+
+body{
+  background:
+    radial-gradient(circle at 20% 0%,rgba(54,217,255,.08),transparent 30%),
+    radial-gradient(circle at 80% 0%,rgba(57,255,136,.06),transparent 28%),
+    var(--bg);
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  max-width:1800px;
+  margin:auto;
+  padding:16px;
+}
+
+
+  /* =========================================
+   AMOMII CONTROLLER EXPAND / COLLAPSE
+   ========================================= */
+
+.controllerHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+}
+
+.controllerHeader + .panelBody{
+  overflow:hidden;
+  max-height:3000px;
+  opacity:1;
+  transition:
+    max-height .25s ease,
+    opacity .2s ease;
+}
+
+.controllerHeader + .panelBody.collapsed{
+  max-height:0;
+  opacity:0;
+}
+
+/* HEADER */
+
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:18px 20px;
+  margin-bottom:16px;
+  background:rgba(13,18,25,.92);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+}
+
+.brand h1{
+  margin:0;
+  font-size:25px;
+  letter-spacing:2px;
+  color:white;
+}
+
+.brand p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:2px;
+}
+
+.headerStatus{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.statusItem{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#555;
+  box-shadow:0 0 8px transparent;
+}
+
+.dot.green{
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+
+.dot.red{
+  background:var(--red);
+  box-shadow:0 0 12px var(--red);
+}
+
+.dot.yellow{
+  background:var(--yellow);
+  box-shadow:0 0 12px var(--yellow);
+}
+/* GRID */
+
+.mainGrid{
+  display:grid;
+  grid-template-columns:minmax(250px,1fr) 1000px 300px;
+  gap:16px;
+}
+
+
+/* 3 PANELS */
+
+.panel{
+  background:rgba(13,18,25,.94);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.panelHeader{
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.015);
+  color:var(--cyan);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:2px;
+}
+
+.panelBody{
+  padding:14px;
+}
+
+/* GENERIC PANEL EXPAND / COLLAPSE */
+
+.panel > .panelHeader.genericCollapseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  cursor:pointer;
+  user-select:none;
+}
+
+.genericCollapseArrow{
+  flex:0 0 auto;
+  color:var(--muted);
+  font-size:13px;
+  transition:transform .18s ease;
+}
+
+.panel > .panelHeader.genericCollapseHeader.expanded .genericCollapseArrow{
+  transform:rotate(90deg);
+  color:var(--cyan);
+}
+
+.panel > .panelBody.genericCollapseBody{
+  overflow:hidden;
+}
+
+.panel > .panelBody.genericCollapseBody.collapsed{
+  display:none;
+}
+
+/* BUTTONS */
+
+.buttonGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+button.control{
+  border:1px solid var(--border);
+  background:#111923;
+  color:var(--text);
+  padding:10px 8px;
+  border-radius:8px;
+  font-size:11px;
+  transition:.15s ease;
+}
+
+button.control:hover{
+  border-color:var(--cyan);
+  color:white;
+  transform:translateY(-1px);
+}
+
+button.control.primary{
+  border-color:rgba(54,217,255,.35);
+  color:var(--cyan);
+}
+
+button.control.good{
+  border-color:rgba(57,255,136,.35);
+  color:var(--green);
+}
+
+button.control.warn{
+  border-color:rgba(255,216,77,.35);
+  color:var(--yellow);
+}
+
+button.control.danger{
+  border-color:rgba(255,85,112,.35);
+  color:var(--red);
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+/* =========================================
+   NOVA VOICE BUTTONS
+   ========================================= */
+
+.voiceButtons{
+  display:flex !important;
+  flex-direction:row !important;
+  gap:6px;
+  width:100%;
+}
+
+.voiceButtons button.control{
+  flex:1 1 0 !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:5px 6px !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  white-space:nowrap;
+}
+
+.voiceButtons button.control.full{
+  grid-column:auto !important;
+}
+
+
+/* =========================================
+   VOICE HEADER STATUS
+   ========================================= */
+
+.voiceHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.voiceStatus{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  letter-spacing:.5px;
+  opacity:.8;
+}
+
+.voiceStatus .dot{
+  width:7px;
+  height:7px;
+  flex:none;
+}
+
+/* CENTER */
+
+.centerColumn{
+  min-width:0;
+}
+
+/* =========================================
+   CONTROLLER INTERNAL SECTIONS
+   ========================================= */
+
+.panelSection{
+  margin-top:20px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.panelSubHeader{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1px;
+  margin-bottom:12px;
+  opacity:0.75;
+}
+
+.voiceHero{
+  margin-bottom:16px;
+  border:1px solid rgba(57,255,136,.22);
+  background:
+    radial-gradient(circle at 50% 0%,rgba(57,255,136,.08),transparent 50%),
+    var(--panel);
+  border-radius:14px;
+  padding:20px;
+  text-align:center;
+}
+
+/* NOVA CORE CONTAINER */
+#novaCoreContainer {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* PEDESTAL */
+#novaPedestal {
+    position: absolute;
+    bottom: 40px;
+    width: 220px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* THRONE RING */
+#novaThroneRing {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 229, 255, 0.7);
+    box-shadow:
+        0 0 20px rgba(0, 229, 255, 0.8),
+        0 0 40px rgba(255, 0, 255, 0.4);
+    background: radial-gradient(circle, rgba(0, 229, 255, 0.1) 0%, transparent 70%);
+    animation: throneRotate 20s linear infinite;
+}
+
+/* GLYPHS */
+#novaGlyphLayer {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    pointer-events: none;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(0, 229, 255, 0.4) 0, transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(255, 0, 255, 0.4) 0, transparent 40%),
+        radial-gradient(circle at 40% 80%, rgba(0, 255, 180, 0.4) 0, transparent 40%);
+    opacity: 0.7;
+    mix-blend-mode: screen;
+    animation: glyphPulse 6s ease-in-out infinite;
+}
+
+/* CONDUITS */
+#novaConduits {
+    position: absolute;
+    width: 140px;
+    height: 120px;
+    bottom: -10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+#novaConduits::before,
+#novaConduits::after {
+    content: "";
+    width: 4px;
+    height: 80px;
+    background: linear-gradient(to bottom,
+        rgba(0, 229, 255, 0.0),
+        rgba(0, 229, 255, 0.9),
+        rgba(255, 0, 255, 0.7));
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.9);
+    animation: conduitPulse 3s ease-in-out infinite;
+}
+
+/* ORB */
+#novaOrb {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* OUTER RING */
+.novaOuterRing {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 3px solid rgba(0, 229, 255, 0.9);
+    box-shadow:
+        0 0 25px rgba(0, 229, 255, 0.9),
+        0 0 50px rgba(0, 229, 255, 0.6);
+    animation: outerBreath 6s ease-in-out infinite;
+}
+
+/* INNER RING */
+.novaInnerRing {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 0, 255, 0.7);
+    box-shadow:
+        0 0 20px rgba(255, 0, 255, 0.7),
+        0 0 40px rgba(255, 0, 255, 0.4);
+    animation: innerPulse 4s ease-in-out infinite;
+}
+
+/* IRIS */
+.novaIris {
+    position: absolute;
+    width: 150px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(0, 229, 255, 1) 0%,
+        rgba(0, 120, 200, 0.9) 40%,
+        rgba(0, 10, 30, 1) 100%);
+    box-shadow:
+        0 0 20px rgba(0, 229, 255, 0.9),
+        0 0 40px rgba(0, 229, 255, 0.7);
+    clip-path: ellipse(0% 0% at 50% 50%);
+    animation: irisIdle 8s ease-in-out infinite;
+}
+
+/* WAVEFORM */
+.novaWaveform {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 1px dashed rgba(0, 229, 255, 0.6);
+    box-shadow: 0 0 18px rgba(0, 229, 255, 0.6);
+    opacity: 0.6;
+    animation: waveformIdle 5s ease-in-out infinite;
+}
+
+/* PARTICLES */
+.novaParticles {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(0, 229, 255, 0.7) 0, transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(255, 0, 255, 0.7) 0, transparent 40%),
+        radial-gradient(circle at 40% 80%, rgba(0, 255, 180, 0.7) 0, transparent 40%);
+    mix-blend-mode: screen;
+    opacity: 0.4;
+    animation: particleDrift 10s linear infinite;
+}
+
+/* KEYFRAMES */
+@keyframes throneRotate {
+    0%   { transform: rotate(0deg); }
+    20%  { transform: rotate(60deg); }
+    30%  { transform: rotate(180deg); }
+    40%  { transform: rotate(240deg); }
+    45%  { transform: rotate(260deg); }
+    50%  { transform: rotate(260deg); }
+    70%  { transform: rotate(200deg); }
+    80%  { transform: rotate(40deg); }
+    90%  { transform: rotate(-120deg); }
+    100% { transform: rotate(-180deg); }
+}
+
+@keyframes glyphPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50%      { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes conduitPulse {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
+}
+
+@keyframes outerBreath {
+    0%, 100% { box-shadow: 0 0 25px rgba(0, 229, 255, 0.9), 0 0 50px rgba(0, 229, 255, 0.6); }
+    50%      { box-shadow: 0 0 35px rgba(0, 229, 255, 1), 0 0 70px rgba(0, 229, 255, 0.9); }
+}
+
+@keyframes innerPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.05); }
+}
+
+@keyframes irisIdle {
+    0%   { clip-path: ellipse(0% 0% at 50% 50%); }
+    20%  { clip-path: ellipse(40% 20% at 50% 50%); }
+    40%  { clip-path: ellipse(20% 10% at 50% 50%); }
+    60%  { clip-path: ellipse(35% 18% at 50% 50%); }
+    80%  { clip-path: ellipse(10% 5% at 50% 50%); }
+    100% { clip-path: ellipse(0% 0% at 50% 50%); }
+}
+
+@keyframes waveformIdle {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50%      { transform: scale(1.08); opacity: 0.8; }
+}
+
+@keyframes particleDrift {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(4px, -3px); }
+    50%  { transform: translate(-3px, 5px); }
+    75%  { transform: translate(2px, -4px); }
+    100% { transform: translate(0, 0); }
+}
+
+/* STATE CLASSES */
+.nova-speaking .novaIris {
+    clip-path: ellipse(60% 60% at 50% 50%);
+    box-shadow:
+        0 0 30px rgba(0, 229, 255, 1),
+        0 0 70px rgba(0, 229, 255, 1);
+}
+
+.nova-speaking .novaWaveform {
+    animation: waveformSpeak 1.2s ease-in-out infinite;
+}
+
+@keyframes waveformSpeak {
+    0%   { transform: scale(1); opacity: 0.7; }
+    50%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.7; }
+}
+
+.nova-error .novaOuterRing {
+    box-shadow:
+        0 0 25px rgba(255, 0, 0, 0.9),
+        0 0 50px rgba(255, 0, 0, 0.7);
+}
+
+.nova-error #novaThroneRing {
+    border-color: rgba(255, 0, 0, 0.8);
+    box-shadow:
+        0 0 20px rgba(255, 0, 0, 0.9),
+        0 0 40px rgba(255, 0, 0, 0.7);
+}
+
+
+.voiceTitle{
+  font-size:20px;
+  font-weight:700;
+  color:white;
+}
+
+.voiceSubtitle{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.lastHeard{
+  margin-top:14px;
+  padding:10px;
+  background:#080c11;
+  border:1px solid #1e2834;
+  border-radius:8px;
+  color:var(--cyan);
+  min-height:40px;
+}
+
+.novaName {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #eaffff;
+    text-shadow:
+    0 0 10px rgba(0, 255, 255, 1),
+    0 0 20px rgba(0, 255, 255, 1),
+    0 0 35px rgba(0, 255, 255, 1);
+    -webkit-text-stroke: 1px rgba(0,0,0,0.4);
+    pointer-events: none;
+    z-index: 9999;
+
+}
+
+/* CONSOLE */
+
+/* =========================================
+   NOVA COMMAND CONSOLE EXPAND / COLLAPSE
+   ========================================= */
+
+.consoleHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+}
+
+.consoleBody{
+  overflow:hidden;
+  max-height:2000px;
+  opacity:1;
+  transition:
+    max-height .25s ease,
+    opacity .2s ease;
+}
+
+.consoleBody.collapsed{
+  max-height:0;
+  opacity:0;
+}
+
+.console{
+  height:220px;
+  overflow-y:auto;
+  padding:14px;
+  background:#05080c;
+  font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  font-size:12px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.consoleLine{
+  margin:0 0 3px;
+}
+
+.consoleLine.system{color:var(--cyan)}
+.consoleLine.success{color:var(--green)}
+.consoleLine.warning{color:var(--yellow)}
+.consoleLine.error{color:var(--red)}
+.consoleLine.voice{color:var(--purple)}
+.consoleLine.command{color:#d9e4ef}
+
+.commandRow{
+  display:flex;
+  gap:8px;
+  padding:12px;
+  border-top:1px solid var(--border);
+}
+
+.commandRow input{
+  flex:1;
+  min-width:0;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:10px;
+  border-radius:8px;
+  outline:none;
+}
+
+.commandRow input:focus{
+  border-color:var(--cyan);
+}
+
+/* =========================================
+   MORSE PANEL
+   ========================================= */
+
+.morsePanel{
+  padding:12px;
+  border-top:1px solid var(--border);
+}
+
+.morsePanel .panelSubHeader{
+  margin-bottom:8px;
+}
+
+.morseRow{
+  display:flex;
+  gap:8px;
+}
+
+.morseRow input{
+  flex:1;
+  min-width:0;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:10px;
+  border-radius:8px;
+  outline:none;
+}
+
+.morseRow input:focus{
+  border-color:var(--cyan);
+}
+
+.morseOutput{
+  margin-top:8px;
+  min-height:20px;
+  padding:8px;
+  background:#05080c;
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--cyan);
+  font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  font-size:12px;
+}
+/* =========================================
+   MORSE DISPLAY
+   ========================================= */
+
+.morseCard{
+  overflow:hidden;
+}
+
+.morseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.morseStatus{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  letter-spacing:1px;
+  opacity:.8;
+}
+
+.morseStatus .dot{
+  width:7px;
+  height:7px;
+}
+
+.morseDisplay{
+  overflow:hidden;
+  padding:16px 0;
+  background:#05080c;
+  border-top:1px solid var(--border);
+}
+
+.morseLabel{
+  padding:0 14px 8px;
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.5;
+}
+
+.morseScrollingText{
+  white-space:nowrap;
+  font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:6px;
+  color:var(--cyan);
+  text-shadow:
+    0 0 6px rgba(0,255,255,.7),
+    0 0 18px rgba(0,255,255,.35);
+  animation:morseScroll 12s linear infinite;
+}
+
+@keyframes morseScroll{
+
+  from{
+    transform:translateX(100%);
+  }
+
+  to{
+    transform:translateX(-100%);
+  }
+
+}
+/* RIGHT */
+
+.statList{
+  display:grid;
+  gap:7px;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:12px;
+}
+
+.stat span:first-child{
+  color:var(--muted);
+}
+
+.stat span:last-child{
+  color:white;
+  text-align:right;
+}
+
+.card{
+  margin-bottom:16px;
+}
+
+.card:last-child{
+  margin-bottom:0;
+}
+
+/* DIAGNOSTICS */
+
+.testGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.testItem{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 8px;
+  border:1px solid #1c2732;
+  border-radius:6px;
+  background:#090e14;
+  font-size:11px;
+}
+
+.testItem span:first-child{
+  color:var(--muted);
+}
+
+.testValue.ok{color:var(--green)}
+.testValue.fail{color:var(--red)}
+.testValue.testing{color:var(--yellow)}
+.testValue.pending{color:var(--muted)}
+
+.testResult{
+  margin-top:8px;
+  text-align:center;
+  padding:8px;
+  border-radius:7px;
+  border:1px solid #263241;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+.testResult.pass{
+  color:var(--green);
+  border-color:rgba(57,255,136,.35);
+}
+
+.testResult.fail{
+  color:var(--red);
+  border-color:rgba(255,85,112,.35);
+}
+
+/* PROFILE */
+
+.profileName{
+  font-size:18px;
+  color:white;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.profileRow{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  padding:5px 0;
+}
+
+.profileRow span:first-child{
+  color:var(--muted);
+}
+
+/* HISTORY */
+
+.history{
+  max-height:190px;
+  overflow-y:auto;
+}
+
+.historyItem{
+  padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:11px;
+}
+
+.historyItem .time{
+  color:var(--muted);
+  margin-right:6px;
+}
+
+.historyItem .cmd{
+  color:var(--cyan);
+}
+
+/* MEDIA */
+
+.mediaPanel{
+  margin-top:16px;
+}
+
+.mediaTabs{
+  display:flex;
+  gap:6px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+
+.tab{
+  border:1px solid var(--border);
+  background:#0a0f15;
+  color:var(--muted);
+  padding:8px 11px;
+  border-radius:7px;
+  font-size:11px;
+}
+
+.tab.active{
+  color:var(--cyan);
+  border-color:rgba(54,217,255,.4);
+}
+
+.mediaSection{
+  display:none;
+}
+
+.mediaSection.active{
+  display:block;
+}
+
+.mediaControls{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.mediaControls button{
+  border:1px solid var(--border);
+  background:#111923;
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:7px;
+  font-size:11px;
+}
+
+.mediaControls button:hover{
+  border-color:var(--cyan);
+}
+
+.mediaFileRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+  flex-wrap:wrap;
+}
+
+.fileButton{
+  display:inline-block;
+  padding:9px 12px;
+  border:1px solid var(--border);
+  background:#111923;
+  color:var(--cyan);
+  border-radius:7px;
+  cursor:pointer;
+  font-size:11px;
+}
+
+input[type=file]{
+  display:none;
+}
+
+.mediaList{
+  margin-top:10px;
+  max-height:150px;
+  overflow-y:auto;
+}
+
+.mediaItem{
+  padding:8px;
+  margin-bottom:5px;
+  border:1px solid #1c2732;
+  border-radius:6px;
+  background:#090e14;
+  font-size:11px;
+  cursor:pointer;
+}
+
+.mediaItem:hover,
+.mediaItem.selected{
+  border-color:var(--cyan);
+}
+
+audio,
+video{
+  width:100%;
+  margin-top:10px;
+  background:#000;
+  border-radius:8px;
+}
+
+.videoWrap{
+  background:#000;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+#youtubeFrame{
+  width:100%;
+  aspect-ratio:16/9;
+  border:0;
+  display:block;
+}
+
+.youtubeRow{
+  display:flex;
+  gap:7px;
+}
+
+.youtubeRow input{
+  flex:1;
+  min-width:0;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:9px;
+  border-radius:7px;
+}
+
+/* CALENDAR - NOVA / OUTLOOK STYLE */
+
+.calendarToolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.calendarToolbarGroup{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.calendarToolbar button,
+.calendarHeader button{
+  border:1px solid var(--border);
+  background:#111923;
+  color:var(--text);
+  padding:7px 10px;
+  border-radius:6px;
+  font-size:10px;
+}
+
+.calendarToolbar button:hover,
+.calendarHeader button:hover{
+  border-color:var(--cyan);
+  color:white;
+}
+
+.calendarToolbar button.active{
+  color:var(--cyan);
+  border-color:rgba(54,217,255,.55);
+  box-shadow:0 0 9px rgba(54,217,255,.18);
+}
+
+.calendarHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.calendarMonth{
+  color:white;
+  font-weight:700;
+  letter-spacing:.5px;
+}
+
+.calendarAccountBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:8px 10px;
+  margin-bottom:10px;
+  border:1px solid #1c2732;
+  background:#090e14;
+  border-radius:7px;
+  font-size:10px;
+}
+
+.calendarAccountStatus{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+}
+
+.calendarGrid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+
+.dayLabel{
+  text-align:center;
+  color:var(--muted);
+  font-size:9px;
+  padding:5px 0;
+}
+
+.day{
+  min-height:72px;
+  border:1px solid #1c2732;
+  border-radius:6px;
+  padding:5px;
+  background:#090e14;
+  font-size:10px;
+  cursor:pointer;
+  transition:.12s ease;
+}
+
+.day:hover{
+  border-color:rgba(54,217,255,.55);
+  background:#0d151e;
+}
+
+.day.today{
+  border-color:var(--cyan);
+  box-shadow:inset 0 0 10px rgba(54,217,255,.08);
+}
+
+.day.selected{
+  outline:1px solid var(--green);
+  box-shadow:0 0 10px rgba(57,255,136,.22);
+}
+
+.dayNumber{
+  color:var(--muted);
+}
+
+.eventDot{
+  margin-top:4px;
+  padding:2px 4px;
+  border-left:2px solid var(--green);
+  color:var(--green);
+  background:rgba(57,255,136,.06);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.calendarListView{
+  display:grid;
+  gap:6px;
+}
+
+.calendarListDay{
+  padding:8px;
+  border:1px solid #1c2732;
+  border-radius:7px;
+  background:#090e14;
+}
+
+.calendarListDayTitle{
+  color:var(--cyan);
+  font-size:11px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.calendarGrid.weekView{
+  grid-template-columns:repeat(7,1fr);
+}
+
+.calendarGrid.dayView{
+  grid-template-columns:1fr;
+}
+
+.calendarGrid.dayView .day{
+  min-height:180px;
+}
+
+.calendarGrid.agendaView{
+  display:block;
+}
+
+/* EVENT LIST */
+
+.eventList{
+  margin-top:12px;
+  max-height:260px;
+  overflow-y:auto;
+}
+
+.eventListHeading{
+  color:var(--cyan);
+  font-size:10px;
+  letter-spacing:1px;
+  margin-bottom:7px;
+}
+
+.event{
+  padding:9px;
+  border:1px solid #1c2732;
+  background:#090e14;
+  border-radius:7px;
+  margin-bottom:6px;
+  cursor:pointer;
+}
+
+.event:hover{
+  border-color:var(--cyan);
+}
+
+.eventTitle{
+  color:white;
+  font-weight:700;
+  font-size:12px;
+}
+
+.eventMeta{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:3px;
+}
+
+.calendarModal{
+  position:fixed;
+  inset:0;
+  z-index:20000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.72);
+}
+
+.calendarModal.open{
+  display:flex;
+}
+
+.calendarEditor{
+  width:min(520px,100%);
+  background:#0d1219;
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.calendarEditorBody{
+  padding:14px;
+  display:grid;
+  gap:10px;
+}
+
+.calendarEditor label{
+  display:grid;
+  gap:5px;
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:.5px;
+}
+
+.calendarEditor input,
+.calendarEditor textarea{
+  width:100%;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:9px;
+  border-radius:7px;
+  outline:none;
+}
+
+.calendarEditor input:focus,
+.calendarEditor textarea:focus{
+  border-color:var(--cyan);
+}
+
+.calendarEditor textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+.calendarEditorRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.calendarEditorActions{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.calendarEditorActions > div{
+  display:flex;
+  gap:8px;
+}
+
+@media(max-width:600px){
+  .calendarEditorRow{
+    grid-template-columns:1fr;
+  }
+  .day{
+    min-height:60px;
+  }
+}
+
+/* HELP */
+
+.helpList{
+  display:grid;
+  gap:5px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.helpList div{
+  padding:5px 0;
+}
+
+.helpList b{
+  color:var(--cyan);
+}
+
+/* MOBILE */
+
+@media(max-width:1100px){
+  .mainGrid{
+    grid-template-columns:200px 1fr;
+  }
+
+  .rightColumn{
+    grid-column:1/-1;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+
+  .rightColumn .card{
+    margin:0;
+  }
+}
+
+@media(max-width:750px){
+  .mainGrid{
+    grid-template-columns:1fr;
+  }
+
+  .rightColumn{
+    display:block;
+  }
+
+  .rightColumn .card{
+    margin-bottom:16px;
+  }
+
+  header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .headerStatus{
+    justify-content:flex-start;
+  }
+
+  .console{
+    height:350px;
+  }
+}
+
+@media(max-width:500px){
+  .app{
+    padding:8px;
+  }
+
+  .buttonGrid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .calendarGrid{
+    gap:2px;
+  }
+
+  .day{
+    min-height:45px;
+  }
+}
+
+
+/* ============================================================
+   LEFT COLUMN COLLAPSIBLE PANELS
+   NOVA stays visible; all panels below NOVA start collapsed.
+   ============================================================ */
+
+.leftColumn{
+  min-width:300px;
+}
+
+.novaLeftHome{
+  margin-bottom:10px;
+}
+
+.leftCollapsePanel{
+  margin-bottom:10px;
+}
+
+.leftCollapseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+
+.leftCollapseHeader .collapseArrow{
+  flex:0 0 auto;
+  font-size:16px;
+  line-height:1;
+  transition:transform .18s ease;
+}
+
+.leftCollapseHeader.expanded .collapseArrow{
+  transform:rotate(90deg);
+}
+
+.leftCollapseBody{
+  overflow:hidden;
+  max-height:2000px;
+  opacity:1;
+  transition:max-height .25s ease, opacity .18s ease;
+}
+
+.leftCollapseBody.collapsed{
+  max-height:0;
+  opacity:0;
+  padding-top:0;
+  padding-bottom:0;
+}
+
+/* ============================================================
+   AMOMII ONE CONTROLLER - CLEAN CONTROLS + SYSTEM PANEL
+   ============================================================ */
+
+button.control.electricGreen{
+  background:rgba(57,255,136,.18);
+  border-color:#39ff88;
+  color:#39ff88;
+  box-shadow:0 0 10px rgba(57,255,136,.65), inset 0 0 12px rgba(57,255,136,.12);
+}
+
+.controllerSystemPanel{
+  margin-top:12px;
+}
+
+.systemCollapseHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  user-select:none;
+}
+
+.systemCollapseHeader .collapseArrow{
+  font-size:16px;
+  line-height:1;
+  transition:transform .18s ease;
+}
+
+.systemCollapseHeader.expanded .collapseArrow{
+  transform:rotate(90deg);
+}
+
+.systemCollapseBody{
+  overflow:hidden;
+  max-height:2000px;
+  opacity:1;
+  transition:max-height .25s ease, opacity .18s ease;
+}
+
+.systemCollapseBody.collapsed{
+  max-height:0;
+  opacity:0;
+}
+
+.systemActionRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:10px 0;
+}
+
+.systemTestGrid{
+  margin-top:12px;
+}
+
+/* RSR TRAINER PHYSICAL INPUTS */
+.rsrInputGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.rsrInputIndicator{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#090e14;
+  font-size:11px;
+}
+
+.rsrInputIndicator .rsrInputState{
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:1px;
+}
+
+.rsrInputIndicator.active{
+  border-color:#39ff88;
+  box-shadow:0 0 10px rgba(57,255,136,.45), inset 0 0 12px rgba(57,255,136,.08);
+}
+
+.rsrInputIndicator.active .rsrInputState{
+  color:#39ff88;
+  text-shadow:0 0 8px rgba(57,255,136,.75);
+}
+
+.rsrSystemPanel{
+  margin-top:14px;
+}
+
+.rsrPatternGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.rsrPatternGrid .full{
+  grid-column:1/-1;
+}
+
+.rsrPatternStatus{
+  margin-top:12px;
+}
+
+.rsrPatternActive{
+  border-color:rgba(57,255,136,.55) !important;
+  color:var(--green) !important;
+  box-shadow:0 0 10px rgba(57,255,136,.25);
+}
+
+@media(max-width:600px){
+  .rsrPatternGrid{
+    grid-template-columns:1fr;
+  }
+  .rsrPatternGrid .full{
+    grid-column:auto;
+  }
+}
+
+/* ============================================================
+   FULL SCREEN + DRAGGABLE COLUMN RESIZERS
+   ============================================================ */
+
+html,
+body{
+  width:100%;
+  min-height:100%;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+.app{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:10px;
+}
+
+.mainGrid{
+  position:relative;
+  width:100%;
+  min-width:0;
+}
+
+.mainGrid > .leftColumn,
+.mainGrid > .centerColumn,
+.mainGrid > .rightColumn{
+  min-width:0;
+}
+
+.columnResizer{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:12px;
+  z-index:10000;
+  cursor:col-resize;
+  transform:translateX(-50%);
+  touch-action:none;
+  user-select:none;
+}
+
+.columnResizer::before{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:50%;
+  width:3px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:rgba(54,217,255,.28);
+  box-shadow:0 0 8px rgba(54,217,255,.18);
+  transition:background .15s ease, box-shadow .15s ease, width .15s ease;
+}
+
+.columnResizer:hover::before,
+.columnResizer.dragging::before{
+  width:5px;
+  background:var(--cyan);
+  box-shadow:0 0 12px rgba(54,217,255,.75);
+}
+
+body.columnResizing{
+  cursor:col-resize !important;
+  user-select:none !important;
+}
+
+body.columnResizing *{
+  cursor:col-resize !important;
+}
+
+@media(max-width:1100px){
+  .columnResizer{
+    display:none !important;
+  }
+}
+
+
+/* ============================================================
+   CENTER COLUMN MERGED PANELS
+   ============================================================ */
+
+.novaCommandCenterPanel .console{
+  height:300px;
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+
+.novaOutputSection{
+  margin-top:14px;
+}
+
+.morseIntegratedOutput{
+  display:grid;
+  gap:8px;
+  padding:10px;
+  background:#05080c;
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--cyan);
+  font-family:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  font-size:12px;
+  word-break:break-word;
+}
+
+.morseIntegratedLabel{
+  color:var(--muted);
+  font-weight:700;
+}
+
+.mergedCommandRow{
+  padding:0;
+  border-top:0;
+}
+
+
+/* NOVA LEFT COLUMN TEST LAYOUT */
+.novaResponseConsole{height:180px;margin-top:10px;border:1px solid var(--border);border-radius:8px;}
+.novaConsoleVoiceStatus{margin-bottom:10px;}
+.novaConsoleCommandRow{margin-top:10px;padding:0;border-top:0;}
+#lastHeard{white-space:pre-wrap;}
+
+
+/* NOVA UNIFIED COMMAND CONSOLE TEST */
+.novaUnifiedConsole{overflow:hidden;}
+.novaUnifiedConsole .novaLeftHome{margin-bottom:0;}
+.novaUnifiedBody{padding-top:4px;}
+.novaUnifiedBody .novaConsoleVoiceStatus{margin:0 0 10px;}
+.novaResponseLine{margin-top:10px;min-height:40px;}
+.novaUnifiedConsole .novaResponseConsole{margin-top:8px;height:150px;}
+
+
+/* ============================================================
+
+   ============================================================ */
+.cameraMonitor{margin-bottom:16px;}
+.cameraViewport{position:relative;width:100%;aspect-ratio:16/9;background:#020406;border:1px solid #1c2732;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.cameraViewport video{width:100%;height:100%;margin:0;object-fit:cover;background:#000;border-radius:0;}
+.cameraPlaceholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;letter-spacing:1px;pointer-events:none;}
+.cameraControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.cameraControls .full{grid-column:1/-1;}
+.cameraSelect{width:100%;margin-top:10px;background:#080c11;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:7px;outline:none;}
+.cameraSelect:focus{border-color:var(--cyan);}
+.cameraStatusRow{display:flex;align-items:center;gap:7px;margin-top:10px;color:var(--muted);font-size:10px;letter-spacing:1px;}
+.cameraStatusRow .dot{width:7px;height:7px;}
+.cameraSnapshot{display:none;}
+
+
+/* NOVA IRIS MEDIA MODE */
+.novaIris{position:relative}
+#novaIrisMedia{position:absolute;left:50%;bottom:-68px;transform:translateX(-50%);width:min(360px,92%);padding:8px 12px;border:1px solid rgba(0,255,255,.28);border-radius:10px;background:rgba(3,10,18,.90);box-shadow:0 0 18px rgba(0,255,255,.12);text-align:center;opacity:0;pointer-events:none;transition:opacity .22s ease,bottom .22s ease;z-index:8}
+#novaIrisMedia.active{opacity:1;bottom:-78px}
+.irisMediaType{font-size:9px;letter-spacing:1.7px;color:var(--muted)}
+.irisMediaTitle{margin-top:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px;font-weight:800;color:var(--cyan)}
+.irisMediaProgress{height:3px;margin:7px 0 4px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.12)}
+#irisMediaProgressFill{width:0%;height:100%;background:var(--cyan)}
+.irisMediaMeta{display:flex;justify-content:space-between;gap:10px;font-size:9px;color:var(--muted)}
+body.irisMediaPlaying .novaIris{filter:drop-shadow(0 0 14px rgba(0,255,255,.45))}
+
+
+/* NOVA MEDIA LIBRARY - DRAG/DROP + FOLDER LINK */
+.musicDropZone{
+  margin-top:10px;
+  padding:16px 12px;
+  border:1px dashed rgba(0,255,255,.38);
+  border-radius:10px;
+  text-align:center;
+  color:var(--muted);
+  background:rgba(0,255,255,.025);
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.musicDropZone.dragOver{
+  border-color:var(--cyan);
+  background:rgba(0,255,255,.08);
+  box-shadow:0 0 18px rgba(0,255,255,.12);
+  color:var(--cyan);
+}
+.musicFolderStatus{
+  margin-top:8px;
+  font-size:10px;
+  color:var(--muted);
+}
+.musicFolderStatus.linked{
+  color:var(--electricGreen, #55ff88);
+}
+
+
+/* ============================================================
+   STAGE 6C - MEDIA UNDER NOVA + GUARANTEED MUSIC LIFE MODE
+   ============================================================ */
+
+.mediaNativePicker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+#musicDropZone{
+  min-height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#musicDropZone.dragOver,
+.mediaPanel.musicDragActive{
+  border-color:var(--cyan) !important;
+  box-shadow:0 0 22px rgba(0,229,255,.22);
+}
+
+.novaMusicPulseRing{
+  position:absolute;
+  width:205px;
+  height:205px;
+  border-radius:50%;
+  border:2px solid rgba(0,229,255,.65);
+  box-shadow:
+    0 0 18px rgba(0,229,255,.65),
+    inset 0 0 18px rgba(255,0,255,.18);
+  opacity:0;
+  pointer-events:none;
+  z-index:2;
+}
+
+body.novaMusicAlive .novaMusicPulseRing{
+  opacity:1;
+  animation:novaMusicPulse 650ms ease-in-out infinite alternate;
+}
+
+body.novaMusicAlive .novaOuterRing{
+  animation:novaOuterMusic 780ms ease-in-out infinite alternate !important;
+}
+
+body.novaMusicAlive .novaInnerRing{
+  animation:novaInnerMusic 520ms ease-in-out infinite alternate !important;
+}
+
+body.novaMusicAlive .novaIris{
+  animation:novaIrisMusic 430ms ease-in-out infinite alternate !important;
+  clip-path:ellipse(62% 58% at 50% 50%);
+}
+
+body.novaMusicAlive .novaWaveform{
+  animation:novaWaveMusic 360ms ease-in-out infinite alternate !important;
+}
+
+body.novaMusicAlive .novaParticles{
+  animation:novaParticlesMusic 900ms linear infinite !important;
+}
+
+@keyframes novaMusicPulse{
+  from{
+    transform:scale(.92);
+    opacity:.35;
+    filter:brightness(1);
+  }
+  to{
+    transform:scale(1.14);
+    opacity:1;
+    filter:brightness(1.8);
+  }
+}
+
+@keyframes novaOuterMusic{
+  from{transform:scale(.96) rotate(-4deg);filter:brightness(1)}
+  to{transform:scale(1.12) rotate(4deg);filter:brightness(1.8)}
+}
+
+@keyframes novaInnerMusic{
+  from{transform:scale(.92) rotate(5deg)}
+  to{transform:scale(1.15) rotate(-5deg)}
+}
+
+@keyframes novaIrisMusic{
+  from{transform:scaleX(.92) scaleY(.86);filter:brightness(1.1) saturate(1)}
+  to{transform:scaleX(1.12) scaleY(1.20);filter:brightness(2) saturate(1.7)}
+}
+
+@keyframes novaWaveMusic{
+  from{transform:scale(.88);opacity:.35}
+  to{transform:scale(1.22);opacity:1}
+}
+
+@keyframes novaParticlesMusic{
+  from{transform:rotate(0deg) scale(.95);filter:brightness(1)}
+  50%{transform:rotate(180deg) scale(1.12);filter:brightness(2)}
+  to{transform:rotate(360deg) scale(.95);filter:brightness(1)}
+}
+
+
+/* ============================================================
+   NOVA TWO-COLUMN CENTER WORKSPACE
+   ============================================================ */
+.mainGrid{
+  grid-template-columns:340px minmax(0,1fr);
+  gap:16px;
+}
+#columnResizer2{display:none !important;}
+.centerColumn{min-width:0;}
+.centerColumn > .panel{margin-bottom:16px;}
+@media(max-width:750px){
+  .mainGrid{grid-template-columns:1fr;}
+  #columnResizer1,#columnResizer2{display:none !important;}
+}
+
+
+/* NOVA BROWSER PANEL */
+.browserSearchRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.browserSearchRow input{
+  flex:1;
+  min-width:0;
+  background:#080c11;
+  border:1px solid var(--border);
+  color:white;
+  padding:10px;
+  border-radius:8px;
+  outline:none;
+}
+.browserSearchRow input:focus{border-color:var(--cyan);}
+.browserHint{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:9px;
+  letter-spacing:1px;
+}
+
+/* DRAGGABLE NOVA MUSIC PLAYLIST */
+#musicList .mediaItem{
+  cursor:grab;
+  user-select:none;
+}
+#musicList .mediaItem:active{cursor:grabbing;}
+#musicList .mediaItem.musicDragging{
+  opacity:.45;
+  border-color:var(--cyan);
+}
+#musicList .mediaItem.musicDropTarget{
+  border-color:var(--green);
+  box-shadow:0 0 10px rgba(57,255,136,.25);
+}
+
+
+.novaBookmarkList{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:7px;
+}
+.novaBookmarkItem{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:6px;
+}
+.novaBookmarkItem .control:first-child{
+  text-align:left;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.browserQuickLaunch{
+  margin-top:8px;
+}
+
+
+/* ============================================================
+   NOVA REPAIRED TRUE TWO-COLUMN LAYOUT
+   LEFT: NOVA
+   RIGHT: Calendar, Media, Camera, Browser, AMOMII, RSR
+   ============================================================ */
+.mainGrid{
+  display:grid !important;
+  grid-template-columns:340px minmax(0,1fr) !important;
+  gap:16px !important;
+  align-items:start !important;
+}
+.mainGrid > .leftColumn,
+.mainGrid > .rightColumn{
+  min-width:0 !important;
+}
+.mainGrid > .rightColumn{
+  display:block !important;
+  grid-column:2 !important;
+}
+.mainGrid > .rightColumn > .panel,
+.mainGrid > .rightColumn > .card{
+  width:100% !important;
+  margin-bottom:16px !important;
+}
+.mainGrid > .rightColumn > .panel:last-child,
+.mainGrid > .rightColumn > .card:last-child{
+  margin-bottom:0 !important;
+}
+#columnResizer2{
+  display:none !important;
+}
+@media(max-width:1100px){
+  .mainGrid{
+    grid-template-columns:300px minmax(0,1fr) !important;
+  }
+  .mainGrid > .rightColumn{
+    display:block !important;
+    grid-column:2 !important;
+  }
+}
+@media(max-width:750px){
+  .mainGrid{
+    grid-template-columns:1fr !important;
+  }
+  .mainGrid > .rightColumn{
+    grid-column:1 !important;
+  }
+}
+
+
+/* KEEP THE TWO-COLUMN WIDTH GRIP AVAILABLE ON DESKTOP */
+@media(min-width:751px){
+  #columnResizer1.columnResizer{
+    display:block;
+  }
+}
+
+
+/* ============================================================
+   NOVA SINGLE-STACK COMMAND CENTER
+   NOVA AT TOP — ALL PANELS BELOW
+   ============================================================ */
+.mainGrid.novaSingleStack{
+  display:block !important;
+  width:100% !important;
+}
+.novaTopStack,
+.novaPanelStack{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+.novaTopStack > .panel,
+.novaTopStack > .card,
+.novaPanelStack > .panel,
+.novaPanelStack > .card{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 0 16px 0 !important;
+  grid-column:auto !important;
+}
+.novaTopStack > .panel:last-child,
+.novaTopStack > .card:last-child{
+  margin-bottom:16px !important;
+}
+.novaPanelStack > .panel:last-child,
+.novaPanelStack > .card:last-child{
+  margin-bottom:0 !important;
+}
+#columnResizer1,
+#columnResizer2{
+  display:none !important;
+  pointer-events:none !important;
+}
+@media(max-width:1100px){
+  .mainGrid.novaSingleStack,
+  .novaTopStack,
+  .novaPanelStack{
+    display:block !important;
+    width:100% !important;
+  }
+}
+@media(max-width:750px){
+  .mainGrid.novaSingleStack,
+  .novaTopStack,
+  .novaPanelStack{
+    display:block !important;
+    width:100% !important;
+  }
+}
+
+
+/* NOVA IRIS LIVE DASHBOARD */
+.novaIrisDashboard{width:82%;max-width:250px;text-align:center;line-height:1.15;pointer-events:none}
+#novaIrisPrimary{font-size:clamp(13px,1.25vw,19px);font-weight:800;letter-spacing:1.2px;color:var(--cyan);text-shadow:0 0 10px rgba(54,217,255,.8)}
+#novaIrisSecondary{margin-top:4px;font-size:clamp(8px,.72vw,11px);color:var(--text);white-space:normal}
+#novaIrisResponse{margin-top:5px;font-size:clamp(8px,.7vw,10px);color:var(--green);max-height:36px;overflow:hidden;white-space:normal}
+
+
+/* ============================================================
+   NOVA FULL-PANEL PRESENCE
+   ============================================================ */
+.novaUnifiedConsole .novaLeftHome{
+  width:100% !important;
+  min-height:430px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px 10px 8px !important;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(0,229,255,.10),transparent 34%),
+    radial-gradient(circle at 50% 52%,rgba(255,0,255,.06),transparent 48%);
+}
+.novaUnifiedConsole #novaCoreContainer{
+  width:min(100%,760px) !important;
+  height:400px !important;
+  margin:0 auto !important;
+}
+.novaUnifiedConsole #novaPedestal{
+  width:380px !important;
+  height:180px !important;
+  bottom:62px !important;
+}
+.novaUnifiedConsole #novaThroneRing,
+.novaUnifiedConsole #novaGlyphLayer{
+  width:330px !important;
+  height:330px !important;
+}
+.novaUnifiedConsole #novaConduits{
+  width:260px !important;
+  height:180px !important;
+}
+.novaUnifiedConsole #novaOrb{
+  width:350px !important;
+  height:350px !important;
+}
+.novaUnifiedConsole .novaOuterRing,
+.novaUnifiedConsole .novaParticles{
+  width:350px !important;
+  height:350px !important;
+}
+.novaUnifiedConsole .novaInnerRing{
+  width:270px !important;
+  height:270px !important;
+}
+.novaUnifiedConsole .novaIris{
+  width:245px !important;
+  height:205px !important;
+}
+.novaUnifiedConsole .novaWaveform{
+  width:300px !important;
+  height:300px !important;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  width:88% !important;
+  max-width:220px !important;
+}
+.novaUnifiedConsole #novaIrisPrimary{
+  font-size:22px !important;
+}
+.novaUnifiedConsole #novaIrisSecondary{
+  font-size:11px !important;
+  line-height:1.3 !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  font-size:11px !important;
+  line-height:1.3 !important;
+  max-height:58px !important;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole .novaLeftHome{min-height:340px !important}
+  .novaUnifiedConsole #novaCoreContainer{height:320px !important}
+  .novaUnifiedConsole #novaOrb,
+  .novaUnifiedConsole .novaOuterRing,
+  .novaUnifiedConsole .novaParticles{width:280px !important;height:280px !important}
+  .novaUnifiedConsole .novaInnerRing{width:215px !important;height:215px !important}
+  .novaUnifiedConsole .novaIris{width:205px !important;height:170px !important}
+  .novaUnifiedConsole .novaWaveform{width:240px !important;height:240px !important}
+  .novaUnifiedConsole #novaThroneRing,
+  .novaUnifiedConsole #novaGlyphLayer{width:270px !important;height:270px !important}
+}
+
+
+/* ============================================================
+   NOVA MANUALLY REORDERABLE PANELS
+   Drag any visible panel by its header.
+   ============================================================ */
+.novaPanelStack > .panel > .panelHeader{
+  cursor:grab;
+  user-select:none;
+}
+.novaPanelStack > .panel > .panelHeader:active{
+  cursor:grabbing;
+}
+.novaPanelStack > .panel.novaPanelDragging{
+  opacity:.48;
+}
+.novaPanelStack > .panel.novaPanelDropTarget{
+  outline:1px solid var(--cyan);
+  box-shadow:0 0 16px rgba(54,217,255,.25);
+}
+.novaPanelStack > .panel > .panelHeader::after{
+  content:"⋮⋮";
+  float:right;
+  color:var(--muted);
+  letter-spacing:-2px;
+  opacity:.7;
+}
+
+
+.novaUnifiedConsole #novaIrisResponse{
+  width:92% !important;
+  max-width:260px !important;
+  max-height:105px !important;
+  overflow:auto;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  text-align:center;
+  font-size:12px !important;
+  line-height:1.45 !important;
+}
+
+.headerNovaControls{
+  margin-top:12px;
+  width:100%;
+}
+.headerNovaControls .buttonGrid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.headerNovaControls .control{
+  flex:0 1 auto;
+}
+
+/* ============================================================
+   NOVA FULL-PANEL SYSTEM CORE
+   NOVA now inhabits the entire panel instead of a center circle.
+   ============================================================ */
+.novaUnifiedConsole{
+  position:relative !important;
+  overflow:hidden !important;
+  min-height:470px !important;
+  isolation:isolate;
+  border:1px solid rgba(54,217,255,.55) !important;
+  background:
+    radial-gradient(ellipse at center,rgba(0,229,255,.10),transparent 42%),
+    linear-gradient(180deg,rgba(4,15,24,.98),rgba(2,7,13,.98)) !important;
+}
+.novaUnifiedConsole::before,
+.novaUnifiedConsole::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+}
+.novaUnifiedConsole::before{
+  border:2px solid rgba(54,217,255,.28);
+  box-shadow:
+    inset 0 0 34px rgba(54,217,255,.12),
+    inset 0 0 90px rgba(54,217,255,.06);
+  animation:novaPanelBorderBreathe 3.2s ease-in-out infinite;
+}
+.novaUnifiedConsole::after{
+  background:
+    linear-gradient(90deg,transparent 0 8%,rgba(54,217,255,.20) 8% 9%,transparent 9% 91%,rgba(54,217,255,.20) 91% 92%,transparent 92%),
+    linear-gradient(0deg,transparent 0 10%,rgba(54,217,255,.12) 10% 10.5%,transparent 10.5% 89.5%,rgba(54,217,255,.12) 89.5% 90%,transparent 90%);
+  opacity:.5;
+}
+.novaUnifiedConsole .novaLeftHome{
+  position:relative !important;
+  z-index:2;
+  width:100% !important;
+  min-height:470px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+.novaUnifiedConsole #novaCoreContainer{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+}
+.novaUnifiedConsole #novaOrb{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  transform:none !important;
+  border-radius:0 !important;
+}
+.novaUnifiedConsole .novaOuterRing{
+  position:absolute !important;
+  inset:12px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:18px !important;
+  transform:none !important;
+  border:1px solid rgba(54,217,255,.45) !important;
+  animation:novaPanelOuterPulse 2.6s ease-in-out infinite !important;
+}
+.novaUnifiedConsole .novaInnerRing{
+  position:absolute !important;
+  inset:42px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:14px !important;
+  transform:none !important;
+  border:1px solid rgba(54,217,255,.18) !important;
+  animation:novaPanelInnerPulse 3.4s ease-in-out infinite reverse !important;
+}
+.novaUnifiedConsole .novaIris{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(72%,760px) !important;
+  height:235px !important;
+  transform:translate(-50%,-50%) !important;
+  border-radius:24px !important;
+  background:
+    radial-gradient(ellipse at center,rgba(54,217,255,.14),rgba(3,12,20,.62) 58%,rgba(3,9,15,.88)) !important;
+  border:1px solid rgba(54,217,255,.42) !important;
+  box-shadow:
+    0 0 30px rgba(54,217,255,.15),
+    inset 0 0 35px rgba(54,217,255,.08) !important;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  width:90% !important;
+  max-width:680px !important;
+}
+.novaUnifiedConsole #novaIrisPrimary{
+  font-size:30px !important;
+  letter-spacing:10px !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  width:100% !important;
+  max-width:640px !important;
+  max-height:125px !important;
+  overflow:auto !important;
+  text-align:center !important;
+  font-size:14px !important;
+  line-height:1.55 !important;
+}
+.novaUnifiedConsole .novaWaveform{
+  position:absolute !important;
+  left:4% !important;
+  right:4% !important;
+  bottom:34px !important;
+  top:auto !important;
+  width:92% !important;
+  height:70px !important;
+  transform:none !important;
+  border-radius:0 !important;
+}
+.novaUnifiedConsole .novaParticles{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaMusicPulseRing{
+  position:absolute !important;
+  inset:5px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:20px !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaPedestal{
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:100% !important;
+  height:100% !important;
+  opacity:.38;
+  pointer-events:none;
+}
+.novaUnifiedConsole #novaThroneRing,
+.novaUnifiedConsole #novaGlyphLayer{
+  position:absolute !important;
+  inset:22px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:16px !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaConduits{
+  position:absolute !important;
+  left:5% !important;
+  right:5% !important;
+  bottom:18px !important;
+  width:90% !important;
+  height:55px !important;
+  transform:none !important;
+}
+.novaUnifiedConsole.novaSystemListening{
+  box-shadow:inset 0 0 55px rgba(54,217,255,.16),0 0 18px rgba(54,217,255,.12) !important;
+}
+.novaUnifiedConsole.novaSystemSpeaking{
+  box-shadow:inset 0 0 75px rgba(255,0,255,.13),0 0 22px rgba(54,217,255,.14) !important;
+}
+.novaUnifiedConsole.novaSystemError{
+  animation:novaPanelErrorFlash .55s ease-out 1;
+}
+@keyframes novaPanelBorderBreathe{
+  0%,100%{opacity:.55}
+  50%{opacity:1}
+}
+@keyframes novaPanelOuterPulse{
+  0%,100%{opacity:.38;box-shadow:inset 0 0 18px rgba(54,217,255,.05)}
+  50%{opacity:.95;box-shadow:inset 0 0 42px rgba(54,217,255,.14)}
+}
+@keyframes novaPanelInnerPulse{
+  0%,100%{opacity:.25}
+  50%{opacity:.7}
+}
+@keyframes novaPanelErrorFlash{
+  0%{box-shadow:inset 0 0 0 rgba(255,60,60,0)}
+  35%{box-shadow:inset 0 0 95px rgba(255,60,60,.28)}
+  100%{box-shadow:inset 0 0 0 rgba(255,60,60,0)}
+}
+@media(max-width:650px){
+  .novaUnifiedConsole,
+  .novaUnifiedConsole .novaLeftHome{min-height:390px !important}
+  .novaUnifiedConsole .novaIris{
+    width:84% !important;
+    height:220px !important;
+  }
+  .novaUnifiedConsole #novaIrisPrimary{
+    font-size:24px !important;
+    letter-spacing:7px !important;
+  }
+  .novaUnifiedConsole #novaIrisResponse{
+    font-size:12px !important;
+  }
+}
+
+
+/* ============================================================
+   NOVA CORE REFINEMENT
+   Keep the IRIS alive, but behind the readable system feed.
+   ============================================================ */
+.novaUnifiedConsole .novaIris{
+  overflow:visible !important;
+  background:rgba(3,12,20,.42) !important;
+  animation:none !important;
+  opacity:1 !important;
+}
+.novaUnifiedConsole .novaIris::before{
+  content:"";
+  position:absolute;
+  inset:-38px;
+  z-index:0;
+  pointer-events:none;
+  border-radius:40px;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(54,217,255,.14) 0%,
+      rgba(54,217,255,.07) 35%,
+      rgba(54,217,255,.025) 56%,
+      transparent 72%);
+  opacity:.42;
+  animation:novaIrisBackgroundBreath 4.8s ease-in-out infinite;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  position:relative !important;
+  z-index:4 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  animation:none !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaIrisPrimary,
+.novaUnifiedConsole #novaIrisResponse{
+  position:relative !important;
+  z-index:5 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  animation:none !important;
+  filter:none !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  background:rgba(1,8,14,.46);
+  border:1px solid rgba(54,217,255,.13);
+  border-radius:10px;
+  padding:10px 12px;
+  text-shadow:0 0 8px rgba(54,217,255,.20);
+}
+@keyframes novaIrisBackgroundBreath{
+  0%,100%{opacity:.26;transform:scale(.97)}
+  50%{opacity:.52;transform:scale(1.025)}
+}
+@media(prefers-reduced-motion:reduce){
+  .novaUnifiedConsole .novaIris::before{
+    animation:none !important;
+  }
+}
+
+
+/* ============================================================
+   NOVA INTEGRATED COMMAND RESPONSE
+   NOVA visually speaks command responses; old response panel is gone.
+   ============================================================ */
+.novaUnifiedConsole .novaIris{
+  background:rgba(3,12,20,.22) !important;
+  border-color:rgba(54,217,255,.24) !important;
+  box-shadow:
+    0 0 28px rgba(54,217,255,.08),
+    inset 0 0 34px rgba(54,217,255,.05) !important;
+}
+.novaUnifiedConsole #novaIrisSpeech{
+  position:relative;
+  z-index:7;
+  width:100%;
+  max-width:660px;
+  margin:8px auto 10px;
+  padding:10px 14px;
+  color:var(--green);
+  font-size:clamp(13px,1.1vw,17px);
+  line-height:1.45;
+  font-weight:600;
+  text-align:center;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  text-shadow:0 0 10px rgba(57,255,136,.24);
+}
+.novaUnifiedConsole #novaIrisSpeech.novaSpeechActive{
+  animation:novaSpeechArrival .34s ease-out 1;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  width:100% !important;
+  max-width:660px !important;
+  max-height:82px !important;
+  margin:0 auto !important;
+  padding:7px 10px !important;
+  overflow:auto !important;
+  color:var(--muted) !important;
+  background:rgba(1,8,14,.18) !important;
+  border:0 !important;
+  border-top:1px solid rgba(54,217,255,.10) !important;
+  border-radius:0 !important;
+  font-size:11px !important;
+  line-height:1.4 !important;
+  text-align:left !important;
+  text-shadow:none !important;
+}
+@keyframes novaSpeechArrival{
+  0%{opacity:.45;transform:scale(.985)}
+  100%{opacity:1;transform:scale(1)}
+}
+
+
+/* ============================================================
+   NOVA SCROLLING COMMAND RESPONSE
+   Command responses travel right-to-left across NOVA.
+   ============================================================ */
+.novaUnifiedConsole .novaIris{
+  overflow:visible !important;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  width:100% !important;
+  max-width:none !important;
+  overflow:visible !important;
+}
+.novaUnifiedConsole #novaIrisSpeech{
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  z-index:20 !important;
+  width:min(88vw,1200px) !important;
+  max-width:none !important;
+  height:54px !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  transform:translate(-50%,-50%) !important;
+  border-top:1px solid rgba(54,217,255,.12);
+  border-bottom:1px solid rgba(54,217,255,.12);
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(1,8,14,.24) 12%,
+    rgba(1,8,14,.24) 88%,
+    transparent);
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  position:absolute;
+  left:0;
+  top:50%;
+  display:inline-block;
+  width:max-content;
+  min-width:max-content;
+  white-space:nowrap;
+  color:var(--green);
+  font-size:clamp(15px,1.35vw,21px);
+  line-height:1;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-shadow:
+    0 0 8px rgba(57,255,136,.32),
+    0 0 18px rgba(54,217,255,.15);
+  transform:translate(100vw,-50%);
+  will-change:transform;
+}
+.novaUnifiedConsole #novaIrisSpeechText.novaMarqueeRunning{
+  animation:novaCommandMarquee var(--nova-marquee-duration,12s) linear 1 forwards;
+}
+@keyframes novaCommandMarquee{
+  from{transform:translate(100vw,-50%)}
+  to{transform:translate(calc(-100% - 100vw),-50%)}
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaIrisSpeech{
+    width:94vw !important;
+    height:48px !important;
+  }
+  .novaUnifiedConsole #novaIrisSpeechText{
+    font-size:14px;
+  }
+}
+
+
+/* ============================================================
+   NOVA REFINED ALWAYS-ALIVE HUD
+   Calm idle presence, readable ticker, music adds energy instead
+   of creating the visual system.
+   ============================================================ */
+.novaUnifiedConsole{
+  min-height:390px !important;
+  background:
+    radial-gradient(ellipse at 50% 46%,rgba(54,217,255,.055),transparent 43%),
+    linear-gradient(180deg,rgba(4,15,24,.98),rgba(2,7,13,.98)) !important;
+}
+.novaUnifiedConsole .novaLeftHome{
+  min-height:390px !important;
+}
+.novaUnifiedConsole #novaCoreContainer{
+  overflow:hidden !important;
+}
+.novaUnifiedConsole #novaOrb{
+  inset:0 !important;
+  opacity:1 !important;
+}
+.novaUnifiedConsole .novaOuterRing{
+  inset:16px !important;
+  border-radius:14px !important;
+  border:1px solid rgba(54,217,255,.28) !important;
+  box-shadow:
+    inset 0 0 24px rgba(54,217,255,.035),
+    0 0 12px rgba(54,217,255,.055) !important;
+  opacity:.68 !important;
+  animation:novaIdleFramePulse 4.6s ease-in-out infinite !important;
+}
+.novaUnifiedConsole .novaInnerRing{
+  inset:34px !important;
+  border-radius:12px !important;
+  border:1px solid rgba(181,140,255,.14) !important;
+  box-shadow:none !important;
+  opacity:.42 !important;
+  animation:novaIdleFramePulse 6.2s ease-in-out infinite reverse !important;
+}
+.novaUnifiedConsole #novaThroneRing{
+  inset:26px !important;
+  border-radius:13px !important;
+  border:1px solid rgba(54,217,255,.10) !important;
+  box-shadow:none !important;
+  background:none !important;
+  opacity:.34 !important;
+  animation:novaIdleFramePulse 7s ease-in-out infinite !important;
+}
+.novaUnifiedConsole #novaGlyphLayer{
+  inset:0 !important;
+  border-radius:0 !important;
+  background:
+    linear-gradient(90deg,transparent 0 7%,rgba(54,217,255,.035) 7% 7.2%,transparent 7.2% 92.8%,rgba(54,217,255,.035) 92.8% 93%,transparent 93%) !important;
+  opacity:.45 !important;
+  animation:novaIdleScan 7s ease-in-out infinite !important;
+}
+.novaUnifiedConsole #novaPedestal{
+  display:none !important;
+}
+.novaUnifiedConsole #novaConduits{
+  left:8% !important;
+  right:8% !important;
+  bottom:16px !important;
+  width:84% !important;
+  height:30px !important;
+  opacity:.24 !important;
+}
+.novaUnifiedConsole #novaConduits::before,
+.novaUnifiedConsole #novaConduits::after{
+  height:28px !important;
+  width:2px !important;
+  box-shadow:0 0 7px rgba(54,217,255,.35) !important;
+}
+.novaUnifiedConsole .novaIris{
+  left:50% !important;
+  top:47% !important;
+  width:min(56%,700px) !important;
+  height:185px !important;
+  transform:translate(-50%,-50%) !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(54,217,255,.10) 0%,
+      rgba(181,140,255,.045) 34%,
+      transparent 68%) !important;
+  box-shadow:none !important;
+}
+.novaUnifiedConsole .novaIris::before{
+  inset:-18px !important;
+  border-radius:50% !important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(54,217,255,.10),
+      rgba(54,217,255,.035) 38%,
+      transparent 70%) !important;
+  opacity:.42 !important;
+  animation:novaIrisBackgroundBreath 5.4s ease-in-out infinite !important;
+}
+.novaUnifiedConsole #novaIrisPrimary{
+  font-size:25px !important;
+  letter-spacing:8px !important;
+  opacity:.82 !important;
+}
+.novaUnifiedConsole #novaIrisResponse{
+  max-height:68px !important;
+  max-width:560px !important;
+  font-size:10px !important;
+  line-height:1.35 !important;
+  opacity:.58 !important;
+  background:transparent !important;
+  border:0 !important;
+  overflow:hidden !important;
+  text-align:center !important;
+}
+.novaUnifiedConsole #novaIrisSpeech{
+  position:absolute !important;
+  left:4% !important;
+  right:4% !important;
+  top:auto !important;
+  bottom:42px !important;
+  width:auto !important;
+  height:42px !important;
+  transform:none !important;
+  overflow:hidden !important;
+  border-top:1px solid rgba(54,217,255,.12) !important;
+  border-bottom:1px solid rgba(54,217,255,.12) !important;
+  background:rgba(1,8,14,.22) !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  top:50% !important;
+  color:var(--green) !important;
+  font-size:14px !important;
+  letter-spacing:.6px !important;
+  text-shadow:0 0 8px rgba(57,255,136,.22) !important;
+}
+.novaUnifiedConsole .novaWaveform{
+  left:8% !important;
+  right:8% !important;
+  bottom:18px !important;
+  width:84% !important;
+  height:22px !important;
+  opacity:.18 !important;
+}
+.novaUnifiedConsole .novaParticles{
+  opacity:.28 !important;
+}
+.novaUnifiedConsole #novaMusicPulseRing{
+  inset:10px !important;
+  border-radius:15px !important;
+  opacity:.18;
+}
+.novaUnifiedConsole.novaSystemListening::before{
+  opacity:1 !important;
+  box-shadow:
+    inset 0 0 32px rgba(54,217,255,.10),
+    inset 0 0 75px rgba(54,217,255,.035) !important;
+}
+.novaUnifiedConsole.novaSystemSpeaking::before{
+  opacity:1 !important;
+  box-shadow:
+    inset 0 0 38px rgba(181,140,255,.11),
+    inset 0 0 80px rgba(54,217,255,.035) !important;
+}
+@keyframes novaIdleFramePulse{
+  0%,100%{opacity:.38}
+  50%{opacity:.72}
+}
+@keyframes novaIdleScan{
+  0%,100%{opacity:.20}
+  50%{opacity:.48}
+}
+
+
+/* ============================================================
+   NOVA HUD REBUILD — HARD OVERRIDE
+   Independent idle HUD + independent response ticker.
+   Legacy music transforms can no longer reshape NOVA.
+   ============================================================ */
+.novaUnifiedConsole{
+  position:relative !important;
+  min-height:410px !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(90deg,rgba(54,217,255,.025),transparent 18%,transparent 82%,rgba(181,140,255,.025)),
+    #050b12 !important;
+}
+.novaUnifiedConsole .novaLeftHome{
+  position:relative !important;
+  min-height:410px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+}
+
+/* Always-moving perimeter = NOVA is visibly alive even in silence. */
+.novaUnifiedConsole .novaLeftHome::before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  z-index:8;
+  pointer-events:none;
+  border:1px solid rgba(54,217,255,.38);
+  border-radius:12px;
+  box-shadow:
+    inset 0 0 18px rgba(54,217,255,.06),
+    0 0 10px rgba(54,217,255,.08);
+  animation:novaHudBreathe 2.8s ease-in-out infinite;
+}
+.novaUnifiedConsole .novaLeftHome::after{
+  content:"";
+  position:absolute;
+  z-index:9;
+  pointer-events:none;
+  left:18px;
+  right:18px;
+  top:18px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,rgba(54,217,255,.9),transparent);
+  box-shadow:0 0 12px rgba(54,217,255,.6);
+  animation:novaHudScan 3.6s linear infinite;
+}
+
+/* Kill the huge legacy oval/ring geometry. */
+.novaUnifiedConsole #novaPedestal,
+.novaUnifiedConsole #novaThroneRing,
+.novaUnifiedConsole #novaGlyphLayer,
+.novaUnifiedConsole #novaConduits,
+.novaUnifiedConsole .novaOuterRing,
+.novaUnifiedConsole .novaInnerRing,
+.novaUnifiedConsole .novaWaveform,
+.novaUnifiedConsole .novaParticles,
+.novaUnifiedConsole #novaMusicPulseRing{
+  display:none !important;
+}
+
+/* Legacy analyzer may write inline transform/filter values. Keep the core fixed. */
+.novaUnifiedConsole #novaOrb{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  transform:none !important;
+  filter:none !important;
+  opacity:1 !important;
+}
+
+/* IRIS is now only a soft background presence. */
+.novaUnifiedConsole .novaIris{
+  display:block !important;
+  position:absolute !important;
+  left:50% !important;
+  top:45% !important;
+  width:min(58%,760px) !important;
+  height:210px !important;
+  transform:translate(-50%,-50%) !important;
+  filter:none !important;
+  opacity:.82 !important;
+  overflow:visible !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:
+    radial-gradient(ellipse at center,
+      rgba(54,217,255,.13) 0%,
+      rgba(54,217,255,.055) 30%,
+      rgba(181,140,255,.025) 48%,
+      transparent 72%) !important;
+  box-shadow:none !important;
+  animation:novaHudIris 3.2s ease-in-out infinite !important;
+}
+.novaUnifiedConsole .novaIris::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:-20px !important;
+  border-radius:50% !important;
+  background:radial-gradient(ellipse at center,rgba(54,217,255,.07),transparent 68%) !important;
+  opacity:.6 !important;
+  animation:none !important;
+}
+.novaUnifiedConsole .novaIrisDashboard{
+  position:relative !important;
+  z-index:4 !important;
+  width:100% !important;
+  max-width:none !important;
+  opacity:1 !important;
+  transform:none !important;
+  animation:none !important;
+}
+.novaUnifiedConsole #novaIrisPrimary{
+  font-size:28px !important;
+  letter-spacing:9px !important;
+  opacity:.88 !important;
+}
+.novaUnifiedConsole #novaIrisSecondary{
+  display:none !important;
+}
+/* No duplicate mini log in the center. */
+.novaUnifiedConsole #novaIrisResponse{
+  display:none !important;
+}
+
+/* Independent response ticker across NOVA. */
+.novaUnifiedConsole #novaHudTicker{
+  position:absolute !important;
+  z-index:30 !important;
+  left:4% !important;
+  right:4% !important;
+  bottom:42px !important;
+  height:48px !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  border-top:1px solid rgba(54,217,255,.20);
+  border-bottom:1px solid rgba(54,217,255,.20);
+  background:rgba(2,10,17,.70);
+  box-shadow:inset 0 0 18px rgba(54,217,255,.035);
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  position:absolute !important;
+  left:0 !important;
+  top:50% !important;
+  display:inline-block !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  white-space:nowrap !important;
+  color:var(--green) !important;
+  font-size:16px !important;
+  font-weight:700 !important;
+  letter-spacing:.7px !important;
+  opacity:1 !important;
+  text-shadow:0 0 8px rgba(57,255,136,.30) !important;
+  transform:translate(100vw,-50%);
+  will-change:transform;
+}
+.novaUnifiedConsole #novaIrisSpeechText.novaMarqueeRunning{
+  animation:novaCommandMarquee var(--nova-marquee-duration,12s) linear 1 forwards !important;
+}
+
+/* Listening/speaking changes the whole HUD without giant geometry. */
+.novaUnifiedConsole.novaSystemListening .novaLeftHome::before{
+  border-color:rgba(57,255,136,.55);
+  box-shadow:inset 0 0 24px rgba(57,255,136,.07),0 0 12px rgba(57,255,136,.10);
+}
+.novaUnifiedConsole.novaSystemSpeaking .novaLeftHome::before{
+  border-color:rgba(181,140,255,.62);
+  box-shadow:inset 0 0 28px rgba(181,140,255,.08),0 0 14px rgba(181,140,255,.12);
+}
+
+/* Music adds energy only to the HUD border/core. */
+body.novaMusicAlive .novaUnifiedConsole .novaLeftHome::before{
+  animation-duration:1.15s !important;
+  border-color:rgba(54,217,255,.65);
+  box-shadow:inset 0 0 34px rgba(54,217,255,.09),0 0 16px rgba(54,217,255,.13);
+}
+body.novaMusicAlive .novaUnifiedConsole .novaIris{
+  animation-duration:1.5s !important;
+}
+
+@keyframes novaHudBreathe{
+  0%,100%{opacity:.48}
+  50%{opacity:1}
+}
+@keyframes novaHudScan{
+  0%{transform:translateX(-35%);opacity:.25}
+  50%{opacity:.95}
+  100%{transform:translateX(35%);opacity:.25}
+}
+@keyframes novaHudIris{
+  0%,100%{opacity:.56 !important}
+  50%{opacity:.88 !important}
+}
+@media(max-width:650px){
+  .novaUnifiedConsole,
+  .novaUnifiedConsole .novaLeftHome{min-height:360px !important}
+  .novaUnifiedConsole .novaIris{width:78% !important;height:180px !important}
+  .novaUnifiedConsole #novaHudTicker{left:3% !important;right:3% !important;bottom:32px !important}
+  .novaUnifiedConsole #novaIrisSpeechText{font-size:13px !important}
+}
+@media(prefers-reduced-motion:reduce){
+  .novaUnifiedConsole .novaLeftHome::before,
+  .novaUnifiedConsole .novaLeftHome::after,
+  .novaUnifiedConsole .novaIris{animation:none !important}
+}
+
+
+/* ============================================================
+   NOVA RESPONSE TICKER — FIXED
+   One response lane. No old music text overlay. No flicker.
+   ============================================================ */
+
+/* The old NOW PLAYING IRIS overlay is what produced the white/off-center text. */
+.novaUnifiedConsole #novaIrisMedia,
+.novaUnifiedConsole .novaIrisMedia,
+body.irisMediaPlaying .novaUnifiedConsole #novaIrisMedia{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  animation:none !important;
+  transform:none !important;
+}
+
+/* Keep NOVA name centered and quiet. */
+.novaUnifiedConsole #novaIrisPrimary{
+  display:block !important;
+  position:relative !important;
+  z-index:5 !important;
+  color:var(--cyan) !important;
+  opacity:.72 !important;
+  animation:none !important;
+  transform:none !important;
+  filter:none !important;
+}
+
+/* One clean full-width response lane. */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:100 !important;
+  left:5% !important;
+  right:5% !important;
+  bottom:52px !important;
+  width:auto !important;
+  height:46px !important;
+  overflow:hidden !important;
+  transform:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  background:rgba(2,10,17,.82) !important;
+  border:1px solid rgba(54,217,255,.22) !important;
+  border-radius:7px !important;
+  box-shadow:
+    inset 0 0 16px rgba(54,217,255,.035),
+    0 0 10px rgba(0,0,0,.28) !important;
+}
+
+/* Start just outside the RIGHT edge of the lane and travel fully LEFT. */
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:block !important;
+  position:absolute !important;
+  z-index:101 !important;
+  top:50% !important;
+  left:100% !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:var(--green) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:15px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:.35px !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  filter:none !important;
+  text-shadow:0 0 7px rgba(57,255,136,.28) !important;
+  transform:translate(0,-50%) !important;
+  animation:none !important;
+  will-change:transform;
+}
+.novaUnifiedConsole #novaIrisSpeechText.novaMarqueeRunning{
+  animation:novaResponseTickerMove var(--nova-marquee-duration,12s) linear 1 forwards !important;
+}
+@keyframes novaResponseTickerMove{
+  from{
+    left:100%;
+    transform:translate(0,-50%);
+  }
+  to{
+    left:0%;
+    transform:translate(-100%,-50%);
+  }
+}
+
+/* No blinking/flickering response text anywhere else in NOVA. */
+.novaUnifiedConsole #novaIrisResponse,
+.novaUnifiedConsole #novaIrisSecondary{
+  display:none !important;
+}
+
+
+/* ============================================================
+   NOVA RESPONSE SYSTEM — CLEAN REBUILD
+   Direct log -> queue -> right-to-left NOVA speech.
+   ============================================================ */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:200 !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:58px !important;
+  width:100% !important;
+  height:42px !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:block !important;
+  position:absolute !important;
+  z-index:201 !important;
+  left:100% !important;
+  top:50% !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:var(--green) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:16px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  letter-spacing:.45px !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  filter:none !important;
+  text-shadow:0 0 9px rgba(57,255,136,.38) !important;
+  transform:translate(0,-50%) !important;
+  animation:none !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText.novaTickerRun{
+  animation:novaCleanTicker var(--nova-ticker-time,10s) linear 1 forwards !important;
+}
+@keyframes novaCleanTicker{
+  0%{left:100%;transform:translate(0,-50%)}
+  100%{left:0;transform:translate(-100%,-50%)}
+}
+
+/* Absolutely suppress the old media text UI. */
+#novaIrisMedia,
+.novaIrisMedia,
+body.irisMediaPlaying #novaIrisMedia{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+}
+
+/* Music may energize NOVA, but it may not distort/move the IRIS. */
+body.novaMusicAlive .novaUnifiedConsole .novaIris{
+  transform:translate(-50%,-50%) !important;
+  filter:none !important;
+  clip-path:none !important;
+  animation:novaHudIris 1.8s ease-in-out infinite !important;
+}
+
+
+/* ============================================================
+   NOVA RESPONSE READOUT — DIRECT DOM TEST
+   No CSS marquee dependency. If JS writes text, it WILL show here.
+   ============================================================ */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:99999 !important;
+  left:40px !important;
+  right:40px !important;
+  bottom:55px !important;
+  width:auto !important;
+  height:48px !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:block !important;
+  position:absolute !important;
+  z-index:100000 !important;
+  left:0 !important;
+  top:50% !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:#39ff88 !important;
+  background:transparent !important;
+  font-family:Arial,sans-serif !important;
+  font-size:18px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  letter-spacing:0 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  filter:none !important;
+  text-shadow:0 0 8px rgba(57,255,136,.45) !important;
+  transform:translateY(-50%) !important;
+  animation:none !important;
+}
+
+
+/* NOVA LIVE SPEECH — subtitle mode while NOVA is actually talking */
+.novaUnifiedConsole #novaHudTicker.novaLiveSpeaking{
+  height:58px !important;
+}
+.novaUnifiedConsole #novaHudTicker.novaLiveSpeaking #novaIrisSpeechText{
+  left:50% !important;
+  top:50% !important;
+  width:90% !important;
+  min-width:0 !important;
+  max-width:90% !important;
+  white-space:normal !important;
+  text-align:center !important;
+  line-height:1.35 !important;
+  transform:translate(-50%,-50%) !important;
+  animation:none !important;
+  font-size:17px !important;
+}
+
+
+/* ============================================================
+   NOVA DUAL RESPONSE DISPLAY
+   Bottom ticker always scrolls. Live speech appears only while
+   NOVA is actually speaking aloud.
+   ============================================================ */
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  display:none;
+  position:absolute;
+  z-index:210;
+  left:12%;
+  right:12%;
+  bottom:112px;
+  min-height:44px;
+  padding:7px 12px;
+  align-items:center;
+  justify-content:center;
+  color:var(--cyan);
+  font-size:17px;
+  line-height:1.35;
+  font-weight:600;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  text-shadow:0 0 9px rgba(54,217,255,.32);
+  pointer-events:none;
+}
+.novaUnifiedConsole #novaLiveSpeechDisplay.novaLiveSpeechVisible{
+  display:flex;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaLiveSpeechDisplay{
+    left:6%;
+    right:6%;
+    bottom:98px;
+    font-size:14px;
+  }
+}
+
+
+/* ============================================================
+   NOVA FULL-AREA REAL-TIME SCROLL
+   Smaller system messages move right->left AND bottom->top,
+   using the entire NOVA visual field.
+   ============================================================ */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:180 !important;
+  inset:18px 24px 18px 24px !important;
+  width:auto !important;
+  height:auto !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:block !important;
+  position:absolute !important;
+  z-index:181 !important;
+  left:100% !important;
+  top:100% !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:rgba(57,255,136,.82) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:.3px !important;
+  opacity:.88 !important;
+  visibility:visible !important;
+  filter:none !important;
+  text-shadow:0 0 6px rgba(57,255,136,.26) !important;
+  animation:none !important;
+  transform:none !important;
+}
+
+/* Live speech remains its own centered layer above the moving system feed. */
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:220 !important;
+  bottom:105px !important;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaHudTicker{
+    inset:14px !important;
+  }
+  .novaUnifiedConsole #novaIrisSpeechText{
+    font-size:10px !important;
+  }
+}
+
+
+/* ============================================================
+   NOVA FULL-PANEL SYSTEM STREAM — FIX
+   Independent live messages fill the NOVA panel bottom-to-top.
+   ============================================================ */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:205 !important;
+  inset:10px 18px 10px 18px !important;
+  width:auto !important;
+  height:auto !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:none !important;
+}
+.novaUnifiedConsole .novaSystemStreamMessage{
+  display:block !important;
+  position:absolute !important;
+  z-index:206 !important;
+  left:0 !important;
+  top:0 !important;
+  width:max-content !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  color:rgba(57,255,136,.76) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:.25px !important;
+  text-shadow:0 0 5px rgba(57,255,136,.24) !important;
+  opacity:0 !important;
+  will-change:transform,opacity !important;
+  pointer-events:none !important;
+}
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:240 !important;
+}
+@media(max-width:650px){
+  .novaUnifiedConsole #novaHudTicker{
+    inset:8px 10px !important;
+  }
+  .novaUnifiedConsole .novaSystemStreamMessage{
+    font-size:9px !important;
+  }
+}
+
+
+/* ============================================================
+   NOVA LIVE SYSTEM STREAM + MUSIC INFORMATION — FINAL OVERRIDE
+   ============================================================ */
+.novaUnifiedConsole .novaLeftHome{
+  position:relative !important;
+}
+
+/* System stream occupies the complete NOVA visual field. */
+.novaUnifiedConsole #novaHudTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:230 !important;
+  left:12px !important;
+  right:12px !important;
+  top:12px !important;
+  bottom:12px !important;
+  width:auto !important;
+  height:auto !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.novaUnifiedConsole #novaIrisSpeechText{
+  display:none !important;
+}
+.novaUnifiedConsole #novaHudTicker .novaSystemStreamMessage{
+  display:block !important;
+  position:absolute !important;
+  z-index:231 !important;
+  left:0 !important;
+  top:0 !important;
+  width:max-content !important;
+  max-width:none !important;
+  padding:0 !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+  color:rgba(57,255,136,.90) !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:.25px !important;
+  opacity:0;
+  visibility:visible !important;
+  text-shadow:0 0 6px rgba(57,255,136,.34) !important;
+  pointer-events:none !important;
+  will-change:transform,opacity !important;
+}
+
+/* Spoken response remains the highest-priority text. */
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:260 !important;
+  left:12% !important;
+  right:12% !important;
+  bottom:118px !important;
+}
+
+/* Music information appears directly below NOVA's spoken response. */
+.novaUnifiedConsole #novaMusicInfoDisplay{
+  display:none;
+  position:absolute;
+  z-index:255;
+  left:15%;
+  right:15%;
+  bottom:58px;
+  min-height:48px;
+  text-align:center;
+  pointer-events:none;
+}
+.novaUnifiedConsole #novaMusicInfoDisplay.active{
+  display:block;
+}
+.novaUnifiedConsole #novaMusicInfoStatus{
+  color:rgba(54,217,255,.72);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:1.6px;
+  line-height:1.2;
+}
+.novaUnifiedConsole #novaMusicInfoTitle{
+  margin-top:3px;
+  color:var(--cyan);
+  font-size:14px;
+  font-weight:700;
+  line-height:1.2;
+  text-shadow:0 0 8px rgba(54,217,255,.35);
+}
+.novaUnifiedConsole #novaMusicInfoMeta{
+  margin-top:3px;
+  color:rgba(57,255,136,.72);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.35px;
+}
+
+/* While music is active, the track information replaces the center NOVA label. */
+body.irisMediaPlaying .novaUnifiedConsole #novaIrisPrimary{
+  display:none !important;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaIrisSecondary,
+body.irisMediaPlaying .novaUnifiedConsole #novaIrisResponse{
+  visibility:hidden !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaHudTicker{
+    inset:8px !important;
+  }
+  .novaUnifiedConsole #novaHudTicker .novaSystemStreamMessage{
+    font-size:9px !important;
+  }
+  .novaUnifiedConsole #novaMusicInfoDisplay{
+    left:8%;
+    right:8%;
+    bottom:52px;
+  }
+  .novaUnifiedConsole #novaMusicInfoTitle{
+    font-size:12px;
+  }
+}
+
+
+/* ============================================================
+   NOVA PERSISTENT SYSTEM TICKER — ALWAYS VISIBLE
+   Independent from IRIS, music animation, and live speech.
+   ============================================================ */
+.novaUnifiedConsole .novaLeftHome{
+  position:relative !important;
+  overflow:hidden !important;
+}
+
+.novaUnifiedConsole #novaPersistentTicker{
+  display:block !important;
+  position:absolute !important;
+  z-index:1000000 !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:8px !important;
+  height:24px !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,0,0,.18) 12%,
+    rgba(0,0,0,.18) 88%,
+    transparent
+  ) !important;
+}
+
+.novaUnifiedConsole #novaPersistentTickerTrack{
+  display:block !important;
+  position:absolute !important;
+  left:100% !important;
+  top:50% !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  white-space:nowrap !important;
+  color:#39ff88 !important;
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:650 !important;
+  letter-spacing:.35px !important;
+  opacity:.92 !important;
+  visibility:visible !important;
+  text-shadow:0 0 6px rgba(57,255,136,.38) !important;
+  transform:translateY(-50%) !important;
+  will-change:transform !important;
+}
+
+/* Nothing about music may hide the system ticker. */
+body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTicker,
+body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTickerTrack{
+  display:block !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaPersistentTickerTrack{
+    font-size:9px !important;
+  }
+}
+
+
+/* ============================================================
+   NOVA SCROLL SYSTEM — CSS / WEB-ANIMATION CONFLICT FIX
+   Do NOT use !important on properties animated by JavaScript.
+   ============================================================ */
+
+/* Persistent ticker:
+   JS owns transform while the message is moving. */
+.novaUnifiedConsole #novaPersistentTickerTrack{
+  left:0 !important;
+  transform:translateY(-50%);
+  opacity:.92 !important;
+}
+
+/* Full-area system stream:
+   JS owns opacity + transform. The previous opacity:0 !important
+   made every stream message permanently invisible. */
+.novaUnifiedConsole #novaHudTicker .novaSystemStreamMessage,
+.novaUnifiedConsole .novaSystemStreamMessage{
+  opacity:0;
+  transform:none;
+}
+
+/* Keep both system layers above NOVA visuals but below live speech. */
+.novaUnifiedConsole #novaHudTicker{
+  z-index:245 !important;
+}
+.novaUnifiedConsole #novaPersistentTicker{
+  z-index:250 !important;
+}
+.novaUnifiedConsole #novaLiveSpeechDisplay{
+  z-index:270 !important;
+}
+.novaUnifiedConsole #novaMusicInfoDisplay{
+  z-index:265 !important;
+}
+
+
+/* ============================================================
+   NOVA VERTICAL RUNNING SYSTEM LIST
+   New events enter at the bottom and the list rises toward top.
+   ============================================================ */
+.novaUnifiedConsole #novaPersistentTicker{
+  display:flex !important;
+  position:absolute !important;
+  z-index:250 !important;
+  left:14px !important;
+  right:14px !important;
+  top:14px !important;
+  bottom:14px !important;
+  height:auto !important;
+  overflow:hidden !important;
+  flex-direction:column !important;
+  justify-content:flex-end !important;
+  gap:5px !important;
+  pointer-events:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  background:transparent !important;
+  mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 12%,black 100%);
+}
+
+/* Old horizontal track is no longer used visually. */
+.novaUnifiedConsole #novaPersistentTickerTrack{
+  display:none !important;
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine{
+  display:block;
+  position:relative;
+  flex:0 0 auto;
+  width:100%;
+  box-sizing:border-box;
+  padding:2px 5px;
+  color:rgba(57,255,136,.82);
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  font-size:10px;
+  line-height:1.2;
+  font-weight:600;
+  letter-spacing:.25px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-shadow:0 0 5px rgba(57,255,136,.28);
+  opacity:0;
+  transform:translateY(18px);
+  transition:
+    transform 220ms linear,
+    opacity 220ms linear;
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine.novaVerticalSystemLineIn{
+  opacity:.82;
+  transform:translateY(0);
+}
+
+/* Older lines fade as they approach the top. */
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+8){
+  opacity:.56;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+12){
+  opacity:.36;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+16){
+  opacity:.20;
+}
+
+body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTicker{
+  display:flex !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaPersistentTicker{
+    left:8px !important;
+    right:8px !important;
+    top:8px !important;
+    bottom:8px !important;
+    gap:3px !important;
+  }
+  .novaUnifiedConsole .novaVerticalSystemLine{
+    font-size:8px;
+  }
+}
+
+
+/* ============================================================
+   NOVA RUNNING LIST — IDLE FADE
+   Commands rise bottom-to-top and disappear naturally.
+   ============================================================ */
+.novaUnifiedConsole .novaVerticalSystemLine{
+  transition:
+    transform 240ms linear,
+    opacity 1800ms ease-out !important;
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine.novaVerticalSystemLineIn{
+  opacity:.82;
+  transform:translateY(0);
+}
+
+.novaUnifiedConsole .novaVerticalSystemLine.novaVerticalSystemLineFade{
+  opacity:0 !important;
+  transform:translateY(-22px) !important;
+}
+
+/* Oldest visible messages become progressively softer near the top. */
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+7){
+  opacity:.58;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+10){
+  opacity:.38;
+}
+.novaUnifiedConsole .novaVerticalSystemLine:nth-last-child(n+13){
+  opacity:.22;
+}
+
+
+/* ============================================================
+   NOVA ALIVE — VISUAL UPGRADE V1
+   Visual-only layer. Existing voice/music/command logic preserved.
+   ============================================================ */
+
+.novaUnifiedConsole .novaLeftHome{
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(54,217,255,.09),transparent 26%),
+    radial-gradient(circle at 50% 50%,rgba(57,255,136,.035),transparent 52%),
+    linear-gradient(180deg,rgba(1,10,18,.94),rgba(0,5,10,.98)) !important;
+}
+
+/* Ambient energy field */
+.novaUnifiedConsole .novaLeftHome::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:-18%;
+  pointer-events:none;
+  background:
+    conic-gradient(
+      from 0deg at 50% 50%,
+      transparent 0deg,
+      rgba(54,217,255,.07) 45deg,
+      transparent 90deg,
+      rgba(57,255,136,.045) 180deg,
+      transparent 245deg,
+      rgba(54,217,255,.055) 315deg,
+      transparent 360deg
+    );
+  opacity:.32;
+  filter:blur(24px);
+  animation:novaAmbientRotate 22s linear infinite;
+}
+
+/* Breathing core glow */
+.novaUnifiedConsole .novaLeftHome::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  left:50%;
+  top:50%;
+  width:62%;
+  aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle,
+      rgba(54,217,255,.075) 0%,
+      rgba(54,217,255,.035) 30%,
+      transparent 68%);
+  filter:blur(9px);
+  animation:novaAmbientBreath 4.8s ease-in-out infinite;
+}
+
+@keyframes novaAmbientRotate{
+  to{transform:rotate(360deg)}
+}
+@keyframes novaAmbientBreath{
+  0%,100%{opacity:.32;transform:translate(-50%,-50%) scale(.94)}
+  50%{opacity:.62;transform:translate(-50%,-50%) scale(1.06)}
+}
+
+/* Keep real NOVA content above ambient layers. */
+.novaUnifiedConsole #novaCoreContainer,
+.novaUnifiedConsole #novaPersistentTicker,
+.novaUnifiedConsole #novaLiveSpeechDisplay,
+.novaUnifiedConsole #novaMusicInfoDisplay{
+  position:absolute;
+  z-index:20;
+}
+
+/* Music wakes the whole visual field up. Existing analyser variables drive it. */
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome::before{
+  opacity:calc(.42 + (var(--nova-energy,0) * .42));
+  filter:blur(calc(20px - (var(--nova-energy,0) * 5px)));
+  animation-duration:calc(18s - (var(--nova-energy,0) * 8s));
+}
+
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome::after{
+  opacity:calc(.48 + (var(--nova-bass,0) * .42));
+  transform:
+    translate(-50%,-50%)
+    scale(calc(1 + (var(--nova-bass,0) * .13)));
+  box-shadow:
+    0 0 calc(35px + (var(--nova-bass,0) * 75px))
+    rgba(54,217,255,.16);
+  animation:none;
+}
+
+/* Existing NOVA core becomes brighter/cleaner during music without moving text. */
+body.irisMediaPlaying .novaUnifiedConsole #novaCoreContainer{
+  filter:
+    brightness(calc(1.02 + (var(--nova-energy,0) * .30)))
+    drop-shadow(
+      0 0 calc(8px + (var(--nova-bass,0) * 18px))
+      rgba(54,217,255,.30)
+    );
+}
+
+/* Music information gets a subtle HUD plate. */
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoDisplay{
+  padding:9px 16px;
+  border-top:1px solid rgba(54,217,255,.18);
+  border-bottom:1px solid rgba(54,217,255,.10);
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,12,20,.48) 18%,
+      rgba(0,12,20,.48) 82%,
+      transparent
+    );
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+
+/* Speaking becomes NOVA's strongest foreground state. */
+.novaUnifiedConsole #novaLiveSpeechDisplay.novaLiveSpeechVisible{
+  z-index:280 !important;
+  text-shadow:
+    0 0 7px rgba(54,217,255,.65),
+    0 0 18px rgba(54,217,255,.22) !important;
+  animation:novaSpeechPresence 1.15s ease-in-out infinite alternate;
+}
+
+@keyframes novaSpeechPresence{
+  from{filter:brightness(1)}
+  to{filter:brightness(1.22)}
+}
+
+/* System activity stays behind NOVA's speech/music information. */
+.novaUnifiedConsole #novaPersistentTicker{
+  z-index:240 !important;
+}
+.novaUnifiedConsole .novaVerticalSystemLine{
+  text-shadow:
+    0 0 4px rgba(57,255,136,.38),
+    0 0 10px rgba(57,255,136,.10);
+}
+
+/* Panel edge feels active instead of static. */
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome{
+  box-shadow:
+    inset 0 0 28px rgba(54,217,255,.07),
+    inset 0 0 calc(18px + (var(--nova-bass,0) * 28px))
+      rgba(57,255,136,.035);
+}
+
+
+/* ============================================================
+   NOVA FUTURE ALIVE V2
+   Holographic AI presence + real audio-reactive energy.
+   ============================================================ */
+.novaUnifiedConsole .novaFutureField{
+  position:absolute;
+  z-index:4;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  perspective:700px;
+}
+
+/* Fine futuristic HUD grid */
+.novaUnifiedConsole .novaFutureField::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.18;
+  background-image:
+    linear-gradient(rgba(54,217,255,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(54,217,255,.055) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:radial-gradient(circle at 50% 50%,black,transparent 76%);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,black,transparent 76%);
+  animation:novaGridDrift 16s linear infinite;
+}
+
+/* Scan line sweeps NOVA's whole visual field */
+.novaUnifiedConsole .novaScanBeam{
+  position:absolute;
+  left:4%;
+  right:4%;
+  height:1px;
+  top:-4%;
+  opacity:.28;
+  background:linear-gradient(90deg,transparent,#36d9ff 20%,#39ff88 50%,#36d9ff 80%,transparent);
+  box-shadow:0 0 13px rgba(54,217,255,.55);
+  animation:novaScanSweep 7s linear infinite;
+}
+
+/* Floating holographic horizon bands */
+.novaUnifiedConsole .novaHorizon{
+  position:absolute;
+  left:50%;
+  top:50%;
+  border:1px solid rgba(54,217,255,.13);
+  border-radius:50%;
+  transform:translate(-50%,-50%) rotateX(72deg);
+  box-shadow:0 0 16px rgba(54,217,255,.06);
+}
+.novaUnifiedConsole .novaHorizonOne{
+  width:72%;
+  height:72%;
+  animation:novaHorizonPulse 5s ease-in-out infinite;
+}
+.novaUnifiedConsole .novaHorizonTwo{
+  width:92%;
+  height:92%;
+  border-color:rgba(57,255,136,.08);
+  animation:novaHorizonPulse 7s ease-in-out infinite reverse;
+}
+
+/* Energy arcs around NOVA — not rigid circles */
+.novaUnifiedConsole .novaEnergyArc{
+  position:absolute;
+  left:50%;
+  top:50%;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  border-style:solid;
+  pointer-events:none;
+}
+.novaUnifiedConsole .novaEnergyArcA{
+  width:48%;
+  aspect-ratio:1;
+  border-width:1px;
+  border-color:#36d9ff transparent rgba(54,217,255,.12) transparent;
+  opacity:.42;
+  animation:novaArcSpin 11s linear infinite;
+}
+.novaUnifiedConsole .novaEnergyArcB{
+  width:59%;
+  aspect-ratio:1;
+  border-width:1px;
+  border-color:transparent rgba(57,255,136,.45) transparent rgba(54,217,255,.12);
+  opacity:.28;
+  animation:novaArcSpinReverse 17s linear infinite;
+}
+.novaUnifiedConsole .novaEnergyArcC{
+  width:69%;
+  aspect-ratio:1;
+  border-width:1px;
+  border-color:rgba(54,217,255,.09) transparent transparent rgba(57,255,136,.18);
+  opacity:.25;
+  animation:novaArcSpin 26s linear infinite;
+}
+
+/* Autonomous particles imply NOVA is thinking/alive */
+.novaUnifiedConsole .novaOrbitParticle{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#36d9ff;
+  box-shadow:0 0 8px #36d9ff,0 0 18px rgba(54,217,255,.45);
+  transform-origin:0 0;
+}
+.novaUnifiedConsole .novaOrbitParticle1{animation:novaParticleOrbit1 9s linear infinite}
+.novaUnifiedConsole .novaOrbitParticle2{animation:novaParticleOrbit2 13s linear infinite reverse;background:#39ff88}
+.novaUnifiedConsole .novaOrbitParticle3{animation:novaParticleOrbit3 17s linear infinite}
+.novaUnifiedConsole .novaOrbitParticle4{animation:novaParticleOrbit4 21s linear infinite reverse}
+
+/* Real music spectrum lives across the bottom and grows upward. */
+.novaUnifiedConsole #novaMusicSpectrum{
+  position:absolute;
+  z-index:8;
+  left:5%;
+  right:5%;
+  bottom:0;
+  height:31%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:3px;
+  opacity:0;
+  mask-image:linear-gradient(to top,black 0%,rgba(0,0,0,.8) 58%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to top,black 0%,rgba(0,0,0,.8) 58%,transparent 100%);
+  transition:opacity .5s ease;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
+  opacity:.48;
+}
+.novaUnifiedConsole .novaSpectrumBar{
+  flex:1 1 0;
+  max-width:10px;
+  min-width:2px;
+  height:4%;
+  border-radius:4px 4px 0 0;
+  background:linear-gradient(to top,rgba(57,255,136,.28),rgba(54,217,255,.72));
+  box-shadow:0 0 7px rgba(54,217,255,.22);
+  transform-origin:bottom;
+  transition:height 70ms linear,opacity 100ms linear;
+}
+
+/* Music turns ambient geometry into an energy system */
+body.irisMediaPlaying .novaUnifiedConsole .novaEnergyArcA{
+  opacity:calc(.42 + (var(--nova-energy,0) * .35));
+  filter:drop-shadow(0 0 calc(4px + (var(--nova-highs,0) * 9px)) rgba(54,217,255,.55));
+  animation-duration:calc(9s - (var(--nova-energy,0) * 4s));
+}
+body.irisMediaPlaying .novaUnifiedConsole .novaEnergyArcB{
+  opacity:calc(.30 + (var(--nova-mids,0) * .42));
+  filter:drop-shadow(0 0 calc(3px + (var(--nova-mids,0) * 8px)) rgba(57,255,136,.38));
+}
+body.irisMediaPlaying .novaUnifiedConsole .novaScanBeam{
+  opacity:calc(.25 + (var(--nova-highs,0) * .50));
+  animation-duration:calc(5s - (var(--nova-energy,0) * 2s));
+}
+
+/* NOVA's full panel breathes with bass */
+body.irisMediaPlaying .novaUnifiedConsole .novaFutureField{
+  filter:brightness(calc(1 + (var(--nova-energy,0) * .34)));
+}
+
+/* Speaking wakes up the surrounding arcs too */
+.novaUnifiedConsole .novaLeftHome:has(#novaLiveSpeechDisplay.novaLiveSpeechVisible) .novaEnergyArcA{
+  opacity:.72;
+  filter:drop-shadow(0 0 10px rgba(54,217,255,.55));
+}
+.novaUnifiedConsole .novaLeftHome:has(#novaLiveSpeechDisplay.novaLiveSpeechVisible) .novaScanBeam{
+  opacity:.58;
+}
+
+/* Animations */
+@keyframes novaGridDrift{
+  from{background-position:0 0,0 0}
+  to{background-position:34px 34px,34px 34px}
+}
+@keyframes novaScanSweep{
+  0%{top:-3%;opacity:0}
+  8%{opacity:.35}
+  92%{opacity:.35}
+  100%{top:103%;opacity:0}
+}
+@keyframes novaHorizonPulse{
+  0%,100%{opacity:.15;transform:translate(-50%,-50%) rotateX(72deg) scale(.94)}
+  50%{opacity:.38;transform:translate(-50%,-50%) rotateX(72deg) scale(1.05)}
+}
+@keyframes novaArcSpin{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes novaArcSpinReverse{
+  to{transform:translate(-50%,-50%) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit1{
+  from{transform:rotate(0deg) translateX(145px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(145px) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit2{
+  from{transform:rotate(0deg) translateX(190px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(190px) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit3{
+  from{transform:rotate(0deg) translateX(225px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(225px) rotate(-360deg)}
+}
+@keyframes novaParticleOrbit4{
+  from{transform:rotate(0deg) translateX(265px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(265px) rotate(-360deg)}
+}
+
+/* Keep information readable above holographics. */
+.novaUnifiedConsole #novaCoreContainer{z-index:18 !important}
+.novaUnifiedConsole #novaPersistentTicker{z-index:30 !important}
+.novaUnifiedConsole #novaMusicInfoDisplay{z-index:35 !important}
+.novaUnifiedConsole #novaLiveSpeechDisplay{z-index:40 !important}
+
+@media(max-width:650px){
+  .novaUnifiedConsole .novaFutureField::before{background-size:24px 24px}
+  .novaUnifiedConsole #novaMusicSpectrum{left:3%;right:3%;gap:2px}
+}
+
+
+/* ============================================================
+   NOVA INTEGRATED MEDIA MODE V1
+   Music is now a NOVA capability, not a separate visual player.
+   ============================================================ */
+.novaUnifiedConsole #novaIntegratedMediaControls{
+  display:none;
+  position:absolute;
+  z-index:38;
+  left:22%;
+  right:22%;
+  bottom:20px;
+  pointer-events:auto;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .35s ease,transform .35s ease;
+}
+
+body.irisMediaPlaying .novaUnifiedConsole #novaIntegratedMediaControls,
+body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls{
+  display:block;
+  opacity:.82;
+  transform:translateY(0);
+}
+
+.novaUnifiedConsole #novaMediaProgressWrap{
+  position:relative;
+  width:100%;
+  height:2px;
+  margin:0 auto 10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(54,217,255,.13);
+  box-shadow:0 0 7px rgba(54,217,255,.08);
+  cursor:pointer;
+}
+.novaUnifiedConsole #novaMediaProgressFill{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#39ff88,#36d9ff);
+  box-shadow:0 0 8px rgba(54,217,255,.7);
+  transition:width .12s linear;
+}
+
+.novaUnifiedConsole .novaMediaControlRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+.novaUnifiedConsole .novaMediaGlyph{
+  appearance:none;
+  border:1px solid rgba(54,217,255,.18);
+  min-width:36px;
+  height:28px;
+  padding:0 9px;
+  border-radius:14px;
+  background:rgba(0,10,17,.42);
+  color:rgba(54,217,255,.74);
+  font:700 10px/1 Inter,Segoe UI,sans-serif;
+  letter-spacing:.5px;
+  cursor:pointer;
+  backdrop-filter:blur(4px);
+  box-shadow:
+    inset 0 0 10px rgba(54,217,255,.035),
+    0 0 8px rgba(54,217,255,.035);
+  transition:
+    color .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease,
+    opacity .18s ease;
+}
+.novaUnifiedConsole .novaMediaGlyph:hover{
+  color:#39ff88;
+  border-color:rgba(57,255,136,.52);
+  box-shadow:0 0 13px rgba(57,255,136,.16);
+  transform:translateY(-1px);
+}
+.novaUnifiedConsole .novaMediaPlayGlyph{
+  width:42px;
+  height:34px;
+  border-radius:50%;
+  color:#36d9ff;
+  border-color:rgba(54,217,255,.42);
+  box-shadow:0 0 14px rgba(54,217,255,.13);
+}
+.novaUnifiedConsole .novaMediaLibraryGlyph{
+  min-width:58px;
+  font-size:9px;
+}
+
+/* Music info becomes the central NOVA HUD instead of a player card. */
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoDisplay{
+  left:18% !important;
+  right:18% !important;
+  bottom:67px !important;
+  padding:8px 18px 10px !important;
+  border:0 !important;
+  background:
+    radial-gradient(ellipse at center,rgba(0,15,24,.48),transparent 72%) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoStatus{
+  color:rgba(57,255,136,.72) !important;
+  letter-spacing:2.4px !important;
+}
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoTitle{
+  font-size:17px !important;
+  letter-spacing:.5px;
+  text-shadow:
+    0 0 8px rgba(54,217,255,.50),
+    0 0 22px rgba(54,217,255,.15) !important;
+}
+
+/* Music mode reduces system-feed dominance without disabling it. */
+body.irisMediaPlaying .novaUnifiedConsole #novaPersistentTicker{
+  opacity:.55 !important;
+}
+
+/* Controls softly retreat until pointer approaches NOVA. */
+body.irisMediaPlaying .novaUnifiedConsole #novaIntegratedMediaControls{
+  opacity:.54;
+}
+body.irisMediaPlaying .novaUnifiedConsole .novaLeftHome:hover #novaIntegratedMediaControls{
+  opacity:1;
+}
+
+/* The spectrum becomes part of the lower media-control environment. */
+body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
+  height:37% !important;
+  opacity:.38 !important;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaIntegratedMediaControls{
+    left:9%;
+    right:9%;
+    bottom:14px;
+  }
+  body.irisMediaPlaying .novaUnifiedConsole #novaMusicInfoDisplay{
+    left:8% !important;
+    right:8% !important;
+    bottom:60px !important;
+  }
+  .novaUnifiedConsole .novaMediaControlRow{gap:7px}
+}
+
+
+/* ============================================================
+   NOVA INTEGRATED MEDIA LIBRARY V2
+   The old media panel remains as a compatibility source only.
+   NOVA now owns the visible media experience.
+   ============================================================ */
+
+/* Hide legacy media/player panels when identifiable by their content IDs.
+   DOM stays alive so existing playlist/load/event code keeps working. */
+.novaLegacyMediaHidden{
+  display:none !important;
+}
+
+/* Expanded NOVA media library */
+.novaUnifiedConsole #novaIntegratedMediaLibrary{
+  display:none;
+  position:absolute;
+  z-index:320;
+  left:4%;
+  right:4%;
+  top:7%;
+  bottom:7%;
+  overflow:hidden;
+  border:1px solid rgba(54,217,255,.22);
+  border-radius:16px;
+  background:
+    linear-gradient(180deg,rgba(2,16,25,.94),rgba(0,7,13,.96)),
+    radial-gradient(circle at 50% 0%,rgba(54,217,255,.11),transparent 48%);
+  box-shadow:
+    inset 0 0 32px rgba(54,217,255,.035),
+    0 0 32px rgba(0,0,0,.52),
+    0 0 18px rgba(54,217,255,.08);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  opacity:0;
+  transform:scale(.975) translateY(7px);
+  transition:opacity .22s ease,transform .22s ease;
+  pointer-events:auto;
+}
+.novaUnifiedConsole #novaIntegratedMediaLibrary.active{
+  display:flex;
+  flex-direction:column;
+  opacity:1;
+  transform:scale(1) translateY(0);
+}
+
+.novaUnifiedConsole .novaMediaLibraryHeader{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:52px;
+  padding:0 15px;
+  border-bottom:1px solid rgba(54,217,255,.12);
+  background:linear-gradient(90deg,rgba(54,217,255,.045),transparent);
+}
+.novaUnifiedConsole .novaMediaLibraryIdentity{
+  flex:1;
+  min-width:0;
+}
+.novaUnifiedConsole .novaMediaLibraryEyebrow{
+  color:rgba(57,255,136,.64);
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+.novaUnifiedConsole .novaMediaLibraryTitle{
+  margin-top:2px;
+  color:#36d9ff;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-shadow:0 0 10px rgba(54,217,255,.25);
+}
+.novaUnifiedConsole .novaMediaLibraryAction{
+  appearance:none;
+  height:29px;
+  padding:0 11px;
+  border:1px solid rgba(54,217,255,.20);
+  border-radius:14px;
+  background:rgba(0,10,18,.55);
+  color:rgba(54,217,255,.78);
+  font:700 9px/1 Inter,Segoe UI,sans-serif;
+  letter-spacing:.7px;
+  cursor:pointer;
+}
+.novaUnifiedConsole .novaMediaLibraryAction:hover{
+  color:#39ff88;
+  border-color:rgba(57,255,136,.45);
+  box-shadow:0 0 12px rgba(57,255,136,.10);
+}
+.novaUnifiedConsole #novaMediaLibraryClose{
+  width:30px;
+  padding:0;
+  font-size:15px;
+}
+
+.novaUnifiedConsole #novaMediaLibraryNow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  padding:10px 16px;
+  border-bottom:1px solid rgba(54,217,255,.08);
+  background:rgba(54,217,255,.025);
+}
+.novaUnifiedConsole #novaMediaLibraryNowTitle{
+  overflow:hidden;
+  color:rgba(255,255,255,.82);
+  font-size:11px;
+  font-weight:650;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.novaUnifiedConsole #novaMediaLibraryCount{
+  color:rgba(57,255,136,.55);
+  font-size:9px;
+  letter-spacing:.8px;
+}
+
+.novaUnifiedConsole #novaMediaLibraryList{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:8px 10px 14px;
+}
+.novaUnifiedConsole .novaLibraryTrack{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+  width:100%;
+  min-height:37px;
+  padding:5px 9px;
+  margin:2px 0;
+  border:1px solid transparent;
+  border-radius:9px;
+  background:transparent;
+  color:rgba(255,255,255,.68);
+  text-align:left;
+  cursor:pointer;
+}
+.novaUnifiedConsole .novaLibraryTrack:hover{
+  border-color:rgba(54,217,255,.14);
+  background:rgba(54,217,255,.045);
+}
+.novaUnifiedConsole .novaLibraryTrack.active{
+  border-color:rgba(57,255,136,.20);
+  background:linear-gradient(90deg,rgba(57,255,136,.07),rgba(54,217,255,.025));
+  color:#fff;
+}
+.novaUnifiedConsole .novaLibraryTrackNumber{
+  color:rgba(54,217,255,.42);
+  font-size:9px;
+  text-align:center;
+}
+.novaUnifiedConsole .novaLibraryTrack.active .novaLibraryTrackNumber{
+  color:#39ff88;
+}
+.novaUnifiedConsole .novaLibraryTrackName{
+  overflow:hidden;
+  font-size:10px;
+  font-weight:600;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.novaUnifiedConsole .novaLibraryTrackState{
+  color:rgba(57,255,136,.62);
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+.novaUnifiedConsole .novaMediaLibraryEmpty{
+  display:flex;
+  height:100%;
+  align-items:center;
+  justify-content:center;
+  color:rgba(54,217,255,.42);
+  font-size:10px;
+  letter-spacing:1px;
+  text-align:center;
+}
+
+@media(max-width:650px){
+  .novaUnifiedConsole #novaIntegratedMediaLibrary{
+    left:2%;
+    right:2%;
+    top:4%;
+    bottom:4%;
+  }
+  .novaUnifiedConsole .novaMediaLibraryHeader{
+    gap:7px;
+    padding:0 9px;
+  }
+}
