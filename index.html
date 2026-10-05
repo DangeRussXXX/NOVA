@@ -14946,95 +14946,459 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 let novaMediaPopoutWindow=null;
 
 function openNovaMediaPopout(){
- if(novaMediaPopoutWindow&&!novaMediaPopoutWindow.closed){novaMediaPopoutWindow.focus();return}
- novaMediaPopoutWindow=window.open("","NOVA_MEDIA_CENTER","popup=yes,width=980,height=760,resizable=yes,scrollbars=yes");
- if(!novaMediaPopoutWindow){try{log("Media window blocked. Allow pop-ups for NOVA.","warn")}catch(e){}return}
+ if(novaMediaPopoutWindow&&!novaMediaPopoutWindow.closed){
+   novaMediaPopoutWindow.focus();
+   return;
+ }
+
+ novaMediaPopoutWindow=window.open(
+   "",
+   "NOVA_MEDIA_CENTER",
+   "popup=yes,width=980,height=760,resizable=yes,scrollbars=yes"
+ );
+
+ if(!novaMediaPopoutWindow){
+   try{log("Media window blocked. Allow pop-ups for NOVA.","warn")}catch(e){}
+   return;
+ }
+
  const w=novaMediaPopoutWindow;
  w.document.open();
- w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA MEDIA</title>
+ w.document.write(`<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NOVA MEDIA</title>
 <style>
-html,body{margin:0;min-height:100%;background:#020a10;color:#d9f8ff;font-family:Inter,Segoe UI,Arial,sans-serif}*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#020a10;color:#d9f8ff;font-family:Inter,Segoe UI,Arial,sans-serif}
+*{box-sizing:border-box}
 header{display:flex;align-items:center;gap:8px;padding:12px 14px;background:#07121b;border-bottom:1px solid rgba(54,217,255,.22)}
 header strong{margin-right:auto;color:#36d9ff;letter-spacing:2px}
-button{border:1px solid rgba(54,217,255,.28);border-radius:10px;background:#06121b;color:#36d9ff;padding:8px 12px;font-weight:700;cursor:pointer}
-button:hover,.active{color:#39ff88;border-color:rgba(57,255,136,.5)}
-main{padding:14px}.tabs{display:flex;gap:8px;margin-bottom:12px}.page{display:none}.page.active{display:block}
+button,.fileButton{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(54,217,255,.28);border-radius:10px;background:#06121b;color:#36d9ff;padding:8px 12px;font-weight:700;cursor:pointer;font-size:12px}
+button:hover,.fileButton:hover,.active{color:#39ff88;border-color:rgba(57,255,136,.5)}
+main{padding:14px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.page{display:none}.page.active{display:block}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:9px 0}
+input[type=file]{display:none}
 input[type=text]{flex:1;min-width:300px;background:#02080d;color:white;border:1px solid rgba(54,217,255,.25);border-radius:8px;padding:10px}
 #stage{width:100%;aspect-ratio:16/9;max-height:56vh;background:#000;border:1px solid rgba(54,217,255,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;color:rgba(54,217,255,.4)}
 #stage video,#stage iframe{width:100%;height:100%;border:0;border-radius:10px;background:#000}
-.list{max-height:45vh;overflow:auto;margin-top:10px}.item{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;width:100%;align-items:center;text-align:left;margin:3px 0}
+.list{max-height:45vh;overflow:auto;margin-top:10px}
+.item{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;width:100%;align-items:center;text-align:left;margin:3px 0}
 .item span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#musicSeek{width:100%}.muted{font-size:9px;color:rgba(54,217,255,.6);letter-spacing:1px}
-</style></head><body>
-<header><strong>NOVA MEDIA</strong><button onclick="window.close()">CLOSE</button></header>
+#musicSeek{width:100%}
+.muted{font-size:9px;color:rgba(54,217,255,.6);letter-spacing:1px}
+</style>
+</head>
+<body>
+<header>
+ <strong>NOVA MEDIA</strong>
+ <button id="closeBtn">CLOSE</button>
+</header>
 <main>
-<div class="tabs"><button id="musicTab" class="active" onclick="page('music')">MUSIC</button><button id="watchTab" onclick="page('watch')">VIDEOS + YOUTUBE</button></div>
-
-<div id="music" class="page active">
- <div class="row">
-  <button onclick="pickMusic()">ADD MUSIC</button>
-  <button onclick="pickFolder()">ADD FOLDER</button>
-  <button onclick="restoreMusic()">RESTORE PLAYLIST</button>
-  <button onclick="clearMusic()">CLEAR PLAYLIST</button>
-  <span id="musicCount" class="muted"></span>
+ <div class="tabs">
+  <button id="musicTab" class="active">MUSIC</button>
+  <button id="watchTab">VIDEOS + YOUTUBE</button>
  </div>
- <input id="musicSeek" type="range" min="0" max="100" value="0" oninput="seekMusic(this.value)">
- <div class="row"><button onclick="prevMusic()">PREVIOUS</button><button onclick="toggleMusic()">PLAY / PAUSE</button><button onclick="stopMusic()">STOP</button><button onclick="nextMusic()">NEXT</button></div>
- <div id="musicList" class="list"></div>
-</div>
 
-<div id="watch" class="page">
- <div class="row">
-  <button onclick="pickVideos()">ADD VIDEO FILES</button>
-  <input id="link" type="text" placeholder="Paste a YouTube link">
-  <button onclick="loadLink()">LOAD LINK</button>
-  <button onclick="saveLink()">SAVE LINK</button>
-  <button onclick="clearWatch()">CLEAR PLAYLIST</button>
+ <div id="music" class="page active">
+  <div class="row">
+   <label class="fileButton">ADD MUSIC
+    <input id="popupMusicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple>
+   </label>
+   <label class="fileButton">ADD FOLDER
+    <input id="popupMusicFolder" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm" multiple webkitdirectory directory>
+   </label>
+   <button id="restoreMusicBtn">RESTORE PLAYLIST</button>
+   <button id="clearMusicBtn">CLEAR PLAYLIST</button>
+   <span id="musicCount" class="muted">0 TRACKS</span>
+  </div>
+
+  <input id="musicSeek" type="range" min="0" max="100" value="0">
+
+  <div class="row">
+   <button id="musicPrev">PREVIOUS</button>
+   <button id="musicToggle">PLAY / PAUSE</button>
+   <button id="musicStop">STOP</button>
+   <button id="musicNext">NEXT</button>
+  </div>
+
+  <div id="musicList" class="list"></div>
  </div>
- <div id="stage">LOAD A VIDEO FILE OR YOUTUBE LINK</div>
- <div class="row"><button onclick="prevWatch()">PREVIOUS</button><button onclick="toggleWatch()">PLAY / PAUSE</button><button onclick="stopWatch()">STOP</button><button onclick="nextWatch()">NEXT</button></div>
- <div id="watchList" class="list"></div>
-</div>
+
+ <div id="watch" class="page">
+  <div class="row">
+   <label class="fileButton">ADD VIDEO FILES
+    <input id="popupVideoFiles" type="file" accept="video/*" multiple>
+   </label>
+   <input id="link" type="text" placeholder="Paste a YouTube link">
+   <button id="loadLinkBtn">LOAD LINK</button>
+   <button id="saveLinkBtn">SAVE LINK</button>
+   <button id="clearWatchBtn">CLEAR PLAYLIST</button>
+  </div>
+
+  <div id="stage">LOAD A VIDEO FILE OR YOUTUBE LINK</div>
+
+  <div class="row">
+   <button id="watchPrev">PREVIOUS</button>
+   <button id="watchToggle">PLAY / PAUSE</button>
+   <button id="watchStop">STOP</button>
+   <button id="watchNext">NEXT</button>
+  </div>
+
+  <div id="watchList" class="list"></div>
+ </div>
 </main>
+
 <script>
-let watchIndex=-1,currentType='',currentYTId='';
+const main=window.opener;
+let watchIndex=-1;
+let currentType="";
 
-function page(n){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===n));musicTab.classList.toggle('active',n==='music');watchTab.classList.toggle('active',n==='watch');refresh()}
-function clickMain(ids){for(const id of ids){const e=opener.document.getElementById(id);if(e){e.click();return true}}return false}
-function pickMusic(){clickMain(['musicFiles','musicFileInput'])}
-function pickFolder(){clickMain(['musicFolderFallback','musicFolderInput'])}
-function pickVideos(){clickMain(['videoFiles'])}
-function restoreMusic(){if(opener.restoreSavedPlaylist)opener.restoreSavedPlaylist(true);refresh()}
-function clearMusic(){if(opener.clearMusicPlaylist)opener.clearMusicPlaylist();else if(opener.clearPlaylist)opener.clearPlaylist();refresh()}
-function prevMusic(){const a=opener.musicLibrary||[];if(!a.length)return;opener.playMusic(opener.musicIndex<=0?a.length-1:opener.musicIndex-1)}
-function nextMusic(){const a=opener.musicLibrary||[];if(!a.length)return;opener.playMusic(opener.musicIndex<0?0:(opener.musicIndex+1)%a.length)}
-function toggleMusic(){const a=opener.document.getElementById('audioPlayer');if(!a)return;if(opener.musicIndex<0){if((opener.musicLibrary||[]).length)opener.playMusic(0)}else if(a.paused)a.play();else a.pause()}
-function stopMusic(){const a=opener.document.getElementById('audioPlayer');if(a){a.pause();a.currentTime=0}}
-function seekMusic(v){const a=opener.document.getElementById('audioPlayer');if(a&&isFinite(a.duration)&&a.duration)a.currentTime=a.duration*(+v/100)}
+function el(id){return document.getElementById(id)}
 
-function parseYT(v){v=String(v||'').trim();try{const u=new URL(v);if(u.hostname.includes('youtu.be'))return {id:u.pathname.split('/').filter(Boolean)[0],start:+(u.searchParams.get('t')||0)||0};if(u.hostname.includes('youtube.com')){const id=u.searchParams.get('v')||(u.pathname.startsWith('/shorts/')?u.pathname.split('/')[2]:'');return id?{id,start:+(u.searchParams.get('t')||u.searchParams.get('start')||0)||0}:null}}catch(e){}return /^[\\w-]{11}$/.test(v)?{id:v,start:0}:null}
-function showLocal(i){const x=(opener.videoLibrary||[])[i];if(!x)return;watchIndex=i;currentType='local';const s=document.getElementById('stage');s.innerHTML='';const v=document.createElement('video');v.id='watchVideo';v.controls=true;v.autoplay=true;v.src=x.url;v.onended=nextWatch;s.appendChild(v)}
-function showYT(url){const p=parseYT(url);if(!p)return;currentType='youtube';currentYTId=p.id;const s=document.getElementById('stage');s.innerHTML='';const f=document.createElement('iframe');f.id='watchYT';f.allow='autoplay; encrypted-media; picture-in-picture';f.allowFullscreen=true;f.src='https://www.youtube.com/embed/'+p.id+'?enablejsapi=1&playsinline=1'+(p.start?'&start='+p.start:'');s.appendChild(f)}
-function loadLink(){showYT(document.getElementById('link').value)}
-function saveLink(){const raw=document.getElementById('link').value,p=parseYT(raw);if(!p)return;const input=opener.document.getElementById('youtubeInput');if(input)input.value='https://www.youtube.com/watch?v='+p.id;if(opener.novaAddCurrentYt)opener.novaAddCurrentYt();refresh()}
-function watchItems(){return [...(opener.videoLibrary||[]).map((x,i)=>({type:'local',i,name:x.file?.name||'Video'})),...(opener.novaYtSaved||[]).map((x,i)=>({type:'youtube',i,name:x.url,url:x.url}))]}
-function playWatch(i){const a=watchItems();if(!a.length)return;watchIndex=(i+a.length)%a.length;const x=a[watchIndex];if(x.type==='local')showLocal(x.i);else showYT(x.url);refresh()}
-function prevWatch(){playWatch(watchIndex<=0?watchItems().length-1:watchIndex-1)}
-function nextWatch(){playWatch(watchIndex<0?0:watchIndex+1)}
-function toggleWatch(){if(currentType==='local'){const v=document.getElementById('watchVideo');if(v)v.paused?v.play():v.pause()}else{const f=document.getElementById('watchYT');if(f)f.contentWindow.postMessage(JSON.stringify({event:'command',func:'playVideo',args:[]}), '*')}}
-function stopWatch(){if(currentType==='local'){const v=document.getElementById('watchVideo');if(v){v.pause();v.currentTime=0}}else{const f=document.getElementById('watchYT');if(f)f.contentWindow.postMessage(JSON.stringify({event:'command',func:'stopVideo',args:[]}), '*')}}
-function clearWatch(){if(opener.novaClearVideos)opener.novaClearVideos();if(opener.novaYtSaved){opener.novaYtSaved=[];if(opener.novaSaveYt)opener.novaSaveYt()}watchIndex=-1;document.getElementById('stage').textContent='LOAD A VIDEO FILE OR YOUTUBE LINK';refresh()}
+function showPage(name){
+ el("music").classList.toggle("active",name==="music");
+ el("watch").classList.toggle("active",name==="watch");
+ el("musicTab").classList.toggle("active",name==="music");
+ el("watchTab").classList.toggle("active",name==="watch");
+ refresh();
+}
+
+function musicLib(){return main&&main.musicLibrary?main.musicLibrary:[]}
+function videoLib(){return main&&main.videoLibrary?main.videoLibrary:[]}
+function ytLib(){return main&&main.novaYtSaved?main.novaYtSaved:[]}
+
+function receiveMusic(files,replace){
+ const selected=Array.from(files||[]);
+ if(!selected.length)return;
+ if(typeof main.addMusicFiles==="function"){
+   main.addMusicFiles(selected,!!replace,true);
+ }
+ setTimeout(refresh,150);
+}
+
+function receiveVideos(files){
+ const selected=Array.from(files||[]).filter(f=>f.type.startsWith("video/"));
+ if(!selected.length)return;
+
+ if(typeof main.novaHandleVideoFiles==="function"){
+   main.novaHandleVideoFiles({target:{files:selected}});
+ }else if(main.videoLibrary){
+   selected.forEach(file=>main.videoLibrary.push({file,url:main.URL.createObjectURL(file)}));
+ }
+
+ if(typeof main.novaPersistVideo==="function"){
+   selected.forEach(file=>main.novaPersistVideo(file));
+ }
+
+ setTimeout(refresh,150);
+}
+
+function restoreMusic(){
+ if(typeof main.restoreSavedPlaylist==="function"){
+   main.restoreSavedPlaylist(true);
+ }
+ setTimeout(refresh,250);
+}
+
+function clearMusic(){
+ if(typeof main.clearSavedPlaylist==="function"){
+   main.clearSavedPlaylist();
+ }else{
+   const audio=main.document.getElementById("audioPlayer");
+   if(audio){audio.pause();audio.removeAttribute("src");audio.load()}
+   if(main.musicLibrary)main.musicLibrary.length=0;
+   main.musicIndex=-1;
+ }
+ setTimeout(refresh,250);
+}
+
+function prevMusic(){
+ const a=musicLib();
+ if(!a.length)return;
+ main.playMusic(main.musicIndex<=0?a.length-1:main.musicIndex-1);
+}
+
+function nextMusic(){
+ const a=musicLib();
+ if(!a.length)return;
+ main.playMusic(main.musicIndex<0?0:(main.musicIndex+1)%a.length);
+}
+
+function toggleMusic(){
+ const audio=main.document.getElementById("audioPlayer");
+ if(!audio)return;
+ if(main.musicIndex<0){
+   if(musicLib().length)main.playMusic(0);
+ }else if(audio.paused){
+   audio.play().catch(()=>{});
+ }else{
+   audio.pause();
+ }
+}
+
+function stopMusic(){
+ const audio=main.document.getElementById("audioPlayer");
+ if(audio){audio.pause();audio.currentTime=0}
+}
+
+function seekMusic(){
+ const audio=main.document.getElementById("audioPlayer");
+ if(audio&&Number.isFinite(audio.duration)&&audio.duration>0){
+   audio.currentTime=audio.duration*(Number(el("musicSeek").value)/100);
+ }
+}
+
+function parseYT(value){
+ value=String(value||"").trim();
+ try{
+   const u=new URL(value);
+   let id="";
+   if(u.hostname.includes("youtu.be")){
+     id=u.pathname.split("/").filter(Boolean)[0]||"";
+   }else if(u.hostname.includes("youtube.com")){
+     id=u.searchParams.get("v")||
+       (u.pathname.startsWith("/shorts/")?u.pathname.split("/")[2]:"")||
+       (u.pathname.startsWith("/embed/")?u.pathname.split("/")[2]:"");
+   }
+
+   let raw=u.searchParams.get("t")||u.searchParams.get("start")||"0";
+   let start=Number(raw)||0;
+
+   if(!start&&/[hms]/i.test(raw)){
+     const h=Number((raw.match(/(\\d+)h/i)||[])[1]||0);
+     const m=Number((raw.match(/(\\d+)m/i)||[])[1]||0);
+     const s=Number((raw.match(/(\\d+)s/i)||[])[1]||0);
+     start=h*3600+m*60+s;
+   }
+
+   return id?{id,start}:null;
+ }catch(e){}
+
+ return /^[A-Za-z0-9_-]{11}$/.test(value)?{id:value,start:0}:null;
+}
+
+function showLocal(sourceIndex){
+ const item=videoLib()[sourceIndex];
+ if(!item)return;
+
+ currentType="local";
+ const stage=el("stage");
+ stage.innerHTML="";
+
+ const video=document.createElement("video");
+ video.id="watchVideo";
+ video.controls=true;
+ video.autoplay=true;
+ video.src=item.url;
+ video.addEventListener("ended",nextWatch);
+ stage.appendChild(video);
+}
+
+function showYT(url){
+ const parsed=parseYT(url);
+ if(!parsed)return;
+
+ currentType="youtube";
+ const stage=el("stage");
+ stage.innerHTML="";
+
+ const frame=document.createElement("iframe");
+ frame.id="watchYT";
+ frame.allow="autoplay; encrypted-media; picture-in-picture";
+ frame.allowFullscreen=true;
+ frame.src="https://www.youtube.com/embed/"+encodeURIComponent(parsed.id)+
+   "?enablejsapi=1&playsinline=1"+(parsed.start?"&start="+parsed.start:"");
+
+ stage.appendChild(frame);
+}
+
+function loadLink(){
+ const raw=el("link").value;
+ if(parseYT(raw))showYT(raw);
+}
+
+function saveLink(){
+ const raw=el("link").value;
+ const parsed=parseYT(raw);
+ if(!parsed)return;
+
+ const url="https://www.youtube.com/watch?v="+parsed.id;
+
+ if(main.novaYtSaved&&!main.novaYtSaved.some(x=>x.id===parsed.id)){
+   main.novaYtSaved.push({id:parsed.id,url});
+   if(typeof main.novaSaveYt==="function")main.novaSaveYt();
+ }
+
+ refresh();
+}
+
+function watchItems(){
+ return [
+   ...videoLib().map((x,i)=>({
+     type:"local",
+     sourceIndex:i,
+     name:x.file&&x.file.name?x.file.name:"Video"
+   })),
+   ...ytLib().map((x,i)=>({
+     type:"youtube",
+     sourceIndex:i,
+     name:x.url,
+     url:x.url
+   }))
+ ];
+}
+
+function playWatch(index){
+ const items=watchItems();
+ if(!items.length)return;
+
+ watchIndex=(index+items.length)%items.length;
+ const item=items[watchIndex];
+
+ if(item.type==="local")showLocal(item.sourceIndex);
+ else showYT(item.url);
+
+ refresh();
+}
+
+function prevWatch(){
+ const items=watchItems();
+ if(!items.length)return;
+ playWatch(watchIndex<=0?items.length-1:watchIndex-1);
+}
+
+function nextWatch(){
+ const items=watchItems();
+ if(!items.length)return;
+ playWatch(watchIndex<0?0:watchIndex+1);
+}
+
+function toggleWatch(){
+ if(currentType==="local"){
+   const video=el("watchVideo");
+   if(!video)return;
+   if(video.paused)video.play().catch(()=>{});
+   else video.pause();
+ }else if(currentType==="youtube"){
+   const frame=el("watchYT");
+   if(frame&&frame.contentWindow){
+     frame.contentWindow.postMessage(
+       JSON.stringify({event:"command",func:"playVideo",args:[]}),
+       "*"
+     );
+   }
+ }
+}
+
+function stopWatch(){
+ if(currentType==="local"){
+   const video=el("watchVideo");
+   if(video){video.pause();video.currentTime=0}
+ }else if(currentType==="youtube"){
+   const frame=el("watchYT");
+   if(frame&&frame.contentWindow){
+     frame.contentWindow.postMessage(
+       JSON.stringify({event:"command",func:"stopVideo",args:[]}),
+       "*"
+     );
+   }
+ }
+}
+
+function clearWatch(){
+ if(typeof main.novaClearVideos==="function")main.novaClearVideos();
+
+ if(main.novaYtSaved){
+   main.novaYtSaved.length=0;
+   if(typeof main.novaSaveYt==="function")main.novaSaveYt();
+ }
+
+ watchIndex=-1;
+ currentType="";
+ el("stage").textContent="LOAD A VIDEO FILE OR YOUTUBE LINK";
+ setTimeout(refresh,200);
+}
 
 function refresh(){
- if(!opener||opener.closed)return;
- const ml=document.getElementById('musicList'),music=opener.musicLibrary||[];ml.innerHTML='';musicCount.textContent=music.length+' TRACKS';
- music.forEach((x,i)=>{const b=document.createElement('button');b.className='item';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span><span>'+(i===opener.musicIndex?'PLAYING':'PLAY')+'</span>';b.children[1].textContent=x.file?.name||'Track';b.onclick=()=>opener.playMusic(i);ml.appendChild(b)});
- const au=opener.document.getElementById('audioPlayer');if(au&&isFinite(au.duration)&&au.duration)musicSeek.value=au.currentTime/au.duration*100;
- const wl=document.getElementById('watchList');wl.innerHTML='';watchItems().forEach((x,i)=>{const b=document.createElement('button');b.className='item';b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><span></span><span>PLAY</span>';b.children[1].textContent=(x.type==='youtube'?'YOUTUBE • ':'VIDEO • ')+x.name;b.onclick=()=>playWatch(i);wl.appendChild(b)});
+ if(!main||main.closed)return;
+
+ const music=musicLib();
+ const ml=el("musicList");
+ ml.innerHTML="";
+ el("musicCount").textContent=music.length+" TRACK"+(music.length===1?"":"S");
+
+ music.forEach((item,index)=>{
+   const b=document.createElement("button");
+   b.className="item";
+   b.innerHTML="<span>"+String(index+1).padStart(2,"0")+
+     "</span><span></span><span>"+(index===main.musicIndex?"PLAYING":"PLAY")+"</span>";
+   b.children[1].textContent=item.file&&item.file.name?item.file.name:"Track";
+   b.addEventListener("click",()=>main.playMusic(index));
+   ml.appendChild(b);
+ });
+
+ const audio=main.document.getElementById("audioPlayer");
+ if(audio&&Number.isFinite(audio.duration)&&audio.duration>0){
+   el("musicSeek").value=(audio.currentTime/audio.duration)*100;
+ }
+
+ const wl=el("watchList");
+ wl.innerHTML="";
+
+ watchItems().forEach((item,index)=>{
+   const b=document.createElement("button");
+   b.className="item";
+   b.innerHTML="<span>"+String(index+1).padStart(2,"0")+
+     "</span><span></span><span>PLAY</span>";
+   b.children[1].textContent=(item.type==="youtube"?"YOUTUBE • ":"VIDEO • ")+item.name;
+   b.addEventListener("click",()=>playWatch(index));
+   wl.appendChild(b);
+ });
 }
-setInterval(refresh,1000);refresh();
-<\/script></body></html>`);
+
+el("closeBtn").addEventListener("click",()=>window.close());
+el("musicTab").addEventListener("click",()=>showPage("music"));
+el("watchTab").addEventListener("click",()=>showPage("watch"));
+
+el("popupMusicFiles").addEventListener("change",e=>{
+ receiveMusic(e.target.files,false);
+ e.target.value="";
+});
+
+el("popupMusicFolder").addEventListener("change",e=>{
+ receiveMusic(e.target.files,true);
+ e.target.value="";
+});
+
+el("popupVideoFiles").addEventListener("change",e=>{
+ receiveVideos(e.target.files);
+ e.target.value="";
+});
+
+el("restoreMusicBtn").addEventListener("click",restoreMusic);
+el("clearMusicBtn").addEventListener("click",clearMusic);
+el("musicPrev").addEventListener("click",prevMusic);
+el("musicToggle").addEventListener("click",toggleMusic);
+el("musicStop").addEventListener("click",stopMusic);
+el("musicNext").addEventListener("click",nextMusic);
+el("musicSeek").addEventListener("input",seekMusic);
+
+el("loadLinkBtn").addEventListener("click",loadLink);
+el("saveLinkBtn").addEventListener("click",saveLink);
+el("clearWatchBtn").addEventListener("click",clearWatch);
+el("watchPrev").addEventListener("click",prevWatch);
+el("watchToggle").addEventListener("click",toggleWatch);
+el("watchStop").addEventListener("click",stopWatch);
+el("watchNext").addEventListener("click",nextWatch);
+
+setInterval(refresh,1000);
+refresh();
+<\/script>
+</body>
+</html>`);
  w.document.close();
 }
 
