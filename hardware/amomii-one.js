@@ -44,14 +44,34 @@ function toggleController(){
   const header =
     document.querySelector(".controllerHeader");
 
+  if(!header) return;
+
+  const panel =
+    header.closest(".panel");
+
+  if(!panel) return;
+
   const body =
-    header.parentElement.querySelector(".panelBody");
+    panel.querySelector(":scope > .panelBody");
 
   if(!body) return;
 
   body.classList.toggle("collapsed");
 
 }
+
+// Keep the AMOMII header working even if an inline onclick handler
+// is unavailable after the hardware code is split into separate files.
+window.toggleController = toggleController;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const header = document.querySelector(".controllerHeader");
+  if(!header || header.dataset.amomiiCollapseBound === "true") return;
+
+  header.dataset.amomiiCollapseBound = "true";
+  header.removeAttribute("onclick");
+  header.addEventListener("click", toggleController);
+});
 
 /* ============================================================
    BOARD STATUS
