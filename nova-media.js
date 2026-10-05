@@ -429,11 +429,14 @@ function showMediaTab(tab){
 
     });
 
-  document
-    .getElementById(
+  const section =
+    document.getElementById(
       `${tab}Section`
-    )
-    .classList.add("active");
+    );
+
+  if(section){
+    section.classList.add("active");
+  }
 
   const button =
     document.querySelector(
