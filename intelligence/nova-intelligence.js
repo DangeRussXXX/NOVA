@@ -177,7 +177,7 @@ function novaUnderstandTrainer(text){
 
   const ordinalMatch =
     command.match(
-      /\b(?:turn|switch|put|set)\b.*?\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\b(?:trainer\s+)?(?:light|led)\b.*?\b(on|off)\b/
+      /\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\b(?:trainer\s+)?(?:light|led)\b/
     );
 
   if(ordinalMatch){
@@ -185,22 +185,59 @@ function novaUnderstandTrainer(text){
     const ledNumber =
       ordinalNumbers[ordinalMatch[1]];
 
-    const state =
-      ordinalMatch[2];
+    let state = null;
 
-    return {
-      understood: true,
-      domain: "hardware",
-      device: "trainer",
-      action:
-        state === "on"
-          ? "led_on"
-          : "led_off",
-      target: ledNumber,
-      state: state,
-      command:
-        `trainer led ${ledNumber} ${state}`
-    };
+
+    /* TURN ON/OFF BEFORE THE LIGHT */
+
+    if(
+      /\b(?:turn|switch|put|set)\s+(?:it\s+)?on\b/.test(command) ||
+      /\bon\b.*?\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b/.test(command)
+    ){
+      state = "on";
+    }
+
+    if(
+      /\b(?:turn|switch|put|set)\s+(?:it\s+)?off\b/.test(command) ||
+      /\boff\b.*?\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b/.test(command)
+    ){
+      state = "off";
+    }
+
+
+    /* TURN ON/OFF AFTER THE LIGHT */
+
+    if(!state){
+
+      const trailingState =
+        command.match(
+          /\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\b(?:trainer\s+)?(?:light|led)\b.*?\b(on|off)\b/
+        );
+
+      if(trailingState){
+        state = trailingState[2];
+      }
+
+    }
+
+
+    if(state){
+
+      return {
+        understood: true,
+        domain: "hardware",
+        device: "trainer",
+        action:
+          state === "on"
+            ? "led_on"
+            : "led_off",
+        target: ledNumber,
+        state: state,
+        command:
+          `trainer led ${ledNumber} ${state}`
+      };
+
+    }
   }
 
 
