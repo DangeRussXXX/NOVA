@@ -1,6 +1,6 @@
 /* ============================================================
    NOVA INTELLIGENCE
-   VERSION 1 — NATURAL LANGUAGE INTENT ENGINE
+   VERSION 2 — BOARD + RSR NATURAL LANGUAGE INTENT ENGINE
    ============================================================ */
 
 console.log("NOVA Intelligence loaded.");
@@ -32,7 +32,9 @@ function novaNumberFromWord(value){
     four: 4,
     five: 5,
     six: 6,
-    seven: 7
+    seven: 7,
+    eight: 8,
+    nine: 9
   };
 
   const text =
@@ -53,10 +55,12 @@ function novaNumberFromWord(value){
 
 
 /* ============================================================
-   NATURAL TRAINER LANGUAGE
+   NATURAL BOARD LANGUAGE
+   Spoken name: BOARD
+   Internal hardware commands remain unchanged.
    ============================================================ */
 
-function novaUnderstandTrainer(text){
+function novaUnderstandBoard(text){
 
   const command =
     String(text || "")
@@ -65,50 +69,45 @@ function novaUnderstandTrainer(text){
       .replace(/\s+/g, " ");
 
 
-  /* ----------------------------------------------------------
-     ALL LIGHTS ON
-     ---------------------------------------------------------- */
+  /* BOARD LED ON */
 
   if(
-    /\b(?:turn|switch|put|light)\b.*\b(?:all|every)\b.*\b(?:light|lights|led|leds)\b.*\bon\b/.test(command) ||
-    /\blight up (?:the )?(?:whole|entire) trainer\b/.test(command) ||
-    /\bturn (?:the )?(?:whole|entire) trainer on\b/.test(command)
+    /\b(?:turn|switch|put|set)\b.*?\bboard\b.*?\b(?:light|led)\b.*?\bon\b/.test(command) ||
+    /\b(?:turn|switch|put|set)\b.*?\bon\b.*?\b(?:the\s+)?board\b.*?\b(?:light|led)\b/.test(command)
   ){
     return {
       understood: true,
       domain: "hardware",
-      device: "trainer",
-      action: "all_on",
-      command: "trainer all on"
+      device: "board",
+      action: "led_on",
+      state: "on",
+      command: "led on"
     };
   }
 
 
-  /* ----------------------------------------------------------
-     ALL LIGHTS OFF
-     ---------------------------------------------------------- */
+  /* BOARD LED OFF */
 
   if(
-    /\b(?:turn|switch|put)\b.*\b(?:all|every)\b.*\b(?:light|lights|led|leds)\b.*\boff\b/.test(command) ||
-    /\bturn (?:the )?(?:whole|entire) trainer off\b/.test(command)
+    /\b(?:turn|switch|put|set)\b.*?\bboard\b.*?\b(?:light|led)\b.*?\boff\b/.test(command) ||
+    /\b(?:turn|switch|put|set)\b.*?\boff\b.*?\b(?:the\s+)?board\b.*?\b(?:light|led)\b/.test(command)
   ){
     return {
       understood: true,
       domain: "hardware",
-      device: "trainer",
-      action: "all_off",
-      command: "trainer all off"
+      device: "board",
+      action: "led_off",
+      state: "off",
+      command: "led off"
     };
   }
 
 
-  /* ----------------------------------------------------------
-     BLINK TRAINER
-     ---------------------------------------------------------- */
+  /* BLINK / FLASH BOARD */
 
   const blinkMatch =
     command.match(
-      /\b(?:blink|flash)\b.*?(?:trainer|lights?|leds?)(?:.*?\b(zero|one|two|three|four|five|six|seven|\d+)\b)?/
+      /\b(?:blink|flash)\b.*?\b(?:the\s+)?board\b(?:.*?\b(zero|one|two|three|four|five|six|seven|eight|nine|\d+)\b)?/
     );
 
   if(blinkMatch){
@@ -119,7 +118,124 @@ function novaUnderstandTrainer(text){
     return {
       understood: true,
       domain: "hardware",
-      device: "trainer",
+      device: "board",
+      action: "blink",
+      count: count,
+      command: `blink ${count}`
+    };
+  }
+
+
+  /* BOARD SYSTEM TEST */
+
+  if(
+    /\b(?:run|start|do)\b.*?\bboard\b.*?\b(?:system\s+)?test\b/.test(command) ||
+    /\b(?:run|start|do)\b.*?\b(?:system\s+)?test\b.*?\b(?:on\s+)?(?:the\s+)?board\b/.test(command) ||
+    /\btest\b.*?\b(?:the\s+)?board\b/.test(command)
+  ){
+    return {
+      understood: true,
+      domain: "hardware",
+      device: "board",
+      action: "system_test",
+      command: "system test"
+    };
+  }
+
+
+  /* BOARD STATUS */
+
+  if(
+    /\b(?:what(?:'s| is)|check|show|get)\b.*?\bboard\b.*?\bstatus\b/.test(command) ||
+    /\bboard status\b/.test(command) ||
+    /\bstatus\b.*?\b(?:of|for)\b.*?\b(?:the\s+)?board\b/.test(command)
+  ){
+    return {
+      understood: true,
+      domain: "hardware",
+      device: "board",
+      action: "status",
+      command: "status"
+    };
+  }
+
+
+  return null;
+}
+
+
+/* ============================================================
+   NATURAL RSR LANGUAGE
+   Spoken name: RSR
+   Internal Arduino protocol still uses TRAINER.
+   ============================================================ */
+
+function novaUnderstandRSR(text){
+
+  const command =
+    String(text || "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, " ");
+
+
+  /* ----------------------------------------------------------
+     ALL RSR LIGHTS ON
+     ---------------------------------------------------------- */
+
+  if(
+    /\b(?:turn|switch|put|light)\b.*\b(?:all|every)\b.*\brsr\b.*\b(?:light|lights|led|leds)\b.*\bon\b/.test(command) ||
+    /\b(?:turn|switch|put|light)\b.*\b(?:all|every)\b.*\b(?:light|lights|led|leds)\b.*\brsr\b.*\bon\b/.test(command) ||
+    /\blight up (?:the )?(?:whole|entire) rsr\b/.test(command) ||
+    /\bturn (?:the )?(?:whole|entire) rsr on\b/.test(command)
+  ){
+    return {
+      understood: true,
+      domain: "hardware",
+      device: "rsr",
+      action: "all_on",
+      command: "trainer all on"
+    };
+  }
+
+
+  /* ----------------------------------------------------------
+     ALL RSR LIGHTS OFF
+     ---------------------------------------------------------- */
+
+  if(
+    /\b(?:turn|switch|put)\b.*\b(?:all|every)\b.*\brsr\b.*\b(?:light|lights|led|leds)\b.*\boff\b/.test(command) ||
+    /\b(?:turn|switch|put)\b.*\b(?:all|every)\b.*\b(?:light|lights|led|leds)\b.*\brsr\b.*\boff\b/.test(command) ||
+    /\bturn (?:the )?(?:whole|entire) rsr off\b/.test(command)
+  ){
+    return {
+      understood: true,
+      domain: "hardware",
+      device: "rsr",
+      action: "all_off",
+      command: "trainer all off"
+    };
+  }
+
+
+  /* ----------------------------------------------------------
+     BLINK RSR
+     ---------------------------------------------------------- */
+
+  const blinkMatch =
+    command.match(
+      /\b(?:blink|flash)\b.*?\b(?:the\s+)?rsr\b(?:.*?\b(zero|one|two|three|four|five|six|seven|eight|nine|\d+)\b)?/
+    );
+
+  if(blinkMatch){
+
+    const count =
+      novaNumberFromWord(blinkMatch[1]) ?? 5;
+
+    return {
+      understood: true,
+      domain: "hardware",
+      device: "rsr",
       action: "blink",
       count: count,
       command: `trainer blink ${count}`
@@ -128,12 +244,12 @@ function novaUnderstandTrainer(text){
 
 
   /* ----------------------------------------------------------
-     INDIVIDUAL TRAINER LIGHT
+     INDIVIDUAL RSR LIGHT — NUMBER STYLE
      ---------------------------------------------------------- */
 
   const lightMatch =
     command.match(
-      /\b(?:turn|switch|put|set)\b.*?(?:trainer\s+)?(?:light|led)\s*(?:number\s*)?(zero|one|two|three|four|five|six|seven|0|1|2|3|4|5|6|7)\b.*?\b(on|off)\b/
+      /\b(?:turn|switch|put|set)\b.*?\brsr\b.*?\b(?:light|led)\s*(?:number\s*)?(zero|one|two|three|four|five|six|seven|0|1|2|3|4|5|6|7)\b.*?\b(on|off)\b/
     );
 
   if(lightMatch){
@@ -147,7 +263,7 @@ function novaUnderstandTrainer(text){
     return {
       understood: true,
       domain: "hardware",
-      device: "trainer",
+      device: "rsr",
       action:
         state === "on"
           ? "led_on"
@@ -161,7 +277,7 @@ function novaUnderstandTrainer(text){
 
 
   /* ----------------------------------------------------------
-     FIRST / SECOND / THIRD STYLE LANGUAGE
+     FIRST / SECOND / THIRD STYLE RSR LANGUAGE
      ---------------------------------------------------------- */
 
   const ordinalNumbers = {
@@ -177,18 +293,19 @@ function novaUnderstandTrainer(text){
 
   const ordinalMatch =
     command.match(
-      /\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\b(?:trainer\s+)?(?:light|led)\b/
+      /\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\brsr\b.*?\b(?:light|led)\b|\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\b(?:light|led)\b.*?\brsr\b/
     );
 
   if(ordinalMatch){
 
+    const ordinal =
+      ordinalMatch[1] || ordinalMatch[2];
+
     const ledNumber =
-      ordinalNumbers[ordinalMatch[1]];
+      ordinalNumbers[ordinal];
 
     let state = null;
 
-
-    /* TURN ON/OFF BEFORE THE LIGHT */
 
     if(
       /\b(?:turn|switch|put|set)\s+(?:it\s+)?on\b/.test(command) ||
@@ -205,13 +322,11 @@ function novaUnderstandTrainer(text){
     }
 
 
-    /* TURN ON/OFF AFTER THE LIGHT */
-
     if(!state){
 
       const trailingState =
         command.match(
-          /\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\b(?:trainer\s+)?(?:light|led)\b.*?\b(on|off)\b/
+          /\b(first|second|third|fourth|fifth|sixth|seventh|eighth)\b.*?\b(?:rsr\s+)?(?:light|led)\b.*?\b(on|off)\b/
         );
 
       if(trailingState){
@@ -226,7 +341,7 @@ function novaUnderstandTrainer(text){
       return {
         understood: true,
         domain: "hardware",
-        device: "trainer",
+        device: "rsr",
         action:
           state === "on"
             ? "led_on"
@@ -260,13 +375,23 @@ function novaUnderstand(rawText){
   }
 
 
-  /* TRAINER */
+  /* BOARD */
 
-  const trainerIntent =
-    novaUnderstandTrainer(text);
+  const boardIntent =
+    novaUnderstandBoard(text);
 
-  if(trainerIntent){
-    return trainerIntent;
+  if(boardIntent){
+    return boardIntent;
+  }
+
+
+  /* RSR */
+
+  const rsrIntent =
+    novaUnderstandRSR(text);
+
+  if(rsrIntent){
+    return rsrIntent;
   }
 
 
@@ -299,11 +424,104 @@ function novaExecuteIntent(intent){
 
 
   /* ----------------------------------------------------------
-     TRAINER LED
+     BOARD LED
      ---------------------------------------------------------- */
 
   if(
-    intent.device === "trainer" &&
+    intent.device === "board" &&
+    (
+      intent.action === "led_on" ||
+      intent.action === "led_off"
+    )
+  ){
+
+    sendCloudCommand(
+      intent.command
+    );
+
+    speak(
+      intent.state === "on"
+        ? "Board light on."
+        : "Board light off.",
+      false
+    );
+
+    return true;
+  }
+
+
+  /* ----------------------------------------------------------
+     BOARD BLINK
+     ---------------------------------------------------------- */
+
+  if(
+    intent.device === "board" &&
+    intent.action === "blink"
+  ){
+
+    sendCloudCommand(
+      intent.command
+    );
+
+    speak(
+      `Board blinking ${intent.count} times.`,
+      false
+    );
+
+    return true;
+  }
+
+
+  /* ----------------------------------------------------------
+     BOARD SYSTEM TEST
+     ---------------------------------------------------------- */
+
+  if(
+    intent.device === "board" &&
+    intent.action === "system_test"
+  ){
+
+    sendCloudCommand(
+      intent.command
+    );
+
+    speak(
+      "Running board system test.",
+      false
+    );
+
+    return true;
+  }
+
+
+  /* ----------------------------------------------------------
+     BOARD STATUS
+     ---------------------------------------------------------- */
+
+  if(
+    intent.device === "board" &&
+    intent.action === "status"
+  ){
+
+    sendCloudCommand(
+      intent.command
+    );
+
+    speak(
+      "Checking board status.",
+      false
+    );
+
+    return true;
+  }
+
+
+  /* ----------------------------------------------------------
+     RSR LED
+     ---------------------------------------------------------- */
+
+  if(
+    intent.device === "rsr" &&
     (
       intent.action === "led_on" ||
       intent.action === "led_off"
@@ -325,7 +543,7 @@ function novaExecuteIntent(intent){
     }
 
     speak(
-      `Trainer LED ${intent.target} ${intent.state}.`,
+      `RSR light ${intent.target} ${intent.state}.`,
       false
     );
 
@@ -334,11 +552,11 @@ function novaExecuteIntent(intent){
 
 
   /* ----------------------------------------------------------
-     TRAINER ALL
+     RSR ALL
      ---------------------------------------------------------- */
 
   if(
-    intent.device === "trainer" &&
+    intent.device === "rsr" &&
     (
       intent.action === "all_on" ||
       intent.action === "all_off"
@@ -362,8 +580,8 @@ function novaExecuteIntent(intent){
 
     speak(
       state
-        ? "RSR Trainer all on."
-        : "RSR Trainer all off.",
+        ? "RSR all on."
+        : "RSR all off.",
       false
     );
 
@@ -372,11 +590,11 @@ function novaExecuteIntent(intent){
 
 
   /* ----------------------------------------------------------
-     TRAINER BLINK
+     RSR BLINK
      ---------------------------------------------------------- */
 
   if(
-    intent.device === "trainer" &&
+    intent.device === "rsr" &&
     intent.action === "blink"
   ){
 
@@ -385,7 +603,7 @@ function novaExecuteIntent(intent){
     );
 
     speak(
-      `RSR Trainer blinking ${intent.count} times.`,
+      `RSR blinking ${intent.count} times.`,
       false
     );
 
