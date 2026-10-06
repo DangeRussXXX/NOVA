@@ -3321,7 +3321,7 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
   w.document.close();try{w.focus()}catch(e){}
 }
 function novaCommandReferenceHtml(){
-return `<div class="note">Type these in SEND TO NOVA or speak them while TALK TO NOVA is enabled.</div>
+return `<div class="note">Exact NOVA command reference. Type these in SEND TO NOVA or speak them while TALK TO NOVA is enabled.</div>
 <div class="section">SYSTEM / AMOMII</div><div class="grid">
 <div class="item"><b>connect / disconnect</b></div><div class="item"><b>status</b></div><div class="item"><b>system test</b></div><div class="item"><b>led on / led off</b></div><div class="item"><b>blink 5</b></div><div class="item"><b>sos</b></div><div class="item"><b>stop</b></div><div class="item"><b>help / commands</b></div></div>
 <div class="section">RSR TRAINER</div><div class="grid">
@@ -3329,9 +3329,30 @@ return `<div class="note">Type these in SEND TO NOVA or speak them while TALK TO
 <div class="section">MEDIA / CALENDAR / BROWSER</div><div class="grid">
 <div class="item"><b>play / pause / stop music</b></div><div class="item"><b>next / previous song</b></div><div class="item"><b>shuffle / repeat</b></div><div class="item"><b>play video</b></div><div class="item"><b>add event ...</b></div><div class="item"><b>search Google for ...</b></div><div class="item"><b>open Google / Gmail / YouTube / Maps / Drive</b></div></div>`;
 }
-function openNovaHelpScreen(){openNovaInfoScreen("NOVA HELP",`<div class="grid"><div class="item"><b>TALK TO NOVA</b><br>Voice control.</div><div class="item"><b>NOVA COMMANDS</b><br>All command groups.</div><div class="item"><b>VOICE COMMANDS</b><br>Voice reference.</div><div class="item"><b>COMMAND HISTORY</b><br>Commands received this session.</div></div>`);}
+
+function novaVoiceCommandReferenceHtml(){
+return `<div class="note">NOVA understands the original exact commands plus natural-language trainer requests. These are examples — wording can vary.</div>
+<div class="section">NOVA INTELLIGENCE — RSR TRAINER</div><div class="grid">
+<div class="item"><b>Turn on the first trainer light.</b><br>First through eighth map to trainer LEDs 0 through 7.</div>
+<div class="item"><b>Turn off the first trainer light.</b></div>
+<div class="item"><b>Turn the third trainer light on.</b></div>
+<div class="item"><b>Turn the third trainer light off.</b></div>
+<div class="item"><b>Turn on all the trainer lights.</b></div>
+<div class="item"><b>Turn off all the trainer lights.</b></div>
+<div class="item"><b>Light up the whole trainer.</b></div>
+<div class="item"><b>Turn the entire trainer off.</b></div>
+<div class="item"><b>Blink the trainer five times.</b></div>
+<div class="item"><b>Flash the trainer three times.</b></div></div>
+<div class="section">EXACT TRAINER VOICE COMMANDS</div><div class="grid">
+<div class="item"><b>trainer led 0–7 on/off</b></div><div class="item"><b>trainer led all on/off</b></div><div class="item"><b>trainer blink 5</b></div><div class="item"><b>trainer sos</b></div><div class="item"><b>trainer morse</b></div></div>
+<div class="section">SYSTEM / AMOMII</div><div class="grid">
+<div class="item"><b>connect / disconnect</b></div><div class="item"><b>status</b></div><div class="item"><b>system test</b></div><div class="item"><b>led on / led off</b></div><div class="item"><b>blink 5</b></div><div class="item"><b>sos</b></div><div class="item"><b>stop</b></div><div class="item"><b>help / commands</b></div></div>
+<div class="section">MEDIA / CALENDAR / BROWSER</div><div class="grid">
+<div class="item"><b>play / pause / stop music</b></div><div class="item"><b>next / previous song</b></div><div class="item"><b>shuffle / repeat</b></div><div class="item"><b>play video</b></div><div class="item"><b>add event ...</b></div><div class="item"><b>search Google for ...</b></div><div class="item"><b>open Google / Gmail / YouTube / Maps / Drive</b></div></div>`;
+}
+function openNovaHelpScreen(){openNovaInfoScreen("NOVA HELP",`<div class="grid"><div class="item"><b>TALK TO NOVA</b><br>Voice control.</div><div class="item"><b>NOVA COMMANDS</b><br>Exact command reference.</div><div class="item"><b>VOICE COMMANDS</b><br>Natural-language and voice examples.</div><div class="item"><b>COMMAND HISTORY</b><br>Commands received this session.</div></div>`);}
 function openNovaCommandsScreen(){openNovaInfoScreen("NOVA COMMANDS",novaCommandReferenceHtml());}
-function openNovaVoiceCommandsScreen(){openNovaInfoScreen("NOVA VOICE COMMANDS",novaCommandReferenceHtml());}
+function openNovaVoiceCommandsScreen(){openNovaInfoScreen("NOVA VOICE COMMANDS",novaVoiceCommandReferenceHtml());}
 function openNovaHistoryScreen(){const h=document.getElementById("commandHistory");const items=h?Array.from(h.children):[];openNovaInfoScreen("NOVA COMMAND HISTORY",items.length?items.map(x=>`<div class="historyItem">${x.innerHTML}</div>`).join(""):`<div class="note">No commands recorded this session yet.</div>`);}
 
 
