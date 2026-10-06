@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  >
+
+  <title>NOVA Vehicle Interface</title>
+
+  <link rel="stylesheet" href="nova-vehicle.css">
+</head>
+
+<body>
+
+<div id="novaVehicleApp">
+
+  <!-- ======================================================
+       TOP STATUS BAR
+       ====================================================== -->
+
+  <header class="vehicleTopBar">
+
+    <div class="vehicleIdentity">
+      <div class="novaLogo">NOVA</div>
+      <div class="vehicleMode">VEHICLE COMMAND</div>
+    </div>
+
+    <div class="topStatus">
+
+      <div class="statusItem">
+        <span class="statusDot online"></span>
+        <span id="novaStatus">NOVA ONLINE</span>
+      </div>
+
+      <div class="statusItem">
+        <span id="gpsStatus">GPS SIM</span>
+      </div>
+
+      <div class="statusItem">
+        <span id="vehicleClock">--:--</span>
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- ======================================================
+       MAIN VEHICLE DISPLAY
+       ====================================================== -->
+
+  <main class="vehicleMain">
+
+    <!-- LEFT VEHICLE DATA -->
+
+    <section class="vehicleSidePanel leftPanel">
+
+      <div class="dataCard">
+        <div class="dataLabel">RPM</div>
+        <div class="dataValue">
+          <span id="rpmValue">0</span>
+        </div>
+      </div>
+
+      <div class="dataCard">
+        <div class="dataLabel">BATTERY</div>
+        <div class="dataValue">
+          <span id="voltageValue">13.8</span>
+          <span class="dataUnit">V</span>
+        </div>
+      </div>
+
+      <div class="dataCard">
+        <div class="dataLabel">COOLANT</div>
+        <div class="dataValue">
+          <span id="coolantValue">190</span>
+          <span class="dataUnit">°F</span>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         CENTER NOVA CORE
+         ==================================================== -->
+
+    <section class="novaCenter">
+
+      <div class="speedDisplay">
+
+        <div id="speedValue">0</div>
+
+        <div class="speedUnit">
+          MPH
+        </div>
+
+      </div>
+
+
+      <div class="novaCore">
+
+        <div class="novaOuterRing"></div>
+
+        <div class="novaMiddleRing"></div>
+
+        <div class="novaInnerCore">
+
+          <div class="novaCoreName">
+            NOVA
+          </div>
+
+          <div
+            id="novaCoreStatus"
+            class="novaCoreStatus"
+          >
+            READY
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="novaResponse"
+        class="novaResponse"
+      >
+        VEHICLE SYSTEM READY
+      </div>
+
+
+      <button
+        id="voiceButton"
+        class="talkButton"
+        type="button"
+      >
+        TALK TO NOVA
+      </button>
+
+    </section>
+
+
+    <!-- RIGHT VEHICLE DATA -->
+
+    <section class="vehicleSidePanel rightPanel">
+
+      <div class="dataCard">
+        <div class="dataLabel">FUEL</div>
+
+        <div class="dataValue">
+          <span id="fuelValue">78</span>
+          <span class="dataUnit">%</span>
+        </div>
+      </div>
+
+
+      <div class="dataCard">
+        <div class="dataLabel">GEAR</div>
+
+        <div class="dataValue">
+          <span id="gearValue">P</span>
+        </div>
+      </div>
+
+
+      <div class="dataCard">
+        <div class="dataLabel">CONNECTION</div>
+
+        <div
+          id="vehicleConnection"
+          class="connectionValue"
+        >
+          SIMULATOR
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ======================================================
+       COMMAND BUTTONS
+       ====================================================== -->
+
+  <section class="vehicleControls">
+
+    <button
+      class="vehicleButton"
+      data-panel="navigation"
+      type="button"
+    >
+      <span class="buttonIcon">⌖</span>
+      <span>NAVIGATION</span>
+    </button>
+
+
+    <button
+      class="vehicleButton"
+      data-panel="music"
+      type="button"
+    >
+      <span class="buttonIcon">♫</span>
+      <span>MUSIC</span>
+    </button>
+
+
+    <button
+      class="vehicleButton"
+      data-panel="phone"
+      type="button"
+    >
+      <span class="buttonIcon">☎</span>
+      <span>PHONE</span>
+    </button>
+
+
+    <button
+      class="vehicleButton"
+      data-panel="cameras"
+      type="button"
+    >
+      <span class="buttonIcon">◉</span>
+      <span>CAMERAS</span>
+    </button>
+
+
+    <button
+      class="vehicleButton"
+      data-panel="vehicle"
+      type="button"
+    >
+      <span class="buttonIcon">⚡</span>
+      <span>VEHICLE</span>
+    </button>
+
+
+    <button
+      class="vehicleButton"
+      data-panel="amomii"
+      type="button"
+    >
+      <span class="buttonIcon">A</span>
+      <span>AMOMII</span>
+    </button>
+
+
+    <button
+      class="vehicleButton"
+      data-panel="home"
+      type="button"
+    >
+      <span class="buttonIcon">⌂</span>
+      <span>HOME</span>
+    </button>
+
+
+    <button
+      class="vehicleButton"
+      data-panel="settings"
+      type="button"
+    >
+      <span class="buttonIcon">⚙</span>
+      <span>SETTINGS</span>
+    </button>
+
+  </section>
+
+
+  <!-- ======================================================
+       SLIDE-UP PANEL
+       ====================================================== -->
+
+  <section
+    id="vehiclePanel"
+    class="vehiclePanel"
+  >
+
+    <div class="vehiclePanelHeader">
+
+      <div id="vehiclePanelTitle">
+        NOVA
+      </div>
+
+      <button
+        id="closeVehiclePanel"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div
+      id="vehiclePanelContent"
+      class="vehiclePanelContent"
+    >
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================
+       BOTTOM STATUS
+       ====================================================== -->
+
+  <footer class="vehicleBottomBar">
+
+    <div>
+      VEHICLE:
+      <span id="bottomVehicleStatus">
+        SIMULATED
+      </span>
+    </div>
+
+    <div>
+      AMOMII:
+      <span id="bottomAmomiiStatus">
+        STANDBY
+      </span>
+    </div>
+
+    <div>
+      VOICE:
+      <span id="bottomVoiceStatus">
+        OFF
+      </span>
+    </div>
+
+  </footer>
+
+</div>
+
+
+<script src="nova-vehicle.js"></script>
+
+</body>
+</html>
