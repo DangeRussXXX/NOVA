@@ -1746,3 +1746,115 @@ button {
     padding: 16px;
   }
 }
+/* ============================================================
+   NOVA VEHICLE — LEGACY CORE GEOMETRY FIX
+   Android 6 / Chromium 44
+   ============================================================ */
+
+@supports not (display: grid) {
+
+  /* ---------- CENTER AREA ---------- */
+
+  .novaCenter {
+    position: relative;
+  }
+
+  .speedDisplay {
+    position: absolute;
+
+    top: 8px;
+    left: 50%;
+
+    width: 180px;
+
+    margin-left: -90px;
+
+    text-align: center;
+  }
+
+  #speedValue {
+    font-size: 64px;
+    line-height: 0.85;
+  }
+
+  .speedUnit {
+    margin-top: 5px;
+  }
+
+
+  /* ---------- NOVA CORE ---------- */
+
+  .novaCore {
+    position: relative;
+
+    width: 190px;
+    height: 190px;
+
+    min-width: 190px;
+    min-height: 190px;
+
+    max-width: 190px;
+    max-height: 190px;
+
+    margin-top: 48px;
+
+    flex: 0 0 190px;
+  }
+
+
+  /* Chromium 44 does not understand CSS inset */
+
+  .novaOuterRing {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .novaMiddleRing {
+    top: 27px;
+    right: 27px;
+    bottom: 27px;
+    left: 27px;
+  }
+
+  .novaInnerCore {
+    top: 51px;
+    right: 51px;
+    bottom: 51px;
+    left: 51px;
+  }
+
+
+  /* ---------- CORE TEXT ---------- */
+
+  .novaCoreName {
+    font-size: 23px;
+    letter-spacing: 4px;
+  }
+
+  .novaCoreStatus {
+    margin-top: 4px;
+
+    font-size: 7px;
+    letter-spacing: 1.5px;
+  }
+
+
+  /* ---------- RESPONSE + TALK ---------- */
+
+  .novaResponse {
+    width: 360px;
+
+    min-height: 18px;
+
+    margin-top: 2px;
+  }
+
+  .talkButton {
+    width: 200px;
+    min-width: 200px;
+
+    margin-top: 2px;
+  }
+}
