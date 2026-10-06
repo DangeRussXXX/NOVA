@@ -1,7 +1,11 @@
 /* ============================================================
    NOVA VEHICLE INTERFACE
    Version 1
+
    Simulated Vehicle + Panels + Voice
+
+   Legacy WebView Compatible
+   Target: Android 6 / Chromium 44+
    ============================================================ */
 
 "use strict";
@@ -11,71 +15,71 @@
    DOM
    ============================================================ */
 
-const speedValue =
-  document.getElementById("speedValue");
+var speedValue =
+    document.getElementById("speedValue");
 
-const rpmValue =
-  document.getElementById("rpmValue");
+var rpmValue =
+    document.getElementById("rpmValue");
 
-const voltageValue =
-  document.getElementById("voltageValue");
+var voltageValue =
+    document.getElementById("voltageValue");
 
-const coolantValue =
-  document.getElementById("coolantValue");
+var coolantValue =
+    document.getElementById("coolantValue");
 
-const fuelValue =
-  document.getElementById("fuelValue");
+var fuelValue =
+    document.getElementById("fuelValue");
 
-const gearValue =
-  document.getElementById("gearValue");
+var gearValue =
+    document.getElementById("gearValue");
 
-const vehicleClock =
-  document.getElementById("vehicleClock");
+var vehicleClock =
+    document.getElementById("vehicleClock");
 
-const novaResponse =
-  document.getElementById("novaResponse");
+var novaResponse =
+    document.getElementById("novaResponse");
 
-const novaCoreStatus =
-  document.getElementById("novaCoreStatus");
+var novaCoreStatus =
+    document.getElementById("novaCoreStatus");
 
-const voiceButton =
-  document.getElementById("voiceButton");
+var voiceButton =
+    document.getElementById("voiceButton");
 
-const bottomVoiceStatus =
-  document.getElementById("bottomVoiceStatus");
+var bottomVoiceStatus =
+    document.getElementById("bottomVoiceStatus");
 
-const vehiclePanel =
-  document.getElementById("vehiclePanel");
+var vehiclePanel =
+    document.getElementById("vehiclePanel");
 
-const vehiclePanelTitle =
-  document.getElementById("vehiclePanelTitle");
+var vehiclePanelTitle =
+    document.getElementById("vehiclePanelTitle");
 
-const vehiclePanelContent =
-  document.getElementById("vehiclePanelContent");
+var vehiclePanelContent =
+    document.getElementById("vehiclePanelContent");
 
-const closeVehiclePanel =
-  document.getElementById("closeVehiclePanel");
+var closeVehiclePanel =
+    document.getElementById("closeVehiclePanel");
 
 
 /* ============================================================
    VEHICLE STATE
    ============================================================ */
 
-const vehicleState = {
+var vehicleState = {
 
-  speed: 0,
+    speed: 0,
 
-  rpm: 0,
+    rpm: 0,
 
-  voltage: 13.8,
+    voltage: 13.8,
 
-  coolant: 190,
+    coolant: 190,
 
-  fuel: 78,
+    fuel: 78,
 
-  gear: "P",
+    gear: "P",
 
-  simulated: true
+    simulated: true
 
 };
 
@@ -86,22 +90,22 @@ const vehicleState = {
 
 function updateClock() {
 
-  const now =
-    new Date();
+    var now =
+        new Date();
 
-  vehicleClock.textContent =
-    now.toLocaleTimeString([], {
-      hour: "numeric",
-      minute: "2-digit"
-    });
-
+    vehicleClock.textContent =
+        now.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+        });
 }
+
 
 updateClock();
 
 setInterval(
-  updateClock,
-  1000
+    updateClock,
+    1000
 );
 
 
@@ -111,24 +115,23 @@ setInterval(
 
 function updateVehicleDisplay() {
 
-  speedValue.textContent =
-    Math.round(vehicleState.speed);
+    speedValue.textContent =
+        Math.round(vehicleState.speed);
 
-  rpmValue.textContent =
-    Math.round(vehicleState.rpm);
+    rpmValue.textContent =
+        Math.round(vehicleState.rpm);
 
-  voltageValue.textContent =
-    vehicleState.voltage.toFixed(1);
+    voltageValue.textContent =
+        vehicleState.voltage.toFixed(1);
 
-  coolantValue.textContent =
-    Math.round(vehicleState.coolant);
+    coolantValue.textContent =
+        Math.round(vehicleState.coolant);
 
-  fuelValue.textContent =
-    Math.round(vehicleState.fuel);
+    fuelValue.textContent =
+        Math.round(vehicleState.fuel);
 
-  gearValue.textContent =
-    vehicleState.gear;
-
+    gearValue.textContent =
+        vehicleState.gear;
 }
 
 
@@ -138,36 +141,36 @@ function updateVehicleDisplay() {
 
 function simulateVehicle() {
 
-  /*
-     For now the car is parked.
+    /*
+       For now the car is parked.
 
-     Later this function will be replaced by:
-       - OBD-II
-       - GPS
-       - Android vehicle data
-       - NOVA Vehicle Controller
-  */
+       Later this function will be replaced by:
+         - OBD-II
+         - GPS
+         - Android vehicle data
+         - NOVA Vehicle Controller
+    */
 
-  vehicleState.speed = 0;
+    vehicleState.speed = 0;
 
-  vehicleState.rpm =
-    700 + Math.random() * 35;
+    vehicleState.rpm =
+        700 + Math.random() * 35;
 
-  vehicleState.voltage =
-    13.7 + Math.random() * 0.25;
+    vehicleState.voltage =
+        13.7 + Math.random() * 0.25;
 
-  vehicleState.coolant =
-    188 + Math.random() * 3;
+    vehicleState.coolant =
+        188 + Math.random() * 3;
 
-  updateVehicleDisplay();
-
+    updateVehicleDisplay();
 }
+
 
 simulateVehicle();
 
 setInterval(
-  simulateVehicle,
-  1500
+    simulateVehicle,
+    1500
 );
 
 
@@ -175,31 +178,32 @@ setInterval(
    NOVA RESPONSE
    ============================================================ */
 
-let responseTimer = null;
+var responseTimer = null;
 
 function showNovaResponse(message) {
 
-  if (!message) {
-    return;
-  }
+    if (!message) {
+        return;
+    }
 
-  novaResponse.textContent =
-    String(message).toUpperCase();
+    novaResponse.textContent =
+        String(message).toUpperCase();
 
-  clearTimeout(responseTimer);
+    clearTimeout(responseTimer);
 
-  responseTimer =
-    setTimeout(() => {
+    responseTimer =
+        setTimeout(
+            function() {
 
-      if (!voiceListening) {
+                if (!voiceListening) {
 
-        novaResponse.textContent =
-          "VEHICLE SYSTEM READY";
+                    novaResponse.textContent =
+                        "VEHICLE SYSTEM READY";
+                }
 
-      }
-
-    }, 6000);
-
+            },
+            6000
+        );
 }
 
 
@@ -207,69 +211,112 @@ function showNovaResponse(message) {
    SPEECH
    ============================================================ */
 
+function findPreferredVoice(voices) {
+
+    var i;
+    var voice;
+    var language;
+    var femaleVoicePattern =
+        /aria|jenny|zira|samantha|ava|allison|victoria|female/i;
+
+    /*
+       First choice:
+       English US voice matching one of the preferred names.
+    */
+
+    for (i = 0; i < voices.length; i++) {
+
+        voice = voices[i];
+
+        if (!voice || !voice.lang) {
+            continue;
+        }
+
+        language =
+            String(voice.lang).toLowerCase();
+
+        if (
+            language.indexOf("en-us") === 0 &&
+            femaleVoicePattern.test(
+                String(voice.name || "")
+            )
+        ) {
+            return voice;
+        }
+    }
+
+    /*
+       Second choice:
+       Any English US voice.
+    */
+
+    for (i = 0; i < voices.length; i++) {
+
+        voice = voices[i];
+
+        if (!voice || !voice.lang) {
+            continue;
+        }
+
+        language =
+            String(voice.lang).toLowerCase();
+
+        if (
+            language.indexOf("en-us") === 0
+        ) {
+            return voice;
+        }
+    }
+
+    return null;
+}
+
+
 function speak(text) {
 
-  if (
-    !text ||
-    !("speechSynthesis" in window)
-  ) {
-    return;
-  }
+    if (
+        !text ||
+        !("speechSynthesis" in window)
+    ) {
+        return;
+    }
 
-  speechSynthesis.cancel();
+    window.speechSynthesis.cancel();
 
-  const utterance =
-    new SpeechSynthesisUtterance(text);
+    var utterance =
+        new SpeechSynthesisUtterance(text);
 
-  utterance.rate = 0.9;
+    utterance.rate = 0.9;
 
-  utterance.pitch = 1.05;
+    utterance.pitch = 1.05;
 
-  utterance.volume = 1;
+    utterance.volume = 1;
 
+    var voices =
+        window.speechSynthesis.getVoices();
 
-  const voices =
-    speechSynthesis.getVoices();
+    var preferred =
+        findPreferredVoice(voices);
 
-  const preferred =
-    voices.find(voice =>
-      voice.lang &&
-      voice.lang
-        .toLowerCase()
-        .startsWith("en-us") &&
-      /aria|jenny|zira|samantha|ava|allison|victoria|female/i
-        .test(voice.name)
-    ) ||
-
-    voices.find(voice =>
-      voice.lang &&
-      voice.lang
-        .toLowerCase()
-        .startsWith("en-us")
-    );
-
-  if (preferred) {
-    utterance.voice = preferred;
-  }
-
-
-  novaCoreStatus.textContent =
-    "SPEAKING";
-
-  utterance.onend = () => {
+    if (preferred) {
+        utterance.voice = preferred;
+    }
 
     novaCoreStatus.textContent =
-      voiceListening
-        ? "LISTENING"
-        : "READY";
+        "SPEAKING";
 
-  };
+    utterance.onend =
+        function() {
 
+            novaCoreStatus.textContent =
+                voiceListening
+                    ? "LISTENING"
+                    : "READY";
+        };
 
-  speechSynthesis.speak(
-    utterance
-  );
-
+    window.speechSynthesis.speak(
+        utterance
+    );
 }
 
 
@@ -277,182 +324,184 @@ function speak(text) {
    PANEL SYSTEM
    ============================================================ */
 
-const panelData = {
+var panelData = {
 
-  navigation: {
+    navigation: {
 
-    title: "NAVIGATION",
+        title: "NAVIGATION",
 
-    icon: "⌖",
+        icon: "⌖",
 
-    text:
-      "Navigation system ready. Android GPS and map integration will be connected here."
-
-  },
-
-
-  music: {
-
-    title: "NOVA MEDIA",
-
-    icon: "♫",
-
-    text:
-      "NOVA Media Center will connect to your existing music library and vehicle audio system."
-
-  },
+        text:
+            "Navigation system ready. Android GPS and map integration will be connected here."
+    },
 
 
-  phone: {
+    music: {
 
-    title: "PHONE",
+        title: "NOVA MEDIA",
 
-    icon: "☎",
+        icon: "♫",
 
-    text:
-      "Bluetooth phone controls, contacts, calls and hands-free communication will appear here."
-
-  },
-
-
-  cameras: {
-
-    title: "VEHICLE CAMERAS",
-
-    icon: "◉",
-
-    text:
-      "Front, rear and additional NOVA vehicle camera feeds will appear here."
-
-  },
+        text:
+            "NOVA Media Center will connect to your existing music library and vehicle audio system."
+    },
 
 
-  vehicle: {
+    phone: {
 
-    title: "VEHICLE SYSTEM",
+        title: "PHONE",
 
-    icon: "⚡",
+        icon: "☎",
 
-    text:
-      "Vehicle diagnostics, OBD-II data, sensors, battery voltage and NOVA Vehicle Controller status will appear here."
-
-  },
-
-
-  amomii: {
-
-    title: "AMOMII NETWORK",
-
-    icon: "A",
-
-    text:
-      "Connect NOVA Vehicle to AMOMII ONE, your trainers and other NOVA systems."
-
-  },
+        text:
+            "Bluetooth phone controls, contacts, calls and hands-free communication will appear here."
+    },
 
 
-  home: {
+    cameras: {
 
-    title: "NOVA HOME",
+        title: "VEHICLE CAMERAS",
 
-    icon: "⌂",
+        icon: "◉",
 
-    text:
-      "Remote access to your NOVA home systems will appear here."
+        text:
+            "Front, rear and additional NOVA vehicle camera feeds will appear here."
+    },
 
-  },
+
+    vehicle: {
+
+        title: "VEHICLE SYSTEM",
+
+        icon: "⚡",
+
+        text:
+            "Vehicle diagnostics, OBD-II data, sensors, battery voltage and NOVA Vehicle Controller status will appear here."
+    },
 
 
-  settings: {
+    amomii: {
 
-    title: "VEHICLE SETTINGS",
+        title: "AMOMII NETWORK",
 
-    icon: "⚙",
+        icon: "A",
 
-    text:
-      "Vehicle interface, display, voice, connection and system settings will appear here."
+        text:
+            "Connect NOVA Vehicle to AMOMII ONE, your trainers and other NOVA systems."
+    },
 
-  }
+
+    home: {
+
+        title: "NOVA HOME",
+
+        icon: "⌂",
+
+        text:
+            "Remote access to your NOVA home systems will appear here."
+    },
+
+
+    settings: {
+
+        title: "VEHICLE SETTINGS",
+
+        icon: "⚙",
+
+        text:
+            "Vehicle interface, display, voice, connection and system settings will appear here."
+    }
 
 };
 
 
 function openPanel(panelName) {
 
-  const panel =
-    panelData[panelName];
+    var panel =
+        panelData[panelName];
 
-  if (!panel) {
-    return;
-  }
+    if (!panel) {
+        return;
+    }
 
+    vehiclePanelTitle.textContent =
+        panel.title;
 
-  vehiclePanelTitle.textContent =
-    panel.title;
+    vehiclePanelContent.innerHTML =
+        '<div class="panelWelcome">' +
 
+            '<div class="panelWelcomeIcon">' +
+                panel.icon +
+            '</div>' +
 
-  vehiclePanelContent.innerHTML = `
-    <div class="panelWelcome">
+            '<div class="panelWelcomeTitle">' +
+                panel.title +
+            '</div>' +
 
-      <div class="panelWelcomeIcon">
-        ${panel.icon}
-      </div>
+            '<div class="panelWelcomeText">' +
+                panel.text +
+            '</div>' +
 
-      <div class="panelWelcomeTitle">
-        ${panel.title}
-      </div>
+        '</div>';
 
-      <div class="panelWelcomeText">
-        ${panel.text}
-      </div>
+    vehiclePanel.classList.add(
+        "open"
+    );
 
-    </div>
-  `;
-
-
-  vehiclePanel.classList.add(
-    "open"
-  );
-
-
-  showNovaResponse(
-    `${panel.title} OPEN`
-  );
-
+    showNovaResponse(
+        panel.title + " OPEN"
+    );
 }
 
 
 function closePanel() {
 
-  vehiclePanel.classList.remove(
-    "open"
-  );
-
+    vehiclePanel.classList.remove(
+        "open"
+    );
 }
 
 
-document
-  .querySelectorAll(".vehicleButton")
-  .forEach(button => {
+/* ============================================================
+   PANEL BUTTONS
+   ============================================================ */
 
-    button.addEventListener(
-      "click",
-      () => {
-
-        const panel =
-          button.dataset.panel;
-
-        openPanel(panel);
-
-      }
+var vehicleButtons =
+    document.querySelectorAll(
+        ".vehicleButton"
     );
 
-  });
+var vehicleButtonIndex;
+
+for (
+    vehicleButtonIndex = 0;
+    vehicleButtonIndex < vehicleButtons.length;
+    vehicleButtonIndex++
+) {
+
+    (function(button) {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                var panel =
+                    button.getAttribute(
+                        "data-panel"
+                    );
+
+                openPanel(panel);
+            }
+        );
+
+    })(vehicleButtons[vehicleButtonIndex]);
+}
 
 
 closeVehiclePanel.addEventListener(
-  "click",
-  closePanel
+    "click",
+    closePanel
 );
 
 
@@ -460,126 +509,125 @@ closeVehiclePanel.addEventListener(
    VOICE RECOGNITION
    ============================================================ */
 
-const SpeechRecognition =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
+var SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
 
 
-let recognition = null;
+var recognition = null;
 
-let voiceListening = false;
+var voiceListening = false;
 
 
 if (SpeechRecognition) {
 
-  recognition =
-    new SpeechRecognition();
+    recognition =
+        new SpeechRecognition();
 
-  recognition.continuous = false;
+    recognition.continuous = false;
 
-  recognition.interimResults = false;
+    recognition.interimResults = false;
 
-  recognition.lang = "en-US";
+    recognition.lang = "en-US";
 
-  recognition.maxAlternatives = 1;
-
-
-  recognition.onstart = () => {
-
-    voiceListening = true;
-
-    voiceButton.classList.add(
-      "listening"
-    );
-
-    voiceButton.textContent =
-      "LISTENING...";
-
-    bottomVoiceStatus.textContent =
-      "LISTENING";
-
-    novaCoreStatus.textContent =
-      "LISTENING";
-
-    showNovaResponse(
-      "NOVA IS LISTENING"
-    );
-
-  };
+    recognition.maxAlternatives = 1;
 
 
-  recognition.onresult = event => {
+    recognition.onstart =
+        function() {
 
-    const result =
-      event.results[
-        event.results.length - 1
-      ];
+            voiceListening = true;
 
-    if (
-      !result ||
-      !result[0]
-    ) {
-      return;
-    }
+            voiceButton.classList.add(
+                "listening"
+            );
 
-    const transcript =
-      result[0].transcript.trim();
+            voiceButton.textContent =
+                "LISTENING...";
 
-    if (!transcript) {
-      return;
-    }
+            bottomVoiceStatus.textContent =
+                "LISTENING";
 
-    showNovaResponse(
-      `HEARD: ${transcript}`
-    );
+            novaCoreStatus.textContent =
+                "LISTENING";
 
-    routeVehicleVoiceCommand(
-      transcript
-    );
-
-  };
+            showNovaResponse(
+                "NOVA IS LISTENING"
+            );
+        };
 
 
-  recognition.onerror = event => {
+    recognition.onresult =
+        function(event) {
 
-    console.warn(
-      "NOVA voice recognition:",
-      event.error
-    );
+            var result =
+                event.results[
+                    event.results.length - 1
+                ];
 
-    if (
-      event.error !== "no-speech" &&
-      event.error !== "aborted"
-    ) {
+            if (
+                !result ||
+                !result[0]
+            ) {
+                return;
+            }
 
-      showNovaResponse(
-        `VOICE ERROR: ${event.error}`
-      );
+            var transcript =
+                result[0].transcript.trim();
 
-    }
+            if (!transcript) {
+                return;
+            }
 
-  };
+            showNovaResponse(
+                "HEARD: " + transcript
+            );
+
+            routeVehicleVoiceCommand(
+                transcript
+            );
+        };
 
 
-  recognition.onend = () => {
+    recognition.onerror =
+        function(event) {
 
-    voiceListening = false;
+            console.warn(
+                "NOVA voice recognition:",
+                event.error
+            );
 
-    voiceButton.classList.remove(
-      "listening"
-    );
+            if (
+                event.error !== "no-speech" &&
+                event.error !== "aborted"
+            ) {
 
-    voiceButton.textContent =
-      "TALK TO NOVA";
+                showNovaResponse(
+                    "VOICE ERROR: " +
+                    event.error
+                );
+            }
+        };
 
-    bottomVoiceStatus.textContent =
-      "READY";
 
-    novaCoreStatus.textContent =
-      "READY";
+    recognition.onend =
+        function() {
 
-  };
+            voiceListening = false;
 
+            voiceButton.classList.remove(
+                "listening"
+            );
+
+            voiceButton.textContent =
+                "TALK TO NOVA";
+
+            bottomVoiceStatus.textContent =
+                "READY";
+
+            novaCoreStatus.textContent =
+                "READY";
+        };
 }
 
 
@@ -588,50 +636,48 @@ if (SpeechRecognition) {
    ============================================================ */
 
 voiceButton.addEventListener(
-  "click",
-  () => {
+    "click",
+    function() {
 
-    if (!recognition) {
+        if (!recognition) {
 
-      showNovaResponse(
-        "VOICE RECOGNITION NOT AVAILABLE"
-      );
+            showNovaResponse(
+                "VOICE RECOGNITION NOT AVAILABLE"
+            );
 
-      speak(
-        "Voice recognition is not available in this browser."
-      );
+            speak(
+                "Voice recognition is not available in this browser."
+            );
 
-      return;
+            return;
+        }
 
+
+        if (voiceListening) {
+
+            try {
+                recognition.stop();
+            }
+            catch (error) {
+                console.warn(error);
+            }
+
+            return;
+        }
+
+
+        try {
+
+            recognition.start();
+
+        }
+        catch (error) {
+
+            console.warn(
+                error
+            );
+        }
     }
-
-
-    if (voiceListening) {
-
-      try {
-        recognition.stop();
-      }
-      catch (error) {}
-
-      return;
-
-    }
-
-
-    try {
-
-      recognition.start();
-
-    }
-    catch (error) {
-
-      console.warn(
-        error
-      );
-
-    }
-
-  }
 );
 
 
@@ -640,337 +686,329 @@ voiceButton.addEventListener(
    ============================================================ */
 
 function routeVehicleVoiceCommand(
-  rawText
+    rawText
 ) {
 
-  const command =
-    String(rawText)
-      .toLowerCase()
-      .replace(/[.,!?]/g, "")
-      .replace(/^nova\s+/, "")
-      .trim();
+    var command =
+        String(rawText)
+            .toLowerCase()
+            .replace(/[.,!?]/g, "")
+            .replace(/^nova\s+/, "")
+            .trim();
 
 
-  /* NAVIGATION */
+    /* NAVIGATION */
 
-  if (
-    command.includes("navigation") ||
-    command === "open maps" ||
-    command === "show maps"
-  ) {
+    if (
+        command.indexOf("navigation") !== -1 ||
+        command === "open maps" ||
+        command === "show maps"
+    ) {
 
-    openPanel(
-      "navigation"
-    );
+        openPanel(
+            "navigation"
+        );
 
-    speak(
-      "Opening navigation."
-    );
+        speak(
+            "Opening navigation."
+        );
 
-    return;
+        return;
+    }
 
-  }
 
+    /* MUSIC */
 
-  /* MUSIC */
+    if (
+        command.indexOf("music") !== -1 ||
+        command.indexOf("media") !== -1
+    ) {
 
-  if (
-    command.includes("music") ||
-    command.includes("media")
-  ) {
+        openPanel(
+            "music"
+        );
 
-    openPanel(
-      "music"
-    );
+        speak(
+            "Opening NOVA media."
+        );
 
-    speak(
-      "Opening NOVA media."
-    );
+        return;
+    }
 
-    return;
 
-  }
+    /* PHONE */
 
+    if (
+        command.indexOf("phone") !== -1
+    ) {
 
-  /* PHONE */
+        openPanel(
+            "phone"
+        );
 
-  if (
-    command.includes("phone")
-  ) {
+        speak(
+            "Opening phone controls."
+        );
 
-    openPanel(
-      "phone"
-    );
+        return;
+    }
 
-    speak(
-      "Opening phone controls."
-    );
 
-    return;
+    /* CAMERAS */
 
-  }
+    if (
+        command.indexOf("camera") !== -1
+    ) {
 
+        openPanel(
+            "cameras"
+        );
 
-  /* CAMERAS */
+        speak(
+            "Opening vehicle cameras."
+        );
 
-  if (
-    command.includes("camera")
-  ) {
+        return;
+    }
 
-    openPanel(
-      "cameras"
-    );
 
-    speak(
-      "Opening vehicle cameras."
-    );
+    /* VEHICLE */
 
-    return;
+    if (
+        command.indexOf("vehicle") !== -1 ||
+        command.indexOf("diagnostics") !== -1 ||
+        command.indexOf("obd") !== -1
+    ) {
 
-  }
+        openPanel(
+            "vehicle"
+        );
 
+        speak(
+            "Opening vehicle systems."
+        );
 
-  /* VEHICLE */
+        return;
+    }
 
-  if (
-    command.includes("vehicle") ||
-    command.includes("diagnostics") ||
-    command.includes("obd")
-  ) {
 
-    openPanel(
-      "vehicle"
-    );
+    /* AMOMII */
 
-    speak(
-      "Opening vehicle systems."
-    );
+    if (
+        command.indexOf("amomii") !== -1 ||
+        command.indexOf("trainer") !== -1
+    ) {
 
-    return;
+        openPanel(
+            "amomii"
+        );
 
-  }
+        speak(
+            "Opening the AMOMII network."
+        );
 
+        return;
+    }
 
-  /* AMOMII */
 
-  if (
-    command.includes("amomii") ||
-    command.includes("trainer")
-  ) {
+    /* HOME */
 
-    openPanel(
-      "amomii"
-    );
+    if (
+        command === "home" ||
+        command.indexOf("nova home") !== -1 ||
+        command.indexOf("home system") !== -1
+    ) {
 
-    speak(
-      "Opening the AMOMII network."
-    );
+        openPanel(
+            "home"
+        );
 
-    return;
+        speak(
+            "Opening NOVA home."
+        );
 
-  }
+        return;
+    }
 
 
-  /* HOME */
+    /* SETTINGS */
 
-  if (
-    command === "home" ||
-    command.includes("nova home") ||
-    command.includes("home system")
-  ) {
+    if (
+        command.indexOf("settings") !== -1
+    ) {
 
-    openPanel(
-      "home"
-    );
+        openPanel(
+            "settings"
+        );
 
-    speak(
-      "Opening NOVA home."
-    );
+        speak(
+            "Opening vehicle settings."
+        );
 
-    return;
+        return;
+    }
 
-  }
 
+    /* CLOSE */
 
-  /* SETTINGS */
+    if (
+        command === "close" ||
+        command === "go back" ||
+        command === "back"
+    ) {
 
-  if (
-    command.includes("settings")
-  ) {
+        closePanel();
 
-    openPanel(
-      "settings"
-    );
+        speak(
+            "Closing panel."
+        );
 
-    speak(
-      "Opening vehicle settings."
-    );
+        return;
+    }
 
-    return;
 
-  }
+    /* SPEED */
 
+    if (
+        command.indexOf("speed") !== -1 ||
+        command.indexOf("how fast") !== -1
+    ) {
 
-  /* CLOSE */
+        var speedResponse =
+            "Vehicle speed is " +
+            Math.round(
+                vehicleState.speed
+            ) +
+            " miles per hour.";
 
-  if (
-    command === "close" ||
-    command === "go back" ||
-    command === "back"
-  ) {
+        showNovaResponse(
+            speedResponse
+        );
 
-    closePanel();
+        speak(
+            speedResponse
+        );
 
-    speak(
-      "Closing panel."
-    );
+        return;
+    }
 
-    return;
 
-  }
+    /* BATTERY VOLTAGE */
 
+    if (
+        command.indexOf("battery") !== -1 ||
+        command.indexOf("voltage") !== -1
+    ) {
 
-  /* SPEED */
+        var voltageResponse =
+            "Vehicle voltage is " +
+            vehicleState.voltage.toFixed(1) +
+            " volts.";
 
-  if (
-    command.includes("speed") ||
-    command.includes("how fast")
-  ) {
+        showNovaResponse(
+            voltageResponse
+        );
 
-    const response =
-      `Vehicle speed is ${Math.round(
-        vehicleState.speed
-      )} miles per hour.`;
+        speak(
+            voltageResponse
+        );
+
+        return;
+    }
+
+
+    /* COOLANT */
+
+    if (
+        command.indexOf("coolant") !== -1 ||
+        command.indexOf("temperature") !== -1
+    ) {
+
+        var coolantResponse =
+            "Coolant temperature is " +
+            Math.round(
+                vehicleState.coolant
+            ) +
+            " degrees Fahrenheit.";
+
+        showNovaResponse(
+            coolantResponse
+        );
+
+        speak(
+            coolantResponse
+        );
+
+        return;
+    }
+
+
+    /* FUEL */
+
+    if (
+        command.indexOf("fuel") !== -1 ||
+        command.indexOf("gas") !== -1
+    ) {
+
+        var fuelResponse =
+            "Fuel level is " +
+            Math.round(
+                vehicleState.fuel
+            ) +
+            " percent.";
+
+        showNovaResponse(
+            fuelResponse
+        );
+
+        speak(
+            fuelResponse
+        );
+
+        return;
+    }
+
+
+    /* TIME */
+
+    if (
+        command.indexOf("what time") !== -1 ||
+        command === "time"
+    ) {
+
+        var timeResponse =
+            "It is " +
+            new Date().toLocaleTimeString(
+                [],
+                {
+                    hour: "numeric",
+                    minute: "2-digit"
+                }
+            ) +
+            ".";
+
+        showNovaResponse(
+            timeResponse
+        );
+
+        speak(
+            timeResponse
+        );
+
+        return;
+    }
+
+
+    /* UNKNOWN COMMAND */
 
     showNovaResponse(
-      response
+        "COMMAND NOT RECOGNIZED: " +
+        rawText
     );
 
     speak(
-      response
+        "I don't have that vehicle command yet."
     );
-
-    return;
-
-  }
-
-
-  /* BATTERY VOLTAGE */
-
-  if (
-    command.includes("battery") ||
-    command.includes("voltage")
-  ) {
-
-    const response =
-      `Vehicle voltage is ${vehicleState.voltage.toFixed(
-        1
-      )} volts.`;
-
-    showNovaResponse(
-      response
-    );
-
-    speak(
-      response
-    );
-
-    return;
-
-  }
-
-
-  /* COOLANT */
-
-  if (
-    command.includes("coolant") ||
-    command.includes("temperature")
-  ) {
-
-    const response =
-      `Coolant temperature is ${Math.round(
-        vehicleState.coolant
-      )} degrees Fahrenheit.`;
-
-    showNovaResponse(
-      response
-    );
-
-    speak(
-      response
-    );
-
-    return;
-
-  }
-
-
-  /* FUEL */
-
-  if (
-    command.includes("fuel") ||
-    command.includes("gas")
-  ) {
-
-    const response =
-      `Fuel level is ${Math.round(
-        vehicleState.fuel
-      )} percent.`;
-
-    showNovaResponse(
-      response
-    );
-
-    speak(
-      response
-    );
-
-    return;
-
-  }
-
-
-  /* TIME */
-
-  if (
-    command.includes("what time") ||
-    command === "time"
-  ) {
-
-    const response =
-      `It is ${
-        new Date().toLocaleTimeString(
-          [],
-          {
-            hour: "numeric",
-            minute: "2-digit"
-          }
-        )
-      }.`;
-
-    showNovaResponse(
-      response
-    );
-
-    speak(
-      response
-    );
-
-    return;
-
-  }
-
-
-  /* UNKNOWN COMMAND */
-
-  showNovaResponse(
-    `COMMAND NOT RECOGNIZED: ${rawText}`
-  );
-
-  speak(
-    "I don't have that vehicle command yet."
-  );
-
 }
 
 
@@ -980,26 +1018,27 @@ function routeVehicleVoiceCommand(
 
 function novaVehicleStartup() {
 
-  updateVehicleDisplay();
+    updateVehicleDisplay();
 
-  bottomVoiceStatus.textContent =
-    recognition
-      ? "READY"
-      : "UNAVAILABLE";
+    bottomVoiceStatus.textContent =
+        recognition
+            ? "READY"
+            : "UNAVAILABLE";
 
-  console.log(
-    "NOVA Vehicle Interface initialized."
-  );
-
-
-  setTimeout(() => {
-
-    showNovaResponse(
-      "NOVA VEHICLE INTERFACE ONLINE"
+    console.log(
+        "NOVA Vehicle Interface initialized."
     );
 
-  }, 400);
+    setTimeout(
+        function() {
 
+            showNovaResponse(
+                "NOVA VEHICLE INTERFACE ONLINE"
+            );
+
+        },
+        400
+    );
 }
 
 
