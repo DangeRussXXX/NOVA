@@ -1432,3 +1432,317 @@ button {
     letter-spacing: 0.5px;
   }
 }
+/* ============================================================
+   NOVA VEHICLE — LEGACY ANDROID WEBVIEW FALLBACK
+
+   Target:
+   Android 6 / Chromium 44-era WebView
+   NOVA Stereo 1024 x 600
+
+   Purpose:
+   Replaces CSS Grid layout with Flexbox for old WebViews.
+   Modern browsers continue using the normal Grid layout.
+   ============================================================ */
+
+@supports not (display: grid) {
+
+  /* ==========================================================
+     FULL APPLICATION
+     ========================================================== */
+
+  #novaVehicleApp {
+    width: 100vw;
+    height: 100vh;
+
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+  }
+
+
+  /* ==========================================================
+     TOP BAR
+     ========================================================== */
+
+  .vehicleTopBar {
+    flex: 0 0 48px;
+    height: 48px;
+
+    padding: 0 14px;
+  }
+
+  .novaLogo {
+    font-size: 22px;
+    letter-spacing: 5px;
+  }
+
+  .vehicleMode {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+
+  .topStatus {
+    gap: 12px;
+
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .statusDot {
+    width: 7px;
+    height: 7px;
+  }
+
+
+  /* ==========================================================
+     MAIN COCKPIT
+     ========================================================== */
+
+  .vehicleMain {
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 1 auto;
+
+    display: flex;
+    flex-direction: row;
+
+    gap: 12px;
+
+    padding: 10px 14px;
+
+    overflow: hidden;
+  }
+
+
+  /* ==========================================================
+     LEFT + RIGHT TELEMETRY
+     ========================================================== */
+
+  .vehicleSidePanel {
+    width: 190px;
+
+    min-width: 190px;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+  }
+
+  .vehicleSidePanel .dataCard {
+    width: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 1 0;
+
+    padding: 7px 5px;
+
+    border-radius: 8px;
+  }
+
+  .dataLabel {
+    margin-bottom: 3px;
+
+    font-size: 8px;
+    letter-spacing: 1.3px;
+  }
+
+  .dataValue {
+    font-size: 27px;
+    line-height: 1;
+  }
+
+  .dataUnit {
+    margin-left: 3px;
+
+    font-size: 8px;
+  }
+
+  .connectionValue {
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+
+  /* ==========================================================
+     CENTER NOVA COCKPIT
+     ========================================================== */
+
+  .novaCenter {
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 1 auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+  }
+
+  .speedDisplay {
+    top: 0;
+  }
+
+  #speedValue {
+    font-size: 72px;
+    line-height: 0.9;
+  }
+
+  .speedUnit {
+    margin-top: 5px;
+
+    font-size: 9px;
+    letter-spacing: 3px;
+  }
+
+  .novaCore {
+    width: 190px;
+    height: 190px;
+
+    max-width: 190px;
+
+    flex: 0 0 190px;
+
+    margin-top: 42px;
+  }
+
+  .novaCoreName {
+    font-size: 23px;
+    letter-spacing: 4px;
+  }
+
+  .novaCoreStatus {
+    margin-top: 4px;
+
+    font-size: 7px;
+    letter-spacing: 1.5px;
+  }
+
+  .novaResponse {
+    width: 90%;
+    min-height: 20px;
+
+    margin-top: 4px;
+
+    font-size: 8px;
+    letter-spacing: 0.6px;
+  }
+
+  .talkButton {
+    width: 200px;
+    min-width: 200px;
+
+    margin-top: 4px;
+    padding: 8px 12px;
+
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+
+
+  /* ==========================================================
+     VEHICLE CONTROL BUTTONS
+     ========================================================== */
+
+  .vehicleControls {
+    width: 100%;
+
+    flex: 0 0 96px;
+    height: 96px;
+
+    display: flex;
+    flex-direction: row;
+
+    gap: 5px;
+
+    padding: 6px 10px;
+
+    overflow: hidden;
+  }
+
+  .vehicleButton {
+    width: 0;
+
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 1 0;
+
+    gap: 3px;
+    padding: 4px 2px;
+
+    border-radius: 7px;
+
+    font-size: 7px;
+    letter-spacing: 0.5px;
+  }
+
+  .buttonIcon {
+    font-size: 22px;
+  }
+
+
+  /* ==========================================================
+     BOTTOM STATUS BAR
+     ========================================================== */
+
+  .vehicleBottomBar {
+    flex: 0 0 28px;
+    height: 28px;
+
+    padding: 0 12px;
+
+    font-size: 7px;
+    letter-spacing: 0.5px;
+  }
+
+
+  /* ==========================================================
+     SLIDE-UP PANEL
+     ========================================================== */
+
+  .vehiclePanel {
+    left: 2%;
+    right: 2%;
+    bottom: 28px;
+
+    height: calc(100% - 76px);
+
+    border-radius: 10px 10px 0 0;
+  }
+
+  .vehiclePanelHeader {
+    height: 46px;
+
+    padding: 0 14px;
+
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  #closeVehiclePanel {
+    width: 42px;
+    height: 34px;
+
+    font-size: 22px;
+  }
+
+  .vehiclePanelContent {
+    height: calc(100% - 46px);
+
+    padding: 16px;
+  }
+}
