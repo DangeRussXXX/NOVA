@@ -1,21 +1,48 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 from collections import deque
 import threading
 import time
+import os
+
+
+# ============================================================
+# FLASK APP
+# ============================================================
 
 app = Flask(__name__)
 CORS(app)
 
+
+# ============================================================
+# PATHS
+# ============================================================
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+VEHICLE_DIR = os.path.join(
+    BASE_DIR,
+    "vehicle"
+)
+
+
+# ============================================================
+# COMMAND / RESPONSE QUEUES
+# ============================================================
+
 # Queue of commands waiting to be delivered to the Arduino
 command_queue = deque()
 
-# Queue for Arduino responses (we'll use this in step #3/#5)
+# Queue for Arduino responses
 response_queue = deque()
 
 # Protect queues if multiple requests arrive at the same time
 queue_lock = threading.Lock()
 
+
+# ============================================================
+# AMOMII COMMAND API
+# ============================================================
 
 @app.post("/command")
 def command():
@@ -55,6 +82,10 @@ def get_command():
     return item["command"]
 
 
+# ============================================================
+# ARDUINO RESPONSE API
+# ============================================================
+
 @app.post("/response")
 def response():
     data = request.data.decode().strip()
@@ -89,14 +120,50 @@ def get_response():
     return item["response"]
 
 
+# ============================================================
+# SERVER STATUS
+# ============================================================
+
 @app.get("/status")
 def status():
     with queue_lock:
         return jsonify({
             "commands_pending": len(command_queue),
-            "responses_pending": len(response_queue)
+            "responses_pending": len(response_queue),
+            "vehicle_interface": True
         })
 
+
+# ============================================================
+# NOVA VEHICLE INTERFACE
+# ============================================================
+
+@app.get("/vehicle")
+def vehicle_redirect():
+    return redirect(
+        "/vehicle/nova-vehicle.html"
+    )
+
+
+@app.get("/vehicle/")
+def vehicle_home():
+    return send_from_directory(
+        VEHICLE_DIR,
+        "nova-vehicle.html"
+    )
+
+
+@app.get("/vehicle/<path:filename>")
+def vehicle_files(filename):
+    return send_from_directory(
+        VEHICLE_DIR,
+        filename
+    )
+
+
+# ============================================================
+# START SERVER
+# ============================================================
 
 if __name__ == "__main__":
     app.run(
