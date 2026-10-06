@@ -1145,3 +1145,21 @@ button {
     font-size: 5.5px;
   }
 }
+/* ============================================================
+   PHONE TOUCH SCROLLING
+   Allows up/down + left/right movement on small screens.
+   ============================================================ */
+
+@media (max-width: 699px) {
+
+  html,
+  body {
+    overflow-x: auto;
+    overflow-y: auto;
+    touch-action: pan-x pan-y;
+  }
+
+  #novaVehicleApp {
+    overflow: visible;
+  }
+}
