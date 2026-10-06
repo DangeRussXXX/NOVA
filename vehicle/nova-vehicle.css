@@ -842,3 +842,306 @@ button {
     font-size: 7px;
   }
 }
+/* ============================================================
+   PHONE LAYOUT
+   Only applies to screens narrower than 700px.
+   Desktop and Double-DIN layouts remain unchanged.
+   ============================================================ */
+
+@media (max-width: 699px) {
+
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  #novaVehicleApp {
+    width: 100vw;
+    height: 100vh;
+    min-width: 0;
+    min-height: 0;
+
+    grid-template-rows:
+      44px
+      minmax(0, 1fr)
+      112px
+      28px;
+  }
+
+  /* ---------- TOP BAR ---------- */
+
+  .vehicleTopBar {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .vehicleIdentity {
+    min-width: 0;
+    gap: 5px;
+  }
+
+  .novaLogo {
+    font-size: 18px;
+    letter-spacing: 3px;
+  }
+
+  .vehicleMode {
+    display: none;
+  }
+
+  .topStatus {
+    gap: 7px;
+    font-size: 7px;
+    letter-spacing: 0.3px;
+  }
+
+  .statusItem {
+    gap: 4px;
+  }
+
+  .statusDot {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* Hide GPS SIM on phone to save space */
+  .topStatus .statusItem:nth-child(2) {
+    display: none;
+  }
+
+  /* ---------- MAIN COCKPIT ---------- */
+
+  .vehicleMain {
+    min-width: 0;
+
+    grid-template-columns:
+      72px
+      minmax(0, 1fr)
+      72px;
+
+    gap: 5px;
+    padding: 6px 5px;
+  }
+
+  .vehicleSidePanel {
+    min-width: 0;
+    gap: 5px;
+  }
+
+  .dataCard {
+    min-width: 0;
+    padding: 3px 1px;
+    border-radius: 6px;
+  }
+
+  .dataLabel {
+    margin-bottom: 2px;
+
+    font-size: 6px;
+    letter-spacing: 0.4px;
+
+    text-align: center;
+  }
+
+  .dataValue {
+    font-size: clamp(15px, 5vw, 22px);
+    line-height: 1;
+  }
+
+  .dataUnit {
+    display: block;
+
+    margin: 3px 0 0;
+
+    font-size: 7px;
+
+    text-align: center;
+  }
+
+  .connectionValue {
+    font-size: 8px;
+    letter-spacing: 0.4px;
+    text-align: center;
+  }
+
+  /* ---------- CENTER ---------- */
+
+  .novaCenter {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .speedDisplay {
+    top: 0;
+  }
+
+  #speedValue {
+    font-size: clamp(42px, 15vw, 64px);
+  }
+
+  .speedUnit {
+    margin-top: 3px;
+
+    font-size: 7px;
+    letter-spacing: 2px;
+  }
+
+  .novaCore {
+    width: clamp(112px, 34vw, 155px);
+
+    margin-top: 35px;
+  }
+
+  .novaCoreName {
+    font-size: clamp(14px, 4.5vw, 20px);
+    letter-spacing: 2px;
+  }
+
+  .novaCoreStatus {
+    margin-top: 3px;
+
+    font-size: 6px;
+    letter-spacing: 1px;
+  }
+
+  .novaResponse {
+    width: 100%;
+    min-height: 18px;
+
+    margin-top: 3px;
+
+    font-size: 7px;
+    letter-spacing: 0.4px;
+  }
+
+  .talkButton {
+    width: min(170px, 90%);
+    min-width: 0;
+
+    margin-top: 2px;
+    padding: 7px 8px;
+
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  /* ---------- CONTROL BUTTONS ---------- */
+
+  .vehicleControls {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+
+    grid-template-rows:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .vehicleButton {
+    min-width: 0;
+
+    gap: 3px;
+    padding: 3px 1px;
+
+    border-radius: 6px;
+
+    font-size: 7px;
+    letter-spacing: 0.2px;
+  }
+
+  .buttonIcon {
+    font-size: 18px;
+  }
+
+  /* ---------- SLIDE-UP PANEL ---------- */
+
+  .vehiclePanel {
+    left: 1%;
+    right: 1%;
+    bottom: 28px;
+
+    height: calc(100% - 72px);
+
+    border-radius: 9px 9px 0 0;
+  }
+
+  .vehiclePanelHeader {
+    height: 44px;
+
+    padding: 0 10px;
+
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+
+  #closeVehiclePanel {
+    width: 38px;
+    height: 32px;
+
+    font-size: 21px;
+  }
+
+  .vehiclePanelContent {
+    height: calc(100% - 44px);
+
+    padding: 12px;
+  }
+
+  .panelWelcomeIcon {
+    margin-bottom: 10px;
+
+    font-size: 40px;
+  }
+
+  .panelWelcomeTitle {
+    margin-bottom: 6px;
+
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
+
+  .panelWelcomeText {
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  /* ---------- BOTTOM STATUS ---------- */
+
+  .vehicleBottomBar {
+    padding: 0 7px;
+
+    font-size: 6px;
+    letter-spacing: 0.3px;
+  }
+}
+
+
+/* ============================================================
+   EXTRA NARROW PHONES
+   ============================================================ */
+
+@media (max-width: 390px) {
+
+  .vehicleMain {
+    grid-template-columns:
+      64px
+      minmax(0, 1fr)
+      64px;
+  }
+
+  .novaCore {
+    width: clamp(102px, 32vw, 135px);
+  }
+
+  .topStatus {
+    gap: 5px;
+  }
+
+  .vehicleBottomBar {
+    font-size: 5.5px;
+  }
+}
