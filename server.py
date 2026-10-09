@@ -41,7 +41,7 @@ queue_lock = threading.Lock()
 
 
 # ============================================================
-# AMOMII COMMAND API
+# NOVA CLOUD COMMAND API
 # ============================================================
 
 @app.post("/command")
