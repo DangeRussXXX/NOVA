@@ -359,6 +359,52 @@ function novaUnderstandRSR(text){
   return null;
 }
 
+/* ============================================================
+   NOVA CONVERSATION MEMORY — LED FOLLOW-UPS
+   ============================================================ */
+
+function novaUnderstandFollowUp(rawText) {
+
+  const text = String(rawText || "")
+    .toLowerCase()
+    .replace(/^nova[\s,]+/, "")
+    .replace(/[.,!?]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Only recognize clear follow-up instructions.
+  const match = text.match(
+    /^(?:(?:now|please)\s+)*(?:turn|switch|set)\s+(?:that one|that light|that led|it)\s+(on|off)$/
+  );
+
+  if (!match) {
+    return null;
+  }
+
+  // Only reuse a specific, previously selected RSR LED.
+  if (
+    novaIntelligenceState.lastDevice !== "rsr" ||
+    !Number.isInteger(novaIntelligenceState.lastTarget) ||
+    novaIntelligenceState.lastTarget < 0 ||
+    novaIntelligenceState.lastTarget > 7
+  ) {
+    speak("Which RSR light would you like me to control?");
+    return { needsClarification: true };
+  }
+
+  const ledNumber = novaIntelligenceState.lastTarget;
+  const state = match[1];
+
+  return {
+    understood: true,
+    domain: "hardware",
+    device: "rsr",
+    action: state === "on" ? "led_on" : "led_off",
+    target: ledNumber,
+    state: state,
+    command: `trainer led ${ledNumber} ${state}`
+  };
+}
 
 /* ============================================================
    MAIN INTELLIGENCE ENGINE
@@ -374,6 +420,12 @@ function novaUnderstand(rawText){
     return null;
   }
 
+  // Check conversational follow-up commands first.
+const followUpIntent = novaUnderstandFollowUp(text);
+
+if (followUpIntent) {
+  return followUpIntent;
+}
 
   /* BOARD */
 
@@ -614,7 +666,6 @@ function novaExecuteIntent(intent){
   return false;
 }
 
-
 /* ============================================================
    INTELLIGENCE ENTRY POINT
    ============================================================ */
@@ -626,6 +677,11 @@ function novaTryIntelligence(rawText){
 
   if(!intent){
     return false;
+  }
+
+  // Handle clarification without sending a hardware command.
+  if(intent.needsClarification){
+    return true;
   }
 
   console.log(
