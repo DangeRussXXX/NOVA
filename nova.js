@@ -10,6 +10,7 @@ let novaHumVolume = 0.2;
 });
 
 function clearNovaStates() {
+    if (!novaCore) return;
     novaCore.classList.remove('nova-speaking', 'nova-error', 'nova-listening');
 }
 
@@ -19,7 +20,7 @@ function novaSetIdle() {
 
 function novaSetListening() {
     clearNovaStates();
-    novaCore.classList.add('nova-listening');
+    if (novaCore) novaCore.classList.add('nova-listening');
     if (humListen) {
         humListen.currentTime = 0;
         humListen.play().catch(() => {});
@@ -28,7 +29,7 @@ function novaSetListening() {
 
 function novaSetSpeaking(amplitude = 1.0) {
     clearNovaStates();
-    novaCore.classList.add('nova-speaking');
+    if (novaCore) novaCore.classList.add('nova-speaking');
 
     if (humSpeak) {
         humSpeak.currentTime = 0;
@@ -38,7 +39,7 @@ function novaSetSpeaking(amplitude = 1.0) {
 
 function novaSetError() {
     clearNovaStates();
-    novaCore.classList.add('nova-error');
+    if (novaCore) novaCore.classList.add('nova-error');
 
     if (humError) {
         humError.currentTime = 0;

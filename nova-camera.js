@@ -333,7 +333,7 @@ function snapshotDesktopCamera(){
   canvas.width = video.videoWidth; canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
   const link = novaCameraDocument().createElement("a");
-  link.download = `amomii-camera-${new Date().toISOString().replace(/[:.]/g,"-")}.png`;
+  link.download = `nova-camera-${new Date().toISOString().replace(/[:.]/g,"-")}.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
   if(typeof log === "function") log("Camera snapshot captured.", "success");
