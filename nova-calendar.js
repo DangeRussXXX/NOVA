@@ -1648,7 +1648,7 @@ function addTestEvent(){
     new Date();
 
   addEvent(
-    "AMOMII ONE Test Event",
+    "NOVA Calendar Test Event",
     dateKey(date),
     "12:00"
   );
