@@ -1577,3 +1577,158 @@ if (typeof routeVoiceCommand === "function") {
 } else {
   console.warn("NOVA v4: voice router unavailable; v4 phrases not installed.");
 }
+
+
+/* ============================================================
+   NOVA INTELLIGENCE V5 — DEVICE AWARENESS
+   Preserves V4 router, commands and five-minute memory.
+   Reports Arduino output pin states, NOT optical LED verification.
+   ============================================================ */
+
+const novaV5 = {
+  outputs: Array(8).fill(null),
+  lastSnapshotAt: 0,
+  lastResponseAt: 0,
+  snapshot: null,
+  pending: null,
+  timeoutMs: 15000
+};
+
+function novaV5Say(message) {
+  if (typeof speak === "function") speak(message, false);
+  else console.log("NOVA V5:", message);
+}
+
+function novaV5FinishPending(message) {
+  const pending = novaV5.pending;
+  if (!pending) return;
+  clearTimeout(pending.timer);
+  novaV5.pending = null;
+  novaV5Say(message);
+}
+
+function novaV5DescribeOutputs() {
+  const on = novaV5.outputs.flatMap((value, i) => value === true ? [i] : []);
+  const unknown = novaV5.outputs.filter(value => value === null).length;
+  let result = on.length
+    ? `The Arduino reports RSR outputs ${on.join(", ")} on.`
+    : "The Arduino reports all eight RSR outputs off.";
+  if (unknown) result += ` ${unknown} outputs have unknown states.`;
+  result += " These are Arduino output readings, not physical LED measurements.";
+  return result;
+}
+
+function novaV5Request(kind) {
+  if (novaV5.pending) {
+    novaV5Say("I'm already waiting for an Arduino status report. Please try again shortly.");
+    return true;
+  }
+  if (typeof sendCloudCommand !== "function") {
+    novaV5Say("The cloud command connection is unavailable in this dashboard.");
+    return true;
+  }
+  novaV5.snapshot = {startedAt: Date.now(), values: Array(8).fill(null), seen: new Set(), active: false, trainerOnline: false};
+  const timer = setTimeout(() => {
+    if (novaV5.pending && novaV5.pending.kind === kind) {
+      novaV5FinishPending("I did not receive a complete, fresh trainer status report. I cannot confirm the current device state.");
+    }
+    novaV5.snapshot = null;
+  }, novaV5.timeoutMs);
+  novaV5.pending = {kind, timer};
+  try {
+    sendCloudCommand("trainer status");
+  } catch (error) {
+    novaV5FinishPending("I couldn't send the trainer status request.");
+    novaV5.snapshot = null;
+  }
+  return true;
+}
+
+function novaV5ObserveLine(rawLine) {
+  const line = String(rawLine || "").trim();
+  if (!line) return;
+  novaV5.lastResponseAt = Date.now();
+  const snap = novaV5.snapshot;
+  if (!snap || !novaV5.pending) return;
+  // The firmware emits this heading before its eight numbered output readings.
+  if (/^=+\s*RSR TRAINER STATUS\s*=+$/i.test(line)) {
+    snap.active = true;
+    snap.seen.clear();
+    snap.values.fill(null);
+    return;
+  }
+  if (!snap.active) return;
+  if (/^Trainer:\s*ONLINE$/i.test(line)) snap.trainerOnline = true;
+  const match = line.match(/^TRAINER LED ([0-7]):\s*(ON|OFF)$/i);
+  if (match) {
+    const n = Number(match[1]);
+    snap.values[n] = match[2].toUpperCase() === "ON";
+    snap.seen.add(n);
+  }
+  if (snap.seen.size !== 8) return;
+  novaV5.outputs = snap.values.slice();
+  novaV5.lastSnapshotAt = Date.now();
+  const kind = novaV5.pending.kind;
+  novaV5.snapshot = null;
+  if (kind === "lights") novaV5FinishPending(novaV5DescribeOutputs());
+  else if (kind === "devices") novaV5FinishPending("The AMOMII ONE Arduino responded through the cloud relay, and its RSR trainer output controller reports online. This does not independently verify physical trainer wiring.");
+  else novaV5FinishPending("Yes. I received a fresh, complete status response from the Arduino's RSR trainer controller.");
+}
+
+// Attach to the existing hardware response handler, which receives /response.
+if (typeof processSerialLine === "function") {
+  const novaV5OriginalSerialLine = processSerialLine;
+  processSerialLine = function(line) {
+    novaV5ObserveLine(line);
+    return novaV5OriginalSerialLine.apply(this, arguments);
+  };
+} else {
+  console.warn("NOVA v5: processSerialLine unavailable; response awareness disabled.");
+}
+
+function novaV5HandleCommand(raw) {
+  const text = novaV4Normalize(raw);
+  if (/^(?:which|what) (?:rsr |trainer )?(?:lights|leds|outputs) (?:are )?on\??$/.test(text) ||
+      /^(?:tell me |show me )?(?:which|what) (?:rsr |trainer )?(?:lights|leds|outputs) are on$/.test(text)) {
+    return novaV5Request("lights");
+  }
+  if (/^(?:what|which) devices are connected$/.test(text) ||
+      /^what(?:'s| is) connected$/.test(text)) {
+    return novaV5Request("devices");
+  }
+  if (/^(?:is|does) (?:my |the )?(?:rsr |trainer|rsr trainer)(?: responding| respond| online| connected)\??$/.test(text) ||
+      /^(?:check|test) (?:the |my )?(?:rsr |trainer|rsr trainer) (?:connection|response)$/.test(text)) {
+    return novaV5Request("health");
+  }
+  const except = text.match(/^(?:please )?(?:turn|switch|set) off (?:every|all)(?: rsr| trainer)? (?:light|lights|led|leds)(?: except| but| other than) (?:number )?(zero|one|two|three|four|five|six|seven|[0-7])$/);
+  if (except) {
+    const keep = novaNumberFromWord(except[1]);
+    if (!Number.isInteger(keep) || keep < 0 || keep > 7) return false;
+    if (typeof sendCloudCommand !== "function") {
+      novaV5Say("The cloud relay is not available.");
+      return true;
+    }
+    // This affects only trainer LEDs 0–7. The excluded LED is untouched.
+    for (let n = 0; n < 8; n++) {
+      if (n === keep) continue;
+      sendCloudCommand(`trainer led ${n} off`);
+      if (typeof setTrainerLedUI === "function") setTrainerLedUI(n, false);
+    }
+    novaV4ForgetGroup();
+    novaV4RecordCommand(`trainer LEDs except ${keep} off`);
+    novaV5Say(`I sent off commands for the seven RSR lights other than ${keep}. I left light ${keep} unchanged. Their actual states have not yet been checked.`);
+    return true;
+  }
+  return false;
+}
+
+// V5 wraps V4, leaving all other voice commands unchanged.
+if (typeof routeVoiceCommand === "function") {
+  const novaV5OriginalRoute = routeVoiceCommand;
+  routeVoiceCommand = function(command, raw) {
+    if (novaV5HandleCommand(raw || command)) return;
+    return novaV5OriginalRoute.apply(this, arguments);
+  };
+}
+
+console.log("NOVA Intelligence v5 Device Awareness loaded.");
