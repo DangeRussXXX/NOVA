@@ -1,6 +1,6 @@
 /* ============================================================
-   NOVA ONE
-   NOVA ONE connection controls, board LED/status and system test.
+   AMOMII ONE
+   AMOMII ONE connection controls, board LED/status and system test.
    ============================================================ */
 
 let amomiiConnected = false;
@@ -36,7 +36,7 @@ function setBoardLedUI(isOn){
 }
 
 // ============================================================
-// NOVA CONTROLLER EXPAND / COLLAPSE
+// AMOMII CONTROLLER EXPAND / COLLAPSE
 // ============================================================
 
 function toggleController(){
@@ -60,7 +60,7 @@ function toggleController(){
 
 }
 
-// Keep the NOVA header working even if an inline onclick handler
+// Keep the AMOMII header working even if an inline onclick handler
 // is unavailable after the hardware code is split into separate files.
 window.toggleController = toggleController;
 

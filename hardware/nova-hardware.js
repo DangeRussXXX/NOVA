@@ -1008,7 +1008,7 @@ function toggleConsole(){
 
 // ============================================================
 
-// NOVA CONTROLLER EXPAND / COLLAPSE
+// AMOMII CONTROLLER EXPAND / COLLAPSE
 
 // ============================================================
 
