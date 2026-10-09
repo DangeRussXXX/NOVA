@@ -1106,33 +1106,31 @@ function initializeVoice(){
 
 recognition.onresult = event => {
 
-    if(isSpeaking){
-      return;
+  if (isSpeaking || !voiceEnabled) {
+    return;
+  }
+
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+
+    const result = event.results[i];
+
+    // Ignore unfinished speech recognition results.
+    if (!result || !result.isFinal || !result[0]) {
+      continue;
     }
 
-    const result =
-      event.results[
-        event.results.length - 1
-      ];
+    const transcript = result[0].transcript.trim();
 
-    if(!result || !result[0]){
-      return;
+    if (!transcript) {
+      continue;
     }
 
-    const transcript =
-      result[0].transcript.trim();
-
-    if(!transcript){
-      return;
-    }
-
-    // Existing behavior
+    // Route only finalized recognition results.
     handleVoiceInput(transcript);
 
-
+  }
 
 };
-
 
 }
 
