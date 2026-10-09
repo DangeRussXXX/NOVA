@@ -2,7 +2,7 @@
 
    NOVA INTELLIGENCE
 
-   VERSION 2 — BOARD + RSR NATURAL LANGUAGE INTENT ENGINE
+   VERSION 4 — BOARD + RSR CONVERSATION INTELLIGENCE
 
    ============================================================ */
 
@@ -1418,4 +1418,162 @@ function novaTryIntelligence(rawText){
 
   );
 
+}
+
+
+/* ============================================================
+   NOVA INTELLIGENCE V4 — NATURAL CONVERSATION
+
+   This is installed after index.html defines routeVoiceCommand.
+   It intercepts ONLY the new, clearly recognized phrases and
+   leaves every other command with the existing working router.
+   ============================================================ */
+
+const novaV4State = {
+  group: [],
+  groupUpdated: null,
+  lastCommand: null
+};
+
+function novaV4Normalize(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/^nova[\s,]+/, "")
+    .replace(/[.,!?]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function novaV4ForgetGroup() {
+  novaV4State.group = [];
+  novaV4State.groupUpdated = null;
+}
+
+function novaV4GetFreshGroup() {
+  if (!Number.isFinite(novaV4State.groupUpdated) ||
+      Date.now() - novaV4State.groupUpdated >= NOVA_MEMORY_TIMEOUT) {
+    novaV4ForgetGroup();
+    return [];
+  }
+  return novaV4State.group.slice();
+}
+
+function novaV4RecordCommand(command) {
+  if (typeof command === "string" && command.trim()) {
+    novaV4State.lastCommand = command.trim();
+  }
+}
+
+// A deliberate, narrow grammar for multi-step RSR commands.
+// Examples: "turn on RSR light three", "turn on light five".
+function novaV4ParseLightClause(text) {
+  const match = novaV4Normalize(text).match(
+    /^(?:please )?(?:turn|switch|set) (on|off) (?:the )?(?:(?:rsr|trainer) )?(?:light|led) (?:number )?(zero|one|two|three|four|five|six|seven|[0-7])$/
+  );
+  if (!match) return null;
+  const target = novaNumberFromWord(match[2]);
+  if (!Number.isInteger(target) || target < 0 || target > 7) return null;
+  return {target, state: match[1]};
+}
+
+function novaV4SendLight(target, state) {
+  const intent = {
+    understood: true,
+    domain: "hardware",
+    device: "rsr",
+    action: state === "on" ? "led_on" : "led_off",
+    target,
+    state,
+    command: `trainer led ${target} ${state}`
+  };
+  // Reuse the existing execution path (one relay send per LED).
+  const handled = novaExecuteIntent(intent);
+  if (handled) novaV4RecordCommand(intent.command);
+  return handled;
+}
+
+function novaV4HandleNewCommand(rawText) {
+  const text = novaV4Normalize(rawText);
+
+  if (/^(?:(?:please|now) )*(?:forget|clear|reset) (?:the )?(?:last device|last light|last led|conversation memory)$/.test(text)) {
+    novaClearConversationMemory();
+    novaV4ForgetGroup();
+    speak("I've cleared the last device from conversation memory.", false);
+    return true;
+  }
+
+  if (/^(?:what (?:was|is) (?:the |your )?last command|repeat (?:the |your )?last command)$/.test(text)) {
+    speak(novaV4State.lastCommand
+      ? `The last hardware command I recorded was ${novaV4State.lastCommand.replace(/^trainer led (\d) (on|off)$/, "RSR light $1 $2")}.`
+      : "I haven't recorded a hardware command in this session.", false);
+    return true;
+  }
+
+  const both = text.match(/^(?:(?:now|please) )*(?:turn|switch|set) (?:them both|both(?: of them)?|those two(?: lights)?) (on|off)$/);
+  if (both) {
+    const group = novaV4GetFreshGroup();
+    if (group.length !== 2) {
+      speak("Which two RSR lights would you like me to control?", false);
+      return true;
+    }
+    for (const target of group) novaV4SendLight(target, both[1]);
+    novaV4State.groupUpdated = Date.now();
+    return true;
+  }
+
+  // Validate BOTH clauses before sending EITHER hardware command.
+  const clauses = text.split(/\s+then\s+/);
+  if (clauses.length === 2) {
+    const first = novaV4ParseLightClause(clauses[0]);
+    const second = novaV4ParseLightClause(clauses[1]);
+    if (first && second) {
+      if (first.target === second.target) {
+        speak("Please choose two different RSR lights.", false);
+        return true;
+      }
+      // Preserve the stated order. The cloud relay uses a command queue.
+      novaV4SendLight(first.target, first.state);
+      novaV4SendLight(second.target, second.state);
+      novaV4State.group = [first.target, second.target];
+      novaV4State.groupUpdated = Date.now();
+      return true;
+    }
+    // An attempted two-part LED instruction should not partly execute.
+    if (/\b(?:rsr|trainer|led|light)\b/.test(text)) {
+      speak("I couldn't understand both light commands. Please try again.", false);
+      return true;
+    }
+  }
+  return false;
+}
+
+// Wrap the existing voice router rather than replacing its commands.
+// This also observes legacy "trainer LED three on" commands, which
+// are processed before novaTryIntelligence in index.html.
+if (typeof routeVoiceCommand === "function") {
+  const novaV4OriginalRoute = routeVoiceCommand;
+  routeVoiceCommand = function(command, raw) {
+    const spoken = String(raw || command || "");
+    if (novaV4HandleNewCommand(spoken)) return;
+
+    const normalized = novaV4Normalize(command || spoken);
+    const legacyLED = normalized.match(
+      /\btrainer\s+(?:led\s+)?(zero|one|two|three|four|five|six|seven|[0-7])\s+(on|off)\b/
+    );
+    if (legacyLED) {
+      novaV4ForgetGroup();
+      novaV4RecordCommand(`trainer led ${novaNumberFromWord(legacyLED[1])} ${legacyLED[2]}`);
+    } else if (/^(?:(?:now|please) )*(?:turn|switch|set) (?:that one|that light|that led|it) (?:on|off)$/.test(normalized)) {
+      if (novaHasFreshRSRTarget()) {
+        const state = normalized.match(/\b(on|off)$/)[1];
+        novaV4RecordCommand(`trainer led ${novaIntelligenceState.lastTarget} ${state}`);
+      }
+      novaV4ForgetGroup();
+    } else if (/\b(?:board|rsr|trainer)\b/.test(normalized)) {
+      novaV4ForgetGroup();
+    }
+    return novaV4OriginalRoute.apply(this, arguments);
+  };
+} else {
+  console.warn("NOVA v4: voice router unavailable; v4 phrases not installed.");
 }
