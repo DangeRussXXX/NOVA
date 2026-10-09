@@ -1,6 +1,6 @@
 /* ============================================================
-   AMOMII ONE
-   AMOMII ONE connection controls, board LED/status and system test.
+   NOVA ONE
+   NOVA ONE connection controls, board LED/status and system test.
    ============================================================ */
 
 let amomiiConnected = false;
@@ -15,9 +15,9 @@ function toggleConnection(){
 }
 
 function connectSerial() {
-  log("Connected to AMOMII Cloud Relay.", "success");
+  log("Connected to NOVA Cloud Relay.", "success");
   updateConnectionUI(true);
-  speak("AMOMII Cloud Relay is connected.");
+  speak("NOVA Cloud Relay is connected.");
 }
 
 function toggleBoardLed(){
@@ -36,7 +36,7 @@ function setBoardLedUI(isOn){
 }
 
 // ============================================================
-// AMOMII CONTROLLER EXPAND / COLLAPSE
+// NOVA CONTROLLER EXPAND / COLLAPSE
 // ============================================================
 
 function toggleController(){
@@ -60,7 +60,7 @@ function toggleController(){
 
 }
 
-// Keep the AMOMII header working even if an inline onclick handler
+// Keep the NOVA header working even if an inline onclick handler
 // is unavailable after the hardware code is split into separate files.
 window.toggleController = toggleController;
 
@@ -450,5 +450,3 @@ function stopBoard(){
   speak("Stopped.");
 
 }
-
-
