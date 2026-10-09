@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>DangeRuss Command Center</title>
+<title>NOVA Command Center</title>
 <link rel="stylesheet" href="nova.css">
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
@@ -14,7 +14,7 @@
 <header>
 <div class="brand">
 <h1>NOVA COMMAND CENTER</h1>
-<p>VOICE &amp; TEXT COMMAND CENTER UI - AMOMIII ONE CONTROLLER FOR RSR DIGITAL?ANALOG TRAINER</p>
+<p>VOICE &amp; TEXT COMMAND CENTER UI - NOVA HARDWARE CONTROLLER FOR RSR DIGITAL/ANALOG TRAINER</p>
 <div class="headerNovaControls">
   <div class="buttonGrid">
     <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
@@ -322,7 +322,7 @@
 </div>
 <div class="panel card">
 <div class="panelHeader controllerHeader">
-<span>AMOMII ONE CONTROLLER</span>
+<span>NOVA HARDWARE CONTROLLER</span>
 <div class="connectionStatus">
 <span class="dot red" id="connectionDot"></span>
 <span id="connectionText">DISCONNECTED</span>
@@ -348,7 +348,7 @@
 <button class="control" onclick="runSystemTest()">RUN SYSTEM TEST</button>
 </div>
 <div class="statList">
-<div class="stat"><span>Board</span><span>AMOMII ONE</span></div>
+<div class="stat"><span>Board</span><span>NOVA ONE</span></div>
 <div class="stat"><span>Connection</span><span id="statusConnection">OFFLINE</span></div>
 <div class="stat"><span>System</span><span id="statusSystem">READY</span></div>
 <div class="stat"><span>LED</span><span id="statusLed">UNKNOWN</span></div>
@@ -448,7 +448,7 @@
 </div>
 <script>
 /* ============================================================
-   AMOMII ONE COMMAND CENTER
+   NOVA COMMAND CENTER
    Central Assistant + Device + Media + Calendar Architecture
    ============================================================ */
 
@@ -457,7 +457,7 @@
    IDENTITY
    ============================================================ */
 
-const BOARD_NAME = "AMOMII ONE";
+const BOARD_NAME = "NOVA ONE";
 
 let assistantName =
   localStorage.getItem("amomiiAssistantName") || "NOVA";
@@ -1954,19 +1954,19 @@ function routeVoiceCommand(command,raw){
     return;
   }
 
-/* CLOUD RELAY / AMOMII */
+/* CLOUD RELAY / NOVA */
 
 if (
   /\bconnect\b/.test(command) &&
   !/\bconnect(ed|ion)\b/.test(command)
 ) {
-  log("Connecting to AMOMII Cloud Relay...", "info");
+  log("Connecting to NOVA Cloud Relay...", "info");
   connectSerial();   // now just updates UI, no serial
   return;
 }
 
 if (/\bdisconnect\b/.test(command)) {
-  log("Disconnecting from AMOMII Cloud Relay...", "info");
+  log("Disconnecting from NOVA Cloud Relay...", "info");
   disconnectSerial();  // now just updates UI
   return;
 }
@@ -3322,7 +3322,7 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
 }
 function novaCommandReferenceHtml(){
 return `<div class="note">Exact NOVA command reference. Type these in SEND TO NOVA or speak them while TALK TO NOVA is enabled.</div>
-<div class="section">SYSTEM / AMOMII</div><div class="grid">
+<div class="section">SYSTEM / NOVA</div><div class="grid">
 <div class="item"><b>connect / disconnect</b></div><div class="item"><b>status</b></div><div class="item"><b>system test</b></div><div class="item"><b>led on / led off</b></div><div class="item"><b>blink 5</b></div><div class="item"><b>sos</b></div><div class="item"><b>stop</b></div><div class="item"><b>help / commands</b></div></div>
 <div class="section">RSR TRAINER</div><div class="grid">
 <div class="item"><b>trainer led 0–7 on/off</b></div><div class="item"><b>trainer led all on/off</b></div><div class="item"><b>trainer blink 5</b></div><div class="item"><b>trainer sos</b></div><div class="item"><b>trainer morse</b></div></div>
@@ -3345,7 +3345,7 @@ return `<div class="note">NOVA understands the original exact commands plus natu
 <div class="item"><b>Flash the trainer three times.</b></div></div>
 <div class="section">EXACT TRAINER VOICE COMMANDS</div><div class="grid">
 <div class="item"><b>trainer led 0–7 on/off</b></div><div class="item"><b>trainer led all on/off</b></div><div class="item"><b>trainer blink 5</b></div><div class="item"><b>trainer sos</b></div><div class="item"><b>trainer morse</b></div></div>
-<div class="section">SYSTEM / AMOMII</div><div class="grid">
+<div class="section">SYSTEM / NOVA</div><div class="grid">
 <div class="item"><b>connect / disconnect</b></div><div class="item"><b>status</b></div><div class="item"><b>system test</b></div><div class="item"><b>led on / led off</b></div><div class="item"><b>blink 5</b></div><div class="item"><b>sos</b></div><div class="item"><b>stop</b></div><div class="item"><b>help / commands</b></div></div>
 <div class="section">MEDIA / CALENDAR / BROWSER</div><div class="grid">
 <div class="item"><b>play / pause / stop music</b></div><div class="item"><b>next / previous song</b></div><div class="item"><b>shuffle / repeat</b></div><div class="item"><b>play video</b></div><div class="item"><b>add event ...</b></div><div class="item"><b>search Google for ...</b></div><div class="item"><b>open Google / Gmail / YouTube / Maps / Drive</b></div></div>`;
