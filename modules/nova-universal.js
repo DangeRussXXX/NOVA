@@ -243,13 +243,36 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
   }
   renderTracks();}
 
- function next(){const n=selected()?.items.length||0;if(n)playAt((activeIndex+1+n)%n);}
+ // Voice commands use the original #audioPlayer / musicLibrary engine.
+ // Route the SAME dashboard buttons to that engine when it owns playback.
+ function legacyMusicIsActive(){
+   const audio=document.getElementById('audioPlayer');
+   return !!(audio && audio.currentSrc && activeNative===audio && !audio.ended);
+ }
+ function legacyMusicAction(action){
+   const audio=document.getElementById('audioPlayer');
+   if(!audio)return false;
+   if(action==='toggle'){
+     if(audio.paused){
+       const result=audio.play();
+       if(result&&typeof result.catch==='function')result.catch(err=>console.warn('NOVA legacy resume:',err));
+     }else audio.pause();
+   }else{
+     const fn=action==='next'?window.nextMusic:window.previousMusic;
+     if(typeof fn==='function')fn();
+     else console.warn('NOVA: legacy '+action+' handler is unavailable');
+   }
+   return true;
+ }
+ function next(){if(legacyMusicIsActive()){legacyMusicAction('next');return;}const n=selected()?.items.length||0;if(n)playAt((activeIndex+1+n)%n);}
 
- function prev(){const n=selected()?.items.length||0;if(n)playAt((activeIndex-1+n)%n);}
+ function prev(){if(legacyMusicIsActive()){legacyMusicAction('prev');return;}const n=selected()?.items.length||0;if(n)playAt((activeIndex-1+n)%n);}
 
  $("prev").onclick=prev;$("next").onclick=next;
 
  $("toggle").onclick=()=>{
+
+   if(legacyMusicIsActive()){legacyMusicAction('toggle');return;}
 
    if(activeType==="youtube"&&ytFrame){youtubeCommandLocal(youtubePaused?"playVideo":"pauseVideo");youtubePaused=!youtubePaused;syncPlayButton(!youtubePaused);emitMediaState(youtubePaused?'paused':'playing',{title:selected()?.items[activeIndex]?.name||'',type:'youtube'});return;}
 
