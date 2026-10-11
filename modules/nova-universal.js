@@ -61,7 +61,10 @@ function initializePermanentMedia(){
 
  // This preserves the original button and its listener rather than cloning it.
 
- if(videoControls&&hybridNow)videoControls.appendChild(hybridNow);
+ // Keep the display switch in the header at all times during video playback.
+ // The previous version hid its entire parent when returning to the orb.
+ const headerVideoSwitch=document.getElementById("novaHybridBackOrb");
+ if(videoControls&&headerVideoSwitch)videoControls.appendChild(headerVideoSwitch);
 
  let hybridVideoVisible=true;
 
@@ -74,6 +77,7 @@ function initializePermanentMedia(){
    if(hybridStage)hybridStage.hidden=type!=="video"&&type!=="youtube";
 
    if(hybridNow)hybridNow.hidden=type!=="video"&&type!=="youtube";
+   if(headerVideoSwitch)headerVideoSwitch.hidden=type!=="video"&&type!=="youtube";
 
    hybridVideoVisible=type==="video"||type==="youtube";
 
