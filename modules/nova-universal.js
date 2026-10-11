@@ -17,11 +17,50 @@ function sourceItems(){
 }
 function getSource(key){return sourceItems().find(x=>x.key===key)||null;}
 function makeItem(x){return {key:x.key,type:x.type,name:x.name,url:x.type==="youtube"?x.url:undefined};}
+let embeddedWindow=null;
+let embeddedPanel=null;
 function open(){
- const w=window.open("","NOVA_UNIVERSAL_MEDIA","popup=yes,width=1100,height=850,resizable=yes,scrollbars=yes");
- if(!w){alert("Please allow pop-ups for NOVA Media Center.");return;}
+ if(embeddedPanel){
+   const showing=embeddedPanel.hidden;
+   embeddedPanel.hidden=!showing;
+   document.body.classList.toggle("novaEmbeddedMediaMode",showing);
+   const btn=document.getElementById("novaMediaPopoutButton");
+   if(btn){btn.classList.toggle("novaMediaModeSelected",showing);btn.setAttribute("aria-pressed",String(showing));}
+   if(showing)embeddedPanel.scrollIntoView({behavior:"smooth",block:"nearest"});
+   return;
+ }
+ const host=document.querySelector(".novaUnifiedConsole")||document.querySelector(".novaTopStack")||document.querySelector(".mainGrid");
+ if(!host){console.error("NOVA Media Mode: dashboard host missing");return;}
+ embeddedPanel=document.createElement("section");
+ embeddedPanel.id="novaEmbeddedMediaPanel";
+ embeddedPanel.className="panel card";
+ embeddedPanel.setAttribute("aria-label","NOVA Media Mode");
+ embeddedPanel.innerHTML='<div class="novaEmbeddedMediaHeader"><span>⚡ NOVA MEDIA MODE</span><button type="button" class="control" id="novaMediaModeClose">BACK TO NOVA</button></div>';
+ const frame=document.createElement("iframe");
+ frame.id="novaEmbeddedMediaFrame";
+ frame.title="NOVA Media Library and Playlists";
+ frame.setAttribute("allow","autoplay; encrypted-media; picture-in-picture");
+ embeddedPanel.append(frame);
+ host.insertAdjacentElement("afterend",embeddedPanel);
+ embeddedPanel.querySelector("#novaMediaModeClose").addEventListener("click",()=>open());
+ document.body.classList.add("novaEmbeddedMediaMode");
+ const btn=document.getElementById("novaMediaPopoutButton");
+ if(btn){btn.classList.add("novaMediaModeSelected");btn.setAttribute("aria-pressed","true");}
+ const w=frame.contentWindow;
+ embeddedWindow=w;
  w.document.open();w.document.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NOVA UNIVERSAL MEDIA CENTER</title><style>
 *{box-sizing:border-box}body{margin:0;background:#030b13;color:#d8f5ff;font:14px Segoe UI,Arial,sans-serif}header{padding:15px 20px;border-bottom:1px solid #174c5c;background:#071923;display:flex;align-items:center;justify-content:space-between}h1{margin:0;font-size:19px;color:#38dafa;letter-spacing:2px}main{display:grid;grid-template-columns:minmax(220px,290px) minmax(0,1fr);gap:16px;padding:16px}section,.side{border:1px solid #195064;border-radius:12px;background:#071722;padding:14px;min-width:0}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #246378;border-radius:7px;background:#0a2634;color:#d8f5ff;padding:8px 10px}button:hover{border-color:#42d9fb;color:#42d9fb}button:disabled{opacity:.3;cursor:default}input[type=text],select{width:100%;border:1px solid #246378;background:#04121b;color:#fff;border-radius:7px;padding:9px}input[type=file]{display:none}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}.row>*{flex-shrink:0}.grow{flex:1!important;min-width:100px}h2{font-size:14px;letter-spacing:1px;color:#42d9fb;margin:14px 0 9px}.muted{color:#8aa8b7;font-size:12px}.list{max-height:320px;overflow:auto}.entry{display:flex;align-items:center;gap:7px;padding:8px 5px;border-bottom:1px solid #153643}.entry .name{flex:1;min-width:0;overflow-wrap:anywhere}.entry small{display:block;color:#8aa8b7}.entry button{padding:5px 8px}.selected{background:#103443;border-radius:7px}.stage{height:min(42vw,380px);min-height:210px;background:#000;border:1px solid #1c4556;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden}.stage video,.stage iframe{height:100%;width:100%;border:0}.stage audio{width:90%}.big{font-size:22px;color:#42d9fb;text-align:center;padding:20px}.status{min-height:22px;color:#8ae9ba}.seek{width:100%}.pill{border:1px solid #2c687c;padding:3px 7px;border-radius:30px;color:#86dcec;font-size:10px}#playlistNames .entry{cursor:pointer}#playlistNames .entry .name{font-weight:600}@media(max-width:760px){main{grid-template-columns:1fr}.stage{height:250px}}
+
+/* Embedded NOVA dashboard design */
+body{background:#06121c;font-family:Segoe UI,Arial,sans-serif}header{display:none}
+main{padding:12px;grid-template-columns:minmax(245px,34%) minmax(0,1fr);gap:12px}
+section,.side{border:1px solid #225a70;background:linear-gradient(145deg,#091f2d,#07131e);box-shadow:inset 0 0 20px #051019}
+button{background:linear-gradient(#123b4c,#082331);border:1px solid #2d8197;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:.06em;min-height:34px}
+button:hover{background:#17465a;box-shadow:0 0 10px #29bddd55}
+h2{letter-spacing:2px}.selected{background:#124255;border-left:3px solid #39d9f6}
+.stage{height:110px;min-height:110px;background:radial-gradient(circle,#113b51,#030c13)}
+.stage:has(video),.stage:has(iframe){height:300px}
+@media(max-width:800px){main{grid-template-columns:1fr}.stage{height:110px}}
 </style></head><body><header><h1>⚡ NOVA UNIVERSAL MEDIA CENTER</h1><button id="close">CLOSE</button></header><main><aside class="side"><h2>YOUR PLAYLISTS</h2><div class="row"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create">+ CREATE</button></div><div id="playlistNames" class="list"></div><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="row"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh">REFRESH</button></div><div class="row"><label><button id="addMusic">+ MUSIC FILES</button></label><button id="addVideos">+ VIDEO FILES</button><button id="addFolder">+ FOLDER</button></div><div class="row"><input id="ytLink" class="grow" type="text" placeholder="Paste YouTube URL"><button id="addYt">+ YOUTUBE</button></div><div id="library" class="list"></div><p class="muted">Adding to a playlist does not delete or move original media files.</p></aside><section><h2>UNIVERSAL PLAYER</h2><div id="stage" class="stage"><div class="big">NOVA READY<br><span class="muted">Choose a playlist item to play</span></div></div><div class="row"><button id="prev">◀◀ PREV</button><button id="toggle">▶ PLAY / PAUSE</button><button id="stop">■ STOP</button><button id="next">NEXT ▶▶</button><label class="grow">VOLUME <input id="volume" type="range" min="0" max="1" step=".01" value=".8"></label></div><input id="seek" class="seek" type="range" min="0" max="100" value="0"><p id="now" class="status">Nothing playing</p><h2>PLAYLIST EDITOR</h2><div class="row"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn">RENAME</button><button id="deleteBtn">DELETE PLAYLIST</button></div><div class="row"><span id="count" class="muted"></span><button id="clear">CLEAR PLAYLIST</button></div><div id="tracks" class="list"></div><p class="muted">▲ ▼ reorder • REMOVE only removes from this playlist. Local music files must be present in this browser; cloud storage is a future phase.</p></section></main><input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.opus" multiple><input id="videoFiles" type="file" accept="video/*" multiple><input id="folderFiles" type="file" webkitdirectory directory multiple><script>window.addEventListener('beforeunload',()=>{document.querySelectorAll('audio,video').forEach(x=>x.pause())});<\/script></body></html>`);w.document.close();
  const d=w.document,$=id=>d.getElementById(id);let currentId=playlists[0]?.id||"favorites",activeIndex=-1,activeMedia=null,activeType="",ytFrame=null;
  const hybridStage=document.getElementById("novaHybridVideoStage");
@@ -55,7 +94,7 @@ function open(){
    if(backButton)backButton.textContent=show?"RETURN TO ORB":"SHOW VIDEO";
  };
  if(backButton)backButton.addEventListener("click",backFn);
- w.addEventListener("beforeunload",()=>{buttonHandlers.forEach(([b,fn])=>b.removeEventListener("click",fn,true));if(backButton)backButton.removeEventListener("click",backFn);hybridReset();});
+ // Media Mode is persistent: hiding its panel does not interrupt playback.
 
  const stopEngines=()=>{if(activeMedia){try{activeMedia.pause()}catch(e){}}if(ytFrame){try{ytFrame.contentWindow.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"https://www.youtube.com")}catch(e){}}};
  const selected=()=>playlists.find(p=>p.id===currentId);
@@ -85,12 +124,13 @@ function open(){
  $("folderFiles").onchange=e=>{addMusicFiles(e.target.files,false,true);e.target.value="";setTimeout(renderLibrary,200);};
  $("videoFiles").onchange=e=>{const files=Array.from(e.target.files||[]);files.forEach(file=>{if(!videoLibrary.some(x=>x.file.name===file.name&&x.file.size===file.size)){videoLibrary.push({file,url:URL.createObjectURL(file)});try{novaPersistVideo(file)}catch(e){}}});try{novaRenderVideoList()}catch(e){}e.target.value="";renderLibrary();};
  $("addYt").onclick=()=>{const id=extractYouTubeId($("ytLink").value);if(!id){notify("Enter a valid YouTube link or video ID.");return;}if(!novaYtSaved.some(x=>x.id===id)){novaYtSaved.push({id,url:"https://www.youtube.com/watch?v="+id});novaSaveYt();}$("ytLink").value="";renderLibrary();};
- $("close").onclick=()=>w.close();
- const timer=w.setInterval(()=>{if(w.closed){clearInterval(timer);return;}renderLibrary();},4000);
+ $("close").onclick=()=>open();
+ const timer=window.setInterval(()=>{if(!embeddedPanel?.isConnected){clearInterval(timer);return;}if(!embeddedPanel.hidden)renderLibrary();},4000);
  renderAll();
 }
 /* Override ONLY the Media header button. Existing media APIs remain unchanged. */
-function attach(){const button=document.getElementById("novaMediaPopoutButton");if(!button)return;const replacement=button.cloneNode(true);button.replaceWith(replacement);replacement.addEventListener("click",open);replacement.title="Open NOVA Universal Media Center";}
+function attach(){const button=document.getElementById("novaMediaPopoutButton");if(!button)return;const replacement=button.cloneNode(true);button.replaceWith(replacement);replacement.addEventListener("click",open);replacement.title="Toggle NOVA Media Mode";replacement.setAttribute("aria-pressed","false");}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(attach,0));else setTimeout(attach,0);
 window.openNovaUniversalMediaCenter=open;
+window.toggleNovaMediaMode=open;
 })();
