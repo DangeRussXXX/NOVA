@@ -279,6 +279,7 @@
 
 
 /* NOVA SAFE HEADER MERGE — layout only, no playback or playlist JS changes */
+#novaPermanentMedia > #novaMediaNowCard{display:none!important;}
 .app > header{
   display:flex!important;flex-direction:column!important;align-items:stretch!important;
   gap:10px!important;padding:15px 20px!important;height:auto!important;min-height:0!important;
@@ -347,7 +348,7 @@
 </div>
 <div class="headerStatus">
 </div>
-<div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
+
 </header>
 <div class="mainGrid novaSingleStack">
 <div class="novaTopStack">
@@ -356,6 +357,7 @@
 <div class="panel card novaUnifiedConsole">
 <div class="novaLeftHome">
 <div id="novaPermanentMedia" aria-label="NOVA permanent media workspace">
+  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
   <div class="novaMediaSide" id="novaMediaLeft">
     <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><button id="addMusic" type="button">+ MUSIC</button><button id="addVideos" type="button">+ VIDEO</button><button id="addFolder" type="button">+ FOLDER</button></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
   </div>
@@ -4081,6 +4083,17 @@ if(document.readyState==="loading"){
 <script src="modules/nova-media.js"></script>
 <script src="modules/nova-universal.js"></script>
 <script src="intelligence/nova-intelligence.js"></script>
+<script>
+/* Layout-only bridge: preserve media module's scoped initialization and its live event handlers. */
+window.addEventListener("load", function () {
+  const card = document.getElementById("novaMediaNowCard");
+  const header = document.querySelector(".app > header");
+  if (card && header && card.parentElement !== header) {
+    header.appendChild(card);
+  }
+}, {once:true});
+</script>
+
 </body>
 </html>
 
