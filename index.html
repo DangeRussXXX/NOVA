@@ -509,6 +509,48 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
  .novaUnifiedConsole #novaIntegratedMediaControls .novaPlayerDivider{display:none!important}
 }
 
+
+/* NOVA 1.2 — INTEGRATED LIVE COMMAND ACTIVITY, ABOVE THE PLAYER */
+.novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+ position:absolute!important;top:12px!important;left:14px!important;
+ bottom:76px!important;width:min(440px,36%)!important;height:auto!important;
+ max-height:none!important;min-height:100px!important;overflow-y:auto!important;
+ overflow-x:hidden!important;display:flex!important;flex-direction:column!important;
+ align-items:stretch!important;justify-content:flex-start!important;gap:4px!important;
+ padding:12px 10px!important;margin:0!important;
+ background:linear-gradient(90deg,rgba(2,13,22,.88),rgba(2,13,22,.54))!important;
+ border:0!important;border-radius:8px!important;box-shadow:none!important;
+ pointer-events:auto!important;z-index:225!important;scrollbar-width:thin;
+ scrollbar-color:var(--nova-electric,#00e5ff) #0b1822;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeading{
+ position:sticky;top:-12px;z-index:2;padding:7px 3px 9px;
+ font:800 11px/1.3 inherit;letter-spacing:1.1px;color:var(--nova-electric,#00e5ff);
+ background:#061521;border-bottom:1px solid rgba(var(--nova-electric-rgb,0,229,255),.35);
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry{
+ position:static!important;transform:none!important;opacity:1!important;
+ display:block!important;width:100%!important;height:auto!important;
+ white-space:pre-wrap!important;overflow-wrap:anywhere!important;
+ flex:0 0 auto!important;padding:3px 5px!important;margin:0!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ color:#a9d5e5!important;font:11px/1.4 Consolas,'Courier New',monospace!important;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="voice"]{color:#69e6a1!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="warning"],
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="error"]{color:#ff8c93!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="success"],
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="response"]{color:#f8e873!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="command"]{color:var(--nova-electric,#00e5ff)!important}
+.novaUnifiedConsole .novaLeftHome > #novaIntegratedMediaControls{z-index:350!important}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+  left:8px!important;right:8px!important;width:auto!important;
+  top:12px!important;bottom:70px!important;
+  background:rgba(2,13,22,.77)!important;
+ }
+}
+
 </style>
 </head>
 <body>
@@ -4447,6 +4489,68 @@ window.addEventListener('load',function(){
  add('AMOMII','hardware','amomii');add('RSR TRAINER','hardware','rsr');add('PORTABLE TRAINER','hardware','portable');divider();
  add('MEDIA LIBRARY','media','library');add('PLAYLISTS','media','playlists');
 }, {once:true});
+</script>
+
+
+<script>
+/* NOVA 1.2 — Display existing NOVA event stream without sending commands.
+   Keeps the existing history, logging, media, voice, and hardware handlers intact. */
+(function(){
+  function install(){
+    const lane=document.getElementById('novaHudTicker');
+    if(!lane||lane.dataset.novaActivityReady)return;
+    lane.dataset.novaActivityReady='1';
+    lane.replaceChildren();
+    lane.setAttribute('role','log');
+    lane.setAttribute('aria-label','NOVA live activity monitor');
+    lane.setAttribute('aria-live','off');
+    lane.tabIndex=0;
+    const heading=document.createElement('div');
+    heading.className='novaActivityHeading';
+    heading.textContent='⚡ NOVA LIVE ACTIVITY • ALL COMMANDS';
+    lane.appendChild(heading);
+    const limit=250;
+    const formatTime=t=>new Date(t||Date.now()).toLocaleTimeString();
+    const append=(message,type='system',time=Date.now())=>{
+      const clean=String(message??'').trim();if(!clean)return;
+      const nearBottom=lane.scrollHeight-lane.scrollTop-lane.clientHeight<65;
+      const row=document.createElement('div');row.className='novaActivityEntry';
+      row.dataset.type=String(type).toLowerCase();
+      row.textContent='['+formatTime(time)+'] '+clean;
+      lane.appendChild(row);
+      while(lane.children.length>limit+1)lane.children[1].remove();
+      if(nearBottom)lane.scrollTop=lane.scrollHeight;
+    };
+    // Show recent existing session history immediately; never clear saved history.
+    if(typeof novaFullHistory!=='undefined'&&Array.isArray(novaFullHistory)){
+      novaFullHistory.slice(-70).forEach(x=>append(x.message,x.type,x.time));
+    }
+    // Capture all messages already routed through NOVA's central event logger.
+    if(typeof novaCaptureEvent==='function'){
+      const previous=novaCaptureEvent;
+      novaCaptureEvent=function(message,type='system'){
+        const result=previous.apply(this,arguments);
+        append(message,type);
+        return result;
+      };
+    }
+    // Manual command history can have entries that don't pass through log().
+    if(typeof addHistory==='function'){
+      const previousHistory=addHistory;
+      addHistory=function(command){
+        const result=previousHistory.apply(this,arguments);
+        append('COMMAND: '+String(command),'command');
+        return result;
+      };
+    }
+    // Disable the old animated fly-by stream; retain its compatibility entry point.
+    novaLaunchSystemStream=function(){};
+    if(lane.children.length===1)append('NOVA ACTIVITY MONITOR READY','system');
+    lane.scrollTop=lane.scrollHeight;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
+  else install();
+})();
 </script>
 
 </body>
