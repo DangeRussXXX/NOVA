@@ -18,10 +18,7 @@
 <div class="headerNovaControls">
   <div class="buttonGrid">
     <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
-    <button class="control" onclick="openNovaHelpScreen()">NOVA HELP</button>
-    <button class="control" onclick="openNovaCommandsScreen()">NOVA COMMANDS</button>
-    <button class="control" onclick="openNovaVoiceCommandsScreen()">VOICE COMMANDS</button>
-    <button class="control" onclick="openNovaHistoryScreen()">COMMAND HISTORY</button>
+    <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
           <button class="control" type="button" id="novaMediaPopoutButton" title="Open NOVA Media Center">MEDIA</button>
@@ -795,6 +792,7 @@ function novaPersistentTickerPush(message){
 function novaPersistentTickerNext(){}
 
 function log(message, type="system"){
+  novaCaptureEvent(message,type);
   novaPersistentTickerPush(message);
 
 
@@ -3371,9 +3369,45 @@ return `<div class="note">NOVA understands the original exact commands plus natu
 function openNovaHelpScreen(){openNovaInfoScreen("NOVA HELP",`<div class="grid"><div class="item"><b>TALK TO NOVA</b><br>Voice control.</div><div class="item"><b>NOVA COMMANDS</b><br>Exact command reference.</div><div class="item"><b>VOICE COMMANDS</b><br>Natural-language and voice examples.</div><div class="item"><b>COMMAND HISTORY</b><br>Commands received this session.</div></div>`);}
 function openNovaCommandsScreen(){openNovaInfoScreen("NOVA COMMANDS",novaCommandReferenceHtml());}
 function openNovaVoiceCommandsScreen(){openNovaInfoScreen("NOVA VOICE COMMANDS",novaVoiceCommandReferenceHtml());}
-function openNovaHistoryScreen(){const h=document.getElementById("commandHistory");const items=h?Array.from(h.children):[];openNovaInfoScreen("NOVA COMMAND HISTORY",items.length?items.map(x=>`<div class="historyItem">${x.innerHTML}</div>`).join(""):`<div class="note">No commands recorded this session yet.</div>`);}
+function openNovaHistoryScreen(){openNovaInfoScreen("NOVA COMMAND HISTORY",novaFullHistoryHtml());}
 
 
+
+/* NOVA SYSTEM — COLLAPSIBLE REFERENCE + FULL EVENT HISTORY */
+const NOVA_HISTORY_KEY="novaFullSystemHistoryV1";
+const NOVA_HISTORY_LIMIT=1000;
+let novaFullHistory=[];
+try{
+  const stored=JSON.parse(localStorage.getItem(NOVA_HISTORY_KEY)||"[]");
+  if(Array.isArray(stored))novaFullHistory=stored.slice(-NOVA_HISTORY_LIMIT);
+}catch(e){}
+function novaCaptureEvent(message,type="system"){
+  const clean=String(message??"").replace(/\s+/g," ").trim();
+  if(!clean)return;
+  const last=novaFullHistory[novaFullHistory.length-1];
+  // Avoid same-message duplication when two display paths emit together.
+  if(last && last.message===clean && Date.now()-last.time<120)return;
+  novaFullHistory.push({time:Date.now(),type:String(type),message:clean});
+  if(novaFullHistory.length>NOVA_HISTORY_LIMIT)novaFullHistory.shift();
+  try{localStorage.setItem(NOVA_HISTORY_KEY,JSON.stringify(novaFullHistory));}catch(e){}
+}
+function novaFullHistoryHtml(){
+  if(!novaFullHistory.length)return '<div class="note">No system events recorded yet.</div>';
+  return novaFullHistory.slice().reverse().map(item=>{
+    const date=new Date(item.time).toLocaleString();
+    return `<div class="historyItem"><span class="time">${novaPopupEscape(date)} [${novaPopupEscape(item.type)}]</span><span class="cmd">${novaPopupEscape(item.message)}</span></div>`;
+  }).join("");
+}
+function openNovaSystemScreen(){
+  const help=`<div class="grid"><div class="item"><b>TALK TO NOVA</b><p>Enable voice control.</p></div><div class="item"><b>NOVA COMMANDS</b><p>Exact commands for hardware and features.</p></div><div class="item"><b>VOICE COMMANDS</b><p>Natural language examples.</p></div><div class="item"><b>COMMAND HISTORY</b><p>Rolling system events and responses.</p></div></div>`;
+  const panel=(name,html,expanded=false)=>`<details ${expanded?'open':''} style="border:1px solid #263241;border-radius:10px;margin:0 0 12px;background:#090e14"><summary style="cursor:pointer;padding:15px 17px;color:#36d9ff;font-weight:800;letter-spacing:1px">${name}</summary><div style="padding:0 16px 16px">${html}</div></details>`;
+  openNovaInfoScreen("NOVA SYSTEM",
+    panel("NOVA HELP",help,true)+
+    panel("NOVA COMMANDS",novaCommandReferenceHtml())+
+    panel("VOICE COMMANDS",novaVoiceCommandReferenceHtml())+
+    panel("COMMAND HISTORY",novaFullHistoryHtml())
+  );
+}
 
 /* NOVA IRIS LIVE DASHBOARD + CALENDAR POPUP */
 let novaIrisLastResponse="NOVA READY.";
@@ -3433,6 +3467,7 @@ function novaIrisSetResponse(message,duration=0){
 }
 
 function novaSystemLog(message){
+  novaCaptureEvent(message,"response");
   const clean=String(message||"").replace(/\s+/g," ").trim();
   if(!clean)return;
 
