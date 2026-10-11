@@ -329,6 +329,83 @@
   #novaPermanentMedia #novaMediaRight{grid-column:1!important;grid-row:2!important}
 }
 
+
+
+/* NOVA RIGHT RAIL REFINEMENT — preserves original JS and storage */
+.novaConsoleVoiceStatus{display:none!important}
+#novaCameraPanelSource{display:none!important}
+#novaIntegratedMediaControls{display:none!important}
+#novaMediaRight{overflow-y:auto!important;overflow-x:hidden!important;scrollbar-width:thin;scrollbar-color:#287c9a #061824;gap:12px!important;align-items:stretch!important}
+#novaMediaRight .novaCombinedPlaylist{flex:0 0 auto!important;min-height:0!important;max-height:none!important}
+#novaMediaRight .novaCombinedPlaylist .novaPlaylistTracks{max-height:220px!important;overflow-y:auto!important;flex:none!important;min-height:55px!important}
+#novaMediaRight .novaCombinedPlaylist .novaPlaylistChoices{max-height:115px!important;min-height:30px!important}
+#novaMediaRight .novaRightPanel{flex:0 0 auto!important;width:100%;min-width:0;margin:0!important;position:relative!important;overflow:hidden}
+#novaMediaRight .novaRightPanel .panelHeader{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
+#novaMediaRight .novaRightPanel .panelBody{max-height:420px;overflow:auto}
+#novaMediaRight .novaRightPanel .panelBody.collapsed{display:none!important}
+#novaMediaRight .novaRightPanel .genericCollapseArrow{margin-left:auto}
+#novaMediaRight .novaRightPanel button{max-width:100%}
+#novaMediaRight .novaRightPanel input{max-width:100%;min-width:0}
+#novaMediaRight .novaPlaylistCollapse{cursor:pointer;user-select:none}
+#novaMediaRight .novaPlaylistCollapse:after{content:' ▾';font-size:12px}
+#novaMediaRight .novaPlaylistCollapse[aria-expanded='false']:after{content:' ▸'}
+#novaMediaRight .novaCombinedPlaylist.novaPlaylistClosed > :not(h2){display:none!important}
+#novaHybridTrackName{display:none!important}
+#novaHybridVideoStage:not([hidden]){position:absolute!important;inset:10px 29% 80px 29%!important;width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;z-index:125!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+#novaHybridVideoStage:not([hidden]) iframe,#novaHybridVideoStage:not([hidden]) video{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;border:0!important}
+@media(max-width:760px){#novaHybridVideoStage:not([hidden]){inset:15px 15px 80px 15px!important}}
+
+
+/* NOVA FINAL CONSOLIDATED LAYOUT: visual changes only. */
+/* Hide redundant voice status without removing IDs used by voice scripts. */
+.novaConsoleVoiceStatus{display:none!important}
+/* Hide duplicate bottom media controls, leaving their DOM/listeners intact. */
+.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
+/* Hide duplicate hybrid track caption; the universal header #now is canonical. */
+#novaHybridTrackName{display:none!important}
+/* Hide legacy camera panel but keep camera elements for the camera screen. */
+#novaCameraPanelSource{display:none!important}
+/* Allow left Media Library to expand/collapse just like Playlists. */
+#novaMediaLeft .novaMediaBox.novaLibraryClosed > :not(h2){display:none!important}
+#novaMediaLeft .novaMediaBox.novaLibraryClosed{flex:0 0 auto!important}
+#novaMediaLeft .novaLibraryCollapse{cursor:pointer;user-select:none}
+#novaMediaLeft .novaLibraryCollapse::after{content:' ▾';font-size:12px}
+#novaMediaLeft .novaLibraryCollapse[aria-expanded='false']::after{content:' ▸'}
+/* Full available center column: never squeeze video to a tiny preview. */
+.novaUnifiedConsole .novaLeftHome{position:relative!important}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
+ position:absolute!important;
+ top:22px!important;
+ bottom:110px!important;
+ left:calc(28% + 32px)!important;
+ right:calc(30% + 32px)!important;
+ width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;
+ margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ background:#000!important;overflow:hidden!important;z-index:145!important;
+}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) iframe,
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) video{
+ width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;border:0!important;display:block!important;
+}
+@media(max-width:1100px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
+  left:calc(29% + 18px)!important;right:calc(32% + 18px)!important;
+ }
+}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
+  top:20px!important;left:12px!important;right:12px!important;bottom:auto!important;
+  height:270px!important;
+ }
+}
+/* Right rail panels are individually collapsible and scroll with the rail. */
+#novaMediaRight{overflow-y:auto!important;overscroll-behavior:contain!important}
+#novaMediaRight .novaRightPanel{flex-shrink:0!important}
+#novaMediaRight .novaRightPanel .panelHeader{padding:10px!important}
+#novaMediaRight .novaRightPanel .panelBody.collapsed{display:none!important}
+#novaMediaRight .novaRightPanel .panelBody:not(.collapsed){max-height:420px!important;overflow:auto!important}
+
 </style>
 </head>
 <body>
@@ -4091,6 +4168,89 @@ window.addEventListener("load", function () {
   if (card && header && card.parentElement !== header) {
     header.appendChild(card);
   }
+}, {once:true});
+</script>
+
+<script>
+/* NOVA consolidated workspace: relocate existing DOM only after all scripts initialize.
+   Preserve original media initialization scope, IDs, listeners and playlist storage. */
+window.addEventListener('load', function () {
+  const rail = document.getElementById('novaMediaRight');
+  const stack = document.querySelector('.novaPanelStack');
+  if (!rail || !stack) return;
+
+  const library = document.querySelector('#novaMediaLeft .novaMediaBox');
+  const libraryTitle = library?.querySelector('h2');
+  if (libraryTitle && !libraryTitle.dataset.novaCollapseReady) {
+    libraryTitle.dataset.novaCollapseReady = '1';
+    libraryTitle.classList.add('novaLibraryCollapse');
+    libraryTitle.setAttribute('role','button');
+    libraryTitle.setAttribute('tabindex','0');
+    libraryTitle.setAttribute('aria-expanded','true');
+    const toggleLibrary = () => {
+      const closed = library.classList.toggle('novaLibraryClosed');
+      libraryTitle.setAttribute('aria-expanded', String(!closed));
+    };
+    libraryTitle.addEventListener('click',toggleLibrary);
+    libraryTitle.addEventListener('keydown',e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleLibrary(); }
+    });
+  }
+
+  // Playlist is a single expandable panel, preserving all child controls.
+  const playlist = rail.querySelector('.novaCombinedPlaylist');
+  if (playlist) {
+    const title = playlist.querySelector('h2');
+    if (title && !title.dataset.novaCollapseReady) {
+      title.dataset.novaCollapseReady = '1';
+      title.classList.add('novaPlaylistCollapse');
+      title.setAttribute('role', 'button');
+      title.setAttribute('tabindex', '0');
+      title.setAttribute('aria-expanded', 'true');
+      const toggle = () => {
+        const closed = playlist.classList.toggle('novaPlaylistClosed');
+        title.setAttribute('aria-expanded', String(!closed));
+      };
+      title.addEventListener('click', toggle);
+      title.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
+    }
+  }
+
+  // Existing browser and trainer panels have their own generic collapse
+  // listeners already registered at DOMContentLoaded; DO NOT attach again.
+  const names = new Set([
+    'NOVA BROWSER',
+    'AMOMII HARDWARE CONTROLLER',
+    'RSR TRAINER ONE CONTROLLER',
+    'PORTABLE TRAINER CONTROLLER'
+  ]);
+  Array.from(stack.querySelectorAll(':scope > .panel')).forEach(panel => {
+    const header = panel.querySelector(':scope > .panelHeader');
+    const name = (header?.querySelector(':scope > span')?.textContent ||
+      header?.textContent || '').trim().toUpperCase();
+    if (!names.has(name)) return;
+    panel.classList.add('novaRightPanel');
+    rail.appendChild(panel);
+    const body = header?.nextElementSibling;
+    if (body && body.classList.contains('panelBody')) {
+      body.classList.add('collapsed');
+      header.classList.remove('expanded');
+      // The generic collapse system initializes on DOMContentLoaded. If this
+      // panel lacks a handler, use the existing toggleGenericPanel function.
+      if (!header.classList.contains('genericCollapseHeader') &&
+          !header.hasAttribute('onclick')) {
+        header.classList.add('genericCollapseHeader');
+        body.classList.add('genericCollapseBody');
+        header.addEventListener('click', () => window.toggleGenericPanel?.(header));
+      }
+    }
+  });
+
+  // Keep camera video/select/canvas DOM available to the camera button.
+  const camera = document.getElementById('novaCameraPanelSource');
+  if (camera) camera.style.display = 'none';
 }, {once:true});
 </script>
 
