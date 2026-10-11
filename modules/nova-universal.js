@@ -358,35 +358,73 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
       seekEl.disabled=false;
     }
   },400);
-// NOVA 1.9.8: visual-only playback indicator. No playback routing changes.
-  // The original music engine may update its state independently of the
-  // universal player; always reflect the actual playing media.
+// NOVA 1.9.9: immediate visual feedback, without changing playback routing.
   const playIndicator=$('toggle');
   const compactIndicator=document.getElementById('novaMediaPlayPause');
-  function updatePlaybackIndicator(){
-    const nativePlaying=Array.from(document.querySelectorAll('audio,video'))
-      .some(el=>isNOVAPlayback(el)&&!el.paused&&!el.ended&&!!el.currentSrc);
-    const youtubePlaying=!!(ytFrame&&activeType==='youtube'&&!youtubePaused);
-    const playing=nativePlaying||youtubePlaying;
-    const symbol=playing?'Ⅱ':'▶';
+  let optimisticUntil=0;
+  function actualPlaying(){
+    return Array.from(document.querySelectorAll('audio,video'))
+      .some(el=>isNOVAPlayback(el)&&!el.paused&&!el.ended&&!!el.currentSrc)
+      ||!!(ytFrame&&activeType==='youtube'&&!youtubePaused);
+  }
+  function paintPlayButton(playing){
     for(const button of [playIndicator,compactIndicator]){
       if(!button)continue;
-      if(button.textContent!==symbol)button.textContent=symbol;
-      button.title=playing?'Pause music':'Play music';
-      button.setAttribute('aria-label',playing?'Pause music':'Play music');
+      button.textContent=playing?'Ⅱ':'▶';
+      button.title=playing?'Pause music':'Resume music';
+      button.setAttribute('aria-label',playing?'Pause music':'Resume music');
       button.setAttribute('aria-pressed',String(playing));
     }
   }
-  document.addEventListener('play',updatePlaybackIndicator,true);
-  document.addEventListener('pause',updatePlaybackIndicator,true);
-  document.addEventListener('ended',updatePlaybackIndicator,true);
-  playIndicator?.addEventListener('click',()=>setTimeout(updatePlaybackIndicator,100));
+  function updatePlaybackIndicator(){
+    if(Date.now()<optimisticUntil)return;
+    paintPlayButton(actualPlaying());
+  }
+  // Capture happens before the existing click handler, so the symbol changes
+  // immediately. The original handler still performs pause/resume at the same position.
+  playIndicator?.addEventListener('click',()=>{
+    paintPlayButton(!actualPlaying());
+    optimisticUntil=Date.now()+250;
+    setTimeout(()=>{optimisticUntil=0;updatePlaybackIndicator();},300);
+  },true);
+  // The hidden legacy dashboard button can also be used by other NOVA scripts.
+  compactIndicator?.addEventListener('click',()=>{
+    paintPlayButton(!actualPlaying());
+    optimisticUntil=Date.now()+250;
+    setTimeout(()=>{optimisticUntil=0;updatePlaybackIndicator();},300);
+  },true);
+  for(const name of ['play','playing','pause','ended']){
+    document.addEventListener(name,()=>{
+      optimisticUntil=0;
+      queueMicrotask(updatePlaybackIndicator);
+    },true);
+  }
   const indicatorTimer=window.setInterval(()=>{
     if(!host.isConnected){clearInterval(indicatorTimer);return;}
     updatePlaybackIndicator();
   },300);
   updatePlaybackIndicator();
-  const timer=window.setInterval(()=>{if(!host.isConnected){clearInterval(timer);return;}renderLibrary();},4000);
+
+  // Public volume setter used by NOVA's existing voice command router.
+  // Dispatching input keeps the current volume bar and legacy engine in sync.
+  window.novaSetMediaVolumePercent=function(percent){
+    const level=Math.max(0,Math.min(100,Number(percent)));
+    if(!Number.isFinite(level))return false;
+    const value=level/100;
+    const slider=$('volume');
+    if(slider){slider.value=String(value);slider.dispatchEvent(new Event('input',{bubbles:true}));}
+    for(const el of [activeMedia,document.getElementById('audioPlayer'),document.getElementById('videoPlayer')]){
+      if(el){el.volume=value;el.muted=false;}
+    }
+    const oldSlider=document.getElementById('musicVolume');
+    if(oldSlider)oldSlider.value=String(value);
+    const videoSlider=document.getElementById('videoVolume');
+    if(videoSlider)videoSlider.value=String(value);
+    if(ytFrame){try{ytFrame.contentWindow?.postMessage(JSON.stringify({event:'command',func:'setVolume',args:[level]}),'*');}catch(e){}}
+    return true;
+  };
+
+    const timer=window.setInterval(()=>{if(!host.isConnected){clearInterval(timer);return;}renderLibrary();},4000);
 
  renderAll();
 
