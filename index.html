@@ -108,6 +108,102 @@
  #novaPermanentMedia #novaMediaRight{grid-column:1;grid-row:3}
 }
 
+
+/* ============================================================
+   NOVA CENTERPIECE — LARGE YOUTUBE / VIDEO STAGE
+   Keep the player entirely within the CENTER column.
+   ============================================================ */
+@media (min-width:761px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+    position:absolute!important;
+    top:112px!important;
+    left:calc(28% + 39px)!important;
+    right:calc(30% + 39px)!important;
+    width:auto!important;
+    max-width:none!important;
+    height:auto!important;
+    aspect-ratio:16 / 9!important;
+    margin:0!important;
+    z-index:155!important;
+    border-radius:12px!important;
+    box-shadow:0 12px 40px rgba(0,0,0,.55),0 0 25px rgba(17,196,240,.16)!important;
+  }
+  .novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{
+    position:absolute!important;
+    top:122px!important;
+    left:calc(28% + 50px)!important;
+    right:calc(30% + 50px)!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    justify-content:flex-end!important;
+    background:transparent!important;
+    z-index:160!important;
+    pointer-events:none!important;
+  }
+}
+.novaUnifiedConsole #novaHybridVideoStage iframe,
+.novaUnifiedConsole #novaHybridVideoStage video{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  border:0!important;
+  background:#000!important;
+}
+/* The top Now Playing card already displays the title; don't put a
+   giant raw URL over the video. Keep only the return button. */
+.novaHybridVideoActive .novaUnifiedConsole #novaHybridTrackName{display:none!important}
+.novaHybridVideoActive .novaUnifiedConsole #novaHybridBackOrb{
+  pointer-events:auto!important;
+  background:rgba(6,28,43,.92)!important;
+  color:#a9f3ff!important;
+  border:1px solid #34c7e7!important;
+  border-radius:7px!important;
+  padding:7px 12px!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  box-shadow:0 2px 12px #0009!important;
+}
+.novaHybridVideoActive .novaUnifiedConsole #novaMusicInfoDisplay,
+.novaHybridVideoActive .novaUnifiedConsole #novaPersistentTicker{
+  visibility:hidden!important;
+}
+@media (max-width:1100px) and (min-width:761px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+    left:calc(29% + 26px)!important;
+    right:calc(32% + 26px)!important;
+    top:112px!important;
+  }
+  .novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{
+    left:calc(29% + 32px)!important;
+    right:calc(32% + 32px)!important;
+  }
+}
+@media (max-width:760px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+    position:relative!important;
+    inset:auto!important;
+    width:min(94%,720px)!important;
+    max-width:94%!important;
+    height:auto!important;
+    aspect-ratio:16 / 9!important;
+    margin:90px auto 12px!important;
+    z-index:155!important;
+  }
+  .novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{
+    position:relative!important;
+    inset:auto!important;
+    z-index:160!important;
+    justify-content:center!important;
+  }
+}
+
 </style>
 </head>
 <body>
