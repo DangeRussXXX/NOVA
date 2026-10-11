@@ -247,6 +247,36 @@
  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{left:calc(29% + 26px)!important;right:calc(32% + 26px)!important}
 }
 
+
+/* ============================================================
+   NOVA SINGLE TOP PLAYER — layout-only, playlist-safe revision
+   Existing IDs and media event handlers are preserved.
+   ============================================================ */
+#novaPermanentMedia .novaMediaNow{
+  gap:10px!important;padding:14px 18px!important;
+  border-color:rgba(52,199,231,.65)!important;
+  background:linear-gradient(165deg,rgba(7,34,51,.98),rgba(3,18,31,.97))!important;
+}
+#novaPermanentMedia .novaTopPlayback{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:4px}
+#novaPermanentMedia .novaTopPlayback .novaMediaRow{justify-content:center;margin:0!important;width:100%}
+#novaPermanentMedia .novaTopPlayback button{min-width:44px}
+#novaPermanentMedia .novaTopPlayback #toggle{min-width:110px}
+#novaPermanentMedia .novaTopPlayback label{font-size:11px;letter-spacing:1px;color:#b6dce9}
+#novaPermanentMedia .novaTopPlayback #volume{width:min(220px,68%)!important;max-width:68%}
+#novaPermanentMedia .novaTopPlayback #seek{width:100%!important;max-width:450px;cursor:pointer}
+#novaPermanentMedia #novaMediaRight .novaCombinedPlaylist{flex:1 1 100%!important}
+/* Keep the original bottom DOM buttons for legacy listeners, but hide the duplicate strip. */
+.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
+@media(min-width:761px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{top:245px!important}
+}
+@media(max-width:1100px) and (min-width:761px){
+  #novaPermanentMedia .novaMediaNow{padding:10px!important}
+  #novaPermanentMedia .novaTopPlayback{gap:6px}
+  #novaPermanentMedia .novaTopPlayback button{padding:6px!important;min-width:32px}
+  #novaPermanentMedia .novaTopPlayback #toggle{min-width:85px}
+}
+
 </style>
 </head>
 <body>
@@ -277,9 +307,8 @@
   <div class="novaMediaSide" id="novaMediaLeft">
     <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><button id="addMusic" type="button">+ MUSIC</button><button id="addVideos" type="button">+ VIDEO</button><button id="addFolder" type="button">+ FOLDER</button></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
   </div>
-  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div></div>
+  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
   <div class="novaMediaSide" id="novaMediaRight">
-    <section class="novaMediaBox"><h2>PLAYBACK</h2><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section>
     <section class="novaMediaBox novaCombinedPlaylist"><h2>PLAYLISTS</h2><div class="novaMediaRow"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create" type="button">+ CREATE</button></div><div id="playlistNames" class="novaMediaList novaPlaylistChoices" aria-label="Select playlist"></div><div class="novaPlaylistDivider"></div><h3>EDIT SELECTED PLAYLIST</h3><div class="novaMediaRow"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn" type="button">RENAME</button></div><div class="novaMediaRow"><span id="count" class="muted"></span><button id="clear" type="button">CLEAR</button><button id="deleteBtn" type="button">DELETE LIST</button></div><div id="tracks" class="novaMediaList novaPlaylistTracks"></div><p class="muted">▲ ▼ reorder · REMOVE keeps your original files</p></section>
   </div>
   <input id="novaPermanentMusicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.opus" multiple hidden>
