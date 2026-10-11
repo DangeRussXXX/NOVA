@@ -272,18 +272,35 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
  $("toggle").onclick=()=>{
 
-   if(legacyMusicIsActive()){legacyMusicAction('toggle');return;}
+   if(legacyMusicIsActive()){const wasPlaying=!document.getElementById('audioPlayer').paused;legacyMusicAction('toggle');paintPlayButton(!wasPlaying);return;}
 
    if(activeType==="youtube"&&ytFrame){youtubeCommandLocal(youtubePaused?"playVideo":"pauseVideo");youtubePaused=!youtubePaused;syncPlayButton(!youtubePaused);emitMediaState(youtubePaused?'paused':'playing',{title:selected()?.items[activeIndex]?.name||'',type:'youtube'});return;}
 
-   if(!activeMedia){playAt(activeIndex<0?0:activeIndex);return;}
+   // First Play after page load follows the same path as "NOVA, play music".
+   // Do not create a second universal audio element for the initial click.
+   if(!activeMedia){
+     const legacyAudio=document.getElementById('audioPlayer');
+     if(legacyAudio && legacyAudio.currentSrc && !legacyAudio.ended){
+       legacyMusicAction('toggle');
+       paintPlayButton(true);
+       return;
+     }
+     if(typeof window.playMusic==='function'){
+       window.playMusic();
+       // Actual media play events keep the visual indicator synchronized.
+       return;
+     }
+     // Fallback for standalone universal playlists when no legacy library exists.
+     playAt(activeIndex<0?0:activeIndex);
+     return;
+   }
 
-   if(activeMedia.paused)activeMedia.play().catch(()=>{});else activeMedia.pause();
+   if(activeMedia.paused){activeMedia.play().catch(()=>{});paintPlayButton(true);}else{activeMedia.pause();paintPlayButton(false);}
     // play/pause DOM events update the ticker and button after the state actually changes.
 
  };
 
- $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");syncPlayButton(false);emitMediaState('stopped');};
+ $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");syncPlayButton(false);paintPlayButton(false);emitMediaState('stopped');};
 
  $("volume").oninput=()=>{
     const value=Number($("volume").value);
@@ -358,10 +375,11 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
       seekEl.disabled=false;
     }
   },400);
-// NOVA 1.9.9: immediate visual feedback, without changing playback routing.
+// NOVA 1.9.10: one action-oriented button indicator.
+  // PLAY (▶) means click to resume; PAUSE (Ⅱ) means click to pause.
+  // Playback events are authoritative, including voice-started legacy music.
   const playIndicator=$('toggle');
   const compactIndicator=document.getElementById('novaMediaPlayPause');
-  let optimisticUntil=0;
   function actualPlaying(){
     return Array.from(document.querySelectorAll('audio,video'))
       .some(el=>isNOVAPlayback(el)&&!el.paused&&!el.ended&&!!el.currentSrc)
@@ -371,39 +389,23 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
     for(const button of [playIndicator,compactIndicator]){
       if(!button)continue;
       button.textContent=playing?'Ⅱ':'▶';
-      button.title=playing?'Pause music':'Resume music';
-      button.setAttribute('aria-label',playing?'Pause music':'Resume music');
+      button.title=playing?'Pause music':'Play music';
+      button.setAttribute('aria-label',playing?'Pause music':'Play music');
       button.setAttribute('aria-pressed',String(playing));
     }
   }
-  function updatePlaybackIndicator(){
-    if(Date.now()<optimisticUntil)return;
-    paintPlayButton(actualPlaying());
-  }
-  // Capture happens before the existing click handler, so the symbol changes
-  // immediately. The original handler still performs pause/resume at the same position.
-  playIndicator?.addEventListener('click',()=>{
-    paintPlayButton(!actualPlaying());
-    optimisticUntil=Date.now()+250;
-    setTimeout(()=>{optimisticUntil=0;updatePlaybackIndicator();},300);
-  },true);
-  // The hidden legacy dashboard button can also be used by other NOVA scripts.
-  compactIndicator?.addEventListener('click',()=>{
-    paintPlayButton(!actualPlaying());
-    optimisticUntil=Date.now()+250;
-    setTimeout(()=>{optimisticUntil=0;updatePlaybackIndicator();},300);
-  },true);
+  // Do not toggle the icon optimistically in capture listeners: the playback
+  // handler already changes the real media state, and double-toggling was
+  // causing the icon to disagree with what the player was doing.
   for(const name of ['play','playing','pause','ended']){
-    document.addEventListener(name,()=>{
-      optimisticUntil=0;
-      queueMicrotask(updatePlaybackIndicator);
-    },true);
+    document.addEventListener(name,()=>queueMicrotask(()=>paintPlayButton(actualPlaying())),true);
   }
+  // Other NOVA scripts can start playback via voice; reflect that as well.
   const indicatorTimer=window.setInterval(()=>{
     if(!host.isConnected){clearInterval(indicatorTimer);return;}
-    updatePlaybackIndicator();
-  },300);
-  updatePlaybackIndicator();
+    paintPlayButton(actualPlaying());
+  },350);
+  paintPlayButton(actualPlaying());
 
   // Public volume setter used by NOVA's existing voice command router.
   // Dispatching input keeps the current volume bar and legacy engine in sync.
