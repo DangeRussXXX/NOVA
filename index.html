@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>NOVA Command Center</title>
-<link rel="stylesheet" href="nova.css?v=1.9">
+<link rel="stylesheet" href="nova.css?v=1.9.2">
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 <!-- NOVA 1.8.1: page styles moved to nova.css; loaded after base rules in original order. -->
@@ -3892,7 +3892,48 @@ window.addEventListener('load',function(){
  const right=document.getElementById('novaMediaRight');
  const consoleEl=document.querySelector('.novaUnifiedConsole');
  if(!header||!host||!card||!left||!right||!consoleEl)return;
- const theme=mode=>{document.body.dataset.novaTheme=mode;};
+ // NOVA 1.9.2: Electric Media Mode uses the existing adaptive theme variables.
+ // No changes to the media engine, playlist IDs, or playback handlers.
+ let mediaModeTimer=null;
+ let mediaModeIndex=0;
+ let mediaModeButton=null;
+ const mediaColors=[
+  ['#00e5ff','0,229,255'], // electric cyan
+  ['#317dff','49,125,255'], // electric blue
+  ['#9857ff','152,87,255'], // ultraviolet
+  ['#ff3cac','255,60,172'], // hot pink
+  ['#ff375f','255,55,95'],  // neon red
+  ['#ff8b24','255,139,36'], // plasma orange
+  ['#f9f000','249,240,0'], // electric yellow
+  ['#61ff36','97,255,54'], // neon green
+  ['#00ffb3','0,255,179']  // electric mint
+ ];
+ const applyMediaColor=()=>{
+  const [hex,rgb]=mediaColors[mediaModeIndex%mediaColors.length];
+  document.body.style.setProperty('--nova-electric',hex);
+  document.body.style.setProperty('--nova-electric-rgb',rgb);
+  mediaModeIndex++;
+ };
+ const stopMediaMode=()=>{
+  if(mediaModeTimer!==null){clearInterval(mediaModeTimer);mediaModeTimer=null;}
+  document.body.classList.remove('novaElectricMediaMode');
+  document.body.style.removeProperty('--nova-electric');
+  document.body.style.removeProperty('--nova-electric-rgb');
+  if(mediaModeButton){mediaModeButton.setAttribute('aria-pressed','false');mediaModeButton.textContent='⚡ MEDIA MODE';}
+ };
+ const theme=mode=>{
+  if(mode!=='media' && mediaModeTimer!==null)stopMediaMode();
+  document.body.dataset.novaTheme=mode;
+ };
+ const toggleMediaMode=()=>{
+  if(mediaModeTimer!==null){stopMediaMode();theme('media');return;}
+  theme('media');
+  mediaModeIndex=0;
+  document.body.classList.add('novaElectricMediaMode');
+  applyMediaColor();
+  mediaModeTimer=setInterval(applyMediaColor,1300);
+  if(mediaModeButton){mediaModeButton.setAttribute('aria-pressed','true');mediaModeButton.textContent='⚡ MEDIA MODE ON';}
+ };
  theme('nova');
  const oldControls=card.querySelector('.novaTopPlayback');
  const player=document.createElement('div');player.className='novaAdaptivePlayer';player.setAttribute('aria-label','NOVA universal playback');
@@ -3920,11 +3961,39 @@ window.addEventListener('load',function(){
      },650);
    }
  }
- const now=document.getElementById('now');if(now){now.textContent='WELCOME TO NOVA!';let last='';setInterval(()=>{
-   const value=now.textContent||'';
-   if(value!==last&&value!=='WELCOME TO NOVA!')last=value;
-   if(!last||last==='NOVA READY'||last==='STOPPED')now.textContent='WELCOME TO NOVA!  ⚡  SYSTEM READY';
- },2500);}
+ // NOVA 1.9.1: large scrolling welcome / active-media marquee.
+ // Preserve #now for the existing media engine; do not move or replace its ID.
+ const now=document.getElementById('now');
+ if(now){
+   const welcome='WELCOME TO NOVA!  ⚡  SYSTEM READY';
+   let displayed='';
+   let mediaTitle='';
+   const inactive=/^(?:NOVA READY|STOPPED|WELCOME TO NOVA!?|NO TRACK SELECTED|NOTHING PLAYING|)$/i;
+   const paint=(value,active)=>{
+     const label=active?'♫ NOW PLAYING  •  '+value:welcome;
+     if(label===displayed)return;
+     displayed=label;
+     now.textContent=label;
+     now.classList.toggle('novaNowPlayingActive',active);
+     now.classList.remove('novaMarqueeRun');
+     void now.offsetWidth; // restart the scroll when the track changes
+     now.classList.add('novaMarqueeRun');
+   };
+   paint('',false);
+   setInterval(()=>{
+     // The universal media module writes track names to #now.
+     const incoming=(now.textContent||'').trim();
+     if(incoming!==displayed && !inactive.test(incoming) && !incoming.startsWith('♫ NOW PLAYING')){
+       mediaTitle=incoming;
+     }
+     const mediaPlaying=[...document.querySelectorAll('audio,video')].some(el=>
+       el.id!=='desktopCameraVideo' && !el.paused && !el.ended && el.readyState>1
+     );
+     const youtubePlaying=!!document.querySelector('#novaHybridVideoStage:not([hidden]) iframe[src*="youtube"]');
+     const active=(mediaPlaying||youtubePlaying)&&!!mediaTitle;
+     paint(mediaTitle,active);
+   },700);
+ }
  // Preserve the original live DOM and playlist listeners; only change its presentation.
  const panels={};
  const makeFloat=(key,node,label)=>{
@@ -3967,6 +4036,13 @@ window.addEventListener('load',function(){
  add('NOVA BROWSER','nova','browser');divider();
  add('AMOMII','hardware','amomii');add('RSR TRAINER','hardware','rsr');add('PORTABLE TRAINER','hardware','portable');divider();
  add('MEDIA LIBRARY','media','library');add('PLAYLISTS','media','playlists');
+ mediaModeButton=document.createElement('button');
+ mediaModeButton.type='button';mediaModeButton.className='control novaGroupButton novaMediaModeButton';
+ mediaModeButton.dataset.group='media';mediaModeButton.textContent='⚡ MEDIA MODE';
+ mediaModeButton.title='Toggle cycling electric colors and animated media effects';
+ mediaModeButton.setAttribute('aria-pressed','false');
+ mediaModeButton.addEventListener('click',toggleMediaMode);
+ header.appendChild(mediaModeButton);
 }, {once:true});
 </script>
 

@@ -5248,3 +5248,131 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
   .app .panel,
   .app .novaMediaBox { transition: none !important; }
 }
+
+
+/* ============================================================
+   NOVA 1.9.1 — TWO STEPS LARGER + GIANT MEDIA MARQUEE
+   Overrides only typography and ticker presentation.
+   ============================================================ */
+:root { --nova-ui-text: 18px; --nova-ui-small: 16px; --nova-ui-title: 18px; }
+.app > header .headerNovaControls .buttonGrid button.novaGroupButton {
+  font-size:17px!important; line-height:1.35!important; min-height:43px!important;
+  padding:9px 12px!important;
+}
+.app .commandRow input,.app .commandRow button {font-size:18px!important;}
+#novaPermanentMedia button,
+#novaPermanentMedia input:not([type=range]),
+#novaPermanentMedia select,
+#novaPermanentMedia .novaMediaEntry .name,
+#novaPermanentMedia .muted,
+#novaPermanentMedia .novaMediaNow {font-size:17px!important;}
+#novaPermanentMedia .novaMediaEntry small {font-size:16px!important;}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeadingToggle {font-size:16px!important;}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry {font-size:17px!important;line-height:1.55!important;}
+.app button.control,.app .novaRightPanel button,.app .novaMediaLibraryAction {
+  font-size:17px!important;line-height:1.4!important;
+}
+.app input:not([type=range]),.app select,.app textarea {font-size:18px!important;}
+
+/* Full-width ticker: ~4x original 12px. Clip at the outer card,
+   not at the moving text, so long song names can scroll through. */
+.app > header #novaMediaNowCard {
+  min-height:78px!important;
+  height:78px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  justify-content:flex-start!important;
+  position:relative!important;
+}
+.app > header #novaMediaNowCard #now {
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  width:max-content!important;
+  max-width:none!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  font-size:48px!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+  letter-spacing:1.4px!important;
+  padding:0 1.5rem!important;
+  text-shadow:0 0 18px rgba(var(--nova-electric-rgb),.4)!important;
+  will-change:transform;
+}
+.app > header #novaMediaNowCard #now.novaMarqueeRun {
+  animation:novaBigNowMarquee 17s linear infinite!important;
+}
+@keyframes novaBigNowMarquee {
+  from {transform:translateX(100vw)}
+  to {transform:translateX(-100%)}
+}
+@media(max-width:760px){
+  .app > header #novaMediaNowCard {height:65px!important;min-height:65px!important;}
+  .app > header #novaMediaNowCard #now {font-size:34px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .app > header #novaMediaNowCard #now.novaMarqueeRun {animation:none!important;}
+  .app > header #novaMediaNowCard {justify-content:center!important;}
+  .app > header #novaMediaNowCard #now {font-size:clamp(18px,3vw,48px)!important;}
+}
+
+
+/* ============================================================
+   NOVA 1.9.2 — ELECTRIC MEDIA MODE
+   CSS-only electric atmosphere, enabled by the MEDIA MODE button.
+   Existing layout, playback controls, playlists, and DOM IDs unchanged.
+   ============================================================ */
+.novaMediaModeButton {border-color:#ff3cac!important;color:#ff7dcb!important;}
+.novaMediaModeButton[aria-pressed="true"] {
+  color:#fff!important;
+  border-color:var(--nova-electric)!important;
+  background:linear-gradient(115deg,#071c2a,#26112b,#071c2a)!important;
+  box-shadow:0 0 14px rgba(var(--nova-electric-rgb),.55),inset 0 0 12px rgba(var(--nova-electric-rgb),.16)!important;
+  animation:novaModeButtonCharge 1.8s ease-in-out infinite;
+}
+body.novaElectricMediaMode .novaUnifiedConsole {
+  border-color:var(--nova-electric)!important;
+  box-shadow:0 0 18px rgba(var(--nova-electric-rgb),.4),0 0 55px rgba(var(--nova-electric-rgb),.14),inset 0 0 30px rgba(var(--nova-electric-rgb),.09)!important;
+  transition:border-color .7s linear,box-shadow .7s linear!important;
+}
+body.novaElectricMediaMode .novaUnifiedConsole .novaLeftHome::after {
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(115deg,transparent 0 115px,rgba(var(--nova-electric-rgb),.12) 116px,transparent 118px 235px);
+  background-size:220% 220%;mix-blend-mode:screen;opacity:.38;
+  animation:novaElectricSweep 6s linear infinite;
+}
+body.novaElectricMediaMode #novaCoreContainer,
+body.novaElectricMediaMode #novaThroneRing,
+body.novaElectricMediaMode .novaOuterRing,
+body.novaElectricMediaMode .novaInnerRing,
+body.novaElectricMediaMode .novaWaveform {
+  filter:drop-shadow(0 0 13px var(--nova-electric));
+  transition:filter .75s ease;
+}
+body.novaElectricMediaMode .novaFloatPanel:not([hidden]) {
+  border-color:var(--nova-electric)!important;
+  box-shadow:0 15px 45px #000c,0 0 25px rgba(var(--nova-electric-rgb),.46)!important;
+  transition:border-color .7s linear,box-shadow .7s linear;
+}
+body.novaElectricMediaMode #novaMediaNowCard {
+  box-shadow:0 0 24px rgba(var(--nova-electric-rgb),.55),inset 0 0 12px rgba(var(--nova-electric-rgb),.12)!important;
+  transition:border-color .7s linear,box-shadow .7s linear;
+}
+body.novaElectricMediaMode #now {
+  text-shadow:0 0 12px var(--nova-electric),0 0 28px rgba(var(--nova-electric-rgb),.65)!important;
+  transition:color .7s linear,text-shadow .7s linear;
+}
+@keyframes novaElectricSweep {
+  0% {background-position:100% 0%;opacity:.18}
+  50% {opacity:.46}
+  100% {background-position:-100% 100%;opacity:.18}
+}
+@keyframes novaModeButtonCharge {
+  0%,100% {filter:brightness(.9)}
+  50% {filter:brightness(1.35)}
+}
+@media(prefers-reduced-motion:reduce){
+  body.novaElectricMediaMode .novaUnifiedConsole .novaLeftHome::after,
+  .novaMediaModeButton[aria-pressed="true"] {animation:none!important;}
+}
