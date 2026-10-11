@@ -358,7 +358,35 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
       seekEl.disabled=false;
     }
   },400);
-const timer=window.setInterval(()=>{if(!host.isConnected){clearInterval(timer);return;}renderLibrary();},4000);
+// NOVA 1.9.8: visual-only playback indicator. No playback routing changes.
+  // The original music engine may update its state independently of the
+  // universal player; always reflect the actual playing media.
+  const playIndicator=$('toggle');
+  const compactIndicator=document.getElementById('novaMediaPlayPause');
+  function updatePlaybackIndicator(){
+    const nativePlaying=Array.from(document.querySelectorAll('audio,video'))
+      .some(el=>isNOVAPlayback(el)&&!el.paused&&!el.ended&&!!el.currentSrc);
+    const youtubePlaying=!!(ytFrame&&activeType==='youtube'&&!youtubePaused);
+    const playing=nativePlaying||youtubePlaying;
+    const symbol=playing?'Ⅱ':'▶';
+    for(const button of [playIndicator,compactIndicator]){
+      if(!button)continue;
+      if(button.textContent!==symbol)button.textContent=symbol;
+      button.title=playing?'Pause music':'Play music';
+      button.setAttribute('aria-label',playing?'Pause music':'Play music');
+      button.setAttribute('aria-pressed',String(playing));
+    }
+  }
+  document.addEventListener('play',updatePlaybackIndicator,true);
+  document.addEventListener('pause',updatePlaybackIndicator,true);
+  document.addEventListener('ended',updatePlaybackIndicator,true);
+  playIndicator?.addEventListener('click',()=>setTimeout(updatePlaybackIndicator,100));
+  const indicatorTimer=window.setInterval(()=>{
+    if(!host.isConnected){clearInterval(indicatorTimer);return;}
+    updatePlaybackIndicator();
+  },300);
+  updatePlaybackIndicator();
+  const timer=window.setInterval(()=>{if(!host.isConnected){clearInterval(timer);return;}renderLibrary();},4000);
 
  renderAll();
 
