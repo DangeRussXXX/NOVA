@@ -21,7 +21,7 @@ function initializePermanentMedia(){
  const host=document.getElementById("novaPermanentMedia");
  if(!host)return;
  const w=window;
- const d=document,$=id=>host.querySelector("#"+id)||document.getElementById(id);let currentId=playlists[0]?.id||"favorites",activeIndex=-1,activeMedia=null,activeType="",ytFrame=null;
+ const d=document,$=id=>host.querySelector("#"+id);let currentId=playlists[0]?.id||"favorites",activeIndex=-1,activeMedia=null,activeType="",ytFrame=null;
  const hybridStage=document.getElementById("novaHybridVideoStage");
  const hybridNow=document.getElementById("novaHybridNowPlaying");
  const hybridTitle=document.getElementById("novaHybridTrackName");

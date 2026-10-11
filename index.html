@@ -277,32 +277,6 @@
   #novaPermanentMedia .novaTopPlayback #toggle{min-width:85px}
 }
 
-
-/* NOVA HEADER MEDIA MERGE — real controls in header, no duplicate player. */
-header{display:flex!important;align-items:center!important;gap:22px!important;flex-wrap:wrap!important;min-height:148px!important}
-header .brand{flex:1 1 370px!important;min-width:280px!important}
-header #novaHeaderMediaSlot{display:block!important;flex:1 1 540px!important;min-width:320px!important;max-width:850px!important;margin-left:auto!important}
-#novaHeaderMediaSlot .novaMediaNow{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;padding:12px 18px;border:1px solid rgba(43,166,207,.55);border-radius:12px;background:linear-gradient(145deg,rgba(8,30,46,.96),rgba(3,14,25,.95));color:#d7f4ff;font-family:inherit;pointer-events:auto;text-align:center}
-#novaHeaderMediaSlot .novaMediaNow strong{font-size:12px;letter-spacing:1.5px;color:#58daf7}
-#novaHeaderMediaSlot #now{display:block;max-width:100%;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#novaHeaderMediaSlot #novaMediaVideoControls{display:flex;justify-content:center}
-#novaHeaderMediaSlot #novaHybridNowPlaying{position:static!important;display:flex!important;justify-content:center!important;max-width:100%!important;width:auto!important;padding:0!important;margin:0!important;background:none!important;border:0!important;pointer-events:auto!important}
-#novaHeaderMediaSlot #novaHybridNowPlaying[hidden]{display:none!important}
-#novaHeaderMediaSlot #novaHybridTrackName{display:none!important}
-#novaHeaderMediaSlot #novaHybridBackOrb{background:linear-gradient(180deg,#17475e,#092a3d)!important;border:1px solid #35c6e9!important;color:#d3f7ff!important;border-radius:8px!important;padding:7px 12px!important;cursor:pointer!important;font-size:11px!important;font-weight:700!important;pointer-events:auto!important}
-#novaHeaderMediaSlot .novaTopPlayback{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%}
-#novaHeaderMediaSlot .novaMediaRow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;width:100%;margin:0}
-#novaHeaderMediaSlot button{font-family:inherit;font-size:11px;font-weight:750;letter-spacing:.3px;min-height:30px;padding:6px 11px;cursor:pointer;border:1px solid #2c6b85;border-radius:8px;background:linear-gradient(180deg,#153d52,#092436);color:#c9f5ff}
-#novaHeaderMediaSlot button:hover{border-color:#51defc;background:#174a62}
-#novaHeaderMediaSlot label{font-size:11px;letter-spacing:1px;color:#b6dce9}
-#novaHeaderMediaSlot #volume{width:min(200px,60%);accent-color:#38d6f7}
-#novaHeaderMediaSlot #seek{width:min(100%,440px);accent-color:#38d6f7;cursor:pointer}
-/* Remove the empty center-top card grid cell, retain side columns. */
-#novaPermanentMedia .novaMediaNow{display:none!important}
-.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
-@media(min-width:761px){.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{top:115px!important}}
-@media(max-width:760px){header #novaHeaderMediaSlot{min-width:0!important;flex-basis:100%!important}.novaUnifiedConsole .novaLeftHome{min-height:1250px!important}}
-
 </style>
 </head>
 <body>
@@ -320,8 +294,7 @@ header #novaHeaderMediaSlot{display:block!important;flex:1 1 540px!important;min
   </div>
 </div>
 </div>
-<div class="headerStatus" id="novaHeaderMediaSlot">
-  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
+<div class="headerStatus">
 </div>
 </header>
 <div class="mainGrid novaSingleStack">
@@ -334,7 +307,7 @@ header #novaHeaderMediaSlot{display:block!important;flex:1 1 540px!important;min
   <div class="novaMediaSide" id="novaMediaLeft">
     <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><button id="addMusic" type="button">+ MUSIC</button><button id="addVideos" type="button">+ VIDEO</button><button id="addFolder" type="button">+ FOLDER</button></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
   </div>
-
+  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
   <div class="novaMediaSide" id="novaMediaRight">
     <section class="novaMediaBox novaCombinedPlaylist"><h2>PLAYLISTS</h2><div class="novaMediaRow"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create" type="button">+ CREATE</button></div><div id="playlistNames" class="novaMediaList novaPlaylistChoices" aria-label="Select playlist"></div><div class="novaPlaylistDivider"></div><h3>EDIT SELECTED PLAYLIST</h3><div class="novaMediaRow"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn" type="button">RENAME</button></div><div class="novaMediaRow"><span id="count" class="muted"></span><button id="clear" type="button">CLEAR</button><button id="deleteBtn" type="button">DELETE LIST</button></div><div id="tracks" class="novaMediaList novaPlaylistTracks"></div><p class="muted">▲ ▼ reorder · REMOVE keeps your original files</p></section>
   </div>
