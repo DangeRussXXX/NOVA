@@ -4096,8 +4096,31 @@ function openNovaSystemScreen(){
     panel("NOVA HELP",help,true)+
     panel("NOVA COMMANDS",novaCommandReferenceHtml())+
     panel("VOICE COMMANDS",novaVoiceCommandReferenceHtml())+
-    `<details style="position:relative;border:1px solid #263241;border-radius:10px;margin:0 0 12px;background:#090e14"><summary style="cursor:pointer;padding:15px 210px 15px 17px;color:#36d9ff;font-weight:800;letter-spacing:1px">COMMAND HISTORY</summary><div style="position:absolute;right:12px;top:9px;display:flex;gap:8px"><button type="button" class="close" style="color:#36d9ff" onclick="event.stopPropagation();window.opener.novaDownloadHistory()">⬇ DOWNLOAD</button><button type="button" class="close" style="color:#ff8c93" onclick="event.stopPropagation();window.opener.novaPopupClearHistory(this)">✕ CLEAR</button></div><div id="novaPopupHistoryRows" style="padding:0 16px 16px">${novaFullHistoryHtml()}</div></details>`
+    `<section style="border:1px solid #263241;border-radius:10px;margin:0 0 12px;background:#090e14;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:9px 12px 9px 17px">
+        <span style="color:#36d9ff;font-weight:800;letter-spacing:1px">COMMAND HISTORY</span>
+        <span style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" id="novaPopupDownloadHistory" class="close" style="color:#36d9ff">⬇ DOWNLOAD</button>
+          <button type="button" id="novaPopupClearHistory" class="close" style="color:#ff8c93">✕ CLEAR</button>
+        </span>
+      </div>
+      <details id="novaPopupHistoryDetails" style="border-top:1px solid #263241">
+        <summary style="cursor:pointer;padding:10px 17px;color:#8edff2;font-weight:700">SHOW / HIDE HISTORY</summary>
+        <div id="novaPopupHistoryRows" style="padding:0 16px 16px">${novaFullHistoryHtml()}</div>
+      </details>
+    </section>`
   );
+  // Bind directly to the popup document; inline onclick/window.opener can be unreliable.
+  const popup=window.open('', 'nova_nova_system');
+  if(!popup || popup.closed)return;
+  const download=popup.document.getElementById('novaPopupDownloadHistory');
+  const clear=popup.document.getElementById('novaPopupClearHistory');
+  if(download)download.addEventListener('click',()=>novaDownloadHistory());
+  if(clear)clear.addEventListener('click',()=>{
+    if(!novaClearHistory())return;
+    const rows=popup.document.getElementById('novaPopupHistoryRows');
+    if(rows)rows.innerHTML='<div class="note">No system events recorded yet.</div>';
+  });
 }
 
 /* NOVA IRIS LIVE DASHBOARD + CALENDAR POPUP */
