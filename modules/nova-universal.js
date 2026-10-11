@@ -100,7 +100,7 @@ function initializePermanentMedia(){
 
  for(const [id,action] of dashboardButtons){const b=document.getElementById(id);if(!b)continue;
 
-   const fn=e=>{if(activeIndex<0)return;e.preventDefault();e.stopImmediatePropagation();hybridAction(action);};
+   const fn=e=>{e.preventDefault();e.stopImmediatePropagation();const control=$(action==="toggle"?"toggle":action);if(control)control.click();};
 
    b.addEventListener("click",fn,true);buttonHandlers.push([b,fn]);
 
@@ -162,35 +162,43 @@ function initializePermanentMedia(){
 
  };
 
- // NOVA 1.9.4: one audible native media element at a time.
- // Both the legacy media module and the universal playlist controller can
- // start playback. A capture-phase play listener arbitrates between them.
- // Do not touch the desktop camera preview or speech synthesis.
- const isNOVAPlayback = el => el instanceof HTMLMediaElement &&
-   (el.id === "audioPlayer" || el.id === "videoPlayer" ||
-    el.closest("#novaPermanentMedia, #novaIntegratedMediaLibrary"));
- let resolvingPlayback=false;
- document.addEventListener("play", event=>{
+ // NOVA 1.9.5: central playback arbiter for legacy and universal native media.
+ // A browser can have several media elements; only one is permitted to play.
+ const isNOVAPlayback=el=>el instanceof HTMLMediaElement &&
+   el.id!=="desktopCameraVideo" && !el.closest(".cameraViewport") &&
+   (el.tagName==="AUDIO" || el.tagName==="VIDEO");
+ let activeNative=null;
+ document.addEventListener("play",event=>{
    const playing=event.target;
-   if(resolvingPlayback || !isNOVAPlayback(playing))return;
-   resolvingPlayback=true;
-   try{
-     document.querySelectorAll("audio, video").forEach(other=>{
-       if(other!==playing && isNOVAPlayback(other) && !other.paused){
-         try{other.pause()}catch(e){}
-       }
-     });
-     // A native track must also stop the universal YouTube iframe.
-     if(ytFrame){
-       try{ytFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"*")}catch(e){}
-       try{ytFrame.removeAttribute("src");ytFrame.remove()}catch(e){}
-       ytFrame=null;
+   if(!isNOVAPlayback(playing))return;
+   activeNative=playing;
+   document.querySelectorAll("audio,video").forEach(other=>{
+     if(other!==playing&&isNOVAPlayback(other)){
+       try{other.pause()}catch(e){}
      }
-     const legacyFrame=document.getElementById("youtubeFrame");
-     if(legacyFrame)try{legacyFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"*")}catch(e){}
-   }finally{resolvingPlayback=false;}
+   });
+   // Stop any iframe players if native media starts.
+   if(ytFrame){
+     try{ytFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:"pauseVideo",args:[]}),"*")}catch(e){}
+   }
+   const legacyFrame=document.getElementById("youtubeFrame");
+   if(legacyFrame)try{legacyFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:"pauseVideo",args:[]}),"*")}catch(e){}
+   const item=selected()?.items[activeIndex];
+   const legacyTitle=document.getElementById("novaMusicInfoTitle")?.textContent?.trim();
+   const title=(playing===activeMedia&&item?.name)||legacyTitle||playing.dataset.novaTitle||"MEDIA PLAYING";
+   emitMediaState("playing",{title});
+   syncPlayButton(true);
  },true);
-
+ document.addEventListener("pause",event=>{
+   const el=event.target;
+   if(!isNOVAPlayback(el)||el!==activeNative)return;
+   // Pausing the old player during a handoff must not overwrite the new title.
+   queueMicrotask(()=>{if(activeNative===el&&el.paused){emitMediaState("paused");syncPlayButton(false);}});
+ },true);
+ function syncPlayButton(playing){
+   const b=$("toggle");if(b)b.textContent=playing?"Ⅱ":"▶";
+   const glyph=document.getElementById("novaMediaPlayPause");if(glyph)glyph.textContent=playing?"Ⅱ":"▶";
+ }
  let youtubePaused=false;
 
  function youtubeCommandLocal(command){
@@ -208,7 +216,7 @@ function initializePermanentMedia(){
  const emitMediaState=(state,detail={})=>{
   window.dispatchEvent(new CustomEvent('nova:media-state',{detail:{state,...detail}}));
 };
-const notify=s=>{const el=$("now");if(el)el.textContent=s;};
+const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STOPPED")el.dataset.novaStatus=s;}};
 
  const safeName=x=>String(x||"");
 
@@ -236,16 +244,16 @@ const notify=s=>{const el=$("now");if(el)el.textContent=s;};
 
  $("toggle").onclick=()=>{
 
-   if(activeType==="youtube"&&ytFrame){youtubeCommandLocal(youtubePaused?"playVideo":"pauseVideo");youtubePaused=!youtubePaused;emitMediaState(youtubePaused?'paused':'playing',{title:selected()?.items[activeIndex]?.name||'',type:'youtube'});return;}
+   if(activeType==="youtube"&&ytFrame){youtubeCommandLocal(youtubePaused?"playVideo":"pauseVideo");youtubePaused=!youtubePaused;syncPlayButton(!youtubePaused);emitMediaState(youtubePaused?'paused':'playing',{title:selected()?.items[activeIndex]?.name||'',type:'youtube'});return;}
 
    if(!activeMedia){playAt(activeIndex<0?0:activeIndex);return;}
 
    if(activeMedia.paused)activeMedia.play().catch(()=>{});else activeMedia.pause();
-    emitMediaState(activeMedia.paused?'paused':'playing',{title:selected()?.items[activeIndex]?.name||'',type:activeType});
+    // play/pause DOM events update the ticker and button after the state actually changes.
 
  };
 
- $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");emitMediaState('stopped');};
+ $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");syncPlayButton(false);emitMediaState('stopped');};
 
  $("volume").oninput=()=>{
     const value=Number($("volume").value);
@@ -293,7 +301,7 @@ const notify=s=>{const el=$("now");if(el)el.textContent=s;};
     const btn=$(id);if(!btn)continue;
     btn.addEventListener('click',e=>{
       const legacy=nativeEngine();
-      if(activeIndex>=0||!legacy||legacy===activeMedia)return;
+      if(!legacy||legacy===activeMedia)return;
       // If an existing legacy engine is playing, use its own functions.
       if(id==='toggle'){e.stopImmediatePropagation();legacy.paused?legacy.play().catch(()=>{}):legacy.pause();}
       else if(id==='stop'){e.stopImmediatePropagation();legacy.pause();try{legacy.currentTime=0;}catch(_){}emitMediaState('stopped');}
