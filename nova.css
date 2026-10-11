@@ -4495,9 +4495,7 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
   }
 }
 
-/* ============================================================
-   NOVA 1.7 — STYLES MOVED FROM INDEX.HTML (ORIGINAL ORDER)
-   ============================================================ */
+/* ===== NOVA 1.7 HEAD STYLES — MOVED VERBATIM; KEEP AFTER BASE CSS ===== */
 /* ============================================================
    NOVA CENTERPIECE — ALWAYS-VISIBLE MEDIA DASHBOARD
    Styles must be in the DOCUMENT HEAD, not a popup template.
@@ -5147,53 +5145,25 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
 
 
 /* ============================================================
-   NOVA 1.8 — ELECTRIC INTERFACE POLISH
-   Visual-only enhancements; no media or command behavior changed.
+   NOVA 1.8.1 — SAFE ELECTRIC POLISH
+   Purely decorative. No dimensions, positioning, visibility,
+   animation states, or event handlers are changed here.
    ============================================================ */
-:root {
-  --nova-polish-ease: cubic-bezier(.2,.7,.2,1);
-  --nova-polish-speed: 240ms;
-}
-
-/* Consistent neon focus indication without altering keyboard behavior. */
 .app button:focus-visible,
 .app input:focus-visible,
 .app select:focus-visible,
 .app textarea:focus-visible,
 .app [tabindex]:focus-visible {
   outline: 2px solid var(--nova-electric, #00e5ff);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
-
-/* Add subtle visual feedback to existing interactive controls. */
-.app button:not(:disabled) {
-  transition-property: color, background-color, border-color, box-shadow, transform, filter;
-  transition-duration: var(--nova-polish-speed);
-  transition-timing-function: var(--nova-polish-ease);
-}
-.app button:not(:disabled):active {
-  filter: brightness(1.13);
-}
-
-/* Preserve existing layout and colors; only smooth theme-color changes. */
-.app .panel,
-.app .panelHeader,
+.app .novaGroupButton,
 .app .novaMediaBox,
-.app #novaMediaNowCard,
-.app .novaGroupButton {
-  transition-property: border-color, box-shadow, color, background-color;
-  transition-duration: var(--nova-polish-speed);
-  transition-timing-function: var(--nova-polish-ease);
+.app .panelHeader {
+  transition: border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
 }
-
-/* Reduce animation for users who request it at OS level. */
 @media (prefers-reduced-motion: reduce) {
-  .app button,
-  .app .panel,
-  .app .panelHeader,
+  .app .novaGroupButton,
   .app .novaMediaBox,
-  .app #novaMediaNowCard,
-  .app .novaGroupButton {
-    transition-duration: 0.01ms !important;
-  }
+  .app .panelHeader { transition: none !important; }
 }
