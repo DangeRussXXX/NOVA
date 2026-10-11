@@ -406,6 +406,63 @@
 #novaMediaRight .novaRightPanel .panelBody.collapsed{display:none!important}
 #novaMediaRight .novaRightPanel .panelBody:not(.collapsed){max-height:420px!important;overflow:auto!important}
 
+
+/* NOVA ADAPTIVE INTERFACE 1.0 — scoped visual layer */
+:root{--nova-electric:#00e5ff;--nova-electric-rgb:0,229,255}
+body[data-nova-theme="hardware"]{--nova-electric:#f9f000;--nova-electric-rgb:249,240,0}
+body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60,172}
+.app > header{gap:8px!important;padding:10px 16px!important}
+.app > header .headerNovaControls .buttonGrid{display:flex!important;flex-wrap:wrap!important;gap:6px!important;align-items:center!important}
+.app > header .headerNovaControls .buttonGrid button.novaGroupButton{font-size:11px!important;min-height:35px!important;padding:7px 10px!important;white-space:nowrap!important;border-radius:8px!important;flex:none!important;width:auto!important}
+.novaGroupButton[data-group="nova"]{color:#00e5ff!important;border:1px solid #00e5ff88!important;background:#062331!important}
+.novaGroupButton[data-group="hardware"]{color:#f9f000!important;border:1px solid #f9f00088!important;background:#29280b!important}
+.novaGroupButton[data-group="media"]{color:#ff3cac!important;border:1px solid #ff3cac88!important;background:#300e25!important}
+.novaGroupButton[aria-pressed="true"]{box-shadow:0 0 13px currentColor!important;border-color:currentColor!important}
+.novaGroupDivider{width:1px;height:26px;background:#637581;opacity:.65;margin:0 4px}
+.app > header #novaMediaNowCard{min-height:34px!important;display:flex!important;flex-direction:row!important;justify-content:center!important;align-items:center!important;overflow:hidden!important;border-color:var(--nova-electric)!important;padding:6px 12px!important;background:#061824!important;box-shadow:0 0 12px rgba(var(--nova-electric-rgb),.14)!important}
+.app > header #novaMediaNowCard strong{display:none!important}
+.app > header #novaMediaNowCard #now{color:var(--nova-electric)!important;font-size:12px!important;letter-spacing:1px;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important}
+.app > header #novaMediaNowCard #novaMediaVideoControls{display:none!important}
+.app > header #novaMediaNowCard .novaTopPlayback{display:none!important}
+.novaUnifiedConsole .novaLeftHome{min-height:650px!important}
+#novaPermanentMedia{grid-template-columns:minmax(0,1fr)!important;pointer-events:none!important}
+#novaPermanentMedia .novaMediaSide{display:none!important}
+#novaPermanentMedia .novaMediaNow{display:none!important}
+.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
+.novaUnifiedConsole #novaCoreContainer{filter:drop-shadow(0 0 20px rgba(var(--nova-electric-rgb),.42));transition:filter .5s ease}
+.novaUnifiedConsole #novaOrb,.novaUnifiedConsole .novaOuterRing,.novaUnifiedConsole .novaInnerRing{border-color:var(--nova-electric)!important;transition:border-color .5s,box-shadow .5s,filter .5s}
+.novaUnifiedConsole #novaOrb{box-shadow:0 0 28px rgba(var(--nova-electric-rgb),.35)!important}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){left:5%!important;right:5%!important;top:20px!important;bottom:95px!important}
+.novaAdaptivePlayer{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:nowrap;min-width:0;padding:10px 14px;margin:0 15px 12px;border:1px solid var(--nova-electric);border-radius:12px;background:#061824;box-shadow:0 0 15px rgba(var(--nova-electric-rgb),.15);position:relative;z-index:300}
+.novaAdaptivePlayer .novaTopPlayback{display:flex!important;flex-direction:row!important;align-items:center!important;gap:12px!important;width:100%!important;min-width:0!important}
+.novaAdaptivePlayer .novaMediaRow{display:flex;align-items:center;gap:7px;margin:0;flex-wrap:nowrap;min-width:0}
+.novaAdaptivePlayer .novaMediaRow:first-child{flex:none}
+.novaAdaptivePlayer button{display:inline-flex;align-items:center;justify-content:center;width:35px;height:35px;min-width:35px;padding:0;border:1px solid var(--nova-electric);border-radius:50%;background:#061e2c;color:var(--nova-electric);font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 0 9px rgba(var(--nova-electric-rgb),.2)}
+.novaAdaptivePlayer button:hover{box-shadow:0 0 16px var(--nova-electric)}
+.novaAdaptivePlayer label{font-size:10px;color:var(--nova-electric);white-space:nowrap}
+.novaAdaptivePlayer input[type=range]{accent-color:var(--nova-electric);cursor:pointer;min-width:35px}
+.novaAdaptivePlayer #volume{width:105px}
+.novaAdaptivePlayer #seek{flex:1;min-width:65px;width:auto}
+.novaAdaptivePlayer .novaSeekClock{font-size:10px;color:var(--nova-electric);font-variant-numeric:tabular-nums;white-space:nowrap}
+.novaPlayerDivider{height:25px;width:1px;flex:none;background:#476070}
+.novaFloatPanel{position:fixed!important;top:125px;left:8vw;width:min(460px,85vw);height:min(65vh,640px);max-height:85vh;display:flex!important;flex-direction:column;z-index:9900!important;overflow:hidden!important;resize:both;border:1px solid var(--nova-electric)!important;border-radius:12px!important;box-shadow:0 14px 45px #000b,0 0 22px rgba(var(--nova-electric-rgb),.22)!important;background:#061421!important;pointer-events:auto!important}
+.novaFloatPanel[hidden]{display:none!important}
+#novaMediaLeft.novaFloatPanel{display:flex!important}
+.novaFloatPanel .novaMediaRow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:7px 0}
+.novaFloatPanel .novaMediaRow input,.novaFloatPanel .novaMediaRow select{min-width:0;flex:1;background:#061823;color:#d7f4ff;border:1px solid #2b5268;border-radius:7px;padding:7px}
+.novaFloatPanel .novaMediaRow button{border:1px solid var(--nova-electric);color:var(--nova-electric);background:#0b2836;border-radius:7px;padding:7px;cursor:pointer}
+.novaFloatPanel .novaMediaEntry,.novaFloatPanel .entry{padding:8px;margin:5px 0;border:1px solid #286079;border-radius:8px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.novaFloatPanel .entry .name{flex:1;min-width:110px;overflow-wrap:anywhere}
+.novaFloatPanel .entry small{display:block;color:#9aafba}
+.novaFloatPanel .panelHeader,.novaFloatPanel > h2{cursor:move;user-select:none;flex:none;color:var(--nova-electric)!important}
+.novaFloatPanel .panelBody{display:block!important;flex:1;min-height:0;overflow:auto!important;max-height:none!important}
+.novaFloatPanel .novaMediaBox{height:100%;display:flex;flex-direction:column;overflow:hidden;padding:14px;background:#061421}
+.novaFloatPanel .novaMediaBox h2{color:var(--nova-electric)!important;cursor:move}
+.novaFloatPanel .novaMediaList{overflow:auto;flex:1;min-height:60px}
+.novaFloatClose{position:absolute;top:7px;right:8px;z-index:10;width:28px;height:28px;border-radius:7px;border:1px solid var(--nova-electric);color:var(--nova-electric);background:#061421;cursor:pointer}
+.novaFloatPanel .novaPlaylistClosed > :not(h2),.novaFloatPanel .novaLibraryClosed > :not(h2){display:flex!important}
+@media(max-width:750px){.novaAdaptivePlayer{flex-wrap:wrap}.novaAdaptivePlayer .novaTopPlayback{flex-wrap:wrap!important}.novaAdaptivePlayer #seek{flex:1 1 140px}.novaFloatPanel{left:4vw!important;top:130px!important;width:92vw;resize:vertical}.novaUnifiedConsole .novaLeftHome{min-height:530px!important}}
+
 </style>
 </head>
 <body>
@@ -3759,7 +3816,9 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
 @keyframes novaHybridBreath{from{filter:drop-shadow(0 0 8px rgba(29,206,255,.3))}to{filter:drop-shadow(0 0 25px rgba(29,206,255,.7))}}
 @media(prefers-reduced-motion:reduce){.novaHybridMusicActive #novaOrb{animation:none}}
 
-</style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
+</style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div>
+
+</body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
 function novaCommandReferenceHtml(){
@@ -4253,6 +4312,94 @@ window.addEventListener('load', function () {
   // Keep camera video/select/canvas DOM available to the camera button.
   const camera = document.getElementById('novaCameraPanelSource');
   if (camera) camera.style.display = 'none';
+}, {once:true});
+</script>
+
+<script>
+/* NOVA Adaptive UI: initialize after the universal module binds existing IDs. */
+window.addEventListener('load',function(){
+ const header=document.querySelector('.app > header .headerNovaControls .buttonGrid');
+ const host=document.getElementById('novaPermanentMedia');
+ const card=document.getElementById('novaMediaNowCard');
+ const left=document.getElementById('novaMediaLeft');
+ const right=document.getElementById('novaMediaRight');
+ const consoleEl=document.querySelector('.novaUnifiedConsole');
+ if(!header||!host||!card||!left||!right||!consoleEl)return;
+ const theme=mode=>{document.body.dataset.novaTheme=mode;};
+ theme('nova');
+ const oldControls=card.querySelector('.novaTopPlayback');
+ const player=document.createElement('div');player.className='novaAdaptivePlayer';player.setAttribute('aria-label','NOVA universal playback');
+ if(oldControls){
+   player.appendChild(oldControls);consoleEl.appendChild(player);
+   const rows=oldControls.querySelectorAll('.novaMediaRow');
+   if(rows[0]){
+     const b=rows[0].querySelectorAll('button');
+     ['◀◀','▶','■','▶▶'].forEach((label,i)=>{if(b[i]){b[i].textContent=label;b[i].title=['Previous','Play / Pause','Stop','Next'][i];b[i].setAttribute('aria-label',b[i].title);}});
+   }
+   if(rows[1]){
+     const divider=document.createElement('span');divider.className='novaPlayerDivider';rows[1].before(divider);
+     const divider2=document.createElement('span');divider2.className='novaPlayerDivider';rows[1].after(divider2);
+   }
+   const seek=document.getElementById('seek');
+   if(seek){
+     const clock=document.createElement('span');clock.className='novaSeekClock';clock.textContent='0:00';seek.before(clock);
+     const duration=document.createElement('span');duration.className='novaSeekClock';duration.textContent='--:--';seek.after(duration);
+     const fmt=n=>{if(!Number.isFinite(n))return '--:--';return Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0');};
+     setInterval(()=>{
+       const playing=host.querySelector('#novaNativeAudioStage audio, #novaNativeAudioStage video')||document.querySelector('#novaHybridVideoStage video');
+       if(playing&&Number.isFinite(playing.duration)){clock.textContent=fmt(playing.currentTime);duration.textContent=fmt(playing.duration);}
+       else{clock.textContent='0:00';duration.textContent='--:--';}
+       const toggle=document.getElementById('toggle');if(toggle)toggle.textContent=playing&&!playing.paused?'Ⅱ':'▶';
+     },650);
+   }
+ }
+ const now=document.getElementById('now');if(now){now.textContent='WELCOME TO NOVA!';let last='';setInterval(()=>{
+   const value=now.textContent||'';
+   if(value!==last&&value!=='WELCOME TO NOVA!')last=value;
+   if(!last||last==='NOVA READY'||last==='STOPPED')now.textContent='WELCOME TO NOVA!  ⚡  SYSTEM READY';
+ },2500);}
+ // Preserve the original live DOM and playlist listeners; only change its presentation.
+ const panels={};
+ const makeFloat=(key,node,label)=>{
+   if(!node)return;
+   const shell=document.createElement('div');shell.className='novaFloatPanel';shell.hidden=true;shell.dataset.novaPanel=key;
+   shell.setAttribute('aria-label',label);
+   const close=document.createElement('button');close.type='button';close.className='novaFloatClose';close.textContent='×';close.title='Close '+label;
+   close.addEventListener('click',()=>{shell.hidden=true;document.querySelectorAll('.novaGroupButton').forEach(b=>b.setAttribute('aria-pressed','false'));theme('nova');});
+   shell.appendChild(node);shell.appendChild(close);document.body.appendChild(shell);
+   node.style.display='';panels[key]=shell;
+   const handle=node.querySelector('.panelHeader, h2');
+   if(handle){let origin=null;handle.addEventListener('pointerdown',e=>{
+     if(e.target.closest('button'))return;origin={x:e.clientX,y:e.clientY,left:shell.offsetLeft,top:shell.offsetTop};handle.setPointerCapture?.(e.pointerId);
+   });handle.addEventListener('pointermove',e=>{if(!origin)return;shell.style.left=Math.max(0,origin.left+e.clientX-origin.x)+'px';shell.style.top=Math.max(0,origin.top+e.clientY-origin.y)+'px';});
+   ['pointerup','pointercancel'].forEach(ev=>handle.addEventListener(ev,()=>{origin=null;}));}
+ };
+ makeFloat('library',left,'MEDIA LIBRARY');makeFloat('playlists',right.querySelector('.novaCombinedPlaylist'),'PLAYLISTS');
+ const rightPanels=[...right.querySelectorAll('.novaRightPanel')];
+ for(const node of rightPanels){const title=(node.querySelector('.panelHeader')?.textContent||'').toUpperCase();
+   const key=title.includes('BROWSER')?'browser':title.includes('AMOMII')?'amomii':title.includes('RSR')?'rsr':title.includes('PORTABLE')?'portable':null;
+   if(key){const body=node.querySelector('.panelBody');body?.classList.remove('collapsed');makeFloat(key,node,key.toUpperCase());}
+ }
+ // Remove the old empty columns from the orb area while retaining their IDs in the DOM.
+ if(left.parentElement===host)left.remove();
+ const open=(key,group)=>{
+   const shell=panels[key];if(!shell)return;
+   const show=shell.hidden;
+   Object.values(panels).forEach(p=>p.hidden=true);
+   shell.hidden=!show;
+   theme(show?group:'nova');
+   document.querySelectorAll('.novaGroupButton').forEach(b=>b.setAttribute('aria-pressed',String(show&&b.dataset.panel===key)));
+ };
+ const add=(label,group,key,fn)=>{
+   const b=document.createElement('button');b.type='button';b.className='control novaGroupButton';b.textContent=label;b.dataset.group=group;
+   if(key)b.dataset.panel=key;b.setAttribute('aria-pressed','false');
+   b.addEventListener('click',()=>{if(fn){Object.values(panels).forEach(p=>p.hidden=true);theme(group);fn();}else open(key,group);});header.appendChild(b);
+ };
+ header.querySelectorAll('button').forEach(b=>{b.classList.add('novaGroupButton');b.dataset.group='nova';b.addEventListener('click',()=>{Object.values(panels).forEach(p=>p.hidden=true);theme('nova');});});
+ const divider=()=>{const e=document.createElement('span');e.className='novaGroupDivider';e.setAttribute('aria-hidden','true');header.appendChild(e);};
+ add('NOVA BROWSER','nova','browser');divider();
+ add('AMOMII','hardware','amomii');add('RSR TRAINER','hardware','rsr');add('PORTABLE TRAINER','hardware','portable');divider();
+ add('MEDIA LIBRARY','media','library');add('PLAYLISTS','media','playlists');
 }, {once:true});
 </script>
 
