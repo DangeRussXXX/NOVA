@@ -55,6 +55,7 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
   <div class="buttonGrid">
     <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
+    <button class="control" type="button" id="novaRSRNav" onclick="novaOpenRSR()">RSR TRAINER</button>
     <button class="control" type="button" id="novaHistoryNavButton" aria-controls="novaHudTicker" aria-expanded="false" title="Show or hide NOVA live activity">NOVA HISTORY</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
@@ -3451,6 +3452,9 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
 
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div>
 
+
+
+
 </body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
@@ -4224,6 +4228,145 @@ window.addEventListener('load',function(){
   entries.scrollTop=entries.scrollHeight;render();
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+</script>
+<!-- NOVA RSR TRAINER WORKSPACE: existing command controls are relocated, never duplicated -->
+<div id="novaRSRWorkspace" class="novaRSRWorkspace" hidden role="dialog" aria-modal="true" aria-label="RSR Trainer Command Center">
+  <div class="novaRSRTop">
+    <strong>⚡ NOVA • RSR TRAINER COMMAND CENTER</strong>
+    <span id="novaRSRConnection">CLOUD LINK: NOT VERIFIED</span>
+    <button type="button" class="control" onclick="novaCloseRSR()">RETURN TO NOVA ✕</button>
+  </div>
+  <div class="novaRSRColumns">
+    <section class="novaRSRLeft">
+      <h2>COMMANDS & CONTROLS</h2>
+      <div id="novaRSRControlsHost"></div>
+    </section>
+    <section class="novaRSRRight">
+      <div class="novaRSRToolbar">
+        <h2>RSR TRAINER • LIVE SIMULATOR</h2>
+        <button type="button" class="control" id="novaRSRStateTab" onclick="novaRSRMode('state')">LED / PATTERNS</button>
+        <button type="button" class="control" id="novaRSRWiringTab" onclick="novaRSRMode('wiring')">AMOMII WIRING</button>
+        <label class="control novaRSRPhotoButton">LOAD TRAINER PHOTO<input type="file" accept="image/*" id="novaRSRPhotoInput" hidden></label>
+      </div>
+      <div class="novaRSRPhotoFrame">
+        <div id="novaRSRPhotoPlaceholder">RSR TRAINER IMAGE<br><small>Load your trainer photograph to position the LED overlay over the real board.</small></div>
+        <img id="novaRSRPhoto" alt="RSR trainer photograph" hidden>
+        <div id="novaRSRLedOverlay" class="novaRSRLedOverlay"></div>
+        <div id="novaRSRWiringOverlay" class="novaRSRWiringOverlay" hidden>
+          <strong>AMOMII ONE → RSR TRAINER</strong>
+          <p>8 LED channels • D2–D9 (verify physical wiring)</p>
+          <p>RSR physical switch 0 → AMOMII A0</p>
+          <p>Switch signal reports HI / LO through NOVA.</p>
+          <p>Actual common ground, LED resistors and switch reference wiring must be verified before drawing a definitive schematic.</p>
+        </div>
+      </div>
+      <div class="novaRSRReadouts">
+        <div>LED STATES <strong id="novaRSRLEDText">—</strong></div>
+        <div>SWITCH A0 <strong id="novaRSRSwitchText">UNKNOWN</strong></div>
+        <div>PATTERN <strong id="novaRSRPatternText">NONE</strong></div>
+        <div>DATA <strong id="novaRSRDataText">WAITING FOR HARDWARE</strong></div>
+      </div>
+      <p class="novaRSRNote">LED display mirrors NOVA's reported/commanded states. Commanded states are not independent proof that a physical LED illuminated.</p>
+    </section>
+  </div>
+</div>
+<style id="novaRSRWorkspaceStyle">
+#novaRSRWorkspace[hidden]{display:none!important}
+.novaRSRWorkspace{position:fixed;inset:8px;z-index:100000;background:#061018;color:#c9f7ff;border:2px solid #00cdec;border-radius:12px;display:flex;flex-direction:column;padding:12px;box-sizing:border-box;overflow:hidden;font-family:inherit}
+.novaRSRTop{display:flex;align-items:center;gap:16px;padding:4px 5px 12px;border-bottom:1px solid #17647a;flex-wrap:wrap}
+.novaRSRTop strong{color:#00dfff;font-size:clamp(17px,1.4vw,24px)}
+.novaRSRTop span{margin-left:auto;font-size:12px;color:#9baeb8}
+.novaRSRColumns{display:grid;grid-template-columns:minmax(290px,39%) minmax(0,61%);gap:12px;flex:1;min-height:0;padding-top:12px}
+.novaRSRLeft,.novaRSRRight{min-height:0;min-width:0;overflow:auto;border:1px solid #15516a;border-radius:8px;padding:12px;background:#071823;box-sizing:border-box}
+.novaRSRLeft h2,.novaRSRRight h2{font-size:17px;color:#00dfff;margin:0 0 12px}
+.novaRSRLeft .rsrTrainerController{display:block!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important}
+.novaRSRLeft .rsrTrainerController .panelBody{display:block!important}
+.novaRSRToolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.novaRSRToolbar h2{margin-right:auto}
+.novaRSRPhotoButton{cursor:pointer;display:inline-flex;align-items:center}
+.novaRSRPhotoFrame{position:relative;width:100%;height:min(57vh,640px);min-height:280px;background:#01070b;border:1px solid #156178;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#novaRSRPhoto{width:100%;height:100%;object-fit:contain}
+#novaRSRPhoto[hidden]{display:none!important}
+#novaRSRPhotoPlaceholder{text-align:center;font-size:22px;color:#73a5b5;line-height:2}
+#novaRSRPhotoPlaceholder small{font-size:13px;display:block;line-height:1.5}
+.novaRSRLedOverlay{position:absolute;inset:0;pointer-events:none}
+.novaRSRLED{position:absolute;top:16%;width:3.4%;aspect-ratio:1;border:2px solid #74828b;border-radius:50%;background:#330f16;box-shadow:0 0 5px #111;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;color:white;font-size:10px}
+.novaRSRLED.on{background:#ff263b;box-shadow:0 0 15px 5px #f52a40}
+.novaRSRWiringOverlay{position:absolute;inset:0;background:rgba(1,12,21,.92);padding:25px;overflow:auto;color:#c9f7ff;line-height:1.7}
+.novaRSRWiringOverlay[hidden]{display:none!important}
+.novaRSRWiringOverlay strong{color:#00dfff;font-size:21px}
+.novaRSRReadouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.novaRSRReadouts>div{padding:12px;border:1px solid #14566b;border-radius:6px;display:flex;justify-content:space-between;gap:8px;font-size:12px}
+.novaRSRReadouts strong{color:#00e5ff;text-align:right}
+.novaRSRNote{color:#a9b5bd;font-size:12px}
+body.novaRSRShowing{overflow:hidden!important}
+@media(max-width:850px){.novaRSRWorkspace{overflow:auto}.novaRSRColumns{display:flex;flex-direction:column;overflow:visible}.novaRSRLeft,.novaRSRRight{overflow:visible}.novaRSRPhotoFrame{height:42vh}}
+</style>
+<script>
+(function(){
+  let originalParent=null,originalNext=null,photoURL=null,installed=false;
+  const el=id=>document.getElementById(id);
+  function refresh(){
+    const states=(typeof trainerLedStates!=='undefined')?trainerLedStates:Array(8).fill(false);
+    const layer=el('novaRSRLedOverlay');
+    if(layer){
+      if(layer.children.length!==8){
+        layer.replaceChildren();
+        for(let i=0;i<8;i++){
+          const dot=document.createElement('div');dot.className='novaRSRLED';dot.style.left=(71+i*3.1)+'%';dot.textContent=i;dot.title='LED '+i;layer.append(dot);
+        }
+      }
+      [...layer.children].forEach((dot,i)=>dot.classList.toggle('on',!!states[i]));
+    }
+    el('novaRSRLEDText').textContent=states.map((on,i)=>i+':'+(on?'ON':'OFF')).join('  ');
+    el('novaRSRSwitchText').textContent=el('rsrSwitchState0')?.textContent||'UNKNOWN';
+    el('novaRSRPatternText').textContent=el('rsrPatternName')?.textContent||'NONE';
+    el('novaRSRConnection').textContent='CLOUD LINK: '+(el('connectionText')?.textContent||'NOT VERIFIED');
+  }
+  window.novaOpenRSR=function(){
+    const panel=document.querySelector('.rsrTrainerController');
+    const host=el('novaRSRControlsHost');
+    if(!panel||!host)return;
+    if(!originalParent){originalParent=panel.parentNode;originalNext=panel.nextSibling}
+    host.appendChild(panel);
+    el('novaRSRWorkspace').hidden=false;
+    document.body.classList.add('novaRSRShowing');
+    refresh();
+  };
+  window.novaCloseRSR=function(){
+    const panel=document.querySelector('.rsrTrainerController');
+    if(panel&&originalParent)originalParent.insertBefore(panel,originalNext&&originalNext.parentNode===originalParent?originalNext:null);
+    el('novaRSRWorkspace').hidden=true;
+    document.body.classList.remove('novaRSRShowing');
+  };
+  window.novaRSRMode=function(mode){
+    const wiring=mode==='wiring';
+    el('novaRSRWiringOverlay').hidden=!wiring;
+    el('novaRSRLedOverlay').hidden=wiring;
+    el('novaRSRStateTab').classList.toggle('active',!wiring);
+    el('novaRSRWiringTab').classList.toggle('active',wiring);
+  };
+  function install(){
+    if(installed)return;installed=true;
+    el('novaRSRPhotoInput')?.addEventListener('change',event=>{
+      const file=event.target.files?.[0];if(!file)return;
+      if(photoURL)URL.revokeObjectURL(photoURL);
+      photoURL=URL.createObjectURL(file);
+      const photo=el('novaRSRPhoto');photo.src=photoURL;photo.hidden=false;
+      el('novaRSRPhotoPlaceholder').hidden=true;
+    });
+    // Read the same UI values NOVA already updates; no second command handler.
+    const observer=new MutationObserver(refresh);
+    ['rsrSwitchState0','rsrPatternName','connectionText'].forEach(id=>{const target=el(id);if(target)observer.observe(target,{childList:true,characterData:true,subtree:true})});
+    if(typeof window.setTrainerLedUI==='function'){
+      const previous=window.setTrainerLedUI;
+      window.setTrainerLedUI=function(){const result=previous.apply(this,arguments);refresh();return result};
+    }
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!el('novaRSRWorkspace').hidden)novaCloseRSR()});
+    novaRSRMode('state');refresh();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 </script>
 </body>
