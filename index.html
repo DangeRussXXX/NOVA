@@ -463,6 +463,52 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
 .novaFloatPanel .novaPlaylistClosed > :not(h2),.novaFloatPanel .novaLibraryClosed > :not(h2){display:flex!important}
 @media(max-width:750px){.novaAdaptivePlayer{flex-wrap:wrap}.novaAdaptivePlayer .novaTopPlayback{flex-wrap:wrap!important}.novaAdaptivePlayer #seek{flex:1 1 140px}.novaFloatPanel{left:4vw!important;top:130px!important;width:92vw;resize:vertical}.novaUnifiedConsole .novaLeftHome{min-height:530px!important}}
 
+
+/* NOVA 1.1 — UNIVERSAL CONTROLS INSIDE THE ORIGINAL ORB/VIDEO BAR.
+   Keep legacy button IDs and handlers mounted, but show only one player. */
+.novaUnifiedConsole .novaLeftHome > #novaIntegratedMediaControls{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ position:absolute!important;left:3%!important;right:3%!important;bottom:18px!important;
+ width:94%!important;max-width:none!important;height:auto!important;min-height:44px!important;
+ margin:0!important;padding:0!important;opacity:1!important;visibility:visible!important;
+ pointer-events:auto!important;z-index:350!important;transform:none!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls > #novaMediaProgressWrap,
+.novaUnifiedConsole #novaIntegratedMediaControls > .novaMediaControlRow{display:none!important}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin:0!important;padding:3px 8px!important;gap:12px!important;
+ border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaTopPlayback{
+ display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+ align-items:center!important;gap:10px!important;width:100%!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaMediaRow{display:flex!important;flex-wrap:nowrap!important;align-items:center!important}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer button{
+ width:34px!important;height:28px!important;min-width:34px!important;min-height:28px!important;
+ border-radius:50%!important;border:1px solid rgba(var(--nova-electric-rgb),.55)!important;
+ background:linear-gradient(180deg,#26333b,#121c25)!important;
+ color:var(--nova-electric)!important;box-shadow:0 2px 7px #0009,0 0 7px rgba(var(--nova-electric-rgb),.13)!important;
+ padding:0!important;font-size:12px!important;line-height:1!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer button:hover{
+ border-color:var(--nova-electric)!important;box-shadow:0 0 12px rgba(var(--nova-electric-rgb),.5)!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls #seek{flex:1 1 150px!important;width:auto!important;min-width:60px!important}
+.novaUnifiedConsole #novaIntegratedMediaControls #volume{width:100px!important;flex:0 1 100px!important}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaSeekClock{flex:none!important}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaIntegratedMediaControls{left:2%!important;right:2%!important;width:96%!important;bottom:14px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer{gap:5px!important;padding:3px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaTopPlayback{gap:5px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls #volume{width:52px!important;flex-basis:52px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer button{width:28px!important;min-width:28px!important;height:26px!important;min-height:26px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaPlayerDivider{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -4330,7 +4376,7 @@ window.addEventListener('load',function(){
  const oldControls=card.querySelector('.novaTopPlayback');
  const player=document.createElement('div');player.className='novaAdaptivePlayer';player.setAttribute('aria-label','NOVA universal playback');
  if(oldControls){
-   player.appendChild(oldControls);consoleEl.appendChild(player);
+   player.appendChild(oldControls);const originalBar=document.getElementById('novaIntegratedMediaControls');if(originalBar){originalBar.appendChild(player);}else{consoleEl.querySelector('.novaLeftHome')?.appendChild(player);}
    const rows=oldControls.querySelectorAll('.novaMediaRow');
    if(rows[0]){
      const b=rows[0].querySelectorAll('button');
