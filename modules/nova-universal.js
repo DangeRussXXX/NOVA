@@ -190,18 +190,14 @@ function initializePermanentMedia(){
    const legacyTitle=document.getElementById("novaMusicInfoTitle")?.textContent?.trim();
    const title=(playing===activeMedia&&item?.name)||legacyTitle||playing.dataset.novaTitle||"MEDIA PLAYING";
    emitMediaState("playing",{title});
-   syncPlayButton(true);
+   
  },true);
  document.addEventListener("pause",event=>{
    const el=event.target;
    if(!isNOVAPlayback(el)||el!==activeNative)return;
    // Pausing the old player during a handoff must not overwrite the new title.
-   queueMicrotask(()=>{if(activeNative===el&&el.paused){emitMediaState("paused");syncPlayButton(false);}});
+   queueMicrotask(()=>{if(activeNative===el&&el.paused){emitMediaState("paused");}});
  },true);
- function syncPlayButton(playing){
-   const b=$("toggle");if(b)b.textContent=playing?"Ⅱ":"▶";
-   const glyph=document.getElementById("novaMediaPlayPause");if(glyph)glyph.textContent=playing?"Ⅱ":"▶";
- }
  let youtubePaused=false;
 
  function youtubeCommandLocal(command){
@@ -223,7 +219,7 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
  const safeName=x=>String(x||"");
 
- function renderPlaylists(){const box=$("playlistNames");box.replaceChildren();playlists.forEach(p=>{const row=d.createElement("div");row.className="entry"+(p.id===currentId?" selected":"");const name=d.createElement("span");name.className="name";name.textContent=p.name+" ("+p.items.length+")";row.append(name);row.onclick=()=>{stopEngines();currentId=p.id;activeIndex=-1;activeMedia=null;activeType="";emitMediaState("stopped");syncPlayButton(false);renderAll();};box.append(row);});}
+ function renderPlaylists(){const box=$("playlistNames");box.replaceChildren();playlists.forEach(p=>{const row=d.createElement("div");row.className="entry"+(p.id===currentId?" selected":"");const name=d.createElement("span");name.className="name";name.textContent=p.name+" ("+p.items.length+")";row.append(name);row.onclick=()=>{stopEngines();currentId=p.id;activeIndex=-1;activeMedia=null;activeType="";emitMediaState("stopped");renderAll();};box.append(row);});}
 
  function resolve(item){if(item.type==="youtube")return {...item,url:item.url||"https://www.youtube.com/watch?v="+item.key.slice(8),id:item.key.slice(8)};return getSource(item.key);}
 
@@ -235,10 +231,10 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
  function renderAll(){renderPlaylists();renderTracks();renderLibrary();}
 
- function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable on this device. Add it to this browser first.");return;}stopEngines();youtubePaused=false;activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1";if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=false;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>{notify("Playback was blocked. Press PLAY to start.");syncPlayButton(false);emitMediaState("paused",{title:item.name});});}notify("NOW PLAYING: "+item.name);
+ function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable on this device. Add it to this browser first.");return;}stopEngines();youtubePaused=false;activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1";if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=false;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>{notify("Playback was blocked. Press PLAY to start.");emitMediaState("paused",{title:item.name});});}notify("NOW PLAYING: "+item.name);
   if(item.type==="youtube"){
     // The YouTube iframe uses its own player, so publish its selected title.
-    syncPlayButton(true);
+    
     emitMediaState("playing",{title:item.name,type:item.type});
   }
   renderTracks();}
@@ -272,9 +268,9 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
  $("toggle").onclick=()=>{
 
-   if(legacyMusicIsActive()){const wasPlaying=!document.getElementById('audioPlayer').paused;legacyMusicAction('toggle');paintPlayButton(!wasPlaying);return;}
+   if(legacyMusicIsActive()){const wasPlaying=!document.getElementById('audioPlayer').paused;legacyMusicAction('toggle');return;}
 
-   if(activeType==="youtube"&&ytFrame){youtubeCommandLocal(youtubePaused?"playVideo":"pauseVideo");youtubePaused=!youtubePaused;syncPlayButton(!youtubePaused);emitMediaState(youtubePaused?'paused':'playing',{title:selected()?.items[activeIndex]?.name||'',type:'youtube'});return;}
+   if(activeType==="youtube"&&ytFrame){youtubeCommandLocal(youtubePaused?"playVideo":"pauseVideo");youtubePaused=!youtubePaused;emitMediaState(youtubePaused?'paused':'playing',{title:selected()?.items[activeIndex]?.name||'',type:'youtube'});return;}
 
    // First Play after page load follows the same path as "NOVA, play music".
    // Do not create a second universal audio element for the initial click.
@@ -282,7 +278,7 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
      const legacyAudio=document.getElementById('audioPlayer');
      if(legacyAudio && legacyAudio.currentSrc && !legacyAudio.ended){
        legacyMusicAction('toggle');
-       paintPlayButton(true);
+       
        return;
      }
      if(typeof window.playMusic==='function'){
@@ -295,12 +291,12 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
      return;
    }
 
-   if(activeMedia.paused){activeMedia.play().catch(()=>{});paintPlayButton(true);}else{activeMedia.pause();paintPlayButton(false);}
+   if(activeMedia.paused){activeMedia.play().catch(()=>{});}else{activeMedia.pause();}
     // play/pause DOM events update the ticker and button after the state actually changes.
 
  };
 
- $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");syncPlayButton(false);paintPlayButton(false);emitMediaState('stopped');};
+ $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");emitMediaState('stopped');};
 
  $("volume").oninput=()=>{
     const value=Number($("volume").value);
@@ -335,7 +331,7 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
    // NOVA 1.9.3: Bridge the EXISTING playback bar to whichever NOVA engine is active.
   // The scoped universal controller remains the owner of playlists and track selection.
-  const barIds=['prev','toggle','stop','next'];
+  const barIds=['prev','stop','next'];
   const nativeEngine=()=>{
     if(activeMedia&&!activeMedia.paused&&!activeMedia.ended)return activeMedia;
     for(const id of ['audioPlayer','videoPlayer']){

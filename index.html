@@ -2223,7 +2223,14 @@ if (/\bdisconnect\b/.test(command)) {
     /\bplay music\b|\bstart music\b|\bplay my music\b/.test(command)
   ){
 
-    playMusic();
+    const voiceAudio=document.getElementById('audioPlayer');
+    if(voiceAudio && voiceAudio.currentSrc && voiceAudio.paused && !voiceAudio.ended){
+      voiceAudio.play().catch(error=>console.warn('NOVA voice resume failed:',error));
+    }else if(voiceAudio && voiceAudio.currentSrc && !voiceAudio.paused && !voiceAudio.ended){
+      // Already playing: do not restart the song.
+    }else{
+      playMusic();
+    }
 
     return;
   }
@@ -3968,7 +3975,7 @@ window.addEventListener('load',function(){
        const playing=host.querySelector('#novaNativeAudioStage audio, #novaNativeAudioStage video')||document.querySelector('#novaHybridVideoStage video');
        if(playing&&Number.isFinite(playing.duration)){clock.textContent=fmt(playing.currentTime);duration.textContent=fmt(playing.duration);}
        else{clock.textContent='0:00';duration.textContent='--:--';}
-       const toggle=document.getElementById('toggle');if(toggle)toggle.textContent=playing&&!playing.paused?'Ⅱ':'▶';
+       // Playback button is owned by nova-universal.js; do not overwrite its symbol here.
      },650);
    }
  }
