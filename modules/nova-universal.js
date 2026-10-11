@@ -196,7 +196,10 @@ const hybridStage=document.getElementById("novaHybridVideoStage");
 
  const headerVideoSwitch=document.getElementById("novaHybridBackOrb");
 
- if(videoControls&&headerVideoSwitch)videoControls.appendChild(headerVideoSwitch);
+ // 1.9.16: Keep theater and its switch outside transformed/clipped dashboard ancestors.
+ // Both are moved, never cloned: existing playback and button listeners remain intact.
+ if(hybridStage && hybridStage.parentElement!==document.body)document.body.appendChild(hybridStage);
+ if(headerVideoSwitch && headerVideoSwitch.parentElement!==document.body)document.body.appendChild(headerVideoSwitch);
 
 
 

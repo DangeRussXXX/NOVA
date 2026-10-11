@@ -10,31 +10,34 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 <!-- NOVA 1.8.1: page styles moved to nova.css; loaded after base rules in original order. -->
 
-<!-- NOVA 1.9.15: Main-dashboard theater sizing (not popup template) -->
+<!-- NOVA 1.9.16: viewport-based theater, independent of dashboard transforms -->
 <style id="novaTheaterMainFix">
-#novaHybridVideoStage[hidden]{display:none!important}
-body.novaHybridVideoActive #novaHybridVideoStage:not([hidden]){
- position:fixed!important;top:150px!important;left:50%!important;transform:translateX(-50%)!important;
- width:min(92vw,960px,calc((100dvh - 300px)*16/9))!important;
- height:auto!important;aspect-ratio:16/9!important;max-height:calc(100dvh - 300px)!important;
- box-sizing:border-box!important;min-height:0!important;margin:0!important;padding:0!important;
- overflow:hidden!important;background:#000!important;z-index:50!important;border:2px solid #22c7e8!important;border-radius:10px!important;
+#novaHybridVideoStage[hidden],#novaHybridBackOrb[hidden]{display:none!important}
+body #novaHybridVideoStage:not([hidden]){
+ position:fixed!important;left:50%!important;top:155px!important;
+ transform:translateX(-50%)!important;
+ width:min(94vw,1000px,calc((100dvh - 310px)*16/9))!important;
+ height:auto!important;aspect-ratio:16/9!important;
+ max-height:calc(100dvh - 310px)!important;min-height:0!important;
+ box-sizing:border-box!important;margin:0!important;padding:0!important;
+ overflow:hidden!important;background:#000!important;
+ z-index:1000!important;border:2px solid #22c7e8!important;border-radius:10px!important;
 }
-body.novaHybridVideoActive #novaHybridVideoStage:not([hidden])>iframe,
-body.novaHybridVideoActive #novaHybridVideoStage:not([hidden])>video{
+body #novaHybridVideoStage:not([hidden])>iframe,
+body #novaHybridVideoStage:not([hidden])>video{
  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
- max-width:none!important;max-height:none!important;object-fit:contain!important;border:0!important;display:block!important;
+ max-width:none!important;max-height:none!important;object-fit:contain!important;
+ border:0!important;display:block!important;
 }
-#novaHybridBackOrb:not([hidden]){
- position:fixed!important;right:24px!important;top:103px!important;z-index:999!important;
- display:inline-flex!important;visibility:visible!important;opacity:1!important;
- background:#062936!important;color:#aff5ff!important;border:1px solid #29cce9!important;
- padding:8px 12px!important;border-radius:6px!important;cursor:pointer!important;
+body #novaHybridBackOrb:not([hidden]){
+ position:fixed!important;top:135px!important;right:25px!important;
+ z-index:1100!important;display:inline-flex!important;visibility:visible!important;opacity:1!important;
+ background:#092633!important;color:#a8f1ff!important;border:1px solid #2acbe9!important;
+ border-radius:7px!important;padding:8px 12px!important;cursor:pointer!important;font-weight:700!important;
 }
-#novaHybridBackOrb[hidden]{display:none!important}
-@media(max-height:680px){
- body.novaHybridVideoActive #novaHybridVideoStage:not([hidden]){top:125px!important;width:min(90vw,800px,calc((100dvh - 250px)*16/9))!important;max-height:calc(100dvh - 250px)!important}
- #novaHybridBackOrb:not([hidden]){top:82px!important}
+@media(max-height:700px){
+ body #novaHybridVideoStage:not([hidden]){top:125px!important;width:min(94vw,850px,calc((100dvh - 255px)*16/9))!important;max-height:calc(100dvh - 255px)!important}
+ body #novaHybridBackOrb:not([hidden]){top:105px!important}
 }
 </style>
 </head>
@@ -3864,7 +3867,7 @@ if(document.readyState==="loading"){
 <script src="modules/nova-calendar.js"></script>
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js"></script>
-<script src="modules/nova-universal.js?v=1.9.15"></script>
+<script src="modules/nova-universal.js?v=1.9.16"></script>
 <script src="intelligence/nova-intelligence.js"></script>
 <script>
 /* Layout-only bridge: preserve media module's scoped initialization and its live event handlers. */
