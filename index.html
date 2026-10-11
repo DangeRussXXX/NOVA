@@ -55,7 +55,6 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
   <div class="buttonGrid">
     <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
-    <button class="control" type="button" id="novaRSRNav" onclick="novaOpenRSR()">RSR TRAINER</button>
     <button class="control" type="button" id="novaHistoryNavButton" aria-controls="novaHudTicker" aria-expanded="false" title="Show or hide NOVA live activity">NOVA HISTORY</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
@@ -4133,7 +4132,7 @@ window.addEventListener('load',function(){
  header.querySelectorAll('button').forEach(b=>{b.classList.add('novaGroupButton');b.dataset.group='nova';b.addEventListener('click',()=>{Object.values(panels).forEach(p=>p.hidden=true);theme('nova');});});
  const divider=()=>{const e=document.createElement('span');e.className='novaGroupDivider';e.setAttribute('aria-hidden','true');header.appendChild(e);};
  add('NOVA BROWSER','nova','browser');divider();
- add('AMOMII','hardware','amomii');add('RSR TRAINER','hardware','rsr');add('PORTABLE TRAINER','hardware','portable');divider();
+ add('AMOMII','hardware','amomii');add('RSR TRAINER','hardware','rsr',()=>novaOpenRSR());add('PORTABLE TRAINER','hardware','portable');divider();
  add('MEDIA LIBRARY','media','library');add('PLAYLISTS','media','playlists');
  mediaModeButton=document.createElement('button');
  mediaModeButton.type='button';mediaModeButton.className='control novaGroupButton novaMediaModeButton';
