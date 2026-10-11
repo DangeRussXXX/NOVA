@@ -21,7 +21,6 @@
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
-          <button class="control" type="button" id="novaMediaPopoutButton" title="Toggle NOVA Media Mode">MEDIA</button>
   </div>
 </div>
 </div>
@@ -34,6 +33,21 @@
 
 <div class="panel card novaUnifiedConsole">
 <div class="novaLeftHome">
+<div id="novaPermanentMedia" aria-label="NOVA permanent media workspace">
+  <div class="novaMediaSide" id="novaMediaLeft">
+    <section class="novaMediaBox"><h2>YOUR PLAYLISTS</h2><div class="novaMediaRow"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create" type="button">+ CREATE</button></div><div id="playlistNames" class="novaMediaList"></div></section>
+    <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><button id="addMusic" type="button">+ MUSIC</button><button id="addVideos" type="button">+ VIDEO</button><button id="addFolder" type="button">+ FOLDER</button></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
+  </div>
+  <div class="novaMediaNow"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span></div>
+  <div class="novaMediaSide" id="novaMediaRight">
+    <section class="novaMediaBox"><h2>PLAYBACK</h2><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section>
+    <section class="novaMediaBox"><h2>PLAYLIST EDITOR</h2><div class="novaMediaRow"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn" type="button">RENAME</button></div><div class="novaMediaRow"><span id="count" class="muted"></span><button id="clear" type="button">CLEAR</button><button id="deleteBtn" type="button">DELETE LIST</button></div><div id="tracks" class="novaMediaList"></div><p class="muted">▲ ▼ reorder · REMOVE keeps your original files</p></section>
+  </div>
+  <input id="novaPermanentMusicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.opus" multiple hidden>
+  <input id="novaPermanentVideoFiles" type="file" accept="video/*" multiple hidden>
+  <input id="novaPermanentFolderFiles" type="file" webkitdirectory directory multiple hidden>
+</div>
+
       <div id="novaIntegratedMediaLibrary" aria-label="NOVA Media Library">
         <div class="novaMediaLibraryHeader">
           <div class="novaMediaLibraryIdentity">
@@ -3347,28 +3361,46 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
 @keyframes novaHybridBreath{from{filter:drop-shadow(0 0 8px rgba(29,206,255,.3))}to{filter:drop-shadow(0 0 25px rgba(29,206,255,.7))}}
 @media(prefers-reduced-motion:reduce){.novaHybridMusicActive #novaOrb{animation:none}}
 
-/* NOVA MEDIA MODE: one console, NOVA orb remains the centerpiece. */
-#novaEmbeddedMediaPanel[hidden]{display:none!important}
-#novaMediaPopoutButton.novaMediaModeSelected{border-color:#42ddf9!important;box-shadow:0 0 14px rgba(50,211,245,.45)!important;color:#72edff!important}
+/* NOVA ALWAYS-ON MEDIA WORKSPACE — inside the existing NOVA stage */
 .novaUnifiedConsole{position:relative!important;isolation:isolate}
-body.novaEmbeddedMediaMode .novaUnifiedConsole .novaLeftHome{min-height:650px!important;position:relative}
-#novaEmbeddedMediaPanel{position:absolute!important;inset:8px 0 78px!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:100!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:hidden!important}
-#novaEmbeddedMediaFrame{display:block!important;width:100%!important;height:100%!important;min-height:0!important;border:0!important;background:transparent!important}
-#novaEmbeddedMediaPanel .novaEmbeddedMediaHeader{display:none!important}
-/* The real NOVA orb, video stage and existing controls stay above the media dock. */
-body.novaEmbeddedMediaMode .novaUnifiedConsole #novaCoreContainer{position:relative!important;z-index:125!important;pointer-events:none}
-body.novaEmbeddedMediaMode .novaUnifiedConsole #novaHybridVideoStage{z-index:145!important;position:relative!important}
-body.novaEmbeddedMediaMode .novaUnifiedConsole #novaHybridNowPlaying{z-index:146!important;position:relative!important}
-body.novaEmbeddedMediaMode .novaUnifiedConsole #novaIntegratedMediaControls{z-index:160!important}
-body.novaEmbeddedMediaMode .novaUnifiedConsole #novaMusicInfoDisplay{z-index:150!important;pointer-events:none}
-body.novaEmbeddedMediaMode .novaUnifiedConsole .novaConsoleCommandRow{position:relative!important;z-index:170!important}
-body.novaEmbeddedMediaMode .novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:170!important}
-body.novaEmbeddedMediaMode .novaUnifiedConsole #novaIntegratedMediaLibrary{display:none!important}
-@media(max-width:780px){
- body.novaEmbeddedMediaMode .novaUnifiedConsole .novaLeftHome{min-height:340px!important}
- #novaEmbeddedMediaPanel{position:relative!important;inset:auto!important;height:780px!important;z-index:100!important;overflow:hidden!important}
- body.novaEmbeddedMediaMode .novaUnifiedConsole #novaCoreContainer{pointer-events:none}
-}
+.novaUnifiedConsole .novaLeftHome{position:relative!important;min-height:690px!important;overflow:hidden!important}
+#novaPermanentMedia{position:absolute;inset:16px 18px 95px;z-index:110;pointer-events:none;display:grid;grid-template-columns:minmax(230px,29%) minmax(190px,1fr) minmax(260px,31%);gap:16px}
+#novaPermanentMedia .novaMediaSide{pointer-events:auto;min-width:0;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+#novaPermanentMedia .novaMediaBox{background:rgba(5,19,30,.92);border:1px solid rgba(42,155,188,.65);border-radius:10px;padding:12px;min-width:0;box-shadow:0 0 15px rgba(0,0,0,.24)}
+#novaPermanentMedia .novaMediaBox h2{margin:0 0 10px;color:#43dcfb;font-size:12px;letter-spacing:1.5px}
+#novaPermanentMedia button,#novaPermanentMedia input,#novaPermanentMedia select{font-family:inherit;font-size:11px;min-width:0}
+#novaPermanentMedia button{cursor:pointer;background:linear-gradient(#12374b,#081e2b);color:#c8f4ff;border:1px solid #29647c;border-radius:6px;padding:6px 8px;font-weight:650}
+#novaPermanentMedia button:hover{border-color:#4de3ff;color:#4de3ff}
+#novaPermanentMedia button:disabled{opacity:.35;cursor:default}
+#novaPermanentMedia input:not([type=range]),#novaPermanentMedia select{background:#061621;color:#d9f6ff;border:1px solid #295368;border-radius:5px;padding:8px;width:100%}
+#novaPermanentMedia .novaMediaRow{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:7px 0}
+#novaPermanentMedia .novaMediaRow .grow{flex:1 1 100px;width:auto;min-width:90px}
+#novaPermanentMedia .novaMediaList{overflow-y:auto;max-height:160px;scrollbar-color:#36798f #07141e}
+#novaPermanentMedia .novaMediaEntry{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:6px 2px;border-bottom:1px solid #193d50}
+#novaPermanentMedia .novaMediaEntry .name{flex:1 1 120px;overflow-wrap:anywhere;color:#d9f4ff;font-size:11px}
+#novaPermanentMedia .novaMediaEntry small{display:block;color:#89aebe;font-size:9px}
+#novaPermanentMedia .novaMediaEntry.selected{background:#10374b;border-left:3px solid #3bd7f6}
+#novaPermanentMedia .muted{font-size:10px;color:#89b4c7}
+#novaPermanentMedia #novaMediaLeft{grid-column:1}
+#novaPermanentMedia #novaMediaRight{grid-column:3}
+#novaPermanentMedia #novaMediaRight .novaMediaBox:last-child{flex:1;min-height:0;display:flex;flex-direction:column}
+#novaPermanentMedia #tracks{max-height:235px;flex:1}
+#novaPermanentMedia #playlistNames{max-height:145px}
+#novaPermanentMedia #library{max-height:190px}
+#novaPermanentMedia #seek{width:100%;accent-color:#39d5f7}
+#novaPermanentMedia #volume{width:100px;accent-color:#39d5f7}
+#novaPermanentMedia .novaMediaNow{grid-column:2;align-self:start;justify-self:stretch;pointer-events:none;text-align:center;border:1px solid rgba(40,152,186,.55);background:rgba(4,17,27,.82);border-radius:8px;padding:10px 8px;color:#5bdaf4;font-size:11px;letter-spacing:.07em;overflow-wrap:anywhere}
+#novaPermanentMedia .novaMediaNow strong{display:block;font-size:10px;color:#a4eaff;margin-bottom:4px}
+.novaUnifiedConsole #novaCoreContainer{z-index:125!important;pointer-events:none!important}
+.novaUnifiedConsole #novaHybridVideoStage{z-index:145!important;position:relative!important}
+.novaUnifiedConsole #novaHybridNowPlaying{z-index:146!important;position:relative!important}
+.novaUnifiedConsole #novaIntegratedMediaControls{z-index:160!important}
+.novaUnifiedConsole #novaMusicInfoDisplay{z-index:150!important;pointer-events:none}
+.novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:170!important}
+.novaUnifiedConsole #novaIntegratedMediaLibrary{display:none!important}
+@media(max-width:1000px){#novaPermanentMedia{grid-template-columns:minmax(180px,31%) minmax(130px,1fr) minmax(220px,34%);gap:8px;inset:10px 9px 90px}#novaPermanentMedia .novaMediaBox{padding:8px}}
+@media(max-width:760px){.novaUnifiedConsole .novaLeftHome{min-height:1040px!important;overflow:visible!important}#novaPermanentMedia{inset:290px 8px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px}#novaPermanentMedia #novaMediaLeft{grid-column:1}#novaPermanentMedia #novaMediaRight{grid-column:2}#novaPermanentMedia .novaMediaNow{grid-column:1/-1;grid-row:1;align-self:start}#novaPermanentMedia #novaMediaLeft,#novaPermanentMedia #novaMediaRight{grid-row:2}#novaPermanentMedia .novaMediaBox{padding:8px}#novaPermanentMedia .novaMediaList{max-height:140px}}
+@media(max-width:480px){.novaUnifiedConsole .novaLeftHome{min-height:1400px!important}#novaPermanentMedia{top:300px;grid-template-columns:1fr}#novaPermanentMedia #novaMediaLeft{grid-column:1;grid-row:2}#novaPermanentMedia #novaMediaRight{grid-column:1;grid-row:3}}
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }
