@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>NOVA Command Center</title>
-<link rel="stylesheet" href="nova.css?v=1.9.2">
+<link rel="stylesheet" href="nova.css?v=1.9.3">
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 <!-- NOVA 1.8.1: page styles moved to nova.css; loaded after base rules in original order. -->
@@ -3961,38 +3961,45 @@ window.addEventListener('load',function(){
      },650);
    }
  }
- // NOVA 1.9.1: large scrolling welcome / active-media marquee.
- // Preserve #now for the existing media engine; do not move or replace its ID.
+ // NOVA 1.9.3: ticker listens to real media state, not its own text.
  const now=document.getElementById('now');
  if(now){
    const welcome='WELCOME TO NOVA!  ⚡  SYSTEM READY';
-   let displayed='';
-   let mediaTitle='';
-   const inactive=/^(?:NOVA READY|STOPPED|WELCOME TO NOVA!?|NO TRACK SELECTED|NOTHING PLAYING|)$/i;
-   const paint=(value,active)=>{
-     const label=active?'♫ NOW PLAYING  •  '+value:welcome;
-     if(label===displayed)return;
-     displayed=label;
+   let currentTitle='',currentState='stopped',lastPaint='';
+   const paint=()=>{
+     const label=currentState==='playing'&&currentTitle?'♫ NOW PLAYING  •  '+currentTitle:welcome;
+     if(label===lastPaint)return;
+     lastPaint=label;
      now.textContent=label;
-     now.classList.toggle('novaNowPlayingActive',active);
-     now.classList.remove('novaMarqueeRun');
-     void now.offsetWidth; // restart the scroll when the track changes
-     now.classList.add('novaMarqueeRun');
+     now.classList.toggle('novaNowPlayingActive',currentState==='playing'&&!!currentTitle);
+     now.classList.remove('novaMarqueeRun');void now.offsetWidth;now.classList.add('novaMarqueeRun');
    };
-   paint('',false);
+   window.addEventListener('nova:media-state',event=>{
+     const detail=event.detail||{};
+     currentState=detail.state||'stopped';
+     if(detail.title)currentTitle=detail.title.replace(/^NOW PLAYING:\s*/i,'');
+     if(currentState==='stopped')currentTitle='';
+     paint();
+   });
+   const trackFromLegacy=()=>{
+     const el=[...document.querySelectorAll('audio,video')].find(el=>el.id!=='desktopCameraVideo'&&!el.paused&&!el.ended&&el.readyState>1);
+     if(!el)return false;
+     const info=(document.getElementById('novaMusicInfoTitle')?.textContent||'').trim();
+     const selected=(document.querySelector('#musicList .active, #musicList .selected')?.textContent||'').trim();
+     const file=el.currentSrc?decodeURIComponent(el.currentSrc.split('/').pop().split('?')[0]):'';
+     currentTitle=currentTitle||info||selected||((file&&!file.startsWith('blob:'))?file:'MEDIA PLAYING');
+     currentState='playing';paint();return true;
+   };
+   paint();
    setInterval(()=>{
-     // The universal media module writes track names to #now.
-     const incoming=(now.textContent||'').trim();
-     if(incoming!==displayed && !inactive.test(incoming) && !incoming.startsWith('♫ NOW PLAYING')){
-       mediaTitle=incoming;
+     const active=document.querySelector('#novaNativeAudioStage audio, #novaNativeAudioStage video, #novaHybridVideoStage video');
+     if(active){
+       if(active.paused&&currentState==='playing'){currentState='paused';paint();}
+       else if(!active.paused&&currentState==='paused'){currentState='playing';paint();}
+       return;
      }
-     const mediaPlaying=[...document.querySelectorAll('audio,video')].some(el=>
-       el.id!=='desktopCameraVideo' && !el.paused && !el.ended && el.readyState>1
-     );
-     const youtubePlaying=!!document.querySelector('#novaHybridVideoStage:not([hidden]) iframe[src*="youtube"]');
-     const active=(mediaPlaying||youtubePlaying)&&!!mediaTitle;
-     paint(mediaTitle,active);
-   },700);
+     if(currentState==='stopped'||currentState==='paused')trackFromLegacy();
+   },750);
  }
  // Preserve the original live DOM and playlist listeners; only change its presentation.
  const panels={};

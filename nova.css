@@ -5376,3 +5376,5 @@ body.novaElectricMediaMode #now {
   body.novaElectricMediaMode .novaUnifiedConsole .novaLeftHome::after,
   .novaMediaModeButton[aria-pressed="true"] {animation:none!important;}
 }
+
+/* NOVA 1.9.3: media synchronization is implemented in the existing JS controller. */
