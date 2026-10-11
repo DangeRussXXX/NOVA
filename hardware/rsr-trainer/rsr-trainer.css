@@ -1,0 +1,35 @@
+/* NOVA RSR TRAINER DIGITAL TWIN — v1.9.23
+   Paste into hardware/rsr-trainer/rsr-trainer.css
+   Scoped to #rsrLab to protect NOVA's existing dashboard. */
+#rsrLab[hidden],#rsrLab [hidden]{display:none!important}
+#rsrLab{position:fixed;inset:8px;z-index:100000;display:flex;flex-direction:column;box-sizing:border-box;overflow:hidden;background:#05111c;color:#d5f7ff;border:2px solid #00cbe9;border-radius:12px;box-shadow:0 0 40px #00cbe933;font-family:Arial,sans-serif}
+#rsrLab *{box-sizing:border-box}
+#rsrLab .rsr-lab__header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;background:#071d2b;border-bottom:1px solid #14647b}
+#rsrLab .rsr-lab__header h2{margin:0;color:#00dfff;font-size:clamp(17px,2vw,25px);letter-spacing:.05em}
+#rsrLab #rsrLabLinkStatus{margin-left:auto;color:#a5c2cc;font-size:12px}
+#rsrLab button{cursor:pointer;border:1px solid #1784a0;background:#0b293a;color:#d6f9ff;padding:9px 12px;border-radius:6px;font-weight:700;letter-spacing:.025em}
+#rsrLab button:hover{background:#11506a;border-color:#22d5f4}
+#rsrLab button[aria-pressed="true"]{background:#125a70;border-color:#25edff;box-shadow:0 0 12px #00ddff55}
+#rsrLab #rsrLabClose{border-color:#ffb32d;color:#ffdf96}
+#rsrLab .rsr-lab__columns{display:grid;grid-template-columns:minmax(300px,38%) minmax(0,62%);gap:12px;flex:1;min-height:0;padding:12px}
+#rsrLab .rsr-lab__controls,#rsrLab .rsr-lab__simulator{min-width:0;min-height:0;overflow:auto;background:#071b29;border:1px solid #18576e;border-radius:8px;padding:12px}
+#rsrLab .rsr-lab__group{border:1px solid #15516a;border-radius:8px;margin-bottom:12px;padding:12px;background:#0a2230}
+#rsrLab h3{font-size:14px;color:#00ddf5;letter-spacing:.05em;margin:0 0 12px}
+#rsrLab .rsr-lab__notice{font-size:12px;line-height:1.5;color:#9ebbc5}
+#rsrLab .rsr-lab__controls .rsrTrainerController{display:block!important;width:100%!important;max-width:none!important;position:static!important;margin:0!important}
+#rsrLab .rsr-lab__controls .rsrTrainerController .panelBody{display:block!important}
+#rsrLab .rsr-lab__toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+#rsrLab .rsr-lab__viewport{position:relative;display:flex;justify-content:center;align-items:center;min-height:340px;background:#01080f;border:1px solid #195e75;border-radius:8px;overflow:auto}
+#rsrLab .rsr-lab__board{position:relative;width:100%;max-width:1100px;line-height:0}
+#rsrLab #rsrLabPhoto{display:block;width:100%;height:auto;user-select:none}
+#rsrLab .rsr-lab__layer{position:absolute;inset:0;pointer-events:none}
+#rsrLab .rsr-lab__layer button,#rsrLab .rsr-lab__layer input{pointer-events:auto}
+#rsrLab .rsr-lab__led{position:absolute;width:2.5%;aspect-ratio:1;border-radius:50%;border:1px solid #777;background:#310c13;box-shadow:inset 0 0 5px #000;transform:translate(-50%,-50%)}
+#rsrLab .rsr-lab__led.is-on{background:#ff283c;box-shadow:0 0 13px 4px #ff253fbb,inset 0 0 5px #fff}
+#rsrLab .rsr-lab__led.is-green.is-on{background:#24ff78;box-shadow:0 0 13px 4px #19f96fbb}
+#rsrLab .rsr-lab__wiring{width:100%;min-height:340px;padding:20px;line-height:1.7;color:#d2f4ff;background:#071b29}
+#rsrLab .rsr-lab__wiring h3{font-size:18px}
+#rsrLab .rsr-lab__pin{position:absolute;transform:translate(-50%,-50%);border:1px solid #39dfff;border-radius:50%;width:7px;height:7px;background:#052735;cursor:crosshair;pointer-events:auto}
+#rsrLab .rsr-lab__pin:hover{background:#00eeff;box-shadow:0 0 8px #00eeff}
+#rsrLab output{color:#40e9ff;font-weight:700}
+@media(max-width:900px){#rsrLab{overflow:auto}#rsrLab .rsr-lab__columns{display:flex;flex-direction:column;overflow:visible}#rsrLab .rsr-lab__controls,#rsrLab .rsr-lab__simulator{overflow:visible}#rsrLab .rsr-lab__viewport{min-height:260px}}

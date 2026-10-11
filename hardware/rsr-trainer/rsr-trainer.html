@@ -1,0 +1,56 @@
+<!-- NOVA RSR TRAINER DIGITAL TWIN
+     Fragment loaded into NOVA by the parent dashboard.
+     Requires: hardware/rsr-trainer/rsr-trainer.css and rsr-trainer.js.
+     Image path is relative to the main index.html document.
+     This HTML alone does not change the existing RSR navigation or hardware handlers.
+-->
+<section id="rsrLab" class="rsr-lab" aria-label="RSR Trainer Digital Twin" hidden>
+  <header class="rsr-lab__header">
+    <h2>⚡ RSR TRAINER ONE — DIGITAL TWIN</h2>
+    <span id="rsrLabLinkStatus" role="status">Hardware feedback not verified</span>
+    <button id="rsrLabClose" type="button" aria-label="Close RSR trainer">✕ RETURN TO NOVA</button>
+  </header>
+  <div class="rsr-lab__columns">
+    <aside class="rsr-lab__controls" aria-label="RSR trainer controls">
+      <section class="rsr-lab__group">
+        <h3>EXISTING TRAINER CONTROLS</h3>
+        <div id="rsrLabExistingControls" data-rsr-mount="existing-controls">
+          <!-- rsr-trainer.js moves the original controller here; no duplicate commands. -->
+        </div>
+      </section>
+      <section class="rsr-lab__group">
+        <h3>SIMULATOR STATUS</h3>
+        <p>LEDs: <output id="rsrLabLedStatus">Awaiting state</output></p>
+        <p>Switch 0 / AMOMII A0: <output id="rsrLabSwitchStatus">UNKNOWN</output></p>
+        <p>Trainer power: <output id="rsrLabPowerStatus">NOT MONITORED</output></p>
+        <p class="rsr-lab__notice">Only eight LED channels and switch 0 are currently wired to AMOMII. Other controls are visual until instrumented.</p>
+      </section>
+    </aside>
+    <main class="rsr-lab__simulator" aria-label="RSR trainer simulator">
+      <div class="rsr-lab__toolbar" role="group" aria-label="Simulator display mode">
+        <button id="rsrLabViewBoard" type="button" aria-pressed="true">TRAINER / LEDs</button>
+        <button id="rsrLabViewWiring" type="button" aria-pressed="false">WIRING</button>
+        <button id="rsrLabViewPins" type="button" aria-pressed="false">PIN MAP</button>
+      </div>
+      <div id="rsrLabBoardViewport" class="rsr-lab__viewport">
+        <div id="rsrLabBoard" class="rsr-lab__board">
+          <img id="rsrLabPhoto" src="hardware/rsr-trainer/assets/rsr-trainer.jpg" alt="RSR Electronics PAD-234A trainer front panel" draggable="false">
+          <div id="rsrLabLedLayer" class="rsr-lab__layer" aria-label="LED indicator overlay"></div>
+          <div id="rsrLabSwitchLayer" class="rsr-lab__layer" aria-label="Switch overlay"></div>
+          <div id="rsrLabKnobLayer" class="rsr-lab__layer" aria-label="Knob overlay"></div>
+          <div id="rsrLabPinLayer" class="rsr-lab__layer" aria-label="Pin and breadboard connection overlay" hidden></div>
+        </div>
+        <div id="rsrLabWiringPanel" class="rsr-lab__wiring" hidden>
+          <h3>AMOMII ONE → RSR TRAINER</h3>
+          <p>Eight LED channels: proposed D2–D9 → LED 0–7 (verify actual pin mapping).</p>
+          <p>Physical RSR switch 0 → AMOMII A0. HI/LO feedback is available in NOVA.</p>
+          <p>Ground, switch reference, LED circuit polarity and remaining connections require verification.</p>
+        </div>
+      </div>
+      <footer class="rsr-lab__footer">
+        <span id="rsrLabModeStatus">Digital twin • visualization only</span>
+        <span>Actual board power and built-in power LEDs are not currently monitored.</span>
+      </footer>
+    </main>
+  </div>
+</section>
