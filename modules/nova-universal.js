@@ -21,7 +21,7 @@ function initializePermanentMedia(){
  const host=document.getElementById("novaPermanentMedia");
  if(!host)return;
  const w=window;
- const d=document,$=id=>document.getElementById(id);let currentId=playlists[0]?.id||"favorites",activeIndex=-1,activeMedia=null,activeType="",ytFrame=null;
+ const d=document,$=id=>host.querySelector("#"+id);let currentId=playlists[0]?.id||"favorites",activeIndex=-1,activeMedia=null,activeType="",ytFrame=null;
  const hybridStage=document.getElementById("novaHybridVideoStage");
  const hybridNow=document.getElementById("novaHybridNowPlaying");
  const hybridTitle=document.getElementById("novaHybridTrackName");
@@ -64,7 +64,28 @@ function initializePermanentMedia(){
  if(backButton)backButton.addEventListener("click",backFn);
  // Media Mode is persistent: hiding its panel does not interrupt playback.
 
- const stopEngines=()=>{if(activeMedia){try{activeMedia.pause()}catch(e){}}if(ytFrame){try{ytFrame.contentWindow.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"https://www.youtube.com")}catch(e){}}};
+ // Stop both the universal player and the original NOVA media engines.
+ // The original audioPlayer is separate from activeMedia; failing to pause it
+ // causes music and YouTube to play simultaneously.
+ const stopEngines=()=>{
+   if(activeMedia){try{activeMedia.pause()}catch(e){}}
+   if(ytFrame){try{ytFrame.contentWindow.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"*")}catch(e){}
+     // Remove the old iframe so its audio cannot continue in the background.
+     try{ytFrame.removeAttribute("src");ytFrame.remove()}catch(e){} ytFrame=null;
+   }
+   for(const id of ["audioPlayer","videoPlayer"]){
+     const element=document.getElementById(id);
+     if(element){try{element.pause()}catch(e){}}
+   }
+   const legacyYouTube=document.getElementById("youtubeFrame");
+   if(legacyYouTube){try{legacyYouTube.contentWindow?.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"*")}catch(e){}}
+ };
+ let youtubePaused=false;
+ function youtubeCommandLocal(command){
+   if(!ytFrame)return;
+   try{ytFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:command,args:[]}),"*")}catch(e){}
+ }
+
  const selected=()=>playlists.find(p=>p.id===currentId);
  const notify=s=>{$("now").textContent=s;};
  const safeName=x=>String(x||"");
@@ -74,12 +95,16 @@ function initializePermanentMedia(){
  function move(i,delta){const p=selected(),j=i+delta;[p.items[i],p.items[j]]=[p.items[j],p.items[i]];if(activeIndex===i)activeIndex=j;else if(activeIndex===j)activeIndex=i;save();renderTracks();}
  function renderLibrary(){const box=$("library");box.replaceChildren();const q=$("search").value.trim().toLowerCase(),filter=$("filter").value;sourceItems().filter(x=>(filter==="all"||x.type===filter)&&x.name.toLowerCase().includes(q)).forEach(item=>{const row=d.createElement("div");row.className="entry";const name=d.createElement("span");name.className="name";name.textContent=item.name;const tag=d.createElement("small");tag.textContent=item.type.toUpperCase();name.append(tag);const add=d.createElement("button");add.textContent="+ ADD";add.onclick=()=>{const p=selected();if(!p)return;if(p.items.some(x=>x.key===item.key)){notify("Already in this playlist.");return;}p.items.push(makeItem(item));save();renderAll();};row.append(name,add);box.append(row);});}
  function renderAll(){renderPlaylists();renderTracks();renderLibrary();}
- function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable on this device. Add it to this browser first.");return;}stopEngines();activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1";if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=true;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>notify("Playback was blocked. Press PLAY to start."));}notify("NOW PLAYING: "+item.name);renderTracks();}
+ function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable on this device. Add it to this browser first.");return;}stopEngines();youtubePaused=false;activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1";if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=true;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>notify("Playback was blocked. Press PLAY to start."));}notify("NOW PLAYING: "+item.name);renderTracks();}
  function next(){const n=selected()?.items.length||0;if(n)playAt((activeIndex+1+n)%n);}
  function prev(){const n=selected()?.items.length||0;if(n)playAt((activeIndex-1+n)%n);}
  $("prev").onclick=prev;$("next").onclick=next;
- $("toggle").onclick=()=>{if(activeType==="youtube"&&ytFrame){ytFrame.contentWindow.postMessage(JSON.stringify({event:"command",func:"playVideo",args:[]}),"https://www.youtube.com");return;}if(!activeMedia){playAt(activeIndex<0?0:activeIndex);return;}if(activeMedia.paused)activeMedia.play().catch(()=>{});else activeMedia.pause();};
- $("stop").onclick=()=>{stopEngines();if(activeMedia)activeMedia.currentTime=0;activeType="";hybridReset();activeIndex=-1;notify("STOPPED");};
+ $("toggle").onclick=()=>{
+   if(activeType==="youtube"&&ytFrame){youtubeCommandLocal(youtubePaused?"playVideo":"pauseVideo");youtubePaused=!youtubePaused;return;}
+   if(!activeMedia){playAt(activeIndex<0?0:activeIndex);return;}
+   if(activeMedia.paused)activeMedia.play().catch(()=>{});else activeMedia.pause();
+ };
+ $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");};
  $("volume").oninput=()=>{if(activeMedia)activeMedia.volume=Number($("volume").value);};
  $("seek").oninput=()=>{if(activeMedia&&Number.isFinite(activeMedia.duration))activeMedia.currentTime=activeMedia.duration*Number($("seek").value)/100;};
  $("create").onclick=()=>{const name=$("newName").value.trim();if(!name)return;const id="p"+Date.now()+Math.random().toString(36).slice(2,7);playlists.push({id,name,items:[]});currentId=id;$("newName").value="";save();renderAll();};
