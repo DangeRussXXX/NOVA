@@ -55,6 +55,7 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
   <div class="buttonGrid">
     <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
+    <button class="control" type="button" id="novaHistoryNavButton" aria-controls="novaHudTicker" aria-expanded="false" title="Show or hide NOVA live activity">NOVA HISTORY</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
   </div>
@@ -4154,6 +4155,17 @@ window.addEventListener('load',function(){
   }
   if(!lane||lane.dataset.novaActivityReady)return;
   lane.dataset.novaActivityReady='1';lane.replaceChildren();
+  // 1.9.21: History is hidden by default and opened from the header.
+  const historyNavButton=document.getElementById('novaHistoryNavButton');
+  const setHistoryVisible=(visible)=>{
+    lane.style.setProperty('display',visible?'':'none',visible?'':'important');
+    if(historyNavButton){historyNavButton.setAttribute('aria-expanded',String(visible));historyNavButton.setAttribute('aria-pressed',String(visible));}
+  };
+  setHistoryVisible(false);
+  if(historyNavButton)historyNavButton.addEventListener('click',()=>{
+    const isOpen=historyNavButton.getAttribute('aria-expanded')==='true';
+    setHistoryVisible(!isOpen);
+  });
   lane.setAttribute('role','region');lane.setAttribute('aria-label','NOVA live activity');
   const heading=document.createElement('div');heading.className='novaActivityHeading';
   const headingToggle=document.createElement('button');headingToggle.type='button';
