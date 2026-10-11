@@ -248,20 +248,6 @@
 }
 
 </style>
-<style>
-/* NOVA SINGLE UNIVERSAL TRANSPORT — bottom of NOVA only */
-#novaMediaLegacyTransport{display:none!important}
-#novaPermanentMedia #novaMediaRight{justify-content:stretch!important}
-#novaPermanentMedia #novaMediaRight>.novaCombinedPlaylist{flex:1 1 auto!important}
-.novaUnifiedConsole #novaIntegratedMediaControls{display:flex!important;flex-direction:column!important;align-items:center!important;gap:7px!important;bottom:18px!important;z-index:910!important;pointer-events:auto!important}
-.novaUnifiedConsole #novaIntegratedMediaControls .novaMediaControlRow{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important}
-.novaUnifiedConsole #novaIntegratedMediaControls #novaMediaStop{border-color:#2e829c!important;color:#a8eafa!important}
-.novaUnifiedConsole #novaIntegratedMediaControls .novaBottomPlaybackTools{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;width:min(500px,92%)!important;color:#70d8f0!important;font-size:10px!important;letter-spacing:.06em!important}
-.novaUnifiedConsole #novaIntegratedMediaControls .novaBottomPlaybackTools input[type=range]{accent-color:#4ed7f6!important;min-width:0!important;cursor:pointer!important}
-.novaUnifiedConsole #novaIntegratedMediaControls #volume{width:100px!important;flex:0 1 100px!important}
-.novaUnifiedConsole #novaIntegratedMediaControls #seek{width:190px!important;flex:1 1 120px!important}
-@media(max-width:760px){.novaUnifiedConsole #novaIntegratedMediaControls .novaBottomPlaybackTools{width:95%!important;gap:5px!important;font-size:9px!important}.novaUnifiedConsole #novaIntegratedMediaControls #volume{width:65px!important;flex-basis:65px!important}}
-</style>
 </head>
 <body>
 <div class="app">
@@ -293,7 +279,7 @@
   </div>
   <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div></div>
   <div class="novaMediaSide" id="novaMediaRight">
-    <div id="novaMediaLegacyTransport" hidden aria-hidden="true"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div>
+    <section class="novaMediaBox"><h2>PLAYBACK</h2><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section>
     <section class="novaMediaBox novaCombinedPlaylist"><h2>PLAYLISTS</h2><div class="novaMediaRow"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create" type="button">+ CREATE</button></div><div id="playlistNames" class="novaMediaList novaPlaylistChoices" aria-label="Select playlist"></div><div class="novaPlaylistDivider"></div><h3>EDIT SELECTED PLAYLIST</h3><div class="novaMediaRow"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn" type="button">RENAME</button></div><div class="novaMediaRow"><span id="count" class="muted"></span><button id="clear" type="button">CLEAR</button><button id="deleteBtn" type="button">DELETE LIST</button></div><div id="tracks" class="novaMediaList novaPlaylistTracks"></div><p class="muted">▲ ▼ reorder · REMOVE keeps your original files</p></section>
   </div>
   <input id="novaPermanentMusicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.opus" multiple hidden>
@@ -409,11 +395,6 @@
     <button type="button" class="novaMediaGlyph" id="novaMediaPrev" title="Previous track">◀◀</button>
     <button type="button" class="novaMediaGlyph novaMediaPlayGlyph" id="novaMediaPlayPause" title="Play / Pause">▶</button>
     <button type="button" class="novaMediaGlyph" id="novaMediaNext" title="Next track">▶▶</button>
-    <button type="button" class="novaMediaGlyph" id="novaMediaStop" title="Stop playback">■</button>
-  </div>
-  <div class="novaBottomPlaybackTools" aria-label="Universal media volume and progress">
-    <label for="volume">VOL</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8" aria-label="Universal media volume">
-    <label for="seek">PROGRESS</label><input id="seek" type="range" min="0" max="100" value="0" aria-label="Universal media playback progress">
   </div>
 </div>
 <div id="novaHudTicker" aria-live="polite">
