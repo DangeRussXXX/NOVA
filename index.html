@@ -12,50 +12,39 @@
 
 <!-- NOVA 1.9.16: viewport-based theater, independent of dashboard transforms -->
 <style id="novaTheaterMainFix">
-/* NOVA 1.9.18: original orb workspace owns the video. No viewport overlay. */
-.novaUnifiedConsole .novaLeftHome {
- position:relative!important;
- min-height:650px!important;
- overflow:hidden!important;
+/* 1.9.19: Use a genuine 16:9 video viewport. No forced ultra-wide iframe. */
+.novaUnifiedConsole{position:relative!important}
+.novaUnifiedConsole .novaLeftHome{position:relative!important;overflow:hidden!important}
+body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
+ height:calc((100vw - 42px) * 9 / 16 + 78px)!important;
+ min-height:0!important;
+ max-height:none!important;
 }
 #novaHybridVideoStage[hidden],#novaHybridBackOrb[hidden]{display:none!important}
 .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
- position:absolute!important;
- inset:0 0 82px 0!important;
- top:0!important;right:0!important;bottom:82px!important;left:0!important;
- width:100%!important;height:auto!important;
- min-width:0!important;min-height:0!important;
- max-width:none!important;max-height:none!important;
- margin:0!important;padding:0!important;transform:none!important;
- aspect-ratio:auto!important;display:flex!important;
- align-items:center!important;justify-content:center!important;
- background:#000!important;overflow:hidden!important;
- border:0!important;border-radius:8px!important;
- z-index:160!important;
+ position:absolute!important;left:0!important;right:0!important;top:0!important;
+ bottom:auto!important;width:100%!important;height:auto!important;
+ aspect-ratio:16 / 9!important;max-width:none!important;max-height:none!important;
+ min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;
+ transform:none!important;display:block!important;background:#000!important;
+ overflow:hidden!important;border:0!important;border-radius:6px!important;z-index:160!important;
 }
 .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) iframe,
 .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) video{
- display:block!important;position:static!important;
- width:100%!important;height:100%!important;
- min-width:0!important;min-height:0!important;
- max-width:100%!important;max-height:100%!important;
- margin:0!important;transform:none!important;
- object-fit:contain!important;border:0!important;background:#000!important;
+ display:block!important;position:absolute!important;inset:0!important;
+ width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+ margin:0!important;transform:none!important;object-fit:contain!important;
+ border:0!important;background:#000!important;
 }
-body #novaHybridBackOrb:not([hidden]){
- position:fixed!important;right:22px!important;top:92px!important;
- z-index:1100!important;display:inline-flex!important;
- visibility:visible!important;opacity:1!important;
- background:#092633!important;color:#a8f1ff!important;
- border:1px solid #2acbe9!important;border-radius:7px!important;
- padding:8px 12px!important;cursor:pointer!important;font-weight:700!important;
+.novaUnifiedConsole > #novaHybridBackOrb:not([hidden]){
+ position:absolute!important;right:12px!important;top:12px!important;left:auto!important;bottom:auto!important;
+ z-index:1100!important;display:inline-flex!important;visibility:visible!important;opacity:1!important;
+ background:#092633!important;color:#a8f1ff!important;border:1px solid #2acbe9!important;
+ border-radius:7px!important;padding:8px 12px!important;cursor:pointer!important;font-weight:700!important;
 }
 .novaUnifiedConsole .novaAdaptivePlayer{position:relative!important;z-index:300!important}
 .novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:300!important}
-@media(max-width:760px){
- .novaUnifiedConsole .novaLeftHome{min-height:430px!important}
- .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){bottom:82px!important}
-}
+@media(max-width:760px){body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{height:calc((100vw - 20px) * 9 / 16 + 78px)!important}}
 </style>
 </head>
 <body>

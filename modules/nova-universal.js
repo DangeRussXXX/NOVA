@@ -138,7 +138,8 @@ function initializePermanentMedia(){
  if(hybridStage && theaterHome && hybridStage.parentElement!==theaterHome){
    theaterHome.appendChild(hybridStage);
  }
- if(headerVideoSwitch && headerVideoSwitch.parentElement!==document.body)document.body.appendChild(headerVideoSwitch);
+ const videoPanel=document.querySelector(".novaUnifiedConsole");
+ if(headerVideoSwitch && videoPanel && headerVideoSwitch.parentElement!==videoPanel)videoPanel.appendChild(headerVideoSwitch);
 
 
 
