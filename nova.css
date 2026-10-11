@@ -4494,3 +4494,706 @@ body.irisMediaPlaying .novaUnifiedConsole #novaMusicSpectrum{
     padding:0 9px;
   }
 }
+
+/* ============================================================
+   NOVA 1.7 — STYLES MOVED FROM INDEX.HTML (ORIGINAL ORDER)
+   ============================================================ */
+/* ============================================================
+   NOVA CENTERPIECE — ALWAYS-VISIBLE MEDIA DASHBOARD
+   Styles must be in the DOCUMENT HEAD, not a popup template.
+   ============================================================ */
+.novaUnifiedConsole{position:relative!important;isolation:isolate;min-width:0}
+.novaUnifiedConsole .novaLeftHome{position:relative!important;min-height:740px!important;overflow:hidden!important;isolation:isolate}
+#novaPermanentMedia{
+ position:absolute!important;top:22px!important;right:24px!important;bottom:120px!important;left:24px!important;
+ display:grid!important;grid-template-columns:minmax(275px,28%) minmax(270px,1fr) minmax(310px,30%)!important;
+ grid-template-rows:minmax(0,1fr)!important;gap:22px!important;align-items:stretch!important;
+ z-index:110!important;pointer-events:none!important;min-width:0!important;
+ color:#d7f4ff;font-family:inherit;
+}
+#novaPermanentMedia *{box-sizing:border-box}
+#novaPermanentMedia .novaMediaSide{min-width:0;min-height:0;display:flex;flex-direction:column;gap:16px;pointer-events:auto;overflow:hidden}
+#novaPermanentMedia #novaMediaLeft{grid-column:1;grid-row:1}
+#novaPermanentMedia #novaMediaRight{grid-column:3;grid-row:1}
+#novaPermanentMedia .novaMediaBox{
+ display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;
+ padding:18px;border:1px solid rgba(43,166,207,.55);border-radius:14px;
+ background:linear-gradient(145deg,rgba(8,30,46,.96),rgba(3,14,25,.95));
+ box-shadow:0 9px 28px rgba(0,0,0,.32),inset 0 1px rgba(91,207,240,.08);
+}
+#novaPermanentMedia #novaMediaLeft .novaMediaBox:first-child{flex:0 0 37%}
+#novaPermanentMedia #novaMediaLeft .novaMediaBox:last-child{flex:1}
+#novaPermanentMedia #novaMediaRight .novaMediaBox:first-child{flex:0 0 auto}
+#novaPermanentMedia #novaMediaRight .novaMediaBox:last-child{flex:1}
+#novaPermanentMedia .novaMediaBox h2{font-size:13px;line-height:1.35;letter-spacing:1.8px;color:#54dafa;margin:0 0 15px;font-weight:800}
+#novaPermanentMedia .novaMediaRow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 11px;min-width:0}
+#novaPermanentMedia .novaMediaRow .grow{flex:1 1 125px;min-width:90px;width:auto}
+#novaPermanentMedia input:not([type=range]),#novaPermanentMedia select{
+ font-family:inherit;font-size:12px;min-width:0;max-width:100%;height:36px;
+ padding:8px 10px;border:1px solid #2b5268;border-radius:8px;
+ background:#061823;color:#e3f8ff;outline:none;
+}
+#novaPermanentMedia input:not([type=range]):focus,#novaPermanentMedia select:focus{border-color:#47d7f5;box-shadow:0 0 0 2px #30c9ec22}
+#novaPermanentMedia input::placeholder{color:#789eaf}
+#novaPermanentMedia #search{width:100%;margin-bottom:11px}
+#novaPermanentMedia button{
+ font-family:inherit;font-size:11px;font-weight:750;letter-spacing:.4px;line-height:1.2;
+ min-height:34px;min-width:0;padding:8px 11px;cursor:pointer;
+ border:1px solid #2c6b85;border-radius:8px;
+ background:linear-gradient(180deg,#153d52,#092436);color:#c9f5ff;
+ transition:background .15s,border-color .15s,box-shadow .15s;
+}
+#novaPermanentMedia button:hover{border-color:#51defc;background:#174a62;box-shadow:0 0 12px #27d4f122}
+#novaPermanentMedia button:disabled{opacity:.4;cursor:default}
+#novaPermanentMedia #create,#novaPermanentMedia #addMusic,#novaPermanentMedia #addYt{border-color:#2494b4;color:#8feaff}
+#novaPermanentMedia #deleteBtn{border-color:#80515a;color:#ffc2cb}
+#novaPermanentMedia .novaMediaList{flex:1;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#317a92 #061824;padding-right:3px}
+#novaPermanentMedia #playlistNames,#novaPermanentMedia #library,#novaPermanentMedia #tracks{max-height:none!important}
+#novaPermanentMedia .novaMediaEntry{
+ display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:10px 8px;margin:0 0 6px;
+ border:1px solid rgba(54,115,141,.24);border-radius:8px;background:rgba(19,51,70,.42);
+}
+#novaPermanentMedia .novaMediaEntry.selected{border-color:#2bb8dd;background:#14445a}
+#novaPermanentMedia .novaMediaEntry .name{flex:1 1 100px;min-width:0;overflow-wrap:anywhere;color:#e4f7ff;font-size:12px}
+#novaPermanentMedia .novaMediaEntry small{display:block;font-size:10px;color:#8cb7c8}
+#novaPermanentMedia .muted{font-size:11px;color:#89b1c1;line-height:1.5}
+#novaPermanentMedia .novaMediaNow{
+ grid-column:2;grid-row:1;align-self:start;justify-self:stretch;
+ pointer-events:none;text-align:center;min-width:0;overflow-wrap:anywhere;
+ border:1px solid rgba(40,152,186,.5);border-radius:12px;
+ background:linear-gradient(180deg,rgba(8,32,47,.92),rgba(5,20,32,.8));
+ box-shadow:0 7px 22px #0004;padding:16px 12px;color:#d9f7ff;font-size:13px;
+}
+#novaPermanentMedia .novaMediaNow strong{display:block;color:#58daf7;font-size:12px;letter-spacing:1.7px;margin-bottom:7px}
+#novaPermanentMedia #seek{width:100%;accent-color:#38d6f7;margin:4px 0}
+#novaPermanentMedia #volume{width:min(160px,65%);accent-color:#38d6f7}
+/* The existing NOVA orb and playback controls remain the center, above background only. */
+.novaUnifiedConsole #novaCoreContainer{z-index:125!important;pointer-events:none!important}
+.novaUnifiedConsole #novaHybridVideoStage{z-index:145!important;position:relative!important;max-width:42%!important}
+.novaUnifiedConsole #novaHybridNowPlaying{z-index:146!important;position:relative!important}
+.novaUnifiedConsole #novaIntegratedMediaControls{z-index:160!important}
+.novaUnifiedConsole #novaMusicInfoDisplay{z-index:150!important;pointer-events:none}
+.novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:170!important}
+.novaUnifiedConsole #novaIntegratedMediaLibrary{display:none!important}
+@media(max-width:1100px){
+ #novaPermanentMedia{left:12px!important;right:12px!important;gap:12px!important;grid-template-columns:minmax(220px,29%) minmax(175px,1fr) minmax(240px,32%)!important}
+ #novaPermanentMedia .novaMediaBox{padding:12px}
+ #novaPermanentMedia button{padding:7px 8px;font-size:10px}
+}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome{min-height:1250px!important;overflow:visible!important}
+ #novaPermanentMedia{top:320px!important;bottom:15px!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr)!important;gap:10px!important}
+ #novaPermanentMedia .novaMediaNow{grid-column:1/-1;grid-row:1}
+ #novaPermanentMedia #novaMediaLeft{grid-column:1;grid-row:2}
+ #novaPermanentMedia #novaMediaRight{grid-column:2;grid-row:2}
+ #novaPermanentMedia .novaMediaBox{padding:10px}
+}
+@media(max-width:490px){
+ .novaUnifiedConsole .novaLeftHome{min-height:1770px!important}
+ #novaPermanentMedia{top:310px!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr) minmax(0,1fr)!important}
+ #novaPermanentMedia .novaMediaNow{grid-column:1;grid-row:1}
+ #novaPermanentMedia #novaMediaLeft{grid-column:1;grid-row:2}
+ #novaPermanentMedia #novaMediaRight{grid-column:1;grid-row:3}
+}
+
+
+/* ============================================================
+   NOVA CENTERPIECE — LARGE YOUTUBE / VIDEO STAGE
+   Keep the player entirely within the CENTER column.
+   ============================================================ */
+@media (min-width:761px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+    position:absolute!important;
+    top:112px!important;
+    left:calc(28% + 39px)!important;
+    right:calc(30% + 39px)!important;
+    width:auto!important;
+    max-width:none!important;
+    height:auto!important;
+    aspect-ratio:16 / 9!important;
+    margin:0!important;
+    z-index:155!important;
+    border-radius:12px!important;
+    box-shadow:0 12px 40px rgba(0,0,0,.55),0 0 25px rgba(17,196,240,.16)!important;
+  }
+  .novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{
+    position:absolute!important;
+    top:122px!important;
+    left:calc(28% + 50px)!important;
+    right:calc(30% + 50px)!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    justify-content:flex-end!important;
+    background:transparent!important;
+    z-index:160!important;
+    pointer-events:none!important;
+  }
+}
+.novaUnifiedConsole #novaHybridVideoStage iframe,
+.novaUnifiedConsole #novaHybridVideoStage video{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  border:0!important;
+  background:#000!important;
+}
+/* The top Now Playing card already displays the title; don't put a
+   giant raw URL over the video. Keep only the return button. */
+.novaHybridVideoActive .novaUnifiedConsole #novaHybridTrackName{display:none!important}
+.novaHybridVideoActive .novaUnifiedConsole #novaHybridBackOrb{
+  pointer-events:auto!important;
+  background:rgba(6,28,43,.92)!important;
+  color:#a9f3ff!important;
+  border:1px solid #34c7e7!important;
+  border-radius:7px!important;
+  padding:7px 12px!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  box-shadow:0 2px 12px #0009!important;
+}
+.novaHybridVideoActive .novaUnifiedConsole #novaMusicInfoDisplay,
+.novaHybridVideoActive .novaUnifiedConsole #novaPersistentTicker{
+  visibility:hidden!important;
+}
+@media (max-width:1100px) and (min-width:761px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+    left:calc(29% + 26px)!important;
+    right:calc(32% + 26px)!important;
+    top:112px!important;
+  }
+  .novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{
+    left:calc(29% + 32px)!important;
+    right:calc(32% + 32px)!important;
+  }
+}
+@media (max-width:760px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+    position:relative!important;
+    inset:auto!important;
+    width:min(94%,720px)!important;
+    max-width:94%!important;
+    height:auto!important;
+    aspect-ratio:16 / 9!important;
+    margin:90px auto 12px!important;
+    z-index:155!important;
+  }
+  .novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{
+    position:relative!important;
+    inset:auto!important;
+    z-index:160!important;
+    justify-content:center!important;
+  }
+}
+
+
+/* ============================================================
+   NOVA MEDIA REFINEMENT: SINGLE PLAYLIST PANEL + TOP VIDEO BAR
+   ============================================================ */
+#novaPermanentMedia #novaMediaLeft .novaMediaBox{flex:1 1 auto!important}
+#novaPermanentMedia #novaMediaRight .novaCombinedPlaylist{flex:1 1 auto!important}
+#novaPermanentMedia .novaCombinedPlaylist h3{margin:8px 0 10px;color:#57d8f4;font-size:11px;letter-spacing:1.3px}
+#novaPermanentMedia .novaPlaylistDivider{height:1px;background:linear-gradient(90deg,transparent,#26708b,transparent);margin:12px 0}
+#novaPermanentMedia #playlistNames.novaPlaylistChoices{flex:0 0 auto!important;max-height:145px!important;min-height:48px;overflow-y:auto!important}
+#novaPermanentMedia #tracks.novaPlaylistTracks{flex:1 1 auto!important;min-height:100px;overflow-y:auto!important}
+#novaPermanentMedia .novaMediaNow{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 14px;pointer-events:auto!important;z-index:180!important}
+#novaPermanentMedia .novaMediaNow strong{margin:0}
+#novaPermanentMedia #now{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+#novaPermanentMedia #novaMediaVideoControls{display:flex;justify-content:center;align-items:center;min-height:0;width:100%}
+#novaPermanentMedia #novaMediaVideoControls:empty{display:none}
+#novaPermanentMedia #novaHybridNowPlaying{
+ position:static!important;inset:auto!important;display:flex!important;justify-content:center!important;
+ width:auto!important;max-width:100%!important;margin:0!important;padding:0!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ pointer-events:auto!important;z-index:auto!important;
+}
+#novaPermanentMedia #novaHybridNowPlaying[hidden]{display:none!important}
+#novaPermanentMedia #novaHybridTrackName{display:none!important}
+#novaPermanentMedia #novaHybridBackOrb{
+ background:linear-gradient(180deg,#17475e,#092a3d)!important;
+ border:1px solid #35c6e9!important;color:#d3f7ff!important;
+ border-radius:8px!important;padding:8px 16px!important;
+ cursor:pointer!important;font-family:inherit!important;font-size:11px!important;font-weight:700!important;pointer-events:auto!important;
+}
+/* Prevent old absolute-position video title bar from covering the orb. */
+.novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{display:none!important}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage[hidden]{display:none!important}
+.novaHybridVideoActive .novaUnifiedConsole #novaCoreContainer{display:none!important}
+@media(min-width:761px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+   top:120px!important;left:calc(28% + 39px)!important;right:calc(30% + 39px)!important;
+   aspect-ratio:16/9!important;
+ }
+}
+@media(max-width:1100px) and (min-width:761px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{left:calc(29% + 26px)!important;right:calc(32% + 26px)!important}
+}
+
+
+/* ============================================================
+   NOVA SINGLE TOP PLAYER — layout-only, playlist-safe revision
+   Existing IDs and media event handlers are preserved.
+   ============================================================ */
+#novaPermanentMedia .novaMediaNow{
+  gap:10px!important;padding:14px 18px!important;
+  border-color:rgba(52,199,231,.65)!important;
+  background:linear-gradient(165deg,rgba(7,34,51,.98),rgba(3,18,31,.97))!important;
+}
+#novaPermanentMedia .novaTopPlayback{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:4px}
+#novaPermanentMedia .novaTopPlayback .novaMediaRow{justify-content:center;margin:0!important;width:100%}
+#novaPermanentMedia .novaTopPlayback button{min-width:44px}
+#novaPermanentMedia .novaTopPlayback #toggle{min-width:110px}
+#novaPermanentMedia .novaTopPlayback label{font-size:11px;letter-spacing:1px;color:#b6dce9}
+#novaPermanentMedia .novaTopPlayback #volume{width:min(220px,68%)!important;max-width:68%}
+#novaPermanentMedia .novaTopPlayback #seek{width:100%!important;max-width:450px;cursor:pointer}
+#novaPermanentMedia #novaMediaRight .novaCombinedPlaylist{flex:1 1 100%!important}
+/* Keep the original bottom DOM buttons for legacy listeners, but hide the duplicate strip. */
+.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
+@media(min-width:761px){
+  .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{top:245px!important}
+}
+@media(max-width:1100px) and (min-width:761px){
+  #novaPermanentMedia .novaMediaNow{padding:10px!important}
+  #novaPermanentMedia .novaTopPlayback{gap:6px}
+  #novaPermanentMedia .novaTopPlayback button{padding:6px!important;min-width:32px}
+  #novaPermanentMedia .novaTopPlayback #toggle{min-width:85px}
+}
+
+
+/* NOVA SAFE HEADER MERGE — layout only, no playback or playlist JS changes */
+#novaPermanentMedia > #novaMediaNowCard{display:none!important;}
+.app > header{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:10px!important;padding:15px 20px!important;height:auto!important;min-height:0!important;
+}
+.app > header .brand{width:100%!important;max-width:none!important}
+.app > header .brand > h1,.app > header .brand > p{display:none!important}
+.app > header .headerNovaControls{width:100%!important;margin:0!important}
+.app > header .headerNovaControls .buttonGrid{
+  display:flex!important;flex-wrap:wrap!important;gap:8px!important;align-items:center!important;
+}
+.app > header .headerNovaControls .buttonGrid button{flex:0 0 auto!important;width:auto!important}
+.app > header #novaMediaNowCard{
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  width:100%!important;min-width:0!important;gap:7px!important;
+  padding:10px 14px!important;margin:0!important;
+  background:linear-gradient(180deg,rgba(8,32,47,.92),rgba(5,20,32,.8))!important;
+  border:1px solid rgba(40,152,186,.5)!important;border-radius:10px!important;
+  color:#d9f7ff!important;text-align:center!important;pointer-events:auto!important;
+}
+.app > header #novaMediaNowCard strong{color:#58daf7;font-size:12px;letter-spacing:1.5px}
+.app > header #novaMediaNowCard #now{font-size:12px;max-width:100%;overflow-wrap:anywhere}
+.app > header #novaMediaNowCard #novaMediaVideoControls{display:flex;justify-content:center;align-items:center;gap:7px}
+.app > header #novaMediaNowCard #novaMediaVideoControls:empty{display:none}
+.app > header #novaMediaNowCard .novaTopPlayback{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%}
+.app > header #novaMediaNowCard .novaMediaRow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:0}
+.app > header #novaMediaNowCard button{
+  font:700 11px inherit;min-height:32px;padding:7px 12px;border:1px solid #2c6b85;
+  border-radius:7px;background:linear-gradient(180deg,#153d52,#092436);color:#c9f5ff;cursor:pointer;
+}
+.app > header #novaMediaNowCard button:hover{border-color:#51defc;background:#174a62}
+.app > header #novaMediaNowCard label{font-size:11px;color:#b6dce9}
+.app > header #novaMediaNowCard #volume{width:min(220px,55vw);accent-color:#38d6f7}
+.app > header #novaMediaNowCard #seek{width:min(520px,90%);accent-color:#38d6f7}
+/* The center grid has only the library and playlist columns; the orb owns the center. */
+#novaPermanentMedia{grid-template-rows:minmax(0,1fr)!important}
+#novaPermanentMedia #novaMediaLeft{grid-column:1!important;grid-row:1!important}
+#novaPermanentMedia #novaMediaRight{grid-column:3!important;grid-row:1!important}
+.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
+@media(max-width:760px){
+  #novaPermanentMedia{top:320px!important;grid-template-rows:minmax(0,1fr)!important}
+  #novaPermanentMedia #novaMediaLeft{grid-column:1!important;grid-row:1!important}
+  #novaPermanentMedia #novaMediaRight{grid-column:2!important;grid-row:1!important}
+}
+@media(max-width:490px){
+  #novaPermanentMedia{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:repeat(2,minmax(0,1fr))!important}
+  #novaPermanentMedia #novaMediaLeft{grid-column:1!important;grid-row:1!important}
+  #novaPermanentMedia #novaMediaRight{grid-column:1!important;grid-row:2!important}
+}
+
+
+
+/* NOVA RIGHT RAIL REFINEMENT — preserves original JS and storage */
+.novaConsoleVoiceStatus{display:none!important}
+#novaCameraPanelSource{display:none!important}
+#novaIntegratedMediaControls{display:none!important}
+#novaMediaRight{overflow-y:auto!important;overflow-x:hidden!important;scrollbar-width:thin;scrollbar-color:#287c9a #061824;gap:12px!important;align-items:stretch!important}
+#novaMediaRight .novaCombinedPlaylist{flex:0 0 auto!important;min-height:0!important;max-height:none!important}
+#novaMediaRight .novaCombinedPlaylist .novaPlaylistTracks{max-height:220px!important;overflow-y:auto!important;flex:none!important;min-height:55px!important}
+#novaMediaRight .novaCombinedPlaylist .novaPlaylistChoices{max-height:115px!important;min-height:30px!important}
+#novaMediaRight .novaRightPanel{flex:0 0 auto!important;width:100%;min-width:0;margin:0!important;position:relative!important;overflow:hidden}
+#novaMediaRight .novaRightPanel .panelHeader{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
+#novaMediaRight .novaRightPanel .panelBody{max-height:420px;overflow:auto}
+#novaMediaRight .novaRightPanel .panelBody.collapsed{display:none!important}
+#novaMediaRight .novaRightPanel .genericCollapseArrow{margin-left:auto}
+#novaMediaRight .novaRightPanel button{max-width:100%}
+#novaMediaRight .novaRightPanel input{max-width:100%;min-width:0}
+#novaMediaRight .novaPlaylistCollapse{cursor:pointer;user-select:none}
+#novaMediaRight .novaPlaylistCollapse:after{content:' ▾';font-size:12px}
+#novaMediaRight .novaPlaylistCollapse[aria-expanded='false']:after{content:' ▸'}
+#novaMediaRight .novaCombinedPlaylist.novaPlaylistClosed > :not(h2){display:none!important}
+#novaHybridTrackName{display:none!important}
+#novaHybridVideoStage:not([hidden]){position:absolute!important;inset:10px 29% 80px 29%!important;width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;z-index:125!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+#novaHybridVideoStage:not([hidden]) iframe,#novaHybridVideoStage:not([hidden]) video{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;border:0!important}
+@media(max-width:760px){#novaHybridVideoStage:not([hidden]){inset:15px 15px 80px 15px!important}}
+
+
+/* NOVA FINAL CONSOLIDATED LAYOUT: visual changes only. */
+/* Hide redundant voice status without removing IDs used by voice scripts. */
+.novaConsoleVoiceStatus{display:none!important}
+/* Hide duplicate bottom media controls, leaving their DOM/listeners intact. */
+.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
+/* Hide duplicate hybrid track caption; the universal header #now is canonical. */
+#novaHybridTrackName{display:none!important}
+/* Hide legacy camera panel but keep camera elements for the camera screen. */
+#novaCameraPanelSource{display:none!important}
+/* Allow left Media Library to expand/collapse just like Playlists. */
+#novaMediaLeft .novaMediaBox.novaLibraryClosed > :not(h2){display:none!important}
+#novaMediaLeft .novaMediaBox.novaLibraryClosed{flex:0 0 auto!important}
+#novaMediaLeft .novaLibraryCollapse{cursor:pointer;user-select:none}
+#novaMediaLeft .novaLibraryCollapse::after{content:' ▾';font-size:12px}
+#novaMediaLeft .novaLibraryCollapse[aria-expanded='false']::after{content:' ▸'}
+/* Full available center column: never squeeze video to a tiny preview. */
+.novaUnifiedConsole .novaLeftHome{position:relative!important}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
+ position:absolute!important;
+ top:22px!important;
+ bottom:110px!important;
+ left:calc(28% + 32px)!important;
+ right:calc(30% + 32px)!important;
+ width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;
+ margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ background:#000!important;overflow:hidden!important;z-index:145!important;
+}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) iframe,
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) video{
+ width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;border:0!important;display:block!important;
+}
+@media(max-width:1100px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
+  left:calc(29% + 18px)!important;right:calc(32% + 18px)!important;
+ }
+}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
+  top:20px!important;left:12px!important;right:12px!important;bottom:auto!important;
+  height:270px!important;
+ }
+}
+/* Right rail panels are individually collapsible and scroll with the rail. */
+#novaMediaRight{overflow-y:auto!important;overscroll-behavior:contain!important}
+#novaMediaRight .novaRightPanel{flex-shrink:0!important}
+#novaMediaRight .novaRightPanel .panelHeader{padding:10px!important}
+#novaMediaRight .novaRightPanel .panelBody.collapsed{display:none!important}
+#novaMediaRight .novaRightPanel .panelBody:not(.collapsed){max-height:420px!important;overflow:auto!important}
+
+
+/* NOVA ADAPTIVE INTERFACE 1.0 — scoped visual layer */
+:root{--nova-electric:#00e5ff;--nova-electric-rgb:0,229,255}
+body[data-nova-theme="hardware"]{--nova-electric:#f9f000;--nova-electric-rgb:249,240,0}
+body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60,172}
+.app > header{gap:8px!important;padding:10px 16px!important}
+.app > header .headerNovaControls .buttonGrid{display:flex!important;flex-wrap:wrap!important;gap:6px!important;align-items:center!important}
+.app > header .headerNovaControls .buttonGrid button.novaGroupButton{font-size:11px!important;min-height:35px!important;padding:7px 10px!important;white-space:nowrap!important;border-radius:8px!important;flex:none!important;width:auto!important}
+.novaGroupButton[data-group="nova"]{color:#00e5ff!important;border:1px solid #00e5ff88!important;background:#062331!important}
+.novaGroupButton[data-group="hardware"]{color:#f9f000!important;border:1px solid #f9f00088!important;background:#29280b!important}
+.novaGroupButton[data-group="media"]{color:#ff3cac!important;border:1px solid #ff3cac88!important;background:#300e25!important}
+.novaGroupButton[aria-pressed="true"]{box-shadow:0 0 13px currentColor!important;border-color:currentColor!important}
+.novaGroupDivider{width:1px;height:26px;background:#637581;opacity:.65;margin:0 4px}
+.app > header #novaMediaNowCard{min-height:34px!important;display:flex!important;flex-direction:row!important;justify-content:center!important;align-items:center!important;overflow:hidden!important;border-color:var(--nova-electric)!important;padding:6px 12px!important;background:#061824!important;box-shadow:0 0 12px rgba(var(--nova-electric-rgb),.14)!important}
+.app > header #novaMediaNowCard strong{display:none!important}
+.app > header #novaMediaNowCard #now{color:var(--nova-electric)!important;font-size:12px!important;letter-spacing:1px;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important}
+.app > header #novaMediaNowCard #novaMediaVideoControls{display:none!important}
+.app > header #novaMediaNowCard .novaTopPlayback{display:none!important}
+.novaUnifiedConsole .novaLeftHome{min-height:650px!important}
+#novaPermanentMedia{grid-template-columns:minmax(0,1fr)!important;pointer-events:none!important}
+#novaPermanentMedia .novaMediaSide{display:none!important}
+#novaPermanentMedia .novaMediaNow{display:none!important}
+.novaUnifiedConsole #novaIntegratedMediaControls{display:none!important}
+.novaUnifiedConsole #novaCoreContainer{filter:drop-shadow(0 0 20px rgba(var(--nova-electric-rgb),.42));transition:filter .5s ease}
+.novaUnifiedConsole #novaOrb,.novaUnifiedConsole .novaOuterRing,.novaUnifiedConsole .novaInnerRing{border-color:var(--nova-electric)!important;transition:border-color .5s,box-shadow .5s,filter .5s}
+.novaUnifiedConsole #novaOrb{box-shadow:0 0 28px rgba(var(--nova-electric-rgb),.35)!important}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){left:5%!important;right:5%!important;top:20px!important;bottom:95px!important}
+.novaAdaptivePlayer{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:nowrap;min-width:0;padding:10px 14px;margin:0 15px 12px;border:1px solid var(--nova-electric);border-radius:12px;background:#061824;box-shadow:0 0 15px rgba(var(--nova-electric-rgb),.15);position:relative;z-index:300}
+.novaAdaptivePlayer .novaTopPlayback{display:flex!important;flex-direction:row!important;align-items:center!important;gap:12px!important;width:100%!important;min-width:0!important}
+.novaAdaptivePlayer .novaMediaRow{display:flex;align-items:center;gap:7px;margin:0;flex-wrap:nowrap;min-width:0}
+.novaAdaptivePlayer .novaMediaRow:first-child{flex:none}
+.novaAdaptivePlayer button{display:inline-flex;align-items:center;justify-content:center;width:35px;height:35px;min-width:35px;padding:0;border:1px solid var(--nova-electric);border-radius:50%;background:#061e2c;color:var(--nova-electric);font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 0 9px rgba(var(--nova-electric-rgb),.2)}
+.novaAdaptivePlayer button:hover{box-shadow:0 0 16px var(--nova-electric)}
+.novaAdaptivePlayer label{font-size:10px;color:var(--nova-electric);white-space:nowrap}
+.novaAdaptivePlayer input[type=range]{accent-color:var(--nova-electric);cursor:pointer;min-width:35px}
+.novaAdaptivePlayer #volume{width:105px}
+.novaAdaptivePlayer #seek{flex:1;min-width:65px;width:auto}
+.novaAdaptivePlayer .novaSeekClock{font-size:10px;color:var(--nova-electric);font-variant-numeric:tabular-nums;white-space:nowrap}
+.novaPlayerDivider{height:25px;width:1px;flex:none;background:#476070}
+.novaFloatPanel{position:fixed!important;top:125px;left:8vw;width:min(460px,85vw);height:min(65vh,640px);max-height:85vh;display:flex!important;flex-direction:column;z-index:9900!important;overflow:hidden!important;resize:both;border:1px solid var(--nova-electric)!important;border-radius:12px!important;box-shadow:0 14px 45px #000b,0 0 22px rgba(var(--nova-electric-rgb),.22)!important;background:#061421!important;pointer-events:auto!important}
+.novaFloatPanel[hidden]{display:none!important}
+#novaMediaLeft.novaFloatPanel{display:flex!important}
+.novaFloatPanel .novaMediaRow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:7px 0}
+.novaFloatPanel .novaMediaRow input,.novaFloatPanel .novaMediaRow select{min-width:0;flex:1;background:#061823;color:#d7f4ff;border:1px solid #2b5268;border-radius:7px;padding:7px}
+.novaFloatPanel .novaMediaRow button{border:1px solid var(--nova-electric);color:var(--nova-electric);background:#0b2836;border-radius:7px;padding:7px;cursor:pointer}
+.novaFloatPanel .novaMediaEntry,.novaFloatPanel .entry{padding:8px;margin:5px 0;border:1px solid #286079;border-radius:8px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.novaFloatPanel .entry .name{flex:1;min-width:110px;overflow-wrap:anywhere}
+.novaFloatPanel .entry small{display:block;color:#9aafba}
+.novaFloatPanel .panelHeader,.novaFloatPanel > h2{cursor:move;user-select:none;flex:none;color:var(--nova-electric)!important}
+.novaFloatPanel .panelBody{display:block!important;flex:1;min-height:0;overflow:auto!important;max-height:none!important}
+.novaFloatPanel .novaMediaBox{height:100%;display:flex;flex-direction:column;overflow:hidden;padding:14px;background:#061421}
+.novaFloatPanel .novaMediaBox h2{color:var(--nova-electric)!important;cursor:move}
+.novaFloatPanel .novaMediaList{overflow:auto;flex:1;min-height:60px}
+.novaFloatClose{position:absolute;top:7px;right:8px;z-index:10;width:28px;height:28px;border-radius:7px;border:1px solid var(--nova-electric);color:var(--nova-electric);background:#061421;cursor:pointer}
+.novaFloatPanel .novaPlaylistClosed > :not(h2),.novaFloatPanel .novaLibraryClosed > :not(h2){display:flex!important}
+@media(max-width:750px){.novaAdaptivePlayer{flex-wrap:wrap}.novaAdaptivePlayer .novaTopPlayback{flex-wrap:wrap!important}.novaAdaptivePlayer #seek{flex:1 1 140px}.novaFloatPanel{left:4vw!important;top:130px!important;width:92vw;resize:vertical}.novaUnifiedConsole .novaLeftHome{min-height:530px!important}}
+
+
+/* NOVA 1.1 — UNIVERSAL CONTROLS INSIDE THE ORIGINAL ORB/VIDEO BAR.
+   Keep legacy button IDs and handlers mounted, but show only one player. */
+.novaUnifiedConsole .novaLeftHome > #novaIntegratedMediaControls{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ position:absolute!important;left:3%!important;right:3%!important;bottom:18px!important;
+ width:94%!important;max-width:none!important;height:auto!important;min-height:44px!important;
+ margin:0!important;padding:0!important;opacity:1!important;visibility:visible!important;
+ pointer-events:auto!important;z-index:350!important;transform:none!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls > #novaMediaProgressWrap,
+.novaUnifiedConsole #novaIntegratedMediaControls > .novaMediaControlRow{display:none!important}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin:0!important;padding:3px 8px!important;gap:12px!important;
+ border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaTopPlayback{
+ display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+ align-items:center!important;gap:10px!important;width:100%!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaMediaRow{display:flex!important;flex-wrap:nowrap!important;align-items:center!important}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer button{
+ width:34px!important;height:28px!important;min-width:34px!important;min-height:28px!important;
+ border-radius:50%!important;border:1px solid rgba(var(--nova-electric-rgb),.55)!important;
+ background:linear-gradient(180deg,#26333b,#121c25)!important;
+ color:var(--nova-electric)!important;box-shadow:0 2px 7px #0009,0 0 7px rgba(var(--nova-electric-rgb),.13)!important;
+ padding:0!important;font-size:12px!important;line-height:1!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer button:hover{
+ border-color:var(--nova-electric)!important;box-shadow:0 0 12px rgba(var(--nova-electric-rgb),.5)!important;
+}
+.novaUnifiedConsole #novaIntegratedMediaControls #seek{flex:1 1 150px!important;width:auto!important;min-width:60px!important}
+.novaUnifiedConsole #novaIntegratedMediaControls #volume{width:100px!important;flex:0 1 100px!important}
+.novaUnifiedConsole #novaIntegratedMediaControls .novaSeekClock{flex:none!important}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaIntegratedMediaControls{left:2%!important;right:2%!important;width:96%!important;bottom:14px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer{gap:5px!important;padding:3px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaTopPlayback{gap:5px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls #volume{width:52px!important;flex-basis:52px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaAdaptivePlayer button{width:28px!important;min-width:28px!important;height:26px!important;min-height:26px!important}
+ .novaUnifiedConsole #novaIntegratedMediaControls .novaPlayerDivider{display:none!important}
+}
+
+
+/* NOVA 1.2 — INTEGRATED LIVE COMMAND ACTIVITY, ABOVE THE PLAYER */
+.novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+ position:absolute!important;top:12px!important;left:14px!important;
+ bottom:76px!important;width:min(440px,36%)!important;height:auto!important;
+ max-height:none!important;min-height:100px!important;overflow-y:auto!important;
+ overflow-x:hidden!important;display:flex!important;flex-direction:column!important;
+ align-items:stretch!important;justify-content:flex-start!important;gap:4px!important;
+ padding:12px 10px!important;margin:0!important;
+ background:linear-gradient(90deg,rgba(2,13,22,.88),rgba(2,13,22,.54))!important;
+ border:0!important;border-radius:8px!important;box-shadow:none!important;
+ pointer-events:auto!important;z-index:225!important;scrollbar-width:thin;
+ scrollbar-color:var(--nova-electric,#00e5ff) #0b1822;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeading{
+ position:sticky;top:-12px;z-index:2;padding:7px 3px 9px;
+ font:800 11px/1.3 inherit;letter-spacing:1.1px;color:var(--nova-electric,#00e5ff);
+ background:#061521;border-bottom:1px solid rgba(var(--nova-electric-rgb,0,229,255),.35);
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry{
+ position:static!important;transform:none!important;opacity:1!important;
+ display:block!important;width:100%!important;height:auto!important;
+ white-space:pre-wrap!important;overflow-wrap:anywhere!important;
+ flex:0 0 auto!important;padding:3px 5px!important;margin:0!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ color:#a9d5e5!important;font:11px/1.4 Consolas,'Courier New',monospace!important;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="voice"]{color:#69e6a1!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="warning"],
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="error"]{color:#ff8c93!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="success"],
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="response"]{color:#f8e873!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry[data-type="command"]{color:var(--nova-electric,#00e5ff)!important}
+.novaUnifiedConsole .novaLeftHome > #novaIntegratedMediaControls{z-index:350!important}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+  left:8px!important;right:8px!important;width:auto!important;
+  top:12px!important;bottom:70px!important;
+  background:rgba(2,13,22,.77)!important;
+ }
+}
+
+
+/* NOVA 1.3 — resizable, collapsible activity monitor */
+.novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+ width:var(--nova-log-width,440px)!important;
+ max-width:calc(100% - 28px)!important;
+ padding-right:19px!important;
+}
+.novaUnifiedConsole .novaLeftHome > #novaHudTicker.novaLogHidden{display:none!important}
+.novaUnifiedConsole #novaActivityResizeGrip{
+ position:sticky;right:-19px;top:0;align-self:flex-end;
+ width:13px;min-width:13px;height:56px;margin:-4px -17px -52px 0;
+ z-index:10;cursor:ew-resize;touch-action:none;
+ border-right:3px solid var(--nova-electric,#00e5ff);
+ border-radius:4px;opacity:.8;
+}
+.novaUnifiedConsole #novaActivityResizeGrip:hover{opacity:1;filter:drop-shadow(0 0 6px var(--nova-electric,#00e5ff))}
+.novaUnifiedConsole #novaActivityToggle{
+ position:absolute!important;top:13px!important;left:15px!important;
+ z-index:360!important;cursor:pointer!important;
+ border:1px solid var(--nova-electric,#00e5ff)!important;
+ border-radius:7px!important;background:rgba(3,18,29,.95)!important;
+ color:var(--nova-electric,#00e5ff)!important;
+ font:700 10px/1.3 Arial,sans-serif!important;letter-spacing:.6px!important;
+ padding:6px 10px!important;box-shadow:0 0 10px rgba(0,229,255,.13)!important;
+}
+.novaUnifiedConsole .novaLeftHome:has(#novaHudTicker:not(.novaLogHidden)) > #novaActivityToggle{
+ left:26px!important;top:24px!important;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeading{padding-left:108px!important;min-height:30px}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+  right:auto!important;width:var(--nova-log-width,calc(100% - 16px))!important;
+  max-width:calc(100% - 16px)!important;
+ }
+}
+/* NOVA 1.4 — hide the legacy animated command stream.
+   The resizable NOVA Live Activity Monitor remains the only visible log.
+   Do not remove legacy JS hooks: other modules may still call them. */
+.novaUnifiedConsole #novaPersistentTicker,
+.novaUnifiedConsole #novaPersistentTickerTrack,
+.novaUnifiedConsole .novaSystemStreamMessage{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+
+
+/* NOVA 1.5 — CLEAN COLLAPSIBLE LIVE ACTIVITY + MOVING TOP TICKER */
+.novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+  position:absolute!important;top:16px!important;left:14px!important;bottom:77px!important;
+  width:var(--nova-log-width,390px)!important;max-width:calc(100% - 28px)!important;
+  padding:0!important;display:flex!important;flex-direction:column!important;
+  overflow:hidden!important;background:rgba(2,13,22,.91)!important;
+  border:1px solid rgba(var(--nova-electric-rgb),.45)!important;
+  border-radius:9px!important;z-index:225!important;gap:0!important;
+}
+.novaUnifiedConsole #novaHudTicker.novaActivityCollapsed{bottom:auto!important;height:38px!important;min-height:38px!important;max-height:38px!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeading{
+  position:relative!important;top:auto!important;flex:0 0 38px!important;min-height:38px!important;
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  width:100%!important;padding:0 12px!important;margin:0!important;cursor:pointer!important;
+  background:#061c29!important;color:var(--nova-electric)!important;
+  font:800 11px/1.2 Arial,sans-serif!important;letter-spacing:.7px!important;
+  border:0!important;border-bottom:1px solid rgba(var(--nova-electric-rgb),.28)!important;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntries{
+  display:flex!important;flex:1 1 auto!important;min-height:0!important;flex-direction:column!important;
+  overflow-y:auto!important;overflow-x:hidden!important;gap:0!important;padding:7px 8px!important;
+  scrollbar-width:thin;scrollbar-color:var(--nova-electric) #0b1822;
+}
+.novaUnifiedConsole #novaHudTicker.novaActivityCollapsed .novaActivityEntries{display:none!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry{
+  position:relative!important;display:block!important;white-space:pre-wrap!important;
+  font:11px/1.55 Consolas,'Courier New',monospace!important;min-height:0!important;
+  margin:0!important;padding:4px 3px!important;transform:none!important;
+  overflow-wrap:anywhere!important;opacity:1!important;flex:none!important;
+}
+.novaUnifiedConsole #novaActivityToggle{display:none!important}
+.novaUnifiedConsole #novaActivityResizeGrip{
+  position:absolute!important;right:0!important;top:39px!important;bottom:0!important;
+  height:auto!important;width:9px!important;margin:0!important;cursor:ew-resize!important;
+  border-right:2px solid var(--nova-electric)!important;z-index:4!important;
+}
+.novaUnifiedConsole #novaHudTicker.novaActivityCollapsed #novaActivityResizeGrip{top:0!important}
+.novaUnifiedConsole #novaHudTicker .novaSystemStreamMessage,
+.novaUnifiedConsole #novaHudTicker #novaIrisSpeechText{display:none!important}
+.app > header #novaMediaNowCard{overflow:hidden!important;justify-content:stretch!important}
+.app > header #novaMediaNowCard .novaWelcomeMarquee{width:100%;overflow:hidden;white-space:nowrap;display:block}
+.app > header #novaMediaNowCard .novaWelcomeMarquee #now{
+  display:inline-block!important;width:max-content!important;max-width:none!important;
+  padding-left:100%!important;overflow:visible!important;text-overflow:clip!important;
+  animation:novaWelcomeTravel 19s linear infinite!important;will-change:transform;
+}
+@keyframes novaWelcomeTravel{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@media(prefers-reduced-motion:reduce){.app > header #novaMediaNowCard .novaWelcomeMarquee #now{animation:none!important;padding-left:0!important}}
+@media(max-width:760px){.novaUnifiedConsole .novaLeftHome > #novaHudTicker{left:8px!important;max-width:calc(100% - 16px)!important}}
+
+
+/* NOVA 1.7: compact always-visible action icons in live activity header */
+.novaUnifiedConsole #novaHudTicker .novaActivityHeading{display:flex!important;gap:3px!important;padding:0 5px!important;align-items:center!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeadingToggle{display:flex!important;align-items:center!important;gap:5px!important;flex:1 1 auto!important;min-width:0!important;height:34px!important;padding:0 4px!important;background:transparent!important;border:0!important;color:var(--nova-electric,#00e5ff)!important;font:800 10px Arial,sans-serif!important;letter-spacing:.45px!important;text-align:left!important;cursor:pointer!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeadingToggle span:first-child{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityArrow{margin-left:auto!important;flex:none!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityActions{display:flex!important;align-items:center!important;gap:5px!important;flex:none!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityIcon{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:28px!important;height:26px!important;min-width:28px!important;padding:0!important;border:1px solid rgba(var(--nova-electric-rgb,0,229,255),.6)!important;border-radius:6px!important;background:#0b2836!important;color:var(--nova-electric,#00e5ff)!important;font:800 16px Arial,sans-serif!important;cursor:pointer!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityIcon:hover{box-shadow:0 0 10px rgba(var(--nova-electric-rgb,0,229,255),.4)!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityClear{color:#ff8c93!important;border-color:#ff8c9388!important}
+
+
+/* ============================================================
+   NOVA 1.8 — ELECTRIC INTERFACE POLISH
+   Visual-only enhancements; no media or command behavior changed.
+   ============================================================ */
+:root {
+  --nova-polish-ease: cubic-bezier(.2,.7,.2,1);
+  --nova-polish-speed: 240ms;
+}
+
+/* Consistent neon focus indication without altering keyboard behavior. */
+.app button:focus-visible,
+.app input:focus-visible,
+.app select:focus-visible,
+.app textarea:focus-visible,
+.app [tabindex]:focus-visible {
+  outline: 2px solid var(--nova-electric, #00e5ff);
+  outline-offset: 3px;
+}
+
+/* Add subtle visual feedback to existing interactive controls. */
+.app button:not(:disabled) {
+  transition-property: color, background-color, border-color, box-shadow, transform, filter;
+  transition-duration: var(--nova-polish-speed);
+  transition-timing-function: var(--nova-polish-ease);
+}
+.app button:not(:disabled):active {
+  filter: brightness(1.13);
+}
+
+/* Preserve existing layout and colors; only smooth theme-color changes. */
+.app .panel,
+.app .panelHeader,
+.app .novaMediaBox,
+.app #novaMediaNowCard,
+.app .novaGroupButton {
+  transition-property: border-color, box-shadow, color, background-color;
+  transition-duration: var(--nova-polish-speed);
+  transition-timing-function: var(--nova-polish-ease);
+}
+
+/* Reduce animation for users who request it at OS level. */
+@media (prefers-reduced-motion: reduce) {
+  .app button,
+  .app .panel,
+  .app .panelHeader,
+  .app .novaMediaBox,
+  .app #novaMediaNowCard,
+  .app .novaGroupButton {
+    transition-duration: 0.01ms !important;
+  }
+}
