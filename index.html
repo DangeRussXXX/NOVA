@@ -551,6 +551,41 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
  }
 }
 
+
+/* NOVA 1.3 — resizable, collapsible activity monitor */
+.novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+ width:var(--nova-log-width,440px)!important;
+ max-width:calc(100% - 28px)!important;
+ padding-right:19px!important;
+}
+.novaUnifiedConsole .novaLeftHome > #novaHudTicker.novaLogHidden{display:none!important}
+.novaUnifiedConsole #novaActivityResizeGrip{
+ position:sticky;right:-19px;top:0;align-self:flex-end;
+ width:13px;min-width:13px;height:56px;margin:-4px -17px -52px 0;
+ z-index:10;cursor:ew-resize;touch-action:none;
+ border-right:3px solid var(--nova-electric,#00e5ff);
+ border-radius:4px;opacity:.8;
+}
+.novaUnifiedConsole #novaActivityResizeGrip:hover{opacity:1;filter:drop-shadow(0 0 6px var(--nova-electric,#00e5ff))}
+.novaUnifiedConsole #novaActivityToggle{
+ position:absolute!important;top:13px!important;left:15px!important;
+ z-index:360!important;cursor:pointer!important;
+ border:1px solid var(--nova-electric,#00e5ff)!important;
+ border-radius:7px!important;background:rgba(3,18,29,.95)!important;
+ color:var(--nova-electric,#00e5ff)!important;
+ font:700 10px/1.3 Arial,sans-serif!important;letter-spacing:.6px!important;
+ padding:6px 10px!important;box-shadow:0 0 10px rgba(0,229,255,.13)!important;
+}
+.novaUnifiedConsole .novaLeftHome:has(#novaHudTicker:not(.novaLogHidden)) > #novaActivityToggle{
+ left:26px!important;top:24px!important;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeading{padding-left:108px!important;min-height:30px}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome > #novaHudTicker{
+  right:auto!important;width:var(--nova-log-width,calc(100% - 16px))!important;
+  max-width:calc(100% - 16px)!important;
+ }
+}
 </style>
 </head>
 <body>
@@ -4553,6 +4588,60 @@ window.addEventListener('load',function(){
 })();
 </script>
 
+<script>
+/* NOVA 1.3 — display-only controls; no command or media listeners changed. */
+(function(){
+ function install(){
+  const home=document.querySelector('.novaUnifiedConsole .novaLeftHome');
+  const lane=document.getElementById('novaHudTicker');
+  if(!home||!lane||document.getElementById('novaActivityToggle'))return;
+  const key='novaActivityMonitorPrefsV1';
+  let prefs={};try{prefs=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch(e){}
+  const save=()=>{try{localStorage.setItem(key,JSON.stringify(prefs))}catch(e){}};
+  const toggle=document.createElement('button');toggle.id='novaActivityToggle';
+  toggle.type='button';toggle.setAttribute('aria-controls','novaHudTicker');
+  home.appendChild(toggle);
+  const render=()=>{
+   const hidden=!!prefs.hidden;
+   lane.classList.toggle('novaLogHidden',hidden);
+   toggle.textContent=hidden?'▸ SHOW ACTIVITY':'▾ HIDE ACTIVITY';
+   toggle.setAttribute('aria-expanded',String(!hidden));
+   toggle.title=hidden?'Show NOVA activity monitor':'Hide NOVA activity monitor';
+  };
+  toggle.addEventListener('click',()=>{prefs.hidden=!prefs.hidden;save();render()});
+  const setWidth=px=>{
+   const max=Math.max(200,home.clientWidth-28);
+   const value=Math.min(max,Math.max(200,Math.round(px)));
+   lane.style.setProperty('--nova-log-width',value+'px');prefs.width=value;
+  };
+  if(Number.isFinite(Number(prefs.width))&&Number(prefs.width)>0)setWidth(Number(prefs.width));
+  const grip=document.createElement('div');grip.id='novaActivityResizeGrip';
+  grip.title='Drag left or right to resize activity monitor';
+  grip.setAttribute('role','separator');grip.setAttribute('aria-label','Resize activity monitor');
+  grip.setAttribute('aria-orientation','vertical');grip.tabIndex=0;
+  lane.appendChild(grip);
+  let startX=0,startWidth=0,dragging=false;
+  grip.addEventListener('pointerdown',e=>{
+   if(e.button!==0)return;
+   dragging=true;startX=e.clientX;startWidth=lane.getBoundingClientRect().width;
+   grip.setPointerCapture(e.pointerId);e.preventDefault();
+  });
+  grip.addEventListener('pointermove',e=>{
+   if(!dragging)return;setWidth(startWidth+e.clientX-startX);
+  });
+  const finish=()=>{if(dragging){dragging=false;save()}};
+  grip.addEventListener('pointerup',finish);
+  grip.addEventListener('pointercancel',finish);
+  grip.addEventListener('keydown',e=>{
+   if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
+   e.preventDefault();setWidth(lane.getBoundingClientRect().width+(e.key==='ArrowRight'?24:-24));save();
+  });
+  window.addEventListener('resize',()=>{if(prefs.width)setWidth(prefs.width)});
+  render();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+</script>
 </body>
 </html>
 
