@@ -162,6 +162,35 @@ function initializePermanentMedia(){
 
  };
 
+ // NOVA 1.9.4: one audible native media element at a time.
+ // Both the legacy media module and the universal playlist controller can
+ // start playback. A capture-phase play listener arbitrates between them.
+ // Do not touch the desktop camera preview or speech synthesis.
+ const isNOVAPlayback = el => el instanceof HTMLMediaElement &&
+   (el.id === "audioPlayer" || el.id === "videoPlayer" ||
+    el.closest("#novaPermanentMedia, #novaIntegratedMediaLibrary"));
+ let resolvingPlayback=false;
+ document.addEventListener("play", event=>{
+   const playing=event.target;
+   if(resolvingPlayback || !isNOVAPlayback(playing))return;
+   resolvingPlayback=true;
+   try{
+     document.querySelectorAll("audio, video").forEach(other=>{
+       if(other!==playing && isNOVAPlayback(other) && !other.paused){
+         try{other.pause()}catch(e){}
+       }
+     });
+     // A native track must also stop the universal YouTube iframe.
+     if(ytFrame){
+       try{ytFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"*")}catch(e){}
+       try{ytFrame.removeAttribute("src");ytFrame.remove()}catch(e){}
+       ytFrame=null;
+     }
+     const legacyFrame=document.getElementById("youtubeFrame");
+     if(legacyFrame)try{legacyFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:"stopVideo",args:[]}),"*")}catch(e){}
+   }finally{resolvingPlayback=false;}
+ },true);
+
  let youtubePaused=false;
 
  function youtubeCommandLocal(command){
@@ -195,7 +224,7 @@ const notify=s=>{const el=$("now");if(el)el.textContent=s;};
 
  function renderAll(){renderPlaylists();renderTracks();renderLibrary();}
 
- function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable on this device. Add it to this browser first.");return;}stopEngines();youtubePaused=false;activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1";if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=true;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>notify("Playback was blocked. Press PLAY to start."));}notify("NOW PLAYING: "+item.name);
+ function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable on this device. Add it to this browser first.");return;}stopEngines();youtubePaused=false;activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1";if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=false;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>notify("Playback was blocked. Press PLAY to start."));}notify("NOW PLAYING: "+item.name);
   emitMediaState('playing',{title:item.name,type:item.type});
   renderTracks();}
 
