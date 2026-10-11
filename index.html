@@ -646,6 +646,17 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
 @media(prefers-reduced-motion:reduce){.app > header #novaMediaNowCard .novaWelcomeMarquee #now{animation:none!important;padding-left:0!important}}
 @media(max-width:760px){.novaUnifiedConsole .novaLeftHome > #novaHudTicker{left:8px!important;max-width:calc(100% - 16px)!important}}
 
+
+/* NOVA 1.7: compact always-visible action icons in live activity header */
+.novaUnifiedConsole #novaHudTicker .novaActivityHeading{display:flex!important;gap:3px!important;padding:0 5px!important;align-items:center!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeadingToggle{display:flex!important;align-items:center!important;gap:5px!important;flex:1 1 auto!important;min-width:0!important;height:34px!important;padding:0 4px!important;background:transparent!important;border:0!important;color:var(--nova-electric,#00e5ff)!important;font:800 10px Arial,sans-serif!important;letter-spacing:.45px!important;text-align:left!important;cursor:pointer!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityHeadingToggle span:first-child{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityArrow{margin-left:auto!important;flex:none!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityActions{display:flex!important;align-items:center!important;gap:5px!important;flex:none!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityIcon{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:28px!important;height:26px!important;min-width:28px!important;padding:0!important;border:1px solid rgba(var(--nova-electric-rgb,0,229,255),.6)!important;border-radius:6px!important;background:#0b2836!important;color:var(--nova-electric,#00e5ff)!important;font:800 16px Arial,sans-serif!important;cursor:pointer!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityIcon:hover{box-shadow:0 0 10px rgba(var(--nova-electric-rgb,0,229,255),.4)!important}
+.novaUnifiedConsole #novaHudTicker .novaActivityClear{color:#ff8c93!important;border-color:#ff8c9388!important}
+
 </style>
 </head>
 <body>
@@ -4090,37 +4101,13 @@ function novaPopupClearHistory(button){
   if(rows)rows.innerHTML='<div class="note">No system events recorded yet.</div>';
 }
 function openNovaSystemScreen(){
-  const help=`<div class="grid"><div class="item"><b>TALK TO NOVA</b><p>Enable voice control.</p></div><div class="item"><b>NOVA COMMANDS</b><p>Exact commands for hardware and features.</p></div><div class="item"><b>VOICE COMMANDS</b><p>Natural language examples.</p></div><div class="item"><b>COMMAND HISTORY</b><p>Rolling system events and responses.</p></div></div>`;
+  const help=`<div class="grid"><div class="item"><b>TALK TO NOVA</b><p>Enable voice control.</p></div><div class="item"><b>NOVA COMMANDS</b><p>Exact commands for hardware and features.</p></div><div class="item"><b>VOICE COMMANDS</b><p>Natural language examples.</p></div><div class="item"><b>LIVE ACTIVITY</b><p>Use the monitor on the main NOVA screen to review, download, or clear events.</p></div></div>`;
   const panel=(name,html,expanded=false)=>`<details ${expanded?'open':''} style="border:1px solid #263241;border-radius:10px;margin:0 0 12px;background:#090e14"><summary style="cursor:pointer;padding:15px 17px;color:#36d9ff;font-weight:800;letter-spacing:1px">${name}</summary><div style="padding:0 16px 16px">${html}</div></details>`;
   openNovaInfoScreen("NOVA SYSTEM",
     panel("NOVA HELP",help,true)+
     panel("NOVA COMMANDS",novaCommandReferenceHtml())+
-    panel("VOICE COMMANDS",novaVoiceCommandReferenceHtml())+
-    `<section style="border:1px solid #263241;border-radius:10px;margin:0 0 12px;background:#090e14;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:9px 12px 9px 17px">
-        <span style="color:#36d9ff;font-weight:800;letter-spacing:1px">COMMAND HISTORY</span>
-        <span style="display:flex;gap:8px;flex-wrap:wrap">
-          <button type="button" id="novaPopupDownloadHistory" class="close" style="color:#36d9ff">⬇ DOWNLOAD</button>
-          <button type="button" id="novaPopupClearHistory" class="close" style="color:#ff8c93">✕ CLEAR</button>
-        </span>
-      </div>
-      <details id="novaPopupHistoryDetails" style="border-top:1px solid #263241">
-        <summary style="cursor:pointer;padding:10px 17px;color:#8edff2;font-weight:700">SHOW / HIDE HISTORY</summary>
-        <div id="novaPopupHistoryRows" style="padding:0 16px 16px">${novaFullHistoryHtml()}</div>
-      </details>
-    </section>`
+    panel("VOICE COMMANDS",novaVoiceCommandReferenceHtml())
   );
-  // Bind directly to the popup document; inline onclick/window.opener can be unreliable.
-  const popup=window.open('', 'nova_nova_system');
-  if(!popup || popup.closed)return;
-  const download=popup.document.getElementById('novaPopupDownloadHistory');
-  const clear=popup.document.getElementById('novaPopupClearHistory');
-  if(download)download.addEventListener('click',()=>novaDownloadHistory());
-  if(clear)clear.addEventListener('click',()=>{
-    if(!novaClearHistory())return;
-    const rows=popup.document.getElementById('novaPopupHistoryRows');
-    if(rows)rows.innerHTML='<div class="note">No system events recorded yet.</div>';
-  });
 }
 
 /* NOVA IRIS LIVE DASHBOARD + CALENDAR POPUP */
@@ -4647,18 +4634,29 @@ window.addEventListener('load',function(){
   if(!lane||lane.dataset.novaActivityReady)return;
   lane.dataset.novaActivityReady='1';lane.replaceChildren();
   lane.setAttribute('role','region');lane.setAttribute('aria-label','NOVA live activity');
-  const heading=document.createElement('button');heading.type='button';
-  heading.className='novaActivityHeading';heading.setAttribute('aria-controls','novaActivityEntries');
+  const heading=document.createElement('div');heading.className='novaActivityHeading';
+  const headingToggle=document.createElement('button');headingToggle.type='button';
+  headingToggle.className='novaActivityHeadingToggle';headingToggle.setAttribute('aria-controls','novaActivityEntries');
+  headingToggle.title='Expand or collapse NOVA activity';
   const headingTitle=document.createElement('span');headingTitle.textContent='⚡ NOVA LIVE ACTIVITY';
-  const arrow=document.createElement('span');heading.append(headingTitle,arrow);
+  const arrow=document.createElement('span');arrow.className='novaActivityArrow';
+  headingToggle.append(headingTitle,arrow);
+  const actions=document.createElement('div');actions.className='novaActivityActions';
+  const download=document.createElement('button');download.type='button';download.className='novaActivityIcon';
+  download.textContent='⬇';download.title='Download command history';download.setAttribute('aria-label','Download NOVA command history');
+  const clear=document.createElement('button');clear.type='button';clear.className='novaActivityIcon novaActivityClear';
+  clear.textContent='✕';clear.title='Clear command history';clear.setAttribute('aria-label','Clear NOVA command history');
+  actions.append(download,clear);heading.append(headingToggle,actions);
   const entries=document.createElement('div');entries.className='novaActivityEntries';entries.id='novaActivityEntries';
   entries.setAttribute('role','log');entries.setAttribute('aria-live','off');
   lane.append(heading,entries);
+  download.addEventListener('click',()=>novaDownloadHistory());
+  clear.addEventListener('click',()=>novaClearHistory());
   const key='novaActivityMonitorPrefsV1';
   let prefs={};try{prefs=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch(e){}
   const save=()=>{try{localStorage.setItem(key,JSON.stringify(prefs))}catch(e){}};
-  const render=()=>{lane.classList.toggle('novaActivityCollapsed',!!prefs.hidden);heading.setAttribute('aria-expanded',String(!prefs.hidden));arrow.textContent=prefs.hidden?'▸':'▾'};
-  heading.addEventListener('click',()=>{prefs.hidden=!prefs.hidden;save();render()});
+  const render=()=>{lane.classList.toggle('novaActivityCollapsed',!!prefs.hidden);headingToggle.setAttribute('aria-expanded',String(!prefs.hidden));arrow.textContent=prefs.hidden?'▸':'▾'};
+  headingToggle.addEventListener('click',()=>{prefs.hidden=!prefs.hidden;save();render()});
   const setWidth=px=>{const max=Math.max(200,lane.parentElement.clientWidth-28);const value=Math.min(max,Math.max(200,Math.round(px)));lane.style.setProperty('--nova-log-width',value+'px');prefs.width=value};
   if(Number.isFinite(Number(prefs.width))&&Number(prefs.width)>0)setWidth(Number(prefs.width));
   const grip=document.createElement('div');grip.id='novaActivityResizeGrip';grip.title='Drag to adjust monitor width';
