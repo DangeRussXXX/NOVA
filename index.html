@@ -21,7 +21,7 @@
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
-          <button class="control" type="button" id="novaMediaPopoutButton" title="Open NOVA Media Center">MEDIA</button>
+          <button class="control" type="button" id="novaMediaPopoutButton" title="Toggle NOVA Media Mode">MEDIA</button>
   </div>
 </div>
 </div>
@@ -3347,13 +3347,28 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
 @keyframes novaHybridBreath{from{filter:drop-shadow(0 0 8px rgba(29,206,255,.3))}to{filter:drop-shadow(0 0 25px rgba(29,206,255,.7))}}
 @media(prefers-reduced-motion:reduce){.novaHybridMusicActive #novaOrb{animation:none}}
 
-/* NOVA EMBEDDED MEDIA MODE — stays inside the existing Command Center */
+/* NOVA MEDIA MODE: one console, NOVA orb remains the centerpiece. */
 #novaEmbeddedMediaPanel[hidden]{display:none!important}
-#novaEmbeddedMediaPanel{width:100%;min-width:0;max-width:100%;box-sizing:border-box;margin:12px 0;border:1px solid #23819c;background:linear-gradient(145deg,#091b29,#050e18);border-radius:12px;overflow:hidden;box-shadow:0 0 20px rgba(14,159,200,.15)}
-.novaEmbeddedMediaHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #23576b;color:#59d9f4;font-weight:800;letter-spacing:2px}
-#novaEmbeddedMediaFrame{display:block;width:100%;height:750px;border:0;background:#06121c}
 #novaMediaPopoutButton.novaMediaModeSelected{border-color:#42ddf9!important;box-shadow:0 0 14px rgba(50,211,245,.45)!important;color:#72edff!important}
-@media(max-width:760px){#novaEmbeddedMediaFrame{height:1080px}.novaEmbeddedMediaHeader{font-size:12px}}
+.novaUnifiedConsole{position:relative!important;isolation:isolate}
+body.novaEmbeddedMediaMode .novaUnifiedConsole .novaLeftHome{min-height:650px!important;position:relative}
+#novaEmbeddedMediaPanel{position:absolute!important;inset:8px 0 78px!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:100!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:hidden!important}
+#novaEmbeddedMediaFrame{display:block!important;width:100%!important;height:100%!important;min-height:0!important;border:0!important;background:transparent!important}
+#novaEmbeddedMediaPanel .novaEmbeddedMediaHeader{display:none!important}
+/* The real NOVA orb, video stage and existing controls stay above the media dock. */
+body.novaEmbeddedMediaMode .novaUnifiedConsole #novaCoreContainer{position:relative!important;z-index:125!important;pointer-events:none}
+body.novaEmbeddedMediaMode .novaUnifiedConsole #novaHybridVideoStage{z-index:145!important;position:relative!important}
+body.novaEmbeddedMediaMode .novaUnifiedConsole #novaHybridNowPlaying{z-index:146!important;position:relative!important}
+body.novaEmbeddedMediaMode .novaUnifiedConsole #novaIntegratedMediaControls{z-index:160!important}
+body.novaEmbeddedMediaMode .novaUnifiedConsole #novaMusicInfoDisplay{z-index:150!important;pointer-events:none}
+body.novaEmbeddedMediaMode .novaUnifiedConsole .novaConsoleCommandRow{position:relative!important;z-index:170!important}
+body.novaEmbeddedMediaMode .novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:170!important}
+body.novaEmbeddedMediaMode .novaUnifiedConsole #novaIntegratedMediaLibrary{display:none!important}
+@media(max-width:780px){
+ body.novaEmbeddedMediaMode .novaUnifiedConsole .novaLeftHome{min-height:340px!important}
+ #novaEmbeddedMediaPanel{position:relative!important;inset:auto!important;height:780px!important;z-index:100!important;overflow:hidden!important}
+ body.novaEmbeddedMediaMode .novaUnifiedConsole #novaCoreContainer{pointer-events:none}
+}
 </style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div></body></html>`);
   w.document.close();try{w.focus()}catch(e){}
 }

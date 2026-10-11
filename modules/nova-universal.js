@@ -26,14 +26,14 @@ function open(){
    document.body.classList.toggle("novaEmbeddedMediaMode",showing);
    const btn=document.getElementById("novaMediaPopoutButton");
    if(btn){btn.classList.toggle("novaMediaModeSelected",showing);btn.setAttribute("aria-pressed",String(showing));}
-   if(showing)embeddedPanel.scrollIntoView({behavior:"smooth",block:"nearest"});
+   // Stay on NOVA: do not scroll to a second panel.
    return;
  }
- const host=document.querySelector(".novaUnifiedConsole")||document.querySelector(".novaTopStack")||document.querySelector(".mainGrid");
+ const host=document.querySelector(".novaUnifiedConsole");
  if(!host){console.error("NOVA Media Mode: dashboard host missing");return;}
  embeddedPanel=document.createElement("section");
  embeddedPanel.id="novaEmbeddedMediaPanel";
- embeddedPanel.className="panel card";
+ embeddedPanel.className="novaMediaConsoleDock";
  embeddedPanel.setAttribute("aria-label","NOVA Media Mode");
  embeddedPanel.innerHTML='<div class="novaEmbeddedMediaHeader"><span>⚡ NOVA MEDIA MODE</span><button type="button" class="control" id="novaMediaModeClose">BACK TO NOVA</button></div>';
  const frame=document.createElement("iframe");
@@ -41,7 +41,10 @@ function open(){
  frame.title="NOVA Media Library and Playlists";
  frame.setAttribute("allow","autoplay; encrypted-media; picture-in-picture");
  embeddedPanel.append(frame);
- host.insertAdjacentElement("afterend",embeddedPanel);
+ // Media Mode lives INSIDE the original NOVA console, not below it.
+ const consoleBody=host.querySelector(".novaUnifiedBody");
+ if(consoleBody)host.insertBefore(embeddedPanel,consoleBody);
+ else host.append(embeddedPanel);
  embeddedPanel.querySelector("#novaMediaModeClose").addEventListener("click",()=>open());
  document.body.classList.add("novaEmbeddedMediaMode");
  const btn=document.getElementById("novaMediaPopoutButton");
@@ -61,7 +64,26 @@ h2{letter-spacing:2px}.selected{background:#124255;border-left:3px solid #39d9f6
 .stage{height:110px;min-height:110px;background:radial-gradient(circle,#113b51,#030c13)}
 .stage:has(video),.stage:has(iframe){height:300px}
 @media(max-width:800px){main{grid-template-columns:1fr}.stage{height:110px}}
-</style></head><body><header><h1>⚡ NOVA UNIVERSAL MEDIA CENTER</h1><button id="close">CLOSE</button></header><main><aside class="side"><h2>YOUR PLAYLISTS</h2><div class="row"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create">+ CREATE</button></div><div id="playlistNames" class="list"></div><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="row"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh">REFRESH</button></div><div class="row"><label><button id="addMusic">+ MUSIC FILES</button></label><button id="addVideos">+ VIDEO FILES</button><button id="addFolder">+ FOLDER</button></div><div class="row"><input id="ytLink" class="grow" type="text" placeholder="Paste YouTube URL"><button id="addYt">+ YOUTUBE</button></div><div id="library" class="list"></div><p class="muted">Adding to a playlist does not delete or move original media files.</p></aside><section><h2>UNIVERSAL PLAYER</h2><div id="stage" class="stage"><div class="big">NOVA READY<br><span class="muted">Choose a playlist item to play</span></div></div><div class="row"><button id="prev">◀◀ PREV</button><button id="toggle">▶ PLAY / PAUSE</button><button id="stop">■ STOP</button><button id="next">NEXT ▶▶</button><label class="grow">VOLUME <input id="volume" type="range" min="0" max="1" step=".01" value=".8"></label></div><input id="seek" class="seek" type="range" min="0" max="100" value="0"><p id="now" class="status">Nothing playing</p><h2>PLAYLIST EDITOR</h2><div class="row"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn">RENAME</button><button id="deleteBtn">DELETE PLAYLIST</button></div><div class="row"><span id="count" class="muted"></span><button id="clear">CLEAR PLAYLIST</button></div><div id="tracks" class="list"></div><p class="muted">▲ ▼ reorder • REMOVE only removes from this playlist. Local music files must be present in this browser; cloud storage is a future phase.</p></section></main><input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.opus" multiple><input id="videoFiles" type="file" accept="video/*" multiple><input id="folderFiles" type="file" webkitdirectory directory multiple><script>window.addEventListener('beforeunload',()=>{document.querySelectorAll('audio,video').forEach(x=>x.pause())});<\/script></body></html>`);w.document.close();
+/* NOVA CENTERPIECE MODE: playlist manager LEFT, editor/library RIGHT, NOVA orb CENTER */
+html,body{height:100%;background:transparent!important;overflow:hidden}
+main{height:100%;padding:12px;display:grid;grid-template-columns:minmax(215px,27%) minmax(190px,1fr) minmax(260px,31%);gap:12px;background:transparent}
+main>.side{grid-column:1;min-width:0;overflow-y:auto;max-height:100%;scrollbar-color:#327c91 #071521}
+main>section{grid-column:3;min-width:0;overflow-y:auto;max-height:100%;scrollbar-color:#327c91 #071521}
+main>.side,main>section{border:1px solid #28647a;border-radius:12px;background:rgba(5,22,34,.95);box-shadow:0 0 20px rgba(0,0,0,.25)}
+main>.side h2,main>section h2{font-size:12px;color:#4fdefa;letter-spacing:1.4px}
+main .stage{display:none!important}
+main .list{max-height:240px}
+main #playlistNames{max-height:145px}
+main #library{max-height:240px}
+main #tracks{max-height:270px}
+main .entry{flex-wrap:wrap}
+main .entry .name{min-width:110px}
+main .row{gap:5px}
+main button{font-size:10px;min-height:30px;padding:6px 8px}
+main input,main select{font-size:12px}
+@media(max-width:1150px){main{grid-template-columns:minmax(195px,30%) minmax(120px,1fr) minmax(230px,34%);padding:7px;gap:7px}}
+@media(max-width:780px){html,body{height:auto;overflow:auto}main{height:auto;grid-template-columns:1fr;gap:10px;padding:8px}main>.side{grid-column:1;grid-row:1;max-height:none}main>section{grid-column:1;grid-row:2;max-height:none}main .list{max-height:180px}}
+</style></head><body><header><h1>⚡ NOVA UNIVERSAL MEDIA CENTER</h1><button id="close">CLOSE</button></header><main><aside class="side"><h2>YOUR PLAYLISTS</h2><div class="row"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create">+ CREATE</button></div><div id="playlistNames" class="list"></div><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="row"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh">REFRESH</button></div><div class="row"><label><button id="addMusic">+ MUSIC FILES</button></label><button id="addVideos">+ VIDEO FILES</button><button id="addFolder">+ FOLDER</button></div><div class="row"><input id="ytLink" class="grow" type="text" placeholder="Paste YouTube URL"><button id="addYt">+ YOUTUBE</button></div><div id="library" class="list"></div><p class="muted">Adding to a playlist does not delete or move original media files.</p></aside><section><h2>NOW PLAYING • NOVA</h2><div id="stage" class="stage"><div class="big">NOVA READY<br><span class="muted">Choose a playlist item to play</span></div></div><div class="row"><button id="prev">◀◀ PREV</button><button id="toggle">▶ PLAY / PAUSE</button><button id="stop">■ STOP</button><button id="next">NEXT ▶▶</button><label class="grow">VOLUME <input id="volume" type="range" min="0" max="1" step=".01" value=".8"></label></div><input id="seek" class="seek" type="range" min="0" max="100" value="0"><p id="now" class="status">Nothing playing</p><h2>PLAYLIST EDITOR</h2><div class="row"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn">RENAME</button><button id="deleteBtn">DELETE PLAYLIST</button></div><div class="row"><span id="count" class="muted"></span><button id="clear">CLEAR PLAYLIST</button></div><div id="tracks" class="list"></div><p class="muted">▲ ▼ reorder • REMOVE only removes from this playlist. Local music files must be present in this browser; cloud storage is a future phase.</p></section></main><input id="musicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.opus" multiple><input id="videoFiles" type="file" accept="video/*" multiple><input id="folderFiles" type="file" webkitdirectory directory multiple><script>window.addEventListener('beforeunload',()=>{document.querySelectorAll('audio,video').forEach(x=>x.pause())});<\/script></body></html>`);w.document.close();
  const d=w.document,$=id=>d.getElementById(id);let currentId=playlists[0]?.id||"favorites",activeIndex=-1,activeMedia=null,activeType="",ytFrame=null;
  const hybridStage=document.getElementById("novaHybridVideoStage");
  const hybridNow=document.getElementById("novaHybridNowPlaying");
