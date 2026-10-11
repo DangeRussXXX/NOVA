@@ -586,6 +586,15 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
   max-width:calc(100% - 16px)!important;
  }
 }
+/* NOVA 1.4 — hide the legacy animated command stream.
+   The resizable NOVA Live Activity Monitor remains the only visible log.
+   Do not remove legacy JS hooks: other modules may still call them. */
+.novaUnifiedConsole #novaPersistentTicker,
+.novaUnifiedConsole #novaPersistentTickerTrack,
+.novaUnifiedConsole .novaSystemStreamMessage{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+
 </style>
 </head>
 <body>
