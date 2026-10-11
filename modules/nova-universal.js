@@ -101,72 +101,8 @@ function initializePermanentMedia(){
 
 
  
- // NOVA 1.9.14: theater sizing in the MAIN document, not the pop-out HTML.
- // Keep the YouTube controls inside the viewport and above the command bar.
- if(!document.getElementById('novaTheaterFitStyle')){
-   const style=document.createElement('style');
-   style.id='novaTheaterFitStyle';
-   style.textContent=`
-     #novaHybridVideoStage[hidden]{display:none !important;}
-     #novaHybridVideoStage:not([hidden]){
-       position:fixed !important;
-       top:120px !important;
-       left:50% !important;
-       transform:translateX(-50%) !important;
-       box-sizing:border-box !important;
-       width:min(76vw, 960px, calc((100dvh - 260px) * 16 / 9)) !important;
-       height:auto !important;
-       aspect-ratio:16 / 9 !important;
-       max-height:calc(100dvh - 260px) !important;
-       min-height:0 !important;
-       margin:0 !important;
-       padding:0 !important;
-       overflow:hidden !important;
-       z-index:110 !important;
-       background:#000 !important;
-       border:2px solid #26d7ff !important;
-       border-radius:12px !important;
-       box-shadow:0 12px 40px #000c !important;
-     }
-     #novaHybridVideoStage > iframe,
-     #novaHybridVideoStage > video{
-       position:absolute !important;
-       inset:0 !important;
-       display:block !important;
-       width:100% !important;
-       height:100% !important;
-       max-width:none !important;
-       max-height:none !important;
-       border:0 !important;
-       object-fit:contain !important;
-       background:#000 !important;
-     }
-     #novaMediaVideoControls #novaHybridBackOrb:not([hidden]){
-       position:fixed !important;
-       top:86px !important;
-       right:16px !important;
-       display:inline-flex !important;
-       align-items:center !important;
-       justify-content:center !important;
-       z-index:300 !important;
-       padding:8px 14px !important;
-       min-height:34px !important;
-       color:#bdf8ff !important;
-       background:#082c3a !important;
-       border:1px solid #2acbe9 !important;
-       border-radius:7px !important;
-       font-weight:700 !important;
-       cursor:pointer !important;
-     }
-     #novaMediaVideoControls #novaHybridBackOrb[hidden]{display:none !important;}
-     @media(max-width:750px){
-       #novaHybridVideoStage:not([hidden]){top:145px !important;width:min(96vw,calc((100dvh - 285px) * 16 / 9)) !important;max-height:calc(100dvh - 285px) !important;}
-       #novaMediaVideoControls #novaHybridBackOrb:not([hidden]){top:103px !important;right:8px !important;}
-     }
-   `;
-   document.head.appendChild(style);
- }
-const hybridStage=document.getElementById("novaHybridVideoStage");
+ // NOVA 1.9.17: Theater layout is owned by index.html (single source of truth).
+ const hybridStage=document.getElementById("novaHybridVideoStage");
 
 
 
@@ -198,7 +134,11 @@ const hybridStage=document.getElementById("novaHybridVideoStage");
 
  // 1.9.16: Keep theater and its switch outside transformed/clipped dashboard ancestors.
  // Both are moved, never cloned: existing playback and button listeners remain intact.
- if(hybridStage && hybridStage.parentElement!==document.body)document.body.appendChild(hybridStage);
+ const theaterConsole=document.querySelector('.novaUnifiedConsole');
+ if(hybridStage && theaterConsole && hybridStage.parentElement!==theaterConsole){
+   const commandArea=theaterConsole.querySelector('.novaUnifiedBody');
+   theaterConsole.insertBefore(hybridStage,commandArea||null);
+ }
  if(headerVideoSwitch && headerVideoSwitch.parentElement!==document.body)document.body.appendChild(headerVideoSwitch);
 
 
