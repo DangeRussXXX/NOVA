@@ -4228,9 +4228,11 @@ window.addEventListener('load', function () {
   ]);
   Array.from(stack.querySelectorAll(':scope > .panel')).forEach(panel => {
     const header = panel.querySelector(':scope > .panelHeader');
-    const name = (header?.querySelector(':scope > span')?.textContent ||
-      header?.textContent || '').trim().toUpperCase();
-    if (!names.has(name)) return;
+    // The collapse initializer inserts an arrow <span> into simple headers.
+    // Match the original heading by prefix instead of reading that arrow.
+    const headingText = (header?.textContent || '').replace(/\s+/g, ' ').trim().toUpperCase();
+    const name = Array.from(names).find(label => headingText.startsWith(label));
+    if (!name) return;
     panel.classList.add('novaRightPanel');
     rail.appendChild(panel);
     const body = header?.nextElementSibling;
