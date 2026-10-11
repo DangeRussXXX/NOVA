@@ -5167,3 +5167,84 @@ body[data-nova-theme="media"]{--nova-electric:#ff3cac;--nova-electric-rgb:255,60
   .app .novaMediaBox,
   .app .panelHeader { transition: none !important; }
 }
+
+/* ============================================================
+   NOVA 1.9 — READABILITY + ELECTRIC PANEL POLISH
+   Additive, scoped CSS only. No layout restructuring.
+   ============================================================ */
+:root {
+  --nova-ui-text: 14px;
+  --nova-ui-small: 12px;
+  --nova-ui-title: 14px;
+}
+
+/* General reading size: avoid touching the orb artwork or video. */
+.app { font-size: var(--nova-ui-text); }
+.app .panelHeader,
+.app .panelSubHeader,
+.app .novaMediaBox h2,
+.app .novaMediaBox h3 { font-size: var(--nova-ui-title) !important; line-height: 1.45; }
+.app .voiceSubtitle,
+.app .statusItem,
+.app .stat,
+.app .profileRow,
+.app .historyItem,
+.app .browserHint,
+.app .muted { font-size: var(--nova-ui-small) !important; line-height: 1.5; }
+
+/* Top navigation and command input: preserve widths and button IDs. */
+.app > header .headerNovaControls .buttonGrid button.novaGroupButton {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+.app .commandRow input,
+.app .commandRow button { font-size: 14px !important; }
+
+/* Media library and playlists: larger labels without changing controls. */
+#novaPermanentMedia button,
+#novaPermanentMedia input:not([type=range]),
+#novaPermanentMedia select,
+#novaPermanentMedia .novaMediaEntry .name,
+#novaPermanentMedia .muted,
+#novaPermanentMedia .novaMediaNow { font-size: 13px !important; }
+#novaPermanentMedia .novaMediaEntry small { font-size: 12px !important; }
+
+/* Live activity: increase legibility while keeping collapse/resize intact. */
+.novaUnifiedConsole #novaHudTicker .novaActivityHeadingToggle {
+  font-size: 12px !important;
+}
+.novaUnifiedConsole #novaHudTicker .novaActivityEntry {
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+
+/* Button readability in floating panels and other dashboard panels. */
+.app button.control,
+.app .novaRightPanel button,
+.app .novaMediaLibraryAction { font-size: 13px !important; line-height: 1.35; }
+.app input:not([type=range]),
+.app select,
+.app textarea { font-size: 14px; }
+
+/* Subtle neon emphasis; preserve existing theme and panel geometry. */
+.app .panel,
+.app .novaMediaBox { transition: border-color .2s ease, box-shadow .2s ease; }
+.app .panel:hover,
+.app .novaMediaBox:hover {
+  border-color: rgba(var(--nova-electric-rgb, 0,229,255), .45);
+}
+.app button.control:hover,
+.app .novaGroupButton:hover {
+  box-shadow: 0 0 12px rgba(var(--nova-electric-rgb, 0,229,255), .22);
+}
+.app button:focus-visible,
+.app input:focus-visible,
+.app select:focus-visible,
+.app textarea:focus-visible {
+  outline: 2px solid var(--nova-electric, #00e5ff);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app .panel,
+  .app .novaMediaBox { transition: none !important; }
+}
