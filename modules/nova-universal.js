@@ -25,12 +25,18 @@ function initializePermanentMedia(){
  const hybridStage=document.getElementById("novaHybridVideoStage");
  const hybridNow=document.getElementById("novaHybridNowPlaying");
  const hybridTitle=document.getElementById("novaHybridTrackName");
+ const videoControls=document.getElementById("novaMediaVideoControls");
+ // Move the EXISTING video toggle into the permanent top Now Playing card.
+ // This preserves the original button and its listener rather than cloning it.
+ if(videoControls&&hybridNow)videoControls.appendChild(hybridNow);
  let hybridVideoVisible=true;
  function hybridMode(type,name){
    document.body.classList.toggle("novaHybridVideoActive",type==="video"||type==="youtube");
    document.body.classList.toggle("novaHybridMusicActive",type==="music");
    if(hybridStage)hybridStage.hidden=type!=="video"&&type!=="youtube";
-   if(hybridNow)hybridNow.hidden=!type;
+   if(hybridNow)hybridNow.hidden=type!=="video"&&type!=="youtube";
+   hybridVideoVisible=type==="video"||type==="youtube";
+   if(backButton)backButton.textContent="RETURN TO ORB";
    if(hybridTitle)hybridTitle.textContent=type?"NOW PLAYING: "+name:"";
    const musicTitle=document.getElementById("novaMusicInfoTitle");
    if(type==="music"&&musicTitle)musicTitle.textContent=name;
@@ -47,10 +53,13 @@ function initializePermanentMedia(){
    b.addEventListener("click",fn,true);buttonHandlers.push([b,fn]);
  }
  const backButton=document.getElementById("novaHybridBackOrb");
- const backFn=()=>{if(!hybridStage)return;hybridVideoVisible=!hybridVideoVisible;
-   const show=hybridVideoVisible;hybridStage.hidden=!show;
-   document.body.classList.toggle("novaHybridVideoActive",show);
-   if(backButton)backButton.textContent=show?"RETURN TO ORB":"SHOW VIDEO";
+ const backFn=()=>{
+   if(!hybridStage||!(activeType==="video"||activeType==="youtube"))return;
+   hybridVideoVisible=!hybridVideoVisible;
+   hybridStage.hidden=!hybridVideoVisible;
+   document.body.classList.toggle("novaHybridVideoActive",hybridVideoVisible);
+   if(backButton){backButton.textContent=hybridVideoVisible?"RETURN TO ORB":"SHOW VIDEO";
+     backButton.setAttribute("aria-pressed",String(hybridVideoVisible));}
  };
  if(backButton)backButton.addEventListener("click",backFn);
  // Media Mode is persistent: hiding its panel does not interrupt playback.
@@ -70,7 +79,7 @@ function initializePermanentMedia(){
  function prev(){const n=selected()?.items.length||0;if(n)playAt((activeIndex-1+n)%n);}
  $("prev").onclick=prev;$("next").onclick=next;
  $("toggle").onclick=()=>{if(activeType==="youtube"&&ytFrame){ytFrame.contentWindow.postMessage(JSON.stringify({event:"command",func:"playVideo",args:[]}),"https://www.youtube.com");return;}if(!activeMedia){playAt(activeIndex<0?0:activeIndex);return;}if(activeMedia.paused)activeMedia.play().catch(()=>{});else activeMedia.pause();};
- $("stop").onclick=()=>{stopEngines();if(activeMedia)activeMedia.currentTime=0;hybridReset();activeIndex=-1;notify("STOPPED");};
+ $("stop").onclick=()=>{stopEngines();if(activeMedia)activeMedia.currentTime=0;activeType="";hybridReset();activeIndex=-1;notify("STOPPED");};
  $("volume").oninput=()=>{if(activeMedia)activeMedia.volume=Number($("volume").value);};
  $("seek").oninput=()=>{if(activeMedia&&Number.isFinite(activeMedia.duration))activeMedia.currentTime=activeMedia.duration*Number($("seek").value)/100;};
  $("create").onclick=()=>{const name=$("newName").value.trim();if(!name)return;const id="p"+Date.now()+Math.random().toString(36).slice(2,7);playlists.push({id,name,items:[]});currentId=id;$("newName").value="";save();renderAll();};

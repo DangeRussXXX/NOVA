@@ -204,6 +204,49 @@
   }
 }
 
+
+/* ============================================================
+   NOVA MEDIA REFINEMENT: SINGLE PLAYLIST PANEL + TOP VIDEO BAR
+   ============================================================ */
+#novaPermanentMedia #novaMediaLeft .novaMediaBox{flex:1 1 auto!important}
+#novaPermanentMedia #novaMediaRight .novaCombinedPlaylist{flex:1 1 auto!important}
+#novaPermanentMedia .novaCombinedPlaylist h3{margin:8px 0 10px;color:#57d8f4;font-size:11px;letter-spacing:1.3px}
+#novaPermanentMedia .novaPlaylistDivider{height:1px;background:linear-gradient(90deg,transparent,#26708b,transparent);margin:12px 0}
+#novaPermanentMedia #playlistNames.novaPlaylistChoices{flex:0 0 auto!important;max-height:145px!important;min-height:48px;overflow-y:auto!important}
+#novaPermanentMedia #tracks.novaPlaylistTracks{flex:1 1 auto!important;min-height:100px;overflow-y:auto!important}
+#novaPermanentMedia .novaMediaNow{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 14px;pointer-events:auto!important;z-index:180!important}
+#novaPermanentMedia .novaMediaNow strong{margin:0}
+#novaPermanentMedia #now{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+#novaPermanentMedia #novaMediaVideoControls{display:flex;justify-content:center;align-items:center;min-height:0;width:100%}
+#novaPermanentMedia #novaMediaVideoControls:empty{display:none}
+#novaPermanentMedia #novaHybridNowPlaying{
+ position:static!important;inset:auto!important;display:flex!important;justify-content:center!important;
+ width:auto!important;max-width:100%!important;margin:0!important;padding:0!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ pointer-events:auto!important;z-index:auto!important;
+}
+#novaPermanentMedia #novaHybridNowPlaying[hidden]{display:none!important}
+#novaPermanentMedia #novaHybridTrackName{display:none!important}
+#novaPermanentMedia #novaHybridBackOrb{
+ background:linear-gradient(180deg,#17475e,#092a3d)!important;
+ border:1px solid #35c6e9!important;color:#d3f7ff!important;
+ border-radius:8px!important;padding:8px 16px!important;
+ cursor:pointer!important;font-family:inherit!important;font-size:11px!important;font-weight:700!important;pointer-events:auto!important;
+}
+/* Prevent old absolute-position video title bar from covering the orb. */
+.novaUnifiedConsole .novaLeftHome > #novaHybridNowPlaying{display:none!important}
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage[hidden]{display:none!important}
+.novaHybridVideoActive .novaUnifiedConsole #novaCoreContainer{display:none!important}
+@media(min-width:761px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{
+   top:120px!important;left:calc(28% + 39px)!important;right:calc(30% + 39px)!important;
+   aspect-ratio:16/9!important;
+ }
+}
+@media(max-width:1100px) and (min-width:761px){
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage{left:calc(29% + 26px)!important;right:calc(32% + 26px)!important}
+}
+
 </style>
 </head>
 <body>
@@ -232,13 +275,12 @@
 <div class="novaLeftHome">
 <div id="novaPermanentMedia" aria-label="NOVA permanent media workspace">
   <div class="novaMediaSide" id="novaMediaLeft">
-    <section class="novaMediaBox"><h2>YOUR PLAYLISTS</h2><div class="novaMediaRow"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create" type="button">+ CREATE</button></div><div id="playlistNames" class="novaMediaList"></div></section>
     <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><button id="addMusic" type="button">+ MUSIC</button><button id="addVideos" type="button">+ VIDEO</button><button id="addFolder" type="button">+ FOLDER</button></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
   </div>
-  <div class="novaMediaNow"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span></div>
+  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div></div>
   <div class="novaMediaSide" id="novaMediaRight">
     <section class="novaMediaBox"><h2>PLAYBACK</h2><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section>
-    <section class="novaMediaBox"><h2>PLAYLIST EDITOR</h2><div class="novaMediaRow"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn" type="button">RENAME</button></div><div class="novaMediaRow"><span id="count" class="muted"></span><button id="clear" type="button">CLEAR</button><button id="deleteBtn" type="button">DELETE LIST</button></div><div id="tracks" class="novaMediaList"></div><p class="muted">▲ ▼ reorder · REMOVE keeps your original files</p></section>
+    <section class="novaMediaBox novaCombinedPlaylist"><h2>PLAYLISTS</h2><div class="novaMediaRow"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create" type="button">+ CREATE</button></div><div id="playlistNames" class="novaMediaList novaPlaylistChoices" aria-label="Select playlist"></div><div class="novaPlaylistDivider"></div><h3>EDIT SELECTED PLAYLIST</h3><div class="novaMediaRow"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn" type="button">RENAME</button></div><div class="novaMediaRow"><span id="count" class="muted"></span><button id="clear" type="button">CLEAR</button><button id="deleteBtn" type="button">DELETE LIST</button></div><div id="tracks" class="novaMediaList novaPlaylistTracks"></div><p class="muted">▲ ▼ reorder · REMOVE keeps your original files</p></section>
   </div>
   <input id="novaPermanentMusicFiles" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.opus" multiple hidden>
   <input id="novaPermanentVideoFiles" type="file" accept="video/*" multiple hidden>
