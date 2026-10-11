@@ -12,33 +12,49 @@
 
 <!-- NOVA 1.9.16: viewport-based theater, independent of dashboard transforms -->
 <style id="novaTheaterMainFix">
-/* NOVA 1.9.17: Theater belongs INSIDE the dashboard, not the browser viewport. */
-.novaUnifiedConsole{position:relative!important;isolation:isolate!important}
+/* NOVA 1.9.18: original orb workspace owns the video. No viewport overlay. */
+.novaUnifiedConsole .novaLeftHome {
+ position:relative!important;
+ min-height:650px!important;
+ overflow:hidden!important;
+}
 #novaHybridVideoStage[hidden],#novaHybridBackOrb[hidden]{display:none!important}
-.novaUnifiedConsole #novaHybridVideoStage:not([hidden]){
- position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:64px!important;
- transform:none!important;width:100%!important;height:auto!important;aspect-ratio:auto!important;
- max-width:none!important;max-height:none!important;min-height:0!important;
- box-sizing:border-box!important;margin:0!important;padding:0!important;
- display:flex!important;align-items:center!important;justify-content:center!important;
- background:#000!important;overflow:hidden!important;z-index:30!important;
- border:0!important;border-radius:8px 8px 0 0!important;
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){
+ position:absolute!important;
+ inset:0 0 82px 0!important;
+ top:0!important;right:0!important;bottom:82px!important;left:0!important;
+ width:100%!important;height:auto!important;
+ min-width:0!important;min-height:0!important;
+ max-width:none!important;max-height:none!important;
+ margin:0!important;padding:0!important;transform:none!important;
+ aspect-ratio:auto!important;display:flex!important;
+ align-items:center!important;justify-content:center!important;
+ background:#000!important;overflow:hidden!important;
+ border:0!important;border-radius:8px!important;
+ z-index:160!important;
 }
-.novaUnifiedConsole #novaHybridVideoStage:not([hidden])>iframe,
-.novaUnifiedConsole #novaHybridVideoStage:not([hidden])>video{
- position:relative!important;inset:auto!important;transform:none!important;
- width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
- border:0!important;display:block!important;object-fit:contain!important;background:#000!important;
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) iframe,
+.novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]) video{
+ display:block!important;position:static!important;
+ width:100%!important;height:100%!important;
+ min-width:0!important;min-height:0!important;
+ max-width:100%!important;max-height:100%!important;
+ margin:0!important;transform:none!important;
+ object-fit:contain!important;border:0!important;background:#000!important;
 }
-/* Keep NOVA's playback controls and command entry in front of the theater. */
-.novaUnifiedConsole .novaTopPlayback{position:relative;z-index:45!important}
-.novaUnifiedConsole .novaConsoleCommandRow,
-.novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:50!important}
 body #novaHybridBackOrb:not([hidden]){
- position:fixed!important;right:22px!important;top:92px!important;z-index:1100!important;
- display:inline-flex!important;visibility:visible!important;opacity:1!important;
- background:#092633!important;color:#a8f1ff!important;border:1px solid #2acbe9!important;
- border-radius:7px!important;padding:8px 12px!important;cursor:pointer!important;font-weight:700!important;
+ position:fixed!important;right:22px!important;top:92px!important;
+ z-index:1100!important;display:inline-flex!important;
+ visibility:visible!important;opacity:1!important;
+ background:#092633!important;color:#a8f1ff!important;
+ border:1px solid #2acbe9!important;border-radius:7px!important;
+ padding:8px 12px!important;cursor:pointer!important;font-weight:700!important;
+}
+.novaUnifiedConsole .novaAdaptivePlayer{position:relative!important;z-index:300!important}
+.novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:300!important}
+@media(max-width:760px){
+ .novaUnifiedConsole .novaLeftHome{min-height:430px!important}
+ .novaUnifiedConsole .novaLeftHome > #novaHybridVideoStage:not([hidden]){bottom:82px!important}
 }
 </style>
 </head>
@@ -3868,7 +3884,7 @@ if(document.readyState==="loading"){
 <script src="modules/nova-calendar.js"></script>
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js"></script>
-<script src="modules/nova-universal.js?v=1.9.16"></script>
+<script src="modules/nova-universal.js?v=1.9.18"></script>
 <script src="intelligence/nova-intelligence.js"></script>
 <script>
 /* Layout-only bridge: preserve media module's scoped initialization and its live event handlers. */

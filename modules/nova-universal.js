@@ -134,10 +134,9 @@ function initializePermanentMedia(){
 
  // 1.9.16: Keep theater and its switch outside transformed/clipped dashboard ancestors.
  // Both are moved, never cloned: existing playback and button listeners remain intact.
- const theaterConsole=document.querySelector('.novaUnifiedConsole');
- if(hybridStage && theaterConsole && hybridStage.parentElement!==theaterConsole){
-   const commandArea=theaterConsole.querySelector('.novaUnifiedBody');
-   theaterConsole.insertBefore(hybridStage,commandArea||null);
+ const theaterHome=document.querySelector('.novaUnifiedConsole .novaLeftHome');
+ if(hybridStage && theaterHome && hybridStage.parentElement!==theaterHome){
+   theaterHome.appendChild(hybridStage);
  }
  if(headerVideoSwitch && headerVideoSwitch.parentElement!==document.body)document.body.appendChild(headerVideoSwitch);
 
