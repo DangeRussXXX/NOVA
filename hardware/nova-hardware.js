@@ -742,7 +742,9 @@ function parseRSRSwitchState(line){
 
 
 
-  const match = String(line).match(/^\s\*RSR\s+SWITCH\s+([0-7])\s\*:\s\*(HI|LO)\s\*$/i);
+ const match = String(line).trim().match(
+  /^RSR\s+SWITCH\s+([0-7])\s*:\s*(HI|LO)\s*$/i
+);
 
 
 
