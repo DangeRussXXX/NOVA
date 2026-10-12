@@ -46,6 +46,13 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
 .novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:300!important}
 @media(max-height:600px){body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{height:max(180px,calc(100dvh - 220px))!important;max-height:none!important}}
 </style>
+<style id="novaVoiceBottomPlacement">
+.novaConsoleCommandRow{display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:nowrap!important}
+.novaConsoleCommandRow #voiceButton{order:0!important;flex:0 0 auto!important;width:auto!important;min-width:118px!important;max-width:none!important;margin:0!important;white-space:nowrap!important}
+.novaConsoleCommandRow #commandInput{order:1!important;flex:1 1 auto!important;min-width:0!important;width:auto!important}
+.novaConsoleCommandRow > button:not(#voiceButton){order:2!important;flex:0 0 auto!important;white-space:nowrap!important}
+@media(max-width:520px){.novaConsoleCommandRow{gap:5px!important}.novaConsoleCommandRow #voiceButton{min-width:0!important;padding:8px 6px!important}.novaConsoleCommandRow > button:not(#voiceButton){padding:8px 6px!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -55,7 +62,6 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
 <p>VOICE &amp; TEXT COMMAND CENTER UI - AMOMII HARDWARE CONTROLLER FOR RSR DIGITAL/ANALOG TRAINER</p>
 <div class="headerNovaControls">
   <div class="buttonGrid">
-    <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
     <button class="control" type="button" id="novaHistoryNavButton" aria-controls="novaHudTicker" aria-expanded="false" title="Show or hide NOVA live activity">NOVA HISTORY</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
@@ -204,6 +210,7 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
 <div class="voiceStatus novaConsoleVoiceStatus"><span class="dot red" id="voiceDot"></span><span id="voiceText">VOICE OFF</span></div>
 
 <div class="commandRow mergedCommandRow novaConsoleCommandRow">
+    <button class="control good full" id="voiceButton" onclick="toggleVoice()">TALK TO NOVA</button>
 <input autocomplete="off" id="commandInput" placeholder="Enter commands for NOVA." type="text"/>
 <button class="control primary" onclick="sendManualCommand()">SEND TO NOVA</button>
 </div>
