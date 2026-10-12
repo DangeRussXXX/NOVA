@@ -4310,6 +4310,46 @@ window.addEventListener('load',function(){
 </script>
 <!-- RSR PIN MAP v1: isolated viewer; preserves original controls. -->
 <script src="hardware/rsr-trainer/rsr-pinmap-view.js?v=5.0.0"></script>
+
+<script>
+(function () {
+  function setupMediaCounts() {
+    const list = document.getElementById('library');
+    if (!list || document.getElementById('novaMediaCountBar')) return;
+
+    const bar = document.createElement('div');
+    bar.id = 'novaMediaCountBar';
+    bar.className = 'novaMediaCountBar';
+    list.before(bar);
+
+    function update() {
+      let music = 0, videos = 0, youtube = 0;
+
+      try { music = musicLibrary.length; } catch (e) {}
+      try { videos = videoLibrary.length; } catch (e) {}
+      try { youtube = novaYtSaved.length; } catch (e) {}
+
+      const total = music + videos + youtube;
+      const showing = list.querySelectorAll('.entry').length;
+
+      bar.textContent =
+        'SHOWING ' + showing + ' / ' + total +
+        ' MEDIA • ' + music + ' SONGS • ' +
+        videos + ' VIDEOS • ' + youtube + ' YOUTUBE';
+    }
+
+    new MutationObserver(update).observe(list, {childList: true});
+    update();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMediaCounts);
+  } else {
+    setupMediaCounts();
+  }
+})();
+</script>
+
 </body>
 </html>
 
