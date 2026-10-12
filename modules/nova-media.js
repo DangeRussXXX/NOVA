@@ -3835,3 +3835,87 @@ function initializeNovaMediaPopout(){
 if(document.readyState==="loading"){
   document.addEventListener("DOMContentLoaded",initializeNovaMediaPopout,{once:true});
 }else initializeNovaMediaPopout();
+
+
+/* ============================================================
+   NOVA YOUTUBE VOICE BRIDGE — SAFE MEDIA-ONLY EXTENSION
+   Uses the existing saved YouTube playlist; no cloud/hardware calls.
+   ============================================================ */
+(function novaYouTubeVoiceBridge(){
+  let selectedSource="music";
+  let savedYouTubeIndex=-1;
+  const originalSetHubPage=novaSetHubPage;
+  novaSetHubPage=function(page){
+    if(page==="music"||page==="video"||page==="youtube")selectedSource=page;
+    return originalSetHubPage.apply(this,arguments);
+  };
+  novaOpenMediaPage=novaSetHubPage;
+
+  function items(){return Array.isArray(novaYtSaved)?novaYtSaved.filter(x=>x&&x.id):[];}
+  function playSaved(index){
+    const list=items();
+    if(!list.length){
+      if(typeof speak==="function")speak("Your saved YouTube playlist is empty.");
+      return;
+    }
+    savedYouTubeIndex=((index%list.length)+list.length)%list.length;
+    const item=list[savedYouTubeIndex];
+    const input=document.getElementById("youtubeInput");
+    const frame=document.getElementById("youtubeFrame");
+    if(!frame)return;
+    if(input)input.value=item.url;
+    youtubeVideoId=item.id;
+    selectedSource="youtube";
+    novaSetHubPage("youtube");
+    // Loading a new embed is distinct from sending a play command to a ready embed.
+    // autoplay=1 requests playback; browsers may still require a user click.
+    const origin=(location.protocol==="https:"||location.protocol==="http:")
+      ? "&origin="+encodeURIComponent(location.origin):"";
+    frame.src="https://www.youtube.com/embed/"+encodeURIComponent(item.id)+
+      "?enablejsapi=1&playsinline=1&autoplay=1"+origin;
+    if(typeof log==="function")log("YouTube playlist selected: "+item.url,"system");
+  }
+  function playCurrentYouTube(){
+    const list=items();
+    if(!list.length){
+      if(youtubeVideoId){youtubeCommand("playVideo");return;}
+      if(typeof speak==="function")speak("Your saved YouTube playlist is empty.");
+      return;
+    }
+    const index=list.findIndex(x=>x.id===youtubeVideoId);
+    if(index>=0){
+      savedYouTubeIndex=index;
+      const frame=document.getElementById("youtubeFrame");
+      if(frame&&frame.src.includes(youtubeVideoId)){
+        novaSetHubPage("youtube");
+        youtubeCommand("playVideo");
+        return;
+      }
+    }
+    playSaved(savedYouTubeIndex>=0?savedYouTubeIndex:0);
+  }
+  const priorRoute=routeVoiceCommand;
+  routeVoiceCommand=function(command,raw){
+    const phrase=String(raw||command||"").toLowerCase()
+      .replace(/^\s*nova[\s,]+/,"").replace(/[.!?,]/g,"").replace(/\s+/g," ").trim();
+    if(/^(?:(?:please )?)(?:play|start|resume)(?: my| the)? youtube(?: playlist| videos?| music)?$/.test(phrase)){
+      playCurrentYouTube();return;
+    }
+    if(/^(?:next|skip)(?: youtube)?(?: video| song| track)?$/.test(phrase)&&selectedSource==="youtube"){
+      playSaved(savedYouTubeIndex+1);return;
+    }
+    if(/^(?:previous|last)(?: youtube)?(?: video| song| track)?$/.test(phrase)&&selectedSource==="youtube"){
+      playSaved(savedYouTubeIndex<=0?items().length-1:savedYouTubeIndex-1);return;
+    }
+    if(/^(?:pause|stop)(?: the)? youtube(?: video| playlist)?$/.test(phrase)){
+      youtubeCommand(phrase.startsWith("stop")?"stopVideo":"pauseVideo");return;
+    }
+    // 'Play music' follows the explicitly selected YouTube tab, otherwise
+    // preserves the existing local-audio command behavior unchanged.
+    if(/^(?:play|start|resume)(?: my| the)? music$/.test(phrase)&&selectedSource==="youtube"){
+      playCurrentYouTube();return;
+    }
+    return priorRoute.apply(this,arguments);
+  };
+  console.log("NOVA YouTube Voice Bridge loaded.");
+})();
