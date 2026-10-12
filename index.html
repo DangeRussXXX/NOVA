@@ -80,6 +80,22 @@ body.novaHybridVideoActive #novaMediaVideoControls #novaHybridBackOrb:not([hidde
 .novaUnifiedConsole .novaAdaptivePlayer{position:relative!important;z-index:300!important}
 .novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:300!important}
 @media(max-height:600px){body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{height:max(180px,calc(100dvh - 220px))!important;max-height:none!important}}
+
+/* NOVA reversible video/orb navigation */
+#novaReturnToVideoButton[hidden]{display:none!important}
+#novaReturnToVideoButton{
+ position:absolute!important;right:12px!important;top:12px!important;
+ z-index:1101!important;align-items:center;justify-content:center;
+ background:#092633!important;color:#a8f1ff!important;
+ border:1px solid #2acbe9!important;border-radius:7px!important;
+ padding:8px 12px!important;cursor:pointer!important;font-weight:700!important;
+}
+body.novaHybridVideoParked #novaHybridVideoStage{display:none!important}
+body.novaHybridVideoParked #novaCoreContainer{display:block!important}
+body.novaHybridVideoParked .novaUnifiedConsole .novaLeftHome{
+ height:auto!important;max-height:none!important;
+}
+body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 </style>
 <style id="novaVoiceBottomPlacement">
 .novaConsoleCommandRow{display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:nowrap!important}
@@ -4387,6 +4403,71 @@ window.addEventListener('load',function(){
 
 </script>
 <script src="modules/nova-library-management.js?v=1"></script>
+
+<script id="novaReversibleVideoOrbNavigation">
+/* Reversible presentation switch: do not remove, reload or pause video. */
+(function(){
+  'use strict';
+  function init(){
+    const stage=document.getElementById('novaHybridVideoStage');
+    const orb=document.getElementById('novaCoreContainer');
+    const back=document.getElementById('novaHybridBackOrb');
+    const consolePanel=document.querySelector('.novaUnifiedConsole');
+    if(!stage||!orb||!back||!consolePanel)return;
+    if(document.getElementById('novaReturnToVideoButton'))return;
+    const returnVideo=document.createElement('button');
+    returnVideo.type='button';
+    returnVideo.id='novaReturnToVideoButton';
+    returnVideo.textContent='RETURN TO VIDEO';
+    returnVideo.hidden=true;
+    consolePanel.appendChild(returnVideo);
+    let parked=false;
+    function hasVideo(){
+      return !!stage.querySelector('video, iframe');
+    }
+    function sync(){
+      if(parked&&!hasVideo()){
+        parked=false;
+        document.body.classList.remove('novaHybridVideoParked');
+      }
+      returnVideo.hidden=!(parked&&hasVideo());
+      if(parked)back.hidden=true;
+    }
+    // Capture the original button click before other playback handlers.
+    back.addEventListener('click',function(event){
+      if(stage.hidden||!hasVideo())return; // retain original behavior when no active stage
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      parked=true;
+      document.body.classList.add('novaHybridVideoParked');
+      document.body.classList.remove('novaHybridVideoActive');
+      stage.hidden=true;
+      back.hidden=true;
+      sync();
+    },true);
+    returnVideo.addEventListener('click',function(){
+      if(!hasVideo()){
+        parked=false;
+        document.body.classList.remove('novaHybridVideoParked');
+        sync();
+        return;
+      }
+      parked=false;
+      document.body.classList.remove('novaHybridVideoParked');
+      document.body.classList.add('novaHybridVideoActive');
+      stage.hidden=false;
+      back.hidden=false;
+      sync();
+    });
+    // Keep the return control in sync when the media player changes tracks.
+    const observer=new MutationObserver(sync);
+    observer.observe(stage,{childList:true,subtree:false});
+    sync();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();
+</script>
 </body>
 </html>
 
