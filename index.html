@@ -4118,7 +4118,17 @@ window.addEventListener('load',function(){
    });handle.addEventListener('pointermove',e=>{if(!origin)return;shell.style.left=Math.max(0,origin.left+e.clientX-origin.x)+'px';shell.style.top=Math.max(0,origin.top+e.clientY-origin.y)+'px';});
    ['pointerup','pointercancel'].forEach(ev=>handle.addEventListener(ev,()=>{origin=null;}));}
  };
- makeFloat('library',left,'MEDIA LIBRARY');makeFloat('playlists',right.querySelector('.novaCombinedPlaylist'),'PLAYLISTS');
+ // One combined MEDIA window. Move existing playlist DOM; preserve every ID and listener.
+ const playlistSection=right.querySelector('.novaCombinedPlaylist');
+ if(playlistSection){
+   const combined=document.createElement('div');
+   combined.className='novaUnifiedMediaBody';
+   const librarySection=left.querySelector('.novaMediaBox');
+   if(librarySection)combined.appendChild(librarySection);
+   combined.appendChild(playlistSection);
+   left.appendChild(combined);
+ }
+ makeFloat('library',left,'MEDIA LIBRARY & PLAYLISTS');
  const rightPanels=[...right.querySelectorAll('.novaRightPanel')];
  for(const node of rightPanels){const title=(node.querySelector('.panelHeader')?.textContent||'').toUpperCase();
    const key=title.includes('BROWSER')?'browser':title.includes('AMOMII')?'amomii':title.includes('RSR')?'rsr':title.includes('PORTABLE')?'portable':null;
@@ -4143,16 +4153,13 @@ window.addEventListener('load',function(){
  const divider=()=>{const e=document.createElement('span');e.className='novaGroupDivider';e.setAttribute('aria-hidden','true');header.appendChild(e);};
  add('NOVA BROWSER','nova','browser');divider();
  add('AMOMII','hardware','amomii',()=>window.novaOpenAMOMII());add('RSR TRAINER','hardware','rsr',()=>novaOpenRSR());add('PORTABLE TRAINER','hardware','portable');divider();
- // Single MEDIA navigation button opens the existing library AND playlist windows.
- // Reuse both existing DOM panels so their media event listeners remain intact.
+ // One MEDIA button toggles the single combined media window.
  add('MEDIA','media',null,()=>{
-   const libraryPanel=panels.library;
-   const playlistPanel=panels.playlists;
-   if(!libraryPanel||!playlistPanel)return;
-   const opening=libraryPanel.hidden||playlistPanel.hidden;
+   const mediaPanel=panels.library;
+   if(!mediaPanel)return;
+   const opening=mediaPanel.hidden;
    Object.values(panels).forEach(p=>p.hidden=true);
-   libraryPanel.hidden=!opening;
-   playlistPanel.hidden=!opening;
+   mediaPanel.hidden=!opening;
    theme(opening?'media':'nova');
    const mediaButton=[...header.querySelectorAll('.novaGroupButton')]
      .find(b=>b.textContent==='MEDIA');
