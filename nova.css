@@ -5378,3 +5378,28 @@ body.novaElectricMediaMode #now {
 }
 
 /* NOVA 1.9.3: media synchronization is implemented in the existing JS controller. */
+
+/* NOVA MEDIA: dual-pane view from one MEDIA button; MEDIA MODE unchanged. */
+.novaFloatPanel[data-nova-panel="library"]{
+ left:2vw!important;width:46vw!important;top:125px!important;
+ height:min(70vh,690px)!important;
+}
+.novaFloatPanel[data-nova-panel="playlists"]{
+ left:51vw!important;width:46vw!important;top:125px!important;
+ height:min(70vh,690px)!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaBox,
+.novaFloatPanel[data-nova-panel="playlists"] .novaMediaBox{min-height:0!important;}
+.novaFloatPanel[data-nova-panel="library"] #library,
+.novaFloatPanel[data-nova-panel="playlists"] #tracks,
+.novaFloatPanel[data-nova-panel="playlists"] #playlistNames{
+ overflow-y:scroll!important;overscroll-behavior:contain;scrollbar-width:auto;
+ scrollbar-color:#36d9ff #061824;
+}
+.novaFloatPanel[data-nova-panel="library"] #library{flex:1 1 auto!important;min-height:100px!important;max-height:none!important;}
+.novaFloatPanel[data-nova-panel="playlists"] #playlistNames{flex:0 0 auto!important;height:110px!important;min-height:70px!important;}
+.novaFloatPanel[data-nova-panel="playlists"] #tracks{flex:1 1 auto!important;max-height:none!important;min-height:90px!important;}
+@media(max-width:750px){
+ .novaFloatPanel[data-nova-panel="library"]{left:2vw!important;top:105px!important;width:96vw!important;height:39vh!important;}
+ .novaFloatPanel[data-nova-panel="playlists"]{left:2vw!important;top:calc(105px + 40vh)!important;width:96vw!important;height:39vh!important;}
+}

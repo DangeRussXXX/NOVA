@@ -4103,7 +4103,14 @@ window.addEventListener('load',function(){
    shell.setAttribute('aria-label',label);
    const close=document.createElement('button');close.type='button';close.className='novaFloatClose';close.textContent='×';close.title='Close '+label;
    close.addEventListener('click',()=>{shell.hidden=true;document.querySelectorAll('.novaGroupButton').forEach(b=>b.setAttribute('aria-pressed','false'));theme('nova');});
-   shell.appendChild(node);shell.appendChild(close);document.body.appendChild(shell);
+   if(key==='library'||key==='playlists'){
+   close.addEventListener('click',()=>{
+     if(panels.library)panels.library.hidden=true;
+     if(panels.playlists)panels.playlists.hidden=true;
+     document.querySelectorAll('.novaGroupButton').forEach(b=>{if(b.textContent==='MEDIA')b.setAttribute('aria-pressed','false');});
+   });
+ }
+ shell.appendChild(node);shell.appendChild(close);document.body.appendChild(shell);
    node.style.display='';panels[key]=shell;
    const handle=node.querySelector('.panelHeader, h2');
    if(handle){let origin=null;handle.addEventListener('pointerdown',e=>{
@@ -4136,7 +4143,21 @@ window.addEventListener('load',function(){
  const divider=()=>{const e=document.createElement('span');e.className='novaGroupDivider';e.setAttribute('aria-hidden','true');header.appendChild(e);};
  add('NOVA BROWSER','nova','browser');divider();
  add('AMOMII','hardware','amomii',()=>window.novaOpenAMOMII());add('RSR TRAINER','hardware','rsr',()=>novaOpenRSR());add('PORTABLE TRAINER','hardware','portable');divider();
- add('MEDIA LIBRARY','media','library');add('PLAYLISTS','media','playlists');
+ // Single MEDIA navigation button opens the existing library AND playlist windows.
+ // Reuse both existing DOM panels so their media event listeners remain intact.
+ add('MEDIA','media',null,()=>{
+   const libraryPanel=panels.library;
+   const playlistPanel=panels.playlists;
+   if(!libraryPanel||!playlistPanel)return;
+   const opening=libraryPanel.hidden||playlistPanel.hidden;
+   Object.values(panels).forEach(p=>p.hidden=true);
+   libraryPanel.hidden=!opening;
+   playlistPanel.hidden=!opening;
+   theme(opening?'media':'nova');
+   const mediaButton=[...header.querySelectorAll('.novaGroupButton')]
+     .find(b=>b.textContent==='MEDIA');
+   if(mediaButton)mediaButton.setAttribute('aria-pressed',String(opening));
+ });
  mediaModeButton=document.createElement('button');
  mediaModeButton.type='button';mediaModeButton.className='control novaGroupButton novaMediaModeButton';
  mediaModeButton.dataset.group='media';mediaModeButton.textContent='⚡ MEDIA MODE';
