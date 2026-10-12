@@ -19,14 +19,10 @@
         </div>
       </section>
       <section class="rsr-lab__group rsr-lab__effects" aria-label="RSR visual effects">
-        <h3>⚡ 3-LED VISUAL SIMULATOR</h3>
-        <p class="rsr-lab__notice">LED 0–2 are a local demonstration. Buttons below DO NOT send hardware commands.</p>
-        <div class="rsr-lab__demo-leds" id="rsrLabDemoLeds">
-          <div class="rsr-lab__demo-channel"><span class="rsr-lab__demo-bulb" id="rsrLabDemoLed0"></span><span>LED 0</span><button type="button" data-rsr-demo="0" aria-pressed="false">TURN ON</button></div>
-          <div class="rsr-lab__demo-channel"><span class="rsr-lab__demo-bulb" id="rsrLabDemoLed1"></span><span>LED 1</span><button type="button" data-rsr-demo="1" aria-pressed="false">TURN ON</button></div>
-          <div class="rsr-lab__demo-channel"><span class="rsr-lab__demo-bulb" id="rsrLabDemoLed2"></span><span>LED 2</span><button type="button" data-rsr-demo="2" aria-pressed="false">TURN ON</button></div>
-        </div>
-        <div class="rsr-lab__effect-actions"><button type="button" id="rsrLabSoundToggle" aria-pressed="false">🔇 SOUND OFF</button><button type="button" id="rsrLabDemoReset">RESET DEMO</button></div>
+        <h3>⚡ PHOTO POWER SIMULATION</h3>
+        <p class="rsr-lab__notice">Click the red POWER switch on the trainer photograph. Both red indicator lamps and the green lamp beside the breadboard illuminate together. Visual only — no hardware command.</p>
+        <p>Photo power: <output id="rsrLabPhotoPowerStatus">OFF — SIMULATED</output></p>
+        <div class="rsr-lab__effect-actions"><button type="button" id="rsrLabSoundToggle" aria-pressed="false">🔇 SOUND OFF</button><button type="button" id="rsrLabDemoReset">RESET VISUAL POWER</button></div>
         <h3>RUN TEST VISUALIZATION</h3>
         <div class="rsr-lab__test-track" aria-label="Test animation"><span id="rsrLabTestPulse"></span></div>
         <output id="rsrLabTestResult" role="status">READY — visual demo only</output>
@@ -50,7 +46,7 @@
         <div id="rsrLabBoard" class="rsr-lab__board">
           <img id="rsrLabPhoto" src="hardware/rsr-trainer/assets/rsr-trainer.jpg" alt="RSR Electronics PAD-234A trainer front panel" draggable="false">
           <div id="rsrLabLedLayer" class="rsr-lab__layer" aria-label="LED indicator overlay"></div>
-          <div id="rsrLabSwitchLayer" class="rsr-lab__layer" aria-label="Switch overlay"></div>
+          <div id="rsrLabSwitchLayer" class="rsr-lab__layer" aria-label="Photo power switch and three status light overlays"></div>
           <div id="rsrLabKnobLayer" class="rsr-lab__layer" aria-label="Knob overlay"></div>
           <div id="rsrLabPinLayer" class="rsr-lab__layer" aria-label="Pin and breadboard connection overlay" hidden></div>
         </div>

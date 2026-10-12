@@ -17,7 +17,7 @@
   let previewStates = null;
   let previewName = '';
   let previewStep = 0;
-  let demoStates = [false,false,false];
+  let photoPowerOn = false;
   let soundEnabled = false;
   let audioContext = null;
   let lastSoundAt = 0;
@@ -55,28 +55,57 @@
       osc.start(); osc.stop(audioContext.currentTime + duration + .01);
     } catch (err) { console.debug('RSR audio unavailable:', err); }
   }
-  function refreshDemo() {
-    for (let i=0;i<3;i++) {
-      $('rsrLabDemoLed'+i)?.classList.toggle('is-on', demoStates[i]);
-      const button = lab()?.querySelector('[data-rsr-demo="'+i+'"]');
-      if (button) {
-        button.textContent = demoStates[i] ? 'TURN OFF' : 'TURN ON';
-        button.setAttribute('aria-pressed', String(demoStates[i]));
-      }
+  // Photo-relative coordinates measured from the supplied PAD-234A image.
+  // The two red lamps and green lamp are separate from the 8 Arduino-driven LEDs.
+  function drawPhotoPower() {
+    const layer = $('rsrLabSwitchLayer');
+    if (!layer) return;
+    if (!layer.querySelector('#rsrLabPhotoPowerSwitch')) {
+      const power = document.createElement('button');
+      power.type='button'; power.id='rsrLabPhotoPowerSwitch';
+      power.className='rsr-lab__photo-switch';
+      power.style.left='77.2%'; power.style.top='8.0%';
+      power.title='Click to toggle simulated trainer power (no hardware output)';
+      power.setAttribute('aria-label','Toggle simulated trainer power on photograph');
+      power.addEventListener('click',()=>{
+        photoPowerOn=!photoPowerOn;
+        if (!photoPowerOn) stopTestVisual();
+        refreshDemo();
+        sound(photoPowerOn?620:250,.12,'triangle');
+      });
+      layer.appendChild(power);
+      [[29.5,52.25,'red'],[29.5,60.45,'red'],[29.5,68.75,'green']].forEach(([x,y,color],i)=>{
+        const lamp=document.createElement('span');
+        lamp.id='rsrLabPhotoLamp'+i;
+        lamp.className='rsr-lab__photo-lamp is-'+color;
+        lamp.style.left=x+'%'; lamp.style.top=y+'%';
+        lamp.title='Simulated '+color+' trainer indicator '+(i+1);
+        layer.appendChild(lamp);
+      });
     }
   }
-  function resetDemo() { demoStates=[false,false,false]; refreshDemo(); }
+  function refreshDemo(activeIndex=-1) {
+    drawPhotoPower();
+    const button=$('rsrLabPhotoPowerSwitch');
+    if(button){button.classList.toggle('is-on',photoPowerOn);button.setAttribute('aria-pressed',String(photoPowerOn));}
+    for(let i=0;i<3;i++) {
+      const lamp=$('rsrLabPhotoLamp'+i);
+      if(lamp) lamp.classList.toggle('is-on',activeIndex>=0 ? activeIndex===i : photoPowerOn);
+    }
+    setText('rsrLabPhotoPowerStatus',photoPowerOn?'ON — SIMULATED':'OFF — SIMULATED');
+  }
+  function resetDemo() { photoPowerOn=false; refreshDemo(); }
   function startTestVisual() {
     stopTestVisual();
     testRunning=true;
     $('rsrLabTestPulse')?.parentElement?.classList.add('is-running');
-    setText('rsrLabTestResult','RUNNING — waiting for actual test feedback (not verified)');
+    setText('rsrLabTestResult','RUNNING — visual sequence only; hardware result not verified');
     let step=0;
     const tick=()=>{
-      if (!testRunning) return;
-      demoStates=[false,false,false]; demoStates[step%3]=true;
-      refreshDemo(); sound(300+step%3*170,.075,'triangle'); step++;
-      if (step<12) testTimer=setTimeout(tick,210);
+      if(!testRunning) return;
+      refreshDemo(step%3);
+      sound(300+step%3*170,.075,'triangle'); step++;
+      if(step<12) testTimer=setTimeout(tick,210);
       else {
         stopTestVisual();
         setText('rsrLabTestResult','VISUAL SEQUENCE COMPLETE — check NOVA for actual test result');
@@ -86,10 +115,10 @@
   }
   function stopTestVisual() {
     testRunning=false;
-    if (testTimer!==null) clearTimeout(testTimer);
+    if(testTimer!==null) clearTimeout(testTimer);
     testTimer=null;
     $('rsrLabTestPulse')?.parentElement?.classList.remove('is-running');
-    resetDemo();
+    refreshDemo();
   }
 
   function setText(id, value) {
@@ -137,7 +166,7 @@
     setText('rsrLabLedStatus', states.map((on, i) => `${i}:${on ? 'ON' : 'OFF'}`).join('  '));
     setText('rsrLabSwitchStatus', $('rsrSwitchState0')?.textContent?.trim() || 'UNKNOWN');
     setText('rsrLabLinkStatus', `NOVA LINK: ${$('connectionText')?.textContent?.trim() || 'NOT VERIFIED'}`);
-    setText('rsrLabPowerStatus', 'NOT MONITORED');
+    setText('rsrLabPowerStatus', 'NOT MONITORED (PHOTO: '+(photoPowerOn?'ON':'OFF')+')');
     if (previewName) {
       setText('rsrLabModeStatus', `${previewName} • LOCAL VISUAL PREVIEW (timing not hardware verified)`);
     }
@@ -312,14 +341,6 @@
     $('rsrLabViewBoard')?.addEventListener('click', () => mode('board'));
     $('rsrLabViewWiring')?.addEventListener('click', () => mode('wiring'));
     $('rsrLabViewPins')?.addEventListener('click', () => mode('pins'));
-    $('rsrLabDemoLeds')?.addEventListener('click', event => {
-      const button = event.target.closest('[data-rsr-demo]');
-      if (!button) return;
-      const index = Number(button.dataset.rsrDemo);
-      if (!Number.isInteger(index) || index < 0 || index > 2) return;
-      demoStates[index] = !demoStates[index]; refreshDemo();
-      sound(demoStates[index] ? 680 : 270, .095, 'triangle');
-    });
     $('rsrLabDemoReset')?.addEventListener('click', () => { stopTestVisual(); sound(220,.1); });
     $('rsrLabSoundToggle')?.addEventListener('click', () => {
       soundEnabled=!soundEnabled;
