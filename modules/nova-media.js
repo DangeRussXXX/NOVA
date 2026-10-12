@@ -913,6 +913,7 @@ function addMusicFiles(files, replaceLibrary = false, persistPlaylist = true){
   });
 
   renderMusicList();
+  window.dispatchEvent(new Event("nova:library-updated"));
 
   saveCurrentPlaylistOrder();
 
