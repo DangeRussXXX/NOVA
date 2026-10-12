@@ -1,8 +1,4 @@
-/* NOVA RSR Trainer Digital Twin — v1.9.23
-   File: hardware/rsr-trainer/rsr-trainer.js
-   Requires the rsr-trainer.html fragment to be inserted into the page first.
-   Does not send any new hardware commands or override NOVA's existing functions.
-*/
+/* NOVA RSR Trainer Digital Twin — LED alignment and reverse order */
 (function () {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -12,12 +8,13 @@
   let mountedPanel = null;
   let initialized = false;
   let observer = null;
-  let selectedMode = 'board';
 
-  // These are temporary DISPLAY coordinates, not verified pin coordinates.
-  // Adjust after comparing the actual trainer photo in the browser.
-  const ledPositions = Array.from({length: 8}, (_, i) => ({
-    x: 61.7 + (7 - i) * 2.6, y: 16.4, label: `LED ${i}`
+  // Coordinates are percentages of the photo, measured from the supplied screenshot.
+  // Physical left-to-right order is LED 7, 6, 5, 4, 3, 2, 1, 0.
+  const ledPositions = Array.from({ length: 8 }, (_, i) => ({
+    x: 86.5 - i * 2.61,
+    y: 19.4,
+    label: `LED ${i}`
   }));
 
   function setText(id, value) {
@@ -29,8 +26,6 @@
     if (node) node.hidden = !visible;
   }
   function getStates() {
-    // Existing hardware module exposes trainerLedStates as a top-level const.
-    // typeof is safe when that binding is not yet loaded.
     try {
       if (typeof trainerLedStates !== 'undefined' && Array.isArray(trainerLedStates)) {
         return trainerLedStates.slice(0, 8).map(Boolean);
@@ -40,16 +35,22 @@
   }
   function drawLeds() {
     const layer = $('rsrLabLedLayer');
-    if (!layer || layer.children.length === 8) return;
-    layer.replaceChildren();
+    if (!layer) return;
+    // Rebuild when initialized, so old coordinates cannot persist in DOM.
+    if (layer.children.length !== 8) {
+      layer.replaceChildren();
+      ledPositions.forEach((pos, i) => {
+        const led = document.createElement('span');
+        led.className = 'rsr-lab__led';
+        led.title = `${pos.label} — commanded/reported UI state`;
+        led.setAttribute('aria-label', pos.label);
+        layer.appendChild(led);
+      });
+    }
     ledPositions.forEach((pos, i) => {
-      const led = document.createElement('span');
-      led.className = 'rsr-lab__led';
+      const led = layer.children[i];
       led.style.left = pos.x + '%';
       led.style.top = pos.y + '%';
-      led.title = `${pos.label} — commanded/reported UI state`;
-      led.setAttribute('aria-label', pos.label);
-      layer.appendChild(led);
     });
   }
   function refresh() {
@@ -66,7 +67,6 @@
     setText('rsrLabPowerStatus', 'NOT MONITORED');
   }
   function mode(name) {
-    selectedMode = name;
     show('rsrLabBoard', name !== 'wiring');
     show('rsrLabWiringPanel', name === 'wiring');
     show('rsrLabPinLayer', name === 'pins');
@@ -80,8 +80,7 @@
   function mountOriginalControls() {
     const panel = document.querySelector('.rsrTrainerController');
     const host = $('rsrLabExistingControls');
-    if (!panel || !host) return;
-    if (panel.parentNode === host) return;
+    if (!panel || !host || panel.parentNode === host) return;
     originalParent = panel.parentNode;
     originalNext = panel.nextSibling;
     mountedPanel = panel;
@@ -122,18 +121,16 @@
     });
     ['rsrSwitchState0', 'connectionText', 'rsrPatternName'].forEach(id => {
       const target = $(id);
-      if (target) observer.observe(target, {childList:true, characterData:true, subtree:true});
+      if (target) observer.observe(target, { childList: true, characterData: true, subtree: true });
     });
-    // Existing LED buttons update their classes when the hardware module changes state.
-    // Watch those updates instead of replacing existing control functions.
     const panel = document.querySelector('.rsrTrainerController');
-    if (panel) observer.observe(panel, {attributes:true, attributeFilter:['class','aria-pressed'], subtree:true});
+    if (panel) observer.observe(panel, { attributes: true, attributeFilter: ['class', 'aria-pressed'], subtree: true });
     mode('board');
     refresh();
     return true;
   }
-  window.novaRSRLab = {init, open(){init(); return open();}, close, refresh, mode};
+  window.novaRSRLab = { init, open() { init(); return open(); }, close, refresh, mode };
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, {once:true});
+    document.addEventListener('DOMContentLoaded', init, { once: true });
   } else init();
 })();
