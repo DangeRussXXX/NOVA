@@ -36,6 +36,8 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
  margin:0!important;transform:none!important;object-fit:contain!important;border:0!important;background:#000!important;
 }
+/* RETURN TO ORB — visible only in video mode */
+
 .novaUnifiedConsole > #novaHybridBackOrb:not([hidden]){
     position:absolute!important;
     right:12px!important;
@@ -43,9 +45,9 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
     left:auto!important;
     bottom:auto!important;
     z-index:1100!important;
-    display:none!important;
-    visibility:hidden!important;
-    opacity:0!important;
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
     background:#092633!important;
     color:#a8f1ff!important;
     border:1px solid #2acbe9!important;
@@ -55,12 +57,15 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
     font-weight:700!important;
 }
 
-/* Show RETURN TO ORB only in video mode */
-body.novaHybridVideoActive
-.novaUnifiedConsole > #novaHybridBackOrb:not([hidden]){
-    display:inline-flex!important;
-    visibility:visible!important;
-    opacity:1!important;
+/* Hide when the video screen is inactive */
+body:not(.novaHybridVideoActive)
+.novaUnifiedConsole > #novaHybridBackOrb {
+    display:none!important;
+}
+
+/* Respect the button's hidden attribute */
+#novaHybridBackOrb[hidden]{
+    display:none!important;
 }
 .novaUnifiedConsole .novaAdaptivePlayer{position:relative!important;z-index:300!important}
 .novaUnifiedConsole .novaUnifiedBody{position:relative!important;z-index:300!important}
