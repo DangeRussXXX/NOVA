@@ -4252,7 +4252,7 @@ window.addEventListener('load',function(){
         document.body.appendChild(lab);
         return new Promise(function(resolve,reject) {
           const script = document.createElement('script');
-          script.src = 'hardware/rsr-trainer/rsr-trainer.js?v=1.9.23';
+          script.src = 'hardware/rsr-trainer/rsr-trainer.js?v=1.9.24';
           script.onload = resolve;
           script.onerror = function() { reject(new Error('RSR JavaScript failed to load')); };
           document.body.appendChild(script);
