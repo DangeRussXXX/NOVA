@@ -33,3 +33,17 @@
 #rsrLab .rsr-lab__pin:hover{background:#00eeff;box-shadow:0 0 8px #00eeff}
 #rsrLab output{color:#40e9ff;font-weight:700}
 @media(max-width:900px){#rsrLab{overflow:auto}#rsrLab .rsr-lab__columns{display:flex;flex-direction:column;overflow:visible}#rsrLab .rsr-lab__controls,#rsrLab .rsr-lab__simulator{overflow:visible}#rsrLab .rsr-lab__viewport{min-height:260px}}
+
+/* RSR visual-only 3-LED demo, test motion and optional audio controls */
+#rsrLab .rsr-lab__demo-leds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+#rsrLab .rsr-lab__demo-channel{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0;padding:13px 6px;border:1px solid #17657c;border-radius:10px;background:#061724;font-size:12px;font-weight:bold}
+#rsrLab .rsr-lab__demo-channel button{width:100%;font-size:11px;padding:8px 3px}
+#rsrLab .rsr-lab__demo-bulb{display:block;width:40px;height:40px;border-radius:50%;border:2px solid #375363;background:radial-gradient(circle at 35% 30%,#6b2730,#24050b 70%);box-shadow:inset 0 0 12px #000;transition:background .13s,box-shadow .13s,transform .13s}
+#rsrLab .rsr-lab__demo-bulb.is-on{background:radial-gradient(circle at 35% 30%,#fff6b1,#ff4254 48%,#b90026 90%);box-shadow:0 0 20px #ff2d52bb,0 0 38px #ff2d5266;transform:scale(1.09)}
+#rsrLab .rsr-lab__effect-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
+#rsrLab .rsr-lab__test-track{height:18px;overflow:hidden;border:1px solid #1a6d83;border-radius:15px;background:#020b12;margin:10px 0}
+#rsrLab #rsrLabTestPulse{display:block;width:24%;height:100%;background:linear-gradient(90deg,#00c5f1,#c9fcff,#00c5f1);box-shadow:0 0 12px #00e9ff;transform:translateX(-110%)}
+#rsrLab .rsr-lab__test-track.is-running #rsrLabTestPulse{animation:rsr-test-sweep 1.15s ease-in-out infinite alternate}
+#rsrLab #rsrLabTestResult{display:block;min-height:20px;font-size:12px}
+@keyframes rsr-test-sweep{from{transform:translateX(-110%)}to{transform:translateX(430%)}}
+@media(prefers-reduced-motion:reduce){#rsrLab .rsr-lab__test-track.is-running #rsrLabTestPulse{animation:none;transform:translateX(170%)}}

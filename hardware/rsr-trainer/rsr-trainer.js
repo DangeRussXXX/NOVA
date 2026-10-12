@@ -17,6 +17,12 @@
   let previewStates = null;
   let previewName = '';
   let previewStep = 0;
+  let demoStates = [false,false,false];
+  let soundEnabled = false;
+  let audioContext = null;
+  let lastSoundAt = 0;
+  let testTimer = null;
+  let testRunning = false;
   let previewSpeed = 1.5; // Global simulator speed; hardware timing is unchanged.
 
   // APPROVED photo alignment: LED 7 at left; LED 0 at right.
@@ -25,6 +31,66 @@
     y: 19.4,
     label: `LED ${i}`
   }));
+
+
+  // Web Audio effects are generated locally; no external files and no hardware commands.
+  function sound(frequency=440, duration=.055, type='sine') {
+    if (!soundEnabled || lab()?.hidden) return;
+    const now = performance.now();
+    if (now - lastSoundAt < 65) return; // avoid rapid-fire audio overload
+    lastSoundAt = now;
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!audioContext) audioContext = new AudioCtx();
+      if (audioContext.state === 'suspended') audioContext.resume().catch(()=>{});
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      gain.gain.setValueAtTime(.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.045, audioContext.currentTime + .008);
+      gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + duration);
+      osc.connect(gain); gain.connect(audioContext.destination);
+      osc.start(); osc.stop(audioContext.currentTime + duration + .01);
+    } catch (err) { console.debug('RSR audio unavailable:', err); }
+  }
+  function refreshDemo() {
+    for (let i=0;i<3;i++) {
+      $('rsrLabDemoLed'+i)?.classList.toggle('is-on', demoStates[i]);
+      const button = lab()?.querySelector('[data-rsr-demo="'+i+'"]');
+      if (button) {
+        button.textContent = demoStates[i] ? 'TURN OFF' : 'TURN ON';
+        button.setAttribute('aria-pressed', String(demoStates[i]));
+      }
+    }
+  }
+  function resetDemo() { demoStates=[false,false,false]; refreshDemo(); }
+  function startTestVisual() {
+    stopTestVisual();
+    testRunning=true;
+    $('rsrLabTestPulse')?.parentElement?.classList.add('is-running');
+    setText('rsrLabTestResult','RUNNING — waiting for actual test feedback (not verified)');
+    let step=0;
+    const tick=()=>{
+      if (!testRunning) return;
+      demoStates=[false,false,false]; demoStates[step%3]=true;
+      refreshDemo(); sound(300+step%3*170,.075,'triangle'); step++;
+      if (step<12) testTimer=setTimeout(tick,210);
+      else {
+        stopTestVisual();
+        setText('rsrLabTestResult','VISUAL SEQUENCE COMPLETE — check NOVA for actual test result');
+      }
+    };
+    tick();
+  }
+  function stopTestVisual() {
+    testRunning=false;
+    if (testTimer!==null) clearTimeout(testTimer);
+    testTimer=null;
+    $('rsrLabTestPulse')?.parentElement?.classList.remove('is-running');
+    resetDemo();
+  }
 
   function setText(id, value) {
     const node = $(id);
@@ -100,6 +166,7 @@
   function displayPreview(states) {
     previewStates = Array.from({length: 8}, (_, i) => !!states[i]);
     refresh();
+    if (previewName) sound(260 + previewStep % 8 * 55, .05, previewName === 'STROBE' ? 'square' : 'sine');
   }
   function schedulePreview(fn, ms) {
     previewTimer = setTimeout(fn, Math.max(15, Math.round(ms / previewSpeed)));
@@ -191,6 +258,8 @@
     const button = event.target.closest('button');
     if (!button || !button.closest('.rsrTrainerController')) return;
     const code = button.getAttribute('onclick') || '';
+    const label = (button.textContent || '').trim().toUpperCase();
+    if (/run(?:Trainer)?Test|runSystemTest/i.test(code) || label === 'RUN TEST') startTestVisual();
     if (code.includes('startTrainerPatternUI')) {
       const pattern = code.match(/startTrainerPatternUI\(\s*['"]([^'"]+)['"]/);
       if (pattern) startPattern(pattern[1].toLowerCase());
@@ -231,6 +300,7 @@
   function close() {
     if (!lab()) return;
     stopPreview();
+    stopTestVisual();
     restoreOriginalControls();
     lab().hidden = true;
     document.body.classList.remove('rsr-lab-open');
@@ -242,6 +312,22 @@
     $('rsrLabViewBoard')?.addEventListener('click', () => mode('board'));
     $('rsrLabViewWiring')?.addEventListener('click', () => mode('wiring'));
     $('rsrLabViewPins')?.addEventListener('click', () => mode('pins'));
+    $('rsrLabDemoLeds')?.addEventListener('click', event => {
+      const button = event.target.closest('[data-rsr-demo]');
+      if (!button) return;
+      const index = Number(button.dataset.rsrDemo);
+      if (!Number.isInteger(index) || index < 0 || index > 2) return;
+      demoStates[index] = !demoStates[index]; refreshDemo();
+      sound(demoStates[index] ? 680 : 270, .095, 'triangle');
+    });
+    $('rsrLabDemoReset')?.addEventListener('click', () => { stopTestVisual(); sound(220,.1); });
+    $('rsrLabSoundToggle')?.addEventListener('click', () => {
+      soundEnabled=!soundEnabled;
+      const button=$('rsrLabSoundToggle');
+      if (button) { button.textContent=soundEnabled?'🔊 SOUND ON':'🔇 SOUND OFF'; button.setAttribute('aria-pressed',String(soundEnabled)); }
+      if (soundEnabled) sound(650,.11,'triangle');
+    });
+    refreshDemo();
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && lab() && !lab().hidden) close();
     });
@@ -259,7 +345,7 @@
     refresh();
     return true;
   }
-  window.novaRSRLab = {init, open(){init(); return open();}, close, refresh, mode, stopPreview, setPreviewSpeed};
+  window.novaRSRLab = {init, open(){init(); return open();}, close, refresh, mode, stopPreview, setPreviewSpeed, startTestVisual};
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, {once:true});
   } else init();

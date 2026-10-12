@@ -18,6 +18,20 @@
           <!-- rsr-trainer.js moves the original controller here; no duplicate commands. -->
         </div>
       </section>
+      <section class="rsr-lab__group rsr-lab__effects" aria-label="RSR visual effects">
+        <h3>⚡ 3-LED VISUAL SIMULATOR</h3>
+        <p class="rsr-lab__notice">LED 0–2 are a local demonstration. Buttons below DO NOT send hardware commands.</p>
+        <div class="rsr-lab__demo-leds" id="rsrLabDemoLeds">
+          <div class="rsr-lab__demo-channel"><span class="rsr-lab__demo-bulb" id="rsrLabDemoLed0"></span><span>LED 0</span><button type="button" data-rsr-demo="0" aria-pressed="false">TURN ON</button></div>
+          <div class="rsr-lab__demo-channel"><span class="rsr-lab__demo-bulb" id="rsrLabDemoLed1"></span><span>LED 1</span><button type="button" data-rsr-demo="1" aria-pressed="false">TURN ON</button></div>
+          <div class="rsr-lab__demo-channel"><span class="rsr-lab__demo-bulb" id="rsrLabDemoLed2"></span><span>LED 2</span><button type="button" data-rsr-demo="2" aria-pressed="false">TURN ON</button></div>
+        </div>
+        <div class="rsr-lab__effect-actions"><button type="button" id="rsrLabSoundToggle" aria-pressed="false">🔇 SOUND OFF</button><button type="button" id="rsrLabDemoReset">RESET DEMO</button></div>
+        <h3>RUN TEST VISUALIZATION</h3>
+        <div class="rsr-lab__test-track" aria-label="Test animation"><span id="rsrLabTestPulse"></span></div>
+        <output id="rsrLabTestResult" role="status">READY — visual demo only</output>
+        <p class="rsr-lab__notice">Press the existing RUN TEST button above to start a visual sequence. This does not determine a hardware PASS/FAIL.</p>
+      </section>
       <section class="rsr-lab__group">
         <h3>SIMULATOR STATUS</h3>
         <p>LEDs: <output id="rsrLabLedStatus">Awaiting state</output></p>
