@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA — RSR Schematic Viewer</title>
+
+<style>
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #07131e;
+  color: #c9f5ff;
+  font-family: Arial, sans-serif;
+}
+
+.viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 9px;
+  background: #092b3e;
+  border-bottom: 1px solid #247e9b;
+}
+
+button {
+  padding: 8px 12px;
+  background: #10384c;
+  color: #c5f5ff;
+  border: 1px solid #2c829e;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #1b6179;
+}
+
+button.active {
+  background: #23cbe9;
+  color: #041824;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  overflow-x: auto;
+  background: #061b2a;
+  border-bottom: 1px solid #20566d;
+}
+
+.tabs button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.workspace {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #08111b;
+  cursor: grab;
+  touch-action: none;
+}
+
+.workspace.dragging {
+  cursor: grabbing;
+}
+
+.workspace img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  max-height: none;
+  transform-origin: center center;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.status {
+  padding: 7px 12px;
+  background: #092b3e;
+  border-top: 1px solid #247e9b;
+  font-size: 12px;
+  color: #8feaff;
+}
+
+.zoom-value {
+  min-width: 52px;
+  text-align: center;
+  font-weight: bold;
+  color: #8feaff;
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  color: #f9cb75;
+  line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="viewer">
+
+  <div class="toolbar">
+    <button id="zoomOut" type="button">−</button>
+    <span class="zoom-value" id="zoomValue">100%</span>
+    <button id="zoomIn" type="button">+</button>
+    <button id="fit" type="button">FIT</button>
+    <button id="reset" type="button">RESET</button>
+    <button id="rotateLeft" type="button">↶ ROTATE</button>
+    <button id="rotateRight" type="button">ROTATE ↷</button>
+    <button id="fullscreen" type="button">FULL SCREEN</button>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="workspace" id="workspace">
+    <img id="schematic" alt="RSR Trainer schematic">
+    <div class="empty" id="empty" hidden></div>
+  </div>
+
+  <div class="status" id="status">
+    RSR SCHEMATIC VIEWER READY
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+/*
+  IMAGE REPLACEMENT SYSTEM
+
+  Keep these filenames unchanged.
+  Replace the JPG files whenever new photographs
+  are available.
+
+  No HTML or JavaScript changes required.
+*/
+
+const pages = [
+  {
+    label: "DIGITAL",
+    title: "MAIN BOARD — DIGITAL SECTION",
+    file: "images/rsr-digital.jpg"
+  },
+  {
+    label: "FUNCTION GEN.",
+    title: "FUNCTION GENERATOR",
+    file: "images/rsr-function-generator.jpg"
+  },
+  {
+    label: "POWER SUPPLY",
+    title: "MAIN BOARD — POWER SUPPLY",
+    file: "images/rsr-power-supply.jpg"
+  },
+  {
+    label: "SWITCH BOARD",
+    title: "RSR SWITCH BOARD",
+    file: "images/rsr-switch-board.jpg"
+  }
+];
+
+const workspace = document.getElementById("workspace");
+const schematic = document.getElementById("schematic");
+const tabs = document.getElementById("tabs");
+const status = document.getElementById("status");
+const empty = document.getElementById("empty");
+const zoomValue = document.getElementById("zoomValue");
+
+let currentPage = 0;
+let scale = 1;
+let rotation = 0;
+let offsetX = 0;
+let offsetY = 0;
+let dragging = false;
+let dragX = 0;
+let dragY = 0;
+let startX = 0;
+let startY = 0;
+let imageLoaded = false;
+
+function render() {
+  schematic.style.transform =
+    "translate(-50%, -50%) " +
+    "translate(" + offsetX + "px," + offsetY + "px) " +
+    "rotate(" + rotation + "deg) " +
+    "scale(" + scale + ")";
+
+  zoomValue.textContent = Math.round(scale * 100) + "%";
+}
+
+function fitImage() {
+  if (!imageLoaded) return;
+
+  const width = workspace.clientWidth;
+  const height = workspace.clientHeight;
+
+  const sideways = Math.abs(rotation % 180) === 90;
+
+  const imageWidth = sideways
+    ? schematic.naturalHeight
+    : schematic.naturalWidth;
+
+  const imageHeight = sideways
+    ? schematic.naturalWidth
+    : schematic.naturalHeight;
+
+  if (!imageWidth || !imageHeight) return;
+
+  scale = Math.min(
+    width / imageWidth,
+    height / imageHeight
+  ) * 0.94;
+
+  offsetX = 0;
+  offsetY = 0;
+
+  render();
+}
+
+function showPage(index) {
+  currentPage = index;
+  imageLoaded = false;
+  rotation = 0;
+  offsetX = 0;
+  offsetY = 0;
+  scale = 1;
+
+  empty.hidden = true;
+  schematic.hidden = true;
+
+  const page = pages[index];
+
+  status.textContent = "LOADING — " + page.title;
+
+  document.querySelectorAll(".tabs button")
+    .forEach((button, i) => {
+      button.classList.toggle("active", i === index);
+    });
+
+  schematic.onload = () => {
+    imageLoaded = true;
+    schematic.hidden = false;
+    empty.hidden = true;
+    fitImage();
+    status.textContent = page.title;
+  };
+
+  schematic.onerror = () => {
+    imageLoaded = false;
+    schematic.hidden = true;
+    empty.hidden = false;
+    empty.textContent =
+      "IMAGE NOT FOUND: " + page.file +
+      "\nAdd the photograph using this exact filename.";
+    empty.style.whiteSpace = "pre-line";
+    status.textContent = "IMAGE UNAVAILABLE";
+  };
+
+  schematic.src = page.file;
+}
+
+pages.forEach((page, index) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = page.label;
+  button.onclick = () => showPage(index);
+  tabs.appendChild(button);
+});
+
+document.getElementById("zoomIn").onclick = () => {
+  scale = Math.min(scale * 1.25, 12);
+  render();
+};
+
+document.getElementById("zoomOut").onclick = () => {
+  scale = Math.max(scale / 1.25, 0.05);
+  render();
+};
+
+document.getElementById("fit").onclick = fitImage;
+
+document.getElementById("reset").onclick = () => {
+  rotation = 0;
+  fitImage();
+};
+
+document.getElementById("rotateLeft").onclick = () => {
+  rotation -= 90;
+  fitImage();
+};
+
+document.getElementById("rotateRight").onclick = () => {
+  rotation += 90;
+  fitImage();
+};
+
+document.getElementById("fullscreen").onclick = async () => {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (error) {
+    status.textContent = "FULL SCREEN UNAVAILABLE";
+  }
+};
+
+workspace.addEventListener("wheel", event => {
+  if (!imageLoaded) return;
+
+  event.preventDefault();
+
+  scale = Math.max(
+    0.05,
+    Math.min(12, scale * (event.deltaY < 0 ? 1.12 : 0.89))
+  );
+
+  render();
+}, { passive: false });
+
+workspace.addEventListener("pointerdown", event => {
+  if (event.button !== 0 || !imageLoaded) return;
+
+  dragging = true;
+  dragX = event.clientX;
+  dragY = event.clientY;
+  startX = offsetX;
+  startY = offsetY;
+
+  workspace.classList.add("dragging");
+  workspace.setPointerCapture(event.pointerId);
+});
+
+workspace.addEventListener("pointermove", event => {
+  if (!dragging) return;
+
+  offsetX = startX + event.clientX - dragX;
+  offsetY = startY + event.clientY - dragY;
+
+  render();
+});
+
+function stopDragging() {
+  dragging = false;
+  workspace.classList.remove("dragging");
+}
+
+workspace.addEventListener("pointerup", stopDragging);
+workspace.addEventListener("pointercancel", stopDragging);
+
+window.addEventListener("resize", () => {
+  if (imageLoaded) fitImage();
+});
+
+showPage(0);
+</script>
+
+</body>
+</html>
