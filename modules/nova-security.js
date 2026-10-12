@@ -28,6 +28,7 @@
       if(!body.owner) throw new Error('Account does not have NOVA owner permission');
       // Browser decode is only for token expiration; server verifies signature and claims.
       const payload=JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      console.log('NOVA VERIFIED GOOGLE ACCOUNT ID:', payload.sub);
       idToken=token; expiresAt=payload.exp*1000-30000; owner=true;render();
     }catch(err){expire();alert('NOVA access denied: '+err.message);}
   }
