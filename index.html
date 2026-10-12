@@ -4310,46 +4310,39 @@ window.addEventListener('load',function(){
 </script>
 <!-- RSR PIN MAP v1: isolated viewer; preserves original controls. -->
 <script src="hardware/rsr-trainer/rsr-pinmap-view.js?v=5.0.0"></script>
-
 <script>
+/* NOVA MEDIA COUNT: counts library entries without altering playback handlers. */
 (function () {
   function setupMediaCounts() {
     const list = document.getElementById('library');
-    if (!list || document.getElementById('novaMediaCountBar')) return;
-
+    const search = document.getElementById('search');
+    const filter = document.getElementById('filter');
+    if (!list || !search || !filter || document.getElementById('novaMediaCountBar')) return;
     const bar = document.createElement('div');
     bar.id = 'novaMediaCountBar';
     bar.className = 'novaMediaCountBar';
+    bar.setAttribute('aria-live', 'polite');
     list.before(bar);
-
-    function update() {
-      let music = 0, videos = 0, youtube = 0;
-
-      try { music = musicLibrary.length; } catch (e) {}
-      try { videos = videoLibrary.length; } catch (e) {}
-      try { youtube = novaYtSaved.length; } catch (e) {}
-
-      const total = music + videos + youtube;
-      const showing = list.querySelectorAll('.entry').length;
-
-      bar.textContent =
-        'SHOWING ' + showing + ' / ' + total +
-        ' MEDIA • ' + music + ' SONGS • ' +
-        videos + ' VIDEOS • ' + youtube + ' YOUTUBE';
-    }
-
-    new MutationObserver(update).observe(list, {childList: true});
+    const update = () => {
+      let total = 0, music = 0, videos = 0, youtube = 0;
+      try { total += musicLibrary.length; music += musicLibrary.length; } catch (_) {}
+      try { total += videoLibrary.length; videos += videoLibrary.length; } catch (_) {}
+      try { total += novaYtSaved.length; youtube += novaYtSaved.length; } catch (_) {}
+      const shown = list.querySelectorAll('.entry').length;
+      bar.textContent = `SHOWING ${shown} / ${total} MEDIA  •  ${music} SONGS  •  ${videos} VIDEOS  •  ${youtube} YOUTUBE`;
+    };
+    const observer = new MutationObserver(update);
+    observer.observe(list, {childList:true});
+    search.addEventListener('input', () => queueMicrotask(update));
+    filter.addEventListener('change', () => queueMicrotask(update));
     update();
   }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupMediaCounts);
-  } else {
-    setupMediaCounts();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupMediaCounts);
+  else setupMediaCounts();
 })();
-</script>
 
+</script>
+<script src="modules/nova-library-management.js?v=1"></script>
 </body>
 </html>
 
