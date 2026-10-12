@@ -2,6 +2,7 @@
    Paste this ENTIRE file into hardware/rsr-trainer/rsr-trainer.js.
    The existing dashboard remains the only sender of hardware commands.
    Preview timing is approximate; it is not measured hardware telemetry.
+   Global animation speed defaults to 1.5x; call novaRSRLab.setPreviewSpeed(2) to tune.
 */
 (function () {
   'use strict';
@@ -16,6 +17,7 @@
   let previewStates = null;
   let previewName = '';
   let previewStep = 0;
+  let previewSpeed = 1.5; // Global simulator speed; hardware timing is unchanged.
 
   // APPROVED photo alignment: LED 7 at left; LED 0 at right.
   const ledPositions = Array.from({ length: 8 }, (_, i) => ({
@@ -100,7 +102,13 @@
     refresh();
   }
   function schedulePreview(fn, ms) {
-    previewTimer = setTimeout(fn, ms);
+    previewTimer = setTimeout(fn, Math.max(15, Math.round(ms / previewSpeed)));
+  }
+  function setPreviewSpeed(multiplier) {
+    const speed = Number(multiplier);
+    if (!Number.isFinite(speed) || speed < 0.5 || speed > 4) return false;
+    previewSpeed = speed;
+    return true;
   }
   function startBlink() {
     stopPreview();
@@ -251,7 +259,7 @@
     refresh();
     return true;
   }
-  window.novaRSRLab = {init, open(){init(); return open();}, close, refresh, mode, stopPreview};
+  window.novaRSRLab = {init, open(){init(); return open();}, close, refresh, mode, stopPreview, setPreviewSpeed};
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, {once:true});
   } else init();
