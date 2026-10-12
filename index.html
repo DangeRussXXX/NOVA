@@ -63,6 +63,16 @@ body:not(.novaHybridVideoActive)
     display:none!important;
 }
 
+/* Also handle the actual media-controls location used by NOVA. */
+body:not(.novaHybridVideoActive) #novaMediaVideoControls #novaHybridBackOrb {
+    display:none!important;
+}
+body.novaHybridVideoActive #novaMediaVideoControls #novaHybridBackOrb:not([hidden]) {
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+}
+
 /* Respect the button's hidden attribute */
 #novaHybridBackOrb[hidden]{
     display:none!important;
