@@ -17,7 +17,7 @@
   // These are temporary DISPLAY coordinates, not verified pin coordinates.
   // Adjust after comparing the actual trainer photo in the browser.
   const ledPositions = Array.from({length: 8}, (_, i) => ({
-    x: 67 + i * 3.45, y: 24, label: `LED ${i}`
+    x: 61.7 + (7 - i) * 2.6, y: 16.4, label: `LED ${i}`
   }));
 
   function setText(id, value) {
