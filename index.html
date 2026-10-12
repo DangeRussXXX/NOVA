@@ -47,6 +47,7 @@ body.novaHybridVideoActive .novaUnifiedConsole .novaLeftHome{
 </style>
 </head>
 <body>
+<div class="app">
 <header>
 <div class="brand">
 <h1>NOVA COMMAND CENTER</h1>
@@ -4251,7 +4252,7 @@ window.addEventListener('load',function(){
         document.body.appendChild(lab);
         return new Promise(function(resolve,reject) {
           const script = document.createElement('script');
-          script.src = 'hardware/rsr-trainer/rsr-trainer.js?v=1.9.24';
+          script.src = 'hardware/rsr-trainer/rsr-trainer.js?v=1.9.23';
           script.onload = resolve;
           script.onerror = function() { reject(new Error('RSR JavaScript failed to load')); };
           document.body.appendChild(script);
@@ -4277,10 +4278,10 @@ window.addEventListener('load',function(){
   };
 })();
 </script>
-
-<script src="hardware/rsr-trainer/rsr-pinmap-view.js?v=1.0.0"></script>
 </body>
 </html>
+
+
 
 
 
