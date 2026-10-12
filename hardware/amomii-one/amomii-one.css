@@ -1,1 +1,19 @@
 #amomiiTwin[hidden]{display:none!important}.am-twin{position:fixed;inset:0;z-index:99999;background:rgba(1,10,17,.93);padding:2vh 2vw;box-sizing:border-box;color:#e5faff;font:13px Arial,sans-serif}.am-shell{height:96vh;display:flex;flex-direction:column;border:1px solid #21c8e9;border-radius:10px;overflow:hidden;background:#061c2b}.am-header,.am-tabs,.am-controls,.am-footer{padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #196078}.am-header{justify-content:space-between}.am-header strong{font-size:18px;color:#36e2ff}.am-header span{color:#f5d66b}.am-twin button,.am-twin select,.am-import{background:#063e56;color:#efffff;border:1px solid #27a7d3;border-radius:5px;padding:6px 9px;cursor:pointer;font:inherit}.am-twin button:hover,.am-import:hover{background:#086487}.am-twin .active{background:#09769a}.am-twin label{display:inline-flex;gap:5px;align-items:center}.am-controls{max-height:160px;overflow:auto}.am-stage{flex:1;overflow:auto;min-height:0;display:flex;justify-content:center;align-items:flex-start;padding:10px;background:#020b13}.am-photo{position:relative;width:min(100%,1050px);flex:none}.am-photo img{width:100%;height:auto;display:block;user-select:none}.am-pin-layer{position:absolute;inset:0;pointer-events:none}.am-dot{position:absolute;transform:translate(-50%,-50%);border:1px solid #77ffff;border-radius:50%;width:9px;height:9px;background:#04bfe1;box-shadow:0 0 5px #04bfe1;padding:0;pointer-events:auto}.am-dot.selected{width:15px;height:15px;background:#ffdf23;border:2px solid #fff;box-shadow:0 0 13px #ffd400;z-index:5}.am-dot.estimated{background:#fb8c24;border-color:#ffb673}.am-footer{justify-content:space-between;border-top:1px solid #196078;border-bottom:0}.am-footer>div{display:flex;gap:5px;align-items:center}#amHint{color:#ffd982}#amProgress{color:#75f5c2}@media(max-width:700px){.am-twin{padding:0}.am-shell{height:100vh;border-radius:0}.am-header strong{font-size:14px}.am-controls{max-height:38vh}.am-photo{min-width:640px}}
+/* V2: hardware commands on left, simulator and pin map on right */
+.am-workspace{display:grid;grid-template-columns:minmax(270px,340px) minmax(0,1fr);flex:1;min-height:0;overflow:hidden}
+.am-hardware{padding:15px;overflow-y:auto;border-right:1px solid #196078;background:#071827}
+.am-hardware h2{font-size:15px;margin:0 0 14px;color:#39ddff}
+.am-hardware h3{font-size:13px;margin:20px 0 10px;color:#69d9f0;border-bottom:1px solid #195368;padding-bottom:6px}
+.am-connection{margin:0 0 12px;padding:10px;background:#092c3d;border-radius:6px}
+.am-connection strong{color:#a6ebff}
+.am-button-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.am-button-grid button{min-height:39px;font-weight:bold}
+.am-hw-stats{display:grid;gap:5px}
+.am-hw-stats>div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #154153;padding:6px 0}
+.am-hw-stats strong{text-align:right;color:#c4f7ff}
+.am-hw-note{color:#91acb7;font-size:11px;line-height:1.5;margin-top:20px}
+.am-simulator{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.am-sim-heading{padding:9px 12px;background:#082e42;color:#48e6ff;font-weight:bold;letter-spacing:.04em}
+.am-simulator .am-stage{flex:1}
+.am-simulator .am-controls{max-height:170px}
+@media(max-width:850px){.am-workspace{grid-template-columns:1fr;overflow:auto}.am-hardware{border-right:0;border-bottom:1px solid #196078;max-height:none;overflow:visible}.am-simulator{min-height:540px;overflow:visible}.am-simulator .am-stage{min-height:300px}}

@@ -1,7 +1,50 @@
 <section id="amomiiTwin" class="am-twin" hidden aria-label="AMOMII ONE Digital Twin" role="dialog" aria-modal="true">
  <div class="am-shell"><header class="am-header"><strong>⚡ AMOMII ONE — DIGITAL TWIN</strong><span id="amTwinStatus">VISUAL MAPPER · NO HARDWARE OUTPUT</span><button type="button" id="amTwinClose">✕ CLOSE</button></header>
  <nav class="am-tabs"><button type="button" data-am-tab="board" class="active">BOARD</button><button type="button" data-am-tab="pins">PIN MAP</button></nav>
+ <div class="am-workspace">
+  <aside class="am-hardware" aria-label="AMOMII hardware controller">
+   <h2>AMOMII HARDWARE CONTROLLER</h2>
+   <div class="am-connection">CONNECTION: <strong id="amHwConnection">OFFLINE</strong></div>
+   <div class="am-button-grid">
+    <button type="button" data-am-action="toggleConnection" id="amHwConnect">CONNECT</button>
+    <button type="button" data-am-action="toggleBoardLed" id="amHwLed">LED</button>
+    <button type="button" data-am-command="help">HELP</button>
+    <button type="button" data-am-action="stopBoard">STOP</button>
+    <button type="button" data-am-command="blink 5">BLINK 5</button>
+    <button type="button" data-am-command="sos">SOS</button>
+   </div>
+   <h3>SYSTEM</h3>
+   <div class="am-button-grid">
+    <button type="button" data-am-command="status">STATUS</button>
+    <button type="button" data-am-action="runSystemTest">RUN SYSTEM TEST</button>
+   </div>
+   <div class="am-hw-stats">
+    <div>Board <strong>AMOMII ONE</strong></div>
+    <div>Connection <strong data-am-source="statusConnection">OFFLINE</strong></div>
+    <div>System <strong data-am-source="statusSystem">READY</strong></div>
+    <div>LED <strong data-am-source="statusLed">UNKNOWN</strong></div>
+    <div>Blinking <strong data-am-source="statusBlinking">NO</strong></div>
+    <div>Blink speed <strong data-am-source="statusBlinkSpeed">—</strong></div>
+    <div>Commands <strong data-am-source="statusCommands">0</strong></div>
+    <div>Uptime <strong data-am-source="uptime">00:00:00</strong></div>
+   </div>
+   <h3>SYSTEM TEST</h3>
+   <div class="am-hw-stats">
+    <div>Serial <strong data-am-source="testSerial">—</strong></div>
+    <div>LED <strong data-am-source="testLed">—</strong></div>
+    <div>Timing <strong data-am-source="testTiming">—</strong></div>
+    <div>Memory <strong data-am-source="testMemory">—</strong></div>
+    <div>Commands <strong data-am-source="testCommands">—</strong></div>
+    <div>System <strong data-am-source="testSystem">—</strong></div>
+    <div>Result <strong data-am-source="testResult">NOT RUN</strong></div>
+   </div>
+   <p class="am-hw-note">Uses NOVA's existing hardware commands. Connection status is reported by NOVA, not independently verified here.</p>
+  </aside>
+  <main class="am-simulator" aria-label="AMOMII ONE simulator">
+   <div class="am-sim-heading">BOARD SIMULATION &amp; PIN MAPPER</div>
  <div class="am-controls" id="amTwinControls"><label>GROUP <select id="amGroup"></select></label><label>PIN <select id="amPin"></select></label><button id="amMarker" type="button">● MARKER ON</button><button id="amPlace" type="button">PLACE PIN: OFF</button><button id="amPrev" type="button">◀ PREVIOUS</button><button id="amNext" type="button">NEXT ▶</button><button id="amClear" type="button">CLEAR POSITION</button><label><input id="amShowAll" type="checkbox"> SHOW ALL SAVED</label><button id="amExcel" type="button">DOWNLOAD EXCEL</button><button id="amBackup" type="button">EXPORT BACKUP</button><label class="am-import">IMPORT BACKUP<input id="amImport" type="file" accept="application/json,.json" hidden></label><span id="amProgress"></span><span id="amHint">Select a pin to highlight its estimated position.</span></div>
  <div class="am-stage"><div id="amPhotoWrap" class="am-photo"><img id="amPhoto" src="hardware/amomii-one/assets/amomii-one.jpg" alt="AMOMII ONE Arduino-compatible board" draggable="false"><div id="amPinLayer" class="am-pin-layer"></div></div></div>
  <footer class="am-footer"><span id="amSelection">No pin selected</span><div><button id="amUp" type="button">↑</button><button id="amLeft" type="button">←</button><button id="amRight" type="button">→</button><button id="amDown" type="button">↓</button><label>STEP <select id="amStep"><option value="0.1">0.1%</option><option value="0.02">0.02%</option><option value="0.5">0.5%</option></select></label></div></footer>
- </div></section>
+
+  </main>
+ </div> </div></section>
