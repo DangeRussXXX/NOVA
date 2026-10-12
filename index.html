@@ -114,7 +114,8 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 <div class="headerNovaControls">
   <div class="buttonGrid">
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
-    <button class="control" type="button" id="novaHistoryNavButton" aria-controls="novaHudTicker" aria-expanded="false" title="Show or hide NOVA live activity">NOVA HISTORY</button>
+    <!-- NOVA HISTORY is now part of NOVA SYSTEM; retained hidden for legacy activity hooks. -->
+    <button class="control" type="button" id="novaHistoryNavButton" aria-controls="novaHudTicker" aria-expanded="false" hidden style="display:none!important">NOVA HISTORY</button>
     <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
   </div>
@@ -3516,6 +3517,7 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
 
 </body></html>`);
   w.document.close();try{w.focus()}catch(e){}
+  return w;
 }
 function novaCommandReferenceHtml(){
 return `<div class="note">Exact NOVA command reference. Type these in SEND TO NOVA or speak them while TALK TO NOVA is enabled.</div>
@@ -3602,14 +3604,60 @@ function novaPopupClearHistory(button){
   const doc=button.ownerDocument;const rows=doc.getElementById('novaPopupHistoryRows');
   if(rows)rows.innerHTML='<div class="note">No system events recorded yet.</div>';
 }
+/* NOVA SYSTEM — unified, individually collapsible system + history screen.
+   History remains owned by the main NOVA window; the popup reads it live. */
 function openNovaSystemScreen(){
-  const help=`<div class="grid"><div class="item"><b>TALK TO NOVA</b><p>Enable voice control.</p></div><div class="item"><b>NOVA COMMANDS</b><p>Exact commands for hardware and features.</p></div><div class="item"><b>VOICE COMMANDS</b><p>Natural language examples.</p></div><div class="item"><b>LIVE ACTIVITY</b><p>Use the monitor on the main NOVA screen to review, download, or clear events.</p></div></div>`;
-  const panel=(name,html,expanded=false)=>`<details ${expanded?'open':''} style="border:1px solid #263241;border-radius:10px;margin:0 0 12px;background:#090e14"><summary style="cursor:pointer;padding:15px 17px;color:#36d9ff;font-weight:800;letter-spacing:1px">${name}</summary><div style="padding:0 16px 16px">${html}</div></details>`;
-  openNovaInfoScreen("NOVA SYSTEM",
-    panel("NOVA HELP",help,true)+
-    panel("NOVA COMMANDS",novaCommandReferenceHtml())+
-    panel("VOICE COMMANDS",novaVoiceCommandReferenceHtml())
-  );
+  const help=`<div class="grid"><div class="item"><b>TALK TO NOVA</b><p>Enable voice control on the main dashboard.</p></div><div class="item"><b>NOVA COMMANDS</b><p>Exact commands for hardware and features.</p></div><div class="item"><b>VOICE COMMANDS</b><p>Natural-language examples.</p></div><div class="item"><b>NOVA HISTORY</b><p>Live activity, saved events, download and clear.</p></div></div>`;
+  const panel=(key,name,html,expanded=true)=>`<details class="novaSystemSection" data-nova-section="${key}" ${expanded?'open':''} style="border:1px solid #263241;border-radius:10px;margin:0 0 12px;background:#090e14"><summary style="cursor:pointer;padding:15px 17px;color:#36d9ff;font-weight:800;letter-spacing:1px">${name}</summary><div style="padding:0 16px 16px">${html}</div></details>`;
+  const historyTools=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px"><button class="close" type="button" id="novaSystemDownloadHistory">⬇ DOWNLOAD HISTORY</button><button class="close" type="button" id="novaSystemClearHistory">✕ CLEAR HISTORY</button></div>`;
+  const liveHistory=`<div class="note">Events update automatically while this screen is open.</div><div id="novaSystemLiveRows" style="max-height:300px;overflow:auto;overflow-wrap:anywhere"></div>`;
+  const savedHistory=`${historyTools}<div class="note" id="novaSystemHistoryCount"></div><div id="novaSystemHistoryRows" style="max-height:440px;overflow:auto;overflow-wrap:anywhere"></div>`;
+  const controls=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button type="button" class="close" id="novaSystemShowAll">SHOW ALL PANELS</button><button type="button" class="close" id="novaSystemHideAll">HIDE ALL PANELS</button></div>`;
+  const body=controls+
+    panel('live','NOVA LIVE ACTIVITY',liveHistory)+
+    panel('history','NOVA HISTORY',savedHistory)+
+    panel('help','NOVA HELP',help)+
+    panel('commands','NOVA COMMANDS',novaCommandReferenceHtml())+
+    panel('voice','NOVA VOICE COMMANDS',novaVoiceCommandReferenceHtml());
+  // Reuse NOVA's existing system popup rather than creating a competing window.
+  const w=openNovaInfoScreen('NOVA SYSTEM',body);
+  if(!w || w.closed)return;
+  const doc=w.document;
+  const sections=Array.from(doc.querySelectorAll('.novaSystemSection'));
+  const preferenceKey='novaSystemPanelVisibilityV1';
+  let prefs={};try{prefs=JSON.parse(localStorage.getItem(preferenceKey)||'{}')||{}}catch(e){}
+  const save=()=>{try{localStorage.setItem(preferenceKey,JSON.stringify(prefs))}catch(e){}};
+  sections.forEach(section=>{
+    const key=section.dataset.novaSection;
+    if(typeof prefs[key]==='boolean')section.open=prefs[key];
+    section.addEventListener('toggle',()=>{prefs[key]=section.open;save()});
+  });
+  const setAll=visible=>{sections.forEach(section=>{section.open=visible;prefs[section.dataset.novaSection]=visible});save()};
+  doc.getElementById('novaSystemShowAll')?.addEventListener('click',()=>setAll(true));
+  doc.getElementById('novaSystemHideAll')?.addEventListener('click',()=>setAll(false));
+  doc.getElementById('novaSystemDownloadHistory')?.addEventListener('click',()=>novaDownloadHistory());
+  doc.getElementById('novaSystemClearHistory')?.addEventListener('click',()=>{if(novaClearHistory())refreshHistory(true)});
+  const esc=value=>novaPopupEscape(value);
+  let lastSignature='';
+  function refreshHistory(force=false){
+    if(w.closed)return;
+    const entries=Array.isArray(novaFullHistory)?novaFullHistory:[];
+    const last=entries[entries.length-1];
+    const signature=entries.length+'|'+(last?.time||0)+'|'+(last?.message||'');
+    if(!force&&signature===lastSignature)return;
+    lastSignature=signature;
+    const render=items=>items.length?items.slice().reverse().map(item=>`<div class="historyItem"><span class="time">${esc(new Date(item.time).toLocaleString())} [${esc(item.type)}]</span><span class="cmd">${esc(item.message)}</span></div>`).join(''):'<div class="note">No system events recorded yet.</div>';
+    const live=doc.getElementById('novaSystemLiveRows');
+    const history=doc.getElementById('novaSystemHistoryRows');
+    if(live)live.innerHTML=render(entries.slice(-35));
+    if(history)history.innerHTML=render(entries);
+    const count=doc.getElementById('novaSystemHistoryCount');
+    if(count)count.textContent=entries.length+' SAVED EVENTS';
+  }
+  refreshHistory(true);
+  // Keep popup synced to the existing persistent NOVA event history.
+  const timer=setInterval(()=>{if(w.closed){clearInterval(timer);return}refreshHistory()},1000);
+  w.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
 }
 
 /* NOVA IRIS LIVE DASHBOARD + CALENDAR POPUP */
