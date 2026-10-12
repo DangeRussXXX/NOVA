@@ -65,3 +65,12 @@
 #rsrLab .rsr-lab__photo-lamp{width:1.7%;box-shadow:inset 0 0 3px #000;z-index:21}
 #rsrLab .rsr-lab__photo-lamp.is-on{box-shadow:0 0 10px 5px #ff203abb,0 0 24px 9px #ff203a77}
 #rsrLab .rsr-lab__photo-lamp.is-green.is-on{box-shadow:0 0 10px 5px #18ff75bb,0 0 24px 9px #18ff7577}
+
+
+/* Bright, unmistakable ON state at the existing photographed power switch. */
+#rsrLab #rsrLabPhotoPowerSwitch{transition:background .16s,box-shadow .16s,border-color .16s;overflow:visible}
+#rsrLab #rsrLabPhotoPowerSwitch::after{content:"";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(9px,1.3vw,18px);font-weight:900;letter-spacing:.08em;color:transparent;pointer-events:none}
+#rsrLab #rsrLabPhotoPowerSwitch.is-on{background:rgba(255,20,32,.72)!important;border:3px solid #fff4a3!important;box-shadow:0 0 12px 5px #ff263bd9,0 0 34px 12px #ff263b99,inset 0 0 12px #ffb3a0!important;animation:rsrPowerGlow 1.25s ease-in-out infinite}
+#rsrLab #rsrLabPhotoPowerSwitch.is-on::after{content:"ON";color:#fff;text-shadow:0 1px 3px #7e0011,0 0 8px #fff}
+@keyframes rsrPowerGlow{50%{box-shadow:0 0 17px 7px #ff263bf0,0 0 43px 16px #ff263baa,inset 0 0 14px #ffd4bf}}
+@media(prefers-reduced-motion:reduce){#rsrLab #rsrLabPhotoPowerSwitch.is-on{animation:none}}
