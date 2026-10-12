@@ -7,6 +7,7 @@
 <title>NOVA Command Center</title>
 <link rel="stylesheet" href="nova.css?v=1.9.5">
 <link rel="stylesheet" href="hardware/rsr-trainer/rsr-trainer.css?v=1.9.23">
+<link rel="stylesheet" href="hardware/amomii-one/amomii-one.css?v=1.0.0">
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>⚡</text></svg>">
 <!-- NOVA 1.8.1: page styles moved to nova.css; loaded after base rules in original order. -->
@@ -3872,6 +3873,7 @@ if(document.readyState==="loading"){
 
 </script>
 <script src="hardware/nova-hardware.js"></script>
+<script src="hardware/amomii-one/amomii-one.js?v=1.0.0"></script>
 <script src="modules/nova-browser.js"></script>
 <script src="modules/nova-calendar.js"></script>
 <script src="modules/nova-camera.js"></script>
@@ -4133,7 +4135,7 @@ window.addEventListener('load',function(){
  header.querySelectorAll('button').forEach(b=>{b.classList.add('novaGroupButton');b.dataset.group='nova';b.addEventListener('click',()=>{Object.values(panels).forEach(p=>p.hidden=true);theme('nova');});});
  const divider=()=>{const e=document.createElement('span');e.className='novaGroupDivider';e.setAttribute('aria-hidden','true');header.appendChild(e);};
  add('NOVA BROWSER','nova','browser');divider();
- add('AMOMII','hardware','amomii');add('RSR TRAINER','hardware','rsr',()=>novaOpenRSR());add('PORTABLE TRAINER','hardware','portable');divider();
+ add('AMOMII','hardware','amomii',()=>window.novaOpenAMOMII());add('RSR TRAINER','hardware','rsr',()=>novaOpenRSR());add('PORTABLE TRAINER','hardware','portable');divider();
  add('MEDIA LIBRARY','media','library');add('PLAYLISTS','media','playlists');
  mediaModeButton=document.createElement('button');
  mediaModeButton.type='button';mediaModeButton.className='control novaGroupButton novaMediaModeButton';
