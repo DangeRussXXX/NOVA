@@ -1,11 +1,11 @@
-/* NOVA RSR PIN MAP v5 — individual, manually verified photo pin placement.
+/* NOVA RSR PIN MAP v6 — individual, manually verified photo pin placement.
    Drop-in replacement for hardware/rsr-trainer/rsr-pinmap-view.js.
    Does not send commands to the trainer or change LED functionality.
    The dots are visual markers ONLY; electrical continuity is unverified.
 */
 (function () {
   'use strict';
-  if (window.novaRSRPinmapV5) return;
+  if (window.novaRSRPinmapV6) return;
   const $ = id => document.getElementById(id);
   const DATA_URL = 'hardware/rsr-trainer/rsr-pinmap.json';
   const STORE = 'nova.rsr.pinmap.individual.v3';
@@ -33,21 +33,22 @@
     records.forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.id + (p.section === 'POWER RAIL' ? ' · RAIL (PROVISIONAL)' : ''); frag.appendChild(opt); });
     el.replaceChildren(frag); el.value = selectedPin;
   }
-  // Provisional image-space locations measured from the user's actual 1427 x 925
-  // RSR Digital Twin photo. Never replace manually placed pins.
+  // Provisional hole centers estimated on the actual 976 x 737 full-trainer photo.
+  // Each row is independently placed; user-saved manual points always win.
+  // Main board numbering increases RIGHT to LEFT in this photograph.
   // Printed column 1 is on the RIGHT; column 63 is on the LEFT.
   function seedFromPhoto() {
     const img = image();
-    if (!img || img.naturalWidth !== 1427 || img.naturalHeight !== 925) {
-      return status('Photo preset requires the 1427 × 925 reference image. Current image is ' +
+    if (!img || img.naturalWidth !== 976 || img.naturalHeight !== 737) {
+      return status('Photo preset requires the 976 × 737 full-trainer image. Current image is ' +
         (img ? img.naturalWidth + ' × ' + img.naturalHeight : 'missing') + '. No positions changed.');
     }
     const rowY = {
-      BB1: [113, 135, 157, 179, 201, 266, 288, 310, 332, 354],
-      BB2: [579, 600, 622, 643, 665, 729, 750, 771, 792, 813]
+      BB1: [381, 391, 401, 411, 421, 450, 460, 470, 480, 490],
+      BB2: [565, 575, 585, 595, 605, 625, 635, 645, 655, 665]
     };
     // Horizontal pitch approximated from numbered column markings and hole centers.
-    const xCol1 = 1413, xCol63 = 36;
+    const xCol1 = 844, xCol63 = 321;
     let count = 0;
     for (const p of records) {
       if (!isMain(p) || positions[p.id]) continue;
@@ -56,13 +57,13 @@
       const x = xCol1 + (p.column - 1) * (xCol63 - xCol1) / 62;
       const y = ys[p.row.charCodeAt(0) - 65];
       if (!Number.isFinite(y)) continue;
-      estimates[p.id] = {x: +(x / 1427 * 100).toFixed(5), y: +(y / 925 * 100).toFixed(5)};
+      estimates[p.id] = {x: +(x / 976 * 100).toFixed(5), y: +(y / 737 * 100).toFixed(5)};
       count++;
     }
     try { localStorage.setItem(ESTIMATE_STORE, JSON.stringify(estimates)); }
     catch (e) { return status('Could not save estimates: ' + e.message); }
     render();
-    status('Photo preset loaded: ' + count + ' MAIN pin estimates (orange). Manual positions preserved. Rail IDs remain provisional/unpositioned. Check BB1-A1, BB1-A63, BB2-J1 and BB2-J63 first.');
+    status('Full-trainer photo preset loaded: ' + count + ' MAIN pin estimates (orange). Manual positions preserved. Rail IDs remain provisional/unpositioned. Check BB1-A1, BB1-A63, BB2-J1 and BB2-J63 first.');
   }
   // Write a real XLSX workbook locally; no CDN, account, or network dependency.
   const enc = new TextEncoder();
@@ -108,7 +109,7 @@
       panel.setAttribute('aria-label', 'Individual RSR breadboard pin mapper');
       Object.assign(panel.style, { position: 'relative', zIndex: '65', background: 'rgba(7,23,35,.97)', color: '#e5faff', padding: '12px', border: '1px solid #26b8d6', borderRadius: '8px', font: '13px Arial,sans-serif', boxSizing: 'border-box', maxHeight: '48%', overflow: 'auto' });
       panel.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px"><strong style="color:#16d7f5">RSR PIN MAP · INDIVIDUAL PIN MAPPER v5</strong><span id="rsrMapProgress"></span></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px"><strong style="color:#16d7f5">RSR PIN MAP · INDIVIDUAL PIN MAPPER v6</strong><span id="rsrMapProgress"></span></div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
           <label for="rsrMapBoard">BOARD</label><select id="rsrMapBoard"><option value="BB1">BB1 — UPPER</option><option value="BB2">BB2 — LOWER</option></select>
           <label for="rsrMapSearch">PIN ID</label><select id="rsrMapSearch" aria-label="Choose any pin" style="max-width:270px;min-width:160px"></select>
@@ -119,7 +120,7 @@
           <button type="button" id="rsrMapPlace">PLACE SELECTED PIN: OFF</button>
           <button type="button" id="rsrMapRemove">CLEAR PIN POSITION</button>
           <label><input type="checkbox" id="rsrMapAll"> SHOW ALL SAVED PINS</label>
-          <button type="button" id="rsrMapExcel">DOWNLOAD EXCEL .XLSX</button><button type="button" id="rsrMapEstimate">PRE-FILL FROM PHOTO (1,260 MAIN PINS)</button><button type="button" id="rsrMapExport">EXPORT BACKUP</button>
+          <button type="button" id="rsrMapExcel">DOWNLOAD EXCEL .XLSX</button><button type="button" id="rsrMapEstimate">PRE-FILL FULL TRAINER PHOTO (1,260 PINS)</button><button type="button" id="rsrMapExport">EXPORT BACKUP</button>
           <button type="button" id="rsrMapImport">IMPORT BACKUP</button>
           <input type="file" id="rsrMapFile" accept=".json,application/json" hidden>
         </div>
@@ -201,5 +202,5 @@
   function loadAndShow() { if (records.length) return show(); fetch(DATA_URL, { cache: 'no-store' }).then(r => { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }).then(data => { if (!Array.isArray(data.pins)) throw Error('Missing pins array'); records = data.pins; show(); }).catch(err => { if (ensure()) { panel.hidden = false; active = true; status('Could not load pin database: ' + err.message); } }); }
   document.addEventListener('click', e => { const btn = e.target.closest?.('button'); if (!btn) return; if (btn.id === 'rsrLabViewPins') Promise.resolve().then(loadAndShow); else if (['rsrLabViewBoard', 'rsrLabViewWiring', 'rsrLabClose'].includes(btn.id)) hide(); });
   window.addEventListener('resize', () => { if (active) render(); });
-  window.novaRSRPinmapV5 = { show: loadAndShow, hide, render, seedFromPhoto, getPositions: () => JSON.parse(JSON.stringify(positions)), getEstimates: () => JSON.parse(JSON.stringify(estimates)) };
+  window.novaRSRPinmapV6 = { show: loadAndShow, hide, render, seedFromPhoto, getPositions: () => JSON.parse(JSON.stringify(positions)), getEstimates: () => JSON.parse(JSON.stringify(estimates)) };
 })();
