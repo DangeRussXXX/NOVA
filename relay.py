@@ -1,95 +1,90 @@
+"""NOVA relay: staged for authenticated Render server. Do not deploy alone."""
+import os
+import re
 import time
 import serial
 import requests
+from pathlib import Path
 
-ser = serial.Serial("COM9", 9600, timeout=0.1)
+COMMAND_URL = 'https://amomii-server.onrender.com/command'
+RESPONSE_URL = 'https://amomii-server.onrender.com/response'
+RELAY_TOKEN = os.environ.get('NOVA_RELAY_TOKEN', '').strip()
+if not RELAY_TOKEN:
+    raise SystemExit('NOVA_RELAY_TOKEN is not set. Relay not started.')
 
-COMMAND_URL = "https://amomii-server.onrender.com/command"
-RESPONSE_URL = "https://amomii-server.onrender.com/response"
+HEADERS = {'Authorization': f'Bearer {RELAY_TOKEN}'}
+# Only Arduino commands supported by the current AMOMII trainer protocol.
+PATTERNS = [
+    r'(?:HELP|STATUS|TEST|TOGGLE)',
+    r'(?:TRAINER )?(?:STOP|STATUS|TEST)',
+    r'TRAINER PATTERN [A-Z0-9_-]{1,32}',
+    r'TRAINER ALL (?:ON|OFF)',
+    r'(?:LED|ARDUINO LED) (?:ON|OFF)',
+    r'TRAINER LED [0-7] (?:ON|OFF)',
+    r'TRAINER LED ALL (?:ON|OFF)',
+    r'ARDUINO ALL OFF',
+    r'ARDUINO (?:ON|OFF)',
+    r'(?:ALL|BOTH) (?:ON|OFF)',
+    r'(?:(?:TRAINER|BOTH) )?BLINK \d{1,4}',
+    r'SPEED \d{1,5}',
+    r'(?:(?:TRAINER|BOTH) )?FLASH \d{1,4} \d{1,5}',
+    r'PULSE \d{1,5}',
+    r'(?:(?:TRAINER|BOTH|MORSE|TRAINER MORSE|BOTH MORSE) )?SOS',
+    r'STOP',
+    r'TRAINER LED [0-7] TOGGLE',
+]
+ALLOWED = [re.compile(rf'^(?:{pattern})$', re.IGNORECASE) for pattern in PATTERNS]
 
+def is_approved(cmd):
+    if not (0<len(cmd)<=100 and all(32<=ord(c)<=126 for c in cmd) and any(p.fullmatch(cmd) for p in ALLOWED)):
+        return False
+    parts=cmd.upper().split()
+    if 'BLINK' in parts:return 1<=int(parts[-1])<=100
+    if 'FLASH' in parts:
+        n,ms=map(int,parts[-2:]);return 1<=n<=100 and 20<=ms<=5000
+    if parts[0] in ('SPEED','PULSE'):return 20<=int(parts[-1])<=5000
+    return True
 
-def send_response_to_server(response):
+def send_response(session, response):
     response = response.strip()
-
     if not response:
         return
-
     try:
-        result = requests.post(
-            RESPONSE_URL,
-            data=response,
-            timeout=5
-        )
+        result = session.post(RESPONSE_URL, data=response[:4096], timeout=5)
+        result.raise_for_status()
+        print('>>> POSTED ARDUINO RESPONSE:', repr(response[:120]))
+    except requests.RequestException as error:
+        print('>>> RESPONSE POST ERROR:', error)
 
-        print(
-            ">>> POSTED ARDUINO RESPONSE:",
-            repr(response),
-            "| HTTP",
-            result.status_code
-        )
+def main():
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    with serial.Serial('COM9', 9600, timeout=0.1) as ser:
+        print('NOVA relay connected. Authenticated command polling enabled.')
+        while True:
+            try:
+                result = session.get(COMMAND_URL, timeout=5)
+                result.raise_for_status()
+                cmd = result.text.strip()
+                if cmd:
+                    if is_approved(cmd):
+                        print('>>> RECEIVED APPROVED COMMAND:', repr(cmd))
+                        ser.write((cmd + '\n').encode('ascii'))
+                    else:
+                        print('>>> REJECTED UNAPPROVED COMMAND:', repr(cmd[:120]))
+                while ser.in_waiting > 0:
+                    raw = ser.readline()
+                    line = raw.decode('utf-8', errors='replace').strip()
+                    if line:
+                        print('>>> RECEIVED FROM ARDUINO:', repr(line[:120]))
+                        send_response(session, line)
+            except requests.HTTPError as error:
+                print('>>> HTTP ERROR:', error)
+                if error.response is not None and error.response.status_code in (401, 403):
+                    raise SystemExit('Authentication rejected. Check NOVA_RELAY_TOKEN in Render and Windows.')
+            except (requests.RequestException, serial.SerialException) as error:
+                print('>>> RELAY ERROR:', repr(error))
+            time.sleep(0.2)
 
-    except Exception as e:
-        print(">>> RESPONSE POST ERROR:", e)
-
-
-while True:
-
-    try:
-
-        # -----------------------------
-        # SEND COMMAND TO ARDUINO
-        # -----------------------------
-
-        cmd = requests.get(
-            COMMAND_URL,
-            timeout=5
-        ).text.strip()
-
-        if cmd:
-
-            print(
-                ">>> RECEIVED FROM SERVER:",
-                repr(cmd)
-            )
-
-            ser.write(
-                (cmd + "\n").encode()
-            )
-
-            print(
-                ">>> SENT TO ARDUINO"
-            )
-
-
-        # -----------------------------
-        # READ EVERYTHING FROM ARDUINO
-        # -----------------------------
-
-        while ser.in_waiting > 0:
-
-            raw = ser.readline()
-
-            line = raw.decode(
-                "utf-8",
-                errors="ignore"
-            ).strip()
-
-            if line:
-
-                print(
-                    ">>> RECEIVED FROM ARDUINO:",
-                    repr(line)
-                )
-
-                send_response_to_server(line)
-
-
-    except Exception as e:
-
-        print(
-            ">>> RELAY ERROR:",
-            repr(e)
-        )
-
-
-    time.sleep(0.05)
+if __name__ == '__main__':
+    main()
