@@ -1,0 +1,443 @@
+{
+  "schema_version": "1.0",
+  "source_image": "assets/amomii-one.jpg",
+  "image_dimensions": [
+    857,
+    617
+  ],
+  "note": "All 54 positions are approximate visual estimates. POWER-8 and AUX labels are provisional; do not infer electrical connectivity.",
+  "pins": [
+    {
+      "id": "D0",
+      "group": "DIGITAL",
+      "x": 77.736,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D0"
+    },
+    {
+      "id": "D1",
+      "group": "DIGITAL",
+      "x": 74.982,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D1"
+    },
+    {
+      "id": "D2",
+      "group": "DIGITAL",
+      "x": 72.229,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D2"
+    },
+    {
+      "id": "D3",
+      "group": "DIGITAL",
+      "x": 69.475,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D3"
+    },
+    {
+      "id": "D4",
+      "group": "DIGITAL",
+      "x": 66.721,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D4"
+    },
+    {
+      "id": "D5",
+      "group": "DIGITAL",
+      "x": 63.967,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D5"
+    },
+    {
+      "id": "D6",
+      "group": "DIGITAL",
+      "x": 61.214,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D6"
+    },
+    {
+      "id": "D7",
+      "group": "DIGITAL",
+      "x": 58.46,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D7"
+    },
+    {
+      "id": "D8",
+      "group": "DIGITAL",
+      "x": 56.243,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D8"
+    },
+    {
+      "id": "D9",
+      "group": "DIGITAL",
+      "x": 53.769,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D9"
+    },
+    {
+      "id": "D10",
+      "group": "DIGITAL",
+      "x": 51.295,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D10"
+    },
+    {
+      "id": "D11",
+      "group": "DIGITAL",
+      "x": 48.821,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D11"
+    },
+    {
+      "id": "D12",
+      "group": "DIGITAL",
+      "x": 46.348,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D12"
+    },
+    {
+      "id": "D13",
+      "group": "DIGITAL",
+      "x": 43.874,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "D13"
+    },
+    {
+      "id": "A0",
+      "group": "ANALOG",
+      "x": 63.361,
+      "y": 85.9,
+      "status": "estimated",
+      "label": "A0"
+    },
+    {
+      "id": "A1",
+      "group": "ANALOG",
+      "x": 66.208,
+      "y": 85.9,
+      "status": "estimated",
+      "label": "A1"
+    },
+    {
+      "id": "A2",
+      "group": "ANALOG",
+      "x": 69.055,
+      "y": 85.9,
+      "status": "estimated",
+      "label": "A2"
+    },
+    {
+      "id": "A3",
+      "group": "ANALOG",
+      "x": 71.902,
+      "y": 85.9,
+      "status": "estimated",
+      "label": "A3"
+    },
+    {
+      "id": "A4",
+      "group": "ANALOG",
+      "x": 74.749,
+      "y": 85.9,
+      "status": "estimated",
+      "label": "A4"
+    },
+    {
+      "id": "A5",
+      "group": "ANALOG",
+      "x": 77.596,
+      "y": 85.9,
+      "status": "estimated",
+      "label": "A5"
+    },
+    {
+      "id": "IOREF",
+      "group": "POWER",
+      "x": 40.023,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "IOREF"
+    },
+    {
+      "id": "RESET",
+      "group": "POWER",
+      "x": 42.8,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "RESET"
+    },
+    {
+      "id": "3V3",
+      "group": "POWER",
+      "x": 45.578,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "3V3"
+    },
+    {
+      "id": "5V",
+      "group": "POWER",
+      "x": 48.355,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "5V"
+    },
+    {
+      "id": "GND-1",
+      "group": "POWER",
+      "x": 51.132,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "GND-1"
+    },
+    {
+      "id": "GND-2",
+      "group": "POWER",
+      "x": 53.909,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "GND-2"
+    },
+    {
+      "id": "VIN",
+      "group": "POWER",
+      "x": 56.686,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "VIN"
+    },
+    {
+      "id": "POWER-8",
+      "group": "POWER",
+      "x": 59.463,
+      "y": 85.737,
+      "status": "estimated",
+      "label": "POWER-8"
+    },
+    {
+      "id": "SCL",
+      "group": "I2C / REF",
+      "x": 30.688,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "SCL"
+    },
+    {
+      "id": "SDA",
+      "group": "I2C / REF",
+      "x": 33.302,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "SDA"
+    },
+    {
+      "id": "AREF",
+      "group": "I2C / REF",
+      "x": 35.916,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "AREF"
+    },
+    {
+      "id": "GND-REF",
+      "group": "I2C / REF",
+      "x": 38.53,
+      "y": 15.883,
+      "status": "estimated",
+      "label": "GND-REF"
+    },
+    {
+      "id": "ICSP-MISO",
+      "group": "ICSP",
+      "x": 75.846,
+      "y": 45.381,
+      "status": "estimated",
+      "label": "ICSP-MISO"
+    },
+    {
+      "id": "ICSP-VCC",
+      "group": "ICSP",
+      "x": 78.413,
+      "y": 45.381,
+      "status": "estimated",
+      "label": "ICSP-VCC"
+    },
+    {
+      "id": "ICSP-SCK",
+      "group": "ICSP",
+      "x": 75.846,
+      "y": 48.298,
+      "status": "estimated",
+      "label": "ICSP-SCK"
+    },
+    {
+      "id": "ICSP-MOSI",
+      "group": "ICSP",
+      "x": 78.413,
+      "y": 48.298,
+      "status": "estimated",
+      "label": "ICSP-MOSI"
+    },
+    {
+      "id": "ICSP-RESET-ICSP",
+      "group": "ICSP",
+      "x": 75.846,
+      "y": 51.216,
+      "status": "estimated",
+      "label": "ICSP-RESET-ICSP"
+    },
+    {
+      "id": "ICSP-GND-ICSP",
+      "group": "ICSP",
+      "x": 78.413,
+      "y": 51.216,
+      "status": "estimated",
+      "label": "ICSP-GND-ICSP"
+    },
+    {
+      "id": "AUX-1",
+      "group": "AUX",
+      "x": 72.695,
+      "y": 61.426,
+      "status": "estimated",
+      "label": "AUX-1"
+    },
+    {
+      "id": "AUX-2",
+      "group": "AUX",
+      "x": 75.274,
+      "y": 61.426,
+      "status": "estimated",
+      "label": "AUX-2"
+    },
+    {
+      "id": "AUX-3",
+      "group": "AUX",
+      "x": 77.853,
+      "y": 61.426,
+      "status": "estimated",
+      "label": "AUX-3"
+    },
+    {
+      "id": "AUX-4",
+      "group": "AUX",
+      "x": 80.432,
+      "y": 61.426,
+      "status": "estimated",
+      "label": "AUX-4"
+    },
+    {
+      "id": "AUX-5",
+      "group": "AUX",
+      "x": 72.695,
+      "y": 64.992,
+      "status": "estimated",
+      "label": "AUX-5"
+    },
+    {
+      "id": "AUX-6",
+      "group": "AUX",
+      "x": 75.274,
+      "y": 64.992,
+      "status": "estimated",
+      "label": "AUX-6"
+    },
+    {
+      "id": "AUX-7",
+      "group": "AUX",
+      "x": 77.853,
+      "y": 64.992,
+      "status": "estimated",
+      "label": "AUX-7"
+    },
+    {
+      "id": "AUX-8",
+      "group": "AUX",
+      "x": 80.432,
+      "y": 64.992,
+      "status": "estimated",
+      "label": "AUX-8"
+    },
+    {
+      "id": "AUX-9",
+      "group": "AUX",
+      "x": 72.695,
+      "y": 68.558,
+      "status": "estimated",
+      "label": "AUX-9"
+    },
+    {
+      "id": "AUX-10",
+      "group": "AUX",
+      "x": 75.274,
+      "y": 68.558,
+      "status": "estimated",
+      "label": "AUX-10"
+    },
+    {
+      "id": "AUX-11",
+      "group": "AUX",
+      "x": 77.853,
+      "y": 68.558,
+      "status": "estimated",
+      "label": "AUX-11"
+    },
+    {
+      "id": "AUX-12",
+      "group": "AUX",
+      "x": 80.432,
+      "y": 68.558,
+      "status": "estimated",
+      "label": "AUX-12"
+    },
+    {
+      "id": "AUX-13",
+      "group": "AUX",
+      "x": 72.695,
+      "y": 72.123,
+      "status": "estimated",
+      "label": "AUX-13"
+    },
+    {
+      "id": "AUX-14",
+      "group": "AUX",
+      "x": 75.274,
+      "y": 72.123,
+      "status": "estimated",
+      "label": "AUX-14"
+    },
+    {
+      "id": "AUX-15",
+      "group": "AUX",
+      "x": 77.853,
+      "y": 72.123,
+      "status": "estimated",
+      "label": "AUX-15"
+    },
+    {
+      "id": "AUX-16",
+      "group": "AUX",
+      "x": 80.432,
+      "y": 72.123,
+      "status": "estimated",
+      "label": "AUX-16"
+    }
+  ]
+}
