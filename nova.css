@@ -5563,3 +5563,12 @@ body.novaElectricMediaMode #now {
 #library .entry .novaRemoveLibrary {border:1px solid #f35b8d;color:#ff9cbb;background:transparent;border-radius:5px;padding:6px 8px;font-size:11px;cursor:pointer;}
 #library .entry .novaRemoveLibrary:hover {background:rgba(255,75,125,.16);}
 #novaMediaCountBar {font-size:12px;padding:8px 4px;color:#b8e9f4;letter-spacing:.03em;}
+/* RETURN TO ORB — ONLY VISIBLE IN VIDEO MODE */
+
+body:not(.novaHybridVideoActive) #novaHybridBackOrb {
+    display: none !important;
+}
+
+#novaHybridBackOrb[hidden] {
+    display: none !important;
+}
