@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>NOVA — AMOMII ONE Schematics</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #050b14;
+      color: #e7f5ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #0c1b2d;
+      border-bottom: 1px solid #23536c;
+    }
+
+    .tab {
+      background: #17425b;
+      color: #c8f5ff;
+      border: 1px solid #3e9cbd;
+      border-radius: 6px;
+      padding: 9px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .control {
+      padding: 8px 11px;
+      color: #e7f5ff;
+      background: #132b40;
+      border: 1px solid #38627b;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .control:hover {
+      background: #23506c;
+      border-color: #69d8ff;
+    }
+
+    .zoom {
+      min-width: 54px;
+      text-align: center;
+      color: #85dfff;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .information {
+      padding: 9px 12px;
+      background: #081421;
+      border-bottom: 1px solid #1b3548;
+      font-size: 11px;
+      color: #8cb5c9;
+      letter-spacing: 0.4px;
+    }
+
+    .viewer {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      background: #050b14;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .error {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+      background: #081421;
+      color: #ffbdc5;
+    }
+
+    .error strong {
+      font-size: 17px;
+    }
+
+    .error code {
+      color: #a8eaff;
+      overflow-wrap: anywhere;
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 12px;
+      background: #0b1b2b;
+      border-top: 1px solid #1b4258;
+      font-size: 11px;
+      color: #8bb8cf;
+    }
+
+    @media (max-width: 650px) {
+      .toolbar {
+        gap: 5px;
+        padding: 7px;
+      }
+
+      .control {
+        padding: 7px 8px;
+        font-size: 11px;
+      }
+
+      .information {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="toolbar">
+    <button class="tab" type="button">
+      ⚡ UNO SCHEMATIC
+    </button>
+
+    <div class="spacer"></div>
+
+    <button class="control" id="zoomOut" type="button">
+      −
+    </button>
+
+    <span class="zoom" id="zoomValue">FIT</span>
+
+    <button class="control" id="zoomIn" type="button">
+      +
+    </button>
+
+    <button class="control" id="fitButton" type="button">
+      FIT
+    </button>
+
+    <button class="control" id="resetButton" type="button">
+      RESET
+    </button>
+
+    <button class="control" id="fullscreenButton" type="button">
+      ⛶
+    </button>
+  </div>
+
+  <div class="information">
+    AMOMII UNO REV 1.0 · USB-C · POWER · CH340C · ATMEGA328P · PIN HEADERS
+  </div>
+
+  <main class="viewer" id="viewer">
+    <iframe
+      id="schematicFrame"
+      title="AMOMII UNO Electrical Schematic"
+      src="../assets/amomii_UNO_Schematic.pdf#toolbar=1&navpanes=0&view=Fit"
+      allowfullscreen
+    ></iframe>
+
+    <div class="error" id="errorMessage">
+      <strong>SCHEMATIC PDF NOT FOUND</strong>
+      <span>Place the original PDF at:</span>
+      <code>hardware/amomii-one/assets/amomii_UNO_Schematic.pdf</code>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span>AMOMII ONE · ELECTRICAL SCHEMATICS</span>
+    <span>1 PAGE · REV 1.0</span>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const PDF_PATH =
+        "../assets/amomii_UNO_Schematic.pdf";
+
+      const frame =
+        document.getElementById("schematicFrame");
+
+      const zoomValue =
+        document.getElementById("zoomValue");
+
+      const errorMessage =
+        document.getElementById("errorMessage");
+
+      const viewer =
+        document.getElementById("viewer");
+
+      let zoom = null;
+
+      function loadPdf() {
+        let fragment;
+
+        if (zoom === null) {
+          fragment = "toolbar=1&navpanes=0&view=Fit";
+          zoomValue.textContent = "FIT";
+        } else {
+          fragment =
+            "toolbar=1&navpanes=0&zoom=" + zoom;
+
+          zoomValue.textContent = zoom + "%";
+        }
+
+        frame.src = PDF_PATH + "#" + fragment;
+      }
+
+      function changeZoom(amount) {
+        if (zoom === null) {
+          zoom = 100;
+        }
+
+        zoom = Math.max(
+          25,
+          Math.min(400, zoom + amount)
+        );
+
+        loadPdf();
+      }
+
+      document.getElementById("zoomIn")
+        .addEventListener("click", function () {
+          changeZoom(25);
+        });
+
+      document.getElementById("zoomOut")
+        .addEventListener("click", function () {
+          changeZoom(-25);
+        });
+
+      document.getElementById("fitButton")
+        .addEventListener("click", function () {
+          zoom = null;
+          loadPdf();
+        });
+
+      document.getElementById("resetButton")
+        .addEventListener("click", function () {
+          zoom = 100;
+          loadPdf();
+        });
+
+      document.getElementById("fullscreenButton")
+        .addEventListener("click", async function () {
+          try {
+            if (document.fullscreenElement) {
+              await document.exitFullscreen();
+            } else if (viewer.requestFullscreen) {
+              await viewer.requestFullscreen();
+            }
+          } catch (error) {
+            console.warn(
+              "Fullscreen unavailable:",
+              error
+            );
+          }
+        });
+
+      async function checkPdf() {
+        try {
+          const response = await fetch(PDF_PATH, {
+            method: "HEAD",
+            cache: "no-store"
+          });
+
+          if (!response.ok) {
+            errorMessage.style.display = "flex";
+          }
+        } catch (error) {
+          console.warn(
+            "PDF availability check unavailable:",
+            error
+          );
+        }
+      }
+
+      checkPdf();
+    })();
+  </script>
+
+</body>
+</html>
