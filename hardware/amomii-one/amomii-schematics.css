@@ -1,0 +1,288 @@
+
+/* ============================================================
+   NOVA — AMOMII ONE SCHEMATICS
+   Floating Window Styles
+   ============================================================ */
+
+#novaAmomiiSchematicsWindow {
+  position: fixed;
+  top: 12vh;
+  left: 15vw;
+
+  width: min(1100px, 85vw);
+  height: min(740px, 78vh);
+
+  min-width: 420px;
+  min-height: 280px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #08111e;
+  color: #e7f5ff;
+
+  border: 1px solid rgba(0, 210, 255, 0.45);
+  border-radius: 12px;
+
+  box-shadow:
+    0 0 0 1px rgba(0, 210, 255, 0.08),
+    0 20px 70px rgba(0, 0, 0, 0.75),
+    0 0 30px rgba(0, 180, 255, 0.12);
+
+  overflow: hidden;
+  z-index: 10000;
+  box-sizing: border-box;
+}
+
+#novaAmomiiSchematicsWindow[hidden] {
+  display: none !important;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.nova-am-schematic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  flex: 0 0 auto;
+  min-height: 48px;
+
+  padding: 8px 12px;
+
+  background: linear-gradient(
+    180deg,
+    #172d44 0%,
+    #0c1b2d 100%
+  );
+
+  border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.nova-am-schematic-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  min-width: 0;
+  pointer-events: none;
+}
+
+.nova-am-schematic-title span {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  color: #eafaff;
+}
+
+.nova-am-schematic-title small {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #64c9ed;
+}
+
+/* ============================================================
+   WINDOW BUTTONS
+   ============================================================ */
+
+.nova-am-schematic-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  flex: 0 0 auto;
+}
+
+.nova-am-schematic-actions button {
+  width: 34px;
+  height: 30px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  background: #11283d;
+  color: #e5f7ff;
+
+  border: 1px solid rgba(115, 200, 235, 0.35);
+  border-radius: 6px;
+
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.nova-am-schematic-actions button:hover {
+  background: #204864;
+  border-color: #65dfff;
+}
+
+.nova-am-schematic-actions
+button[data-am-schematic-action="close"]:hover {
+  background: #7a2030;
+  border-color: #ff6a80;
+}
+
+/* ============================================================
+   VIEWER CONTENT
+   ============================================================ */
+
+.nova-am-schematic-content {
+  position: relative;
+  flex: 1 1 auto;
+
+  min-height: 0;
+  overflow: hidden;
+
+  background: #050b14;
+}
+
+.nova-am-schematic-content iframe {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+  background: #050b14;
+}
+
+/* ============================================================
+   RESIZE HANDLE
+   ============================================================ */
+
+.nova-am-schematic-resizer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  width: 24px;
+  height: 24px;
+
+  z-index: 5;
+  cursor: nwse-resize;
+  touch-action: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 48%,
+      rgba(100, 210, 245, 0.6) 49%,
+      rgba(100, 210, 245, 0.6) 53%,
+      transparent 54%
+    );
+
+  background-size: 9px 9px;
+  background-position: bottom right;
+  background-repeat: repeat;
+}
+
+/* ============================================================
+   MINIMIZED STATE
+   ============================================================ */
+
+#novaAmomiiSchematicsWindow.is-minimized {
+  height: 48px !important;
+  min-height: 48px;
+}
+
+#novaAmomiiSchematicsWindow.is-minimized
+.nova-am-schematic-content,
+#novaAmomiiSchematicsWindow.is-minimized
+.nova-am-schematic-resizer {
+  display: none;
+}
+
+/* ============================================================
+   MAXIMIZED STATE
+   ============================================================ */
+
+#novaAmomiiSchematicsWindow.is-maximized {
+  top: 8px !important;
+  left: 8px !important;
+  right: 8px !important;
+  bottom: 8px !important;
+
+  width: calc(100vw - 16px) !important;
+  height: calc(100vh - 16px) !important;
+
+  min-width: 0;
+  min-height: 0;
+
+  border-radius: 8px;
+}
+
+#novaAmomiiSchematicsWindow.is-maximized
+.nova-am-schematic-resizer {
+  display: none;
+}
+
+/* ============================================================
+   AMOMII SCHEMATICS LAUNCH BUTTON
+   ============================================================ */
+
+#amomiiTwin #amSchematicOpen {
+  color: #a8eeff;
+  border-color: rgba(0, 210, 255, 0.45);
+  cursor: pointer;
+}
+
+#amomiiTwin #amSchematicOpen:hover {
+  background: rgba(0, 210, 255, 0.16);
+  color: #ffffff;
+}
+
+/* ============================================================
+   SMALL SCREEN SUPPORT
+   ============================================================ */
+
+@media (max-width: 650px) {
+  #novaAmomiiSchematicsWindow {
+    top: 7vh;
+    left: 3vw;
+
+    width: 94vw;
+    height: 82vh;
+
+    min-width: 0;
+    min-height: 240px;
+  }
+
+  .nova-am-schematic-header {
+    gap: 6px;
+    padding: 7px 9px;
+  }
+
+  .nova-am-schematic-title span {
+    font-size: 12px;
+  }
+
+  .nova-am-schematic-title small {
+    font-size: 9px;
+  }
+
+  .nova-am-schematic-actions {
+    gap: 4px;
+  }
+
+  .nova-am-schematic-actions button {
+    width: 29px;
+    height: 28px;
+  }
+}
