@@ -341,7 +341,6 @@
     $('rsrLabViewBoard')?.addEventListener('click', () => mode('board'));
     $('rsrLabViewWiring')?.addEventListener('click', () => mode('wiring'));
     $('rsrLabViewPins')?.addEventListener('click', () => mode('pins'));
-    $('rsrLabDemoReset')?.addEventListener('click', () => { stopTestVisual(); sound(220,.1); });
     $('rsrLabSoundToggle')?.addEventListener('click', () => {
       soundEnabled=!soundEnabled;
       const button=$('rsrLabSoundToggle');
@@ -349,6 +348,7 @@
       if (soundEnabled) sound(650,.11,'triangle');
     });
     refreshDemo();
+    $('rsrLabPhoto')?.addEventListener('load', refreshDemo);
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && lab() && !lab().hidden) close();
     });

@@ -18,22 +18,10 @@
           <!-- rsr-trainer.js moves the original controller here; no duplicate commands. -->
         </div>
       </section>
-      <section class="rsr-lab__group rsr-lab__effects" aria-label="RSR visual effects">
-        <h3>⚡ PHOTO POWER SIMULATION</h3>
-        <p class="rsr-lab__notice">Click the red POWER switch on the trainer photograph. Both red indicator lamps and the green lamp beside the breadboard illuminate together. Visual only — no hardware command.</p>
-        <p>Photo power: <output id="rsrLabPhotoPowerStatus">OFF — SIMULATED</output></p>
-        <div class="rsr-lab__effect-actions"><button type="button" id="rsrLabSoundToggle" aria-pressed="false">🔇 SOUND OFF</button><button type="button" id="rsrLabDemoReset">RESET VISUAL POWER</button></div>
-        <h3>RUN TEST VISUALIZATION</h3>
-        <div class="rsr-lab__test-track" aria-label="Test animation"><span id="rsrLabTestPulse"></span></div>
-        <output id="rsrLabTestResult" role="status">READY — visual demo only</output>
-        <p class="rsr-lab__notice">Press the existing RUN TEST button above to start a visual sequence. This does not determine a hardware PASS/FAIL.</p>
-      </section>
-      <section class="rsr-lab__group">
-        <h3>SIMULATOR STATUS</h3>
-        <p>LEDs: <output id="rsrLabLedStatus">Awaiting state</output></p>
-        <p>Switch 0 / AMOMII A0: <output id="rsrLabSwitchStatus">UNKNOWN</output></p>
-        <p>Trainer power: <output id="rsrLabPowerStatus">NOT MONITORED</output></p>
-        <p class="rsr-lab__notice">Only eight LED channels and switch 0 are currently wired to AMOMII. Other controls are visual until instrumented.</p>
+      <section class="rsr-lab__group rsr-lab__effects" aria-label="RSR simulation effects">
+        <div class="rsr-lab__effect-actions"><button type="button" id="rsrLabSoundToggle" aria-pressed="false">🔇 SOUND OFF</button></div>
+        <div class="rsr-lab__test-track" aria-label="RUN TEST animation"><span id="rsrLabTestPulse"></span></div>
+        <output id="rsrLabTestResult" role="status">READY</output>
       </section>
     </aside>
     <main class="rsr-lab__simulator" aria-label="RSR trainer simulator">

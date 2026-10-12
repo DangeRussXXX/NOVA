@@ -47,3 +47,21 @@
 #rsrLab #rsrLabTestResult{display:block;min-height:20px;font-size:12px}
 @keyframes rsr-test-sweep{from{transform:translateX(-110%)}to{transform:translateX(430%)}}
 @media(prefers-reduced-motion:reduce){#rsrLab .rsr-lab__test-track.is-running #rsrLabTestPulse{animation:none;transform:translateX(170%)}}
+
+/* RSR photographed power switch + three real-position status lamp overlays */
+#rsrLab .rsr-lab__photo-switch{position:absolute;transform:translate(-50%,-50%);width:9.4%;height:7.1%;min-width:0;min-height:0;padding:0;border:2px solid #ffb34a;border-radius:8px;background:rgba(35,5,8,.28);box-shadow:0 0 0 2px #0008;pointer-events:auto;cursor:pointer;z-index:5}
+#rsrLab .rsr-lab__photo-switch:hover,#rsrLab .rsr-lab__photo-switch:focus-visible{outline:2px solid #fff3a3;outline-offset:1px}
+#rsrLab .rsr-lab__photo-switch.is-on{border-color:#75ff9b;background:rgba(255,50,55,.25);box-shadow:0 0 12px #ff444499,inset 0 0 9px #ff777766}
+#rsrLab .rsr-lab__photo-lamp{position:absolute;transform:translate(-50%,-50%);width:2.25%;aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,#531e26,#170709 72%);box-shadow:inset 0 0 5px #000,0 0 0 1px #251318;transition:background .15s,box-shadow .15s;z-index:4}
+#rsrLab .rsr-lab__photo-lamp.is-green{background:radial-gradient(circle at 35% 30%,#18452a,#06160b 75%)}
+#rsrLab .rsr-lab__photo-lamp.is-on{background:radial-gradient(circle at 35% 30%,#fff0c9,#ff4b55 40%,#bc0824 85%);box-shadow:0 0 11px 3px #ff203aaa,0 0 22px #ff203a88}
+#rsrLab .rsr-lab__photo-lamp.is-green.is-on{background:radial-gradient(circle at 35% 30%,#f3ffe1,#38ff84 42%,#008f3c 90%);box-shadow:0 0 11px 3px #18ff75bb,0 0 22px #18ff7588}
+
+/* Precise photo overlay: switch center at x=77.2%, y=8.0% */
+#rsrLab #rsrLabPhotoPowerSwitch{left:77.2%!important;top:8%!important;width:10.3%;height:7.7%;background:rgba(0,0,0,.03);border:2px solid rgba(255,213,77,.72);border-radius:5px;z-index:30;touch-action:manipulation}
+#rsrLab #rsrLabPhotoPowerSwitch.is-on{background:rgba(255,55,55,.15);border-color:#6bff92}
+#rsrLab #rsrLabSwitchLayer{z-index:20}
+#rsrLab #rsrLabLedLayer{z-index:10}
+#rsrLab .rsr-lab__photo-lamp{width:1.7%;box-shadow:inset 0 0 3px #000;z-index:21}
+#rsrLab .rsr-lab__photo-lamp.is-on{box-shadow:0 0 10px 5px #ff203abb,0 0 24px 9px #ff203a77}
+#rsrLab .rsr-lab__photo-lamp.is-green.is-on{box-shadow:0 0 10px 5px #18ff75bb,0 0 24px 9px #18ff7577}
