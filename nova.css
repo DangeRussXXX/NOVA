@@ -5443,3 +5443,16 @@ body.novaElectricMediaMode #now {
   overflow:auto!important;
  }
 }
+/* NOVA DESKTOP CAMERA — restore visibility in camera screen */
+.novaCameraScreen #novaCameraPanelSource,
+.novaCameraScreen.novaCameraPanelSource,
+.novaCameraScreen #desktopCameraVideo {
+  display: block !important;
+}
+
+.novaCameraScreen #desktopCameraVideo {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 300px;
+  object-fit: contain;
+}
