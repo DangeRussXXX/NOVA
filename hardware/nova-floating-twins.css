@@ -1,11 +1,13 @@
 
 /* ============================================================
-   NOVA FLOATING WINDOWS
-   AMOMII ONE: Vertical accordion layout
-   RSR TRAINER: Existing layout preserved
+   NOVA FLOATING TWINS — V3
+   AMOMII ONE: Resizable two-column accordion workspace
+   RSR TRAINER: Existing two-column workspace preserved
+
+   Window management and presentation only.
    ============================================================ */
 
-/* Shared floating window */
+/* SHARED FLOATING WINDOWS */
 
 #rsrLab.nova-float-window,
 #amomiiTwin.nova-float-window {
@@ -31,7 +33,7 @@
   box-shadow: 0 18px 55px #000c !important;
 }
 
-/* Visibility */
+/* HIDDEN AND MINIMIZED WINDOWS */
 
 #rsrLab.nova-float-window[hidden],
 #amomiiTwin.nova-float-window[hidden],
@@ -41,7 +43,7 @@
 }
 
 /* ============================================================
-   AMOMII ONE WINDOW
+   AMOMII ONE
    ============================================================ */
 
 #amomiiTwin.nova-float-window {
@@ -58,58 +60,76 @@
   border-radius: 0 !important;
 }
 
-/* One vertical scrolling workspace */
+/* TWO COLUMNS WITH A 9PX DRAGGABLE DIVIDER */
 
 #amomiiTwin.nova-float-window .am-workspace {
-  display: flex !important;
-  flex-direction: column !important;
-  grid-template-columns: none !important;
-  gap: 0 !important;
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, var(--nova-left, 35%))
+    9px
+    minmax(0, 1fr) !important;
   flex: 1 1 auto !important;
-  min-height: 0 !important;
+  gap: 0 !important;
   min-width: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  padding: 12px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
 }
 
-/* Both former columns now occupy full width */
+/* LEFT: HARDWARE ACCORDIONS */
 
-#amomiiTwin.nova-float-window .am-hardware,
-#amomiiTwin.nova-float-window .am-simulator {
+#amomiiTwin.nova-float-window .am-hardware {
   display: block !important;
-  flex: 0 0 auto !important;
   width: 100% !important;
   min-width: 0 !important;
   min-height: 0 !important;
   max-height: none !important;
-  overflow: visible !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   box-sizing: border-box !important;
-  padding: 0 !important;
+  padding: 12px !important;
   margin: 0 !important;
   border: 0 !important;
-  background: transparent !important;
+  background: #071827 !important;
 }
 
-/* No column divider in AMOMII ONE */
+/* RIGHT: BOARD SIMULATION AND PIN MAP */
 
-#amomiiTwin.nova-float-window .nova-column-grip {
-  display: none !important;
-}
-
-/* Full-width accordion panels */
-
-#amomiiTwin.nova-float-window .am-section {
+#amomiiTwin.nova-float-window .am-simulator {
+  display: block !important;
   width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  padding: 12px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: #061824 !important;
+}
+
+/* FULL-WIDTH ACCORDION SECTIONS */
+
+#amomiiTwin.nova-float-window details.am-section {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+#amomiiTwin.nova-float-window details.am-section > summary {
+  display: flex !important;
+  width: 100% !important;
+  align-items: center !important;
   box-sizing: border-box !important;
 }
 
 #amomiiTwin.nova-float-window .am-section-body {
   min-width: 0 !important;
-  overflow: visible !important;
 }
 
-/* Allow pin map to expand naturally */
+/* PIN MAP CONTENT */
 
 #amomiiTwin.nova-float-window .am-controls {
   max-height: none !important;
@@ -123,8 +143,7 @@
 }
 
 /* ============================================================
-   RSR TRAINER
-   Preserve existing two-column interface for now.
+   RSR TRAINER — EXISTING LAYOUT
    ============================================================ */
 
 #rsrLab.nova-float-window > .rsr-lab__columns {
@@ -164,9 +183,7 @@
   cursor: grabbing;
 }
 
-/* ============================================================
-   MINIMIZE / MAXIMIZE / CLOSE CONTROLS
-   ============================================================ */
+/* WINDOW ACTIONS */
 
 .nova-float-actions {
   display: flex;
@@ -186,10 +203,10 @@
 }
 
 /* ============================================================
-   RSR COLUMN RESIZER
+   SHARED DRAGGABLE COLUMN DIVIDER
    ============================================================ */
 
-#rsrLab .nova-column-grip {
+.nova-column-grip {
   position: relative;
   z-index: 5;
   width: 9px;
@@ -206,13 +223,13 @@
   );
 }
 
-#rsrLab .nova-column-grip:hover,
-#rsrLab .nova-column-grip.nova-grabbing {
+.nova-column-grip:hover,
+.nova-column-grip.nova-grabbing {
   background: #f9ce57;
   box-shadow: 0 0 10px #f9ce57aa;
 }
 
-#rsrLab .nova-column-grip::after {
+.nova-column-grip::after {
   content: "⋮";
   position: absolute;
   top: 50%;
@@ -289,7 +306,8 @@
     display: none;
   }
 
-  #amomiiTwin.nova-float-window .am-workspace {
+  #amomiiTwin.nova-float-window .am-hardware,
+  #amomiiTwin.nova-float-window .am-simulator {
     padding: 8px !important;
   }
 }
