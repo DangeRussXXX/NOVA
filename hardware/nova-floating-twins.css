@@ -1,6 +1,6 @@
 
 /* ============================================================
-   NOVA FLOATING TWINS — V3
+   NOVA FLOATING TWINS — V4
    AMOMII ONE: Resizable two-column accordion workspace
    RSR TRAINER: Existing two-column workspace preserved
 
@@ -24,7 +24,7 @@
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
-  resize: both !important;
+  resize: none !important;
   z-index: 100100 !important;
   box-sizing: border-box !important;
   display: flex !important;
@@ -310,4 +310,43 @@
   #amomiiTwin.nova-float-window .am-simulator {
     padding: 8px !important;
   }
+}
+
+/* ============================================================
+   V4 WINDOW SIZE CONTROLS
+   These selectors intentionally match/exceed the normal window
+   selector specificity so maximize can override CSS variables.
+   ============================================================ */
+
+#rsrLab.nova-float-window.nova-maximized,
+#amomiiTwin.nova-float-window.nova-maximized {
+  inset: auto !important;
+  left: 4px !important;
+  top: 4px !important;
+  width: calc(100vw - 8px) !important;
+  height: calc(100dvh - 8px) !important;
+  resize: none !important;
+}
+
+/* Explicit corner handle replaces unreliable native CSS resizing. */
+#rsrLab.nova-float-window .nova-window-resize,
+#amomiiTwin.nova-float-window .nova-window-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 23px;
+  height: 23px;
+  z-index: 30;
+  cursor: nwse-resize;
+  touch-action: none;
+  background: linear-gradient(135deg,
+    transparent 0 52%, #24d6f0 53% 58%,
+    transparent 59% 69%, #24d6f0 70% 75%,
+    transparent 76%);
+  border-bottom-right-radius: 9px;
+}
+
+#rsrLab.nova-float-window.nova-maximized .nova-window-resize,
+#amomiiTwin.nova-float-window.nova-maximized .nova-window-resize {
+  display: none !important;
 }
