@@ -97,6 +97,29 @@ body.novaHybridVideoParked .novaUnifiedConsole .novaLeftHome{
 }
 body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 </style>
+
+<style id="novaRestoredVoiceOverlayStyles">
+/* NOVA live diagnostic terminal: above orb and video, inside NOVA's left panel. */
+.novaUnifiedConsole .novaLeftHome > #novaVoiceDiagnosticOverlay{
+ position:absolute!important;left:12px!important;top:12px!important;
+ z-index:1050!important;box-sizing:border-box!important;
+ width:min(40%,390px)!important;max-height:min(45%,290px)!important;
+ padding:9px 10px!important;overflow:hidden!important;pointer-events:none!important;
+ background:rgba(1,12,7,.70)!important;border:1px solid rgba(55,255,119,.34)!important;
+ border-radius:7px!important;box-shadow:0 0 16px rgba(0,0,0,.40)!important;
+ color:#6dff94!important;font:11px/1.45 Consolas,Monaco,monospace!important;
+ text-shadow:0 0 5px rgba(40,255,100,.24)!important;
+}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticTitle{font-weight:700;letter-spacing:.09em;border-bottom:1px solid rgba(55,255,119,.3);padding-bottom:5px;margin-bottom:5px}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLines{display:flex;flex-direction:column;gap:3px;overflow:hidden;max-height:215px}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{overflow-wrap:anywhere;animation:novaDiagnosticAppear .18s ease-out both}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="error"]{color:#ff9e8f!important}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="warning"]{color:#ffd879!important}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="heard"]{color:#c4ffd0!important}
+@keyframes novaDiagnosticAppear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:650px){.novaUnifiedConsole .novaLeftHome > #novaVoiceDiagnosticOverlay{left:6px!important;top:6px!important;width:min(57%,290px)!important;padding:6px!important;font-size:9px!important;max-height:45%!important}}
+@media(prefers-reduced-motion:reduce){#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{animation:none}}
+</style>
 <style id="novaVoiceBottomPlacement">
 .novaConsoleCommandRow{display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:nowrap!important}
 .novaConsoleCommandRow #voiceButton{order:0!important;flex:0 0 auto!important;width:auto!important;min-width:118px!important;max-width:none!important;margin:0!important;white-space:nowrap!important}
@@ -235,6 +258,10 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 <div class="novaParticles"></div>
 <div class="novaMusicPulseRing" id="novaMusicPulseRing"></div>
 </div>
+</div>
+<div id="novaVoiceDiagnosticOverlay" role="log" aria-label="NOVA live voice diagnostics" aria-live="off">
+ <div class="novaVoiceDiagnosticTitle">&gt; NOVA / LIVE COMMAND FEED</div>
+ <div class="novaVoiceDiagnosticLines" id="novaVoiceDiagnosticLines"><div class="novaVoiceDiagnosticLine">[READY] VOICE MONITOR ONLINE</div></div>
 </div>
 <div id="novaHybridVideoStage" aria-label="NOVA hybrid video display" hidden></div>
 <div id="novaHybridNowPlaying" aria-live="polite" hidden><span id="novaHybridTrackName"></span><button type="button" id="novaHybridBackOrb">RETURN TO ORB</button></div>
@@ -710,6 +737,25 @@ document.addEventListener("DOMContentLoaded", () => {
    LOGGING
    ============================================================ */
 
+
+/* Restored integrated live voice diagnostics; does not change command routing. */
+function novaVoiceDiagnostic(message,kind="system"){
+ const lines=document.getElementById("novaVoiceDiagnosticLines");
+ if(!lines)return;
+ const clean=String(message??"").replace(/\s+/g," ").trim();
+ if(!clean)return;
+ const last=lines.lastElementChild;
+ if(last&&last.dataset.message===clean&&Date.now()-Number(last.dataset.at)<350)return;
+ const line=document.createElement("div");
+ line.className="novaVoiceDiagnosticLine";
+ line.dataset.kind=kind;
+ line.dataset.message=clean;
+ line.dataset.at=String(Date.now());
+ line.textContent="["+new Date().toLocaleTimeString()+"] "+clean;
+ lines.appendChild(line);
+ while(lines.children.length>12)lines.firstElementChild.remove();
+}
+
 function timestamp(){
 
   return new Date().toLocaleTimeString();
@@ -905,6 +951,7 @@ function novaPersistentTickerPush(message){
 function novaPersistentTickerNext(){}
 
 function log(message, type="system"){
+  novaVoiceDiagnostic(message,type);
   novaCaptureEvent(message,type);
   novaPersistentTickerPush(message);
 
@@ -1140,6 +1187,7 @@ function initializeVoice(){
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
+    novaVoiceDiagnostic("MICROPHONE LISTENING","system");
     novaSetSystemVisualState("listening",true);
 
     recognitionRunning = true;
@@ -1160,6 +1208,7 @@ function initializeVoice(){
 
 
   recognition.onend = () => {
+    novaVoiceDiagnostic(voiceEnabled ? "RECOGNITION SESSION ENDED / RESTART PENDING" : "MICROPHONE OFF","system");
     novaSetSystemVisualState("listening",false);
 
     recognitionRunning = false;
@@ -1180,6 +1229,7 @@ function initializeVoice(){
 
 
   recognition.onerror = event => {
+    novaVoiceDiagnostic("RECOGNITION ERROR: "+event.error,"error");
     novaSetSystemVisualState("listening",false);
 
     recognitionRunning = false;
@@ -1236,6 +1286,8 @@ recognition.onresult = event => {
       continue;
     }
 
+    // Show the actual recognized words before any routing or command filtering.
+    novaVoiceDiagnostic('HEARD: "'+transcript+'"',"heard");
     // Route only finalized recognition results.
     handleVoiceInput(transcript);
 
@@ -1811,6 +1863,7 @@ function handleVoiceInput(rawText){
   }
 
   // Route the voice command through your existing logic
+  novaVoiceDiagnostic("ROUTING: "+normalized,"system");
   routeVoiceCommand(normalized, text);  
 }
 
