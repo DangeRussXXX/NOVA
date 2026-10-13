@@ -1133,7 +1133,7 @@ function initializeVoice(){
     document.getElementById(
       "voiceText"
     ).textContent =
-      "LISTENING";
+      "NOVA is listening";
 
     document.getElementById(
       "voiceDot"
@@ -1269,32 +1269,15 @@ function startVoice(){
 
   updateVoiceUI();
 
-  log(
-    "Voice control enabled.",
-    "voice"
-  );
-
-  showNovaResponse(
-    "Voice control enabled. Listening for voice input..."
-  );
-
+  log("NOVA is listening", "voice");
+  showNovaResponse("NOVA is listening");
   awaitingUserName = false;
 
-  speak(
-    `Voice control enabled. Listening for voice input...`
-  );
-
+  // Start immediately from the button click; do not speak over the microphone.
   clearTimeout(recognitionCooldownTimer);
-  recognitionCooldownTimer =
-    setTimeout(() => {
-      if(
-        voiceEnabled &&
-        !isSpeaking &&
-        !recognitionRunning
-      ){
-        startRecognition();
-      }
-    },1200);
+  clearTimeout(resumeRecognitionTimer);
+  restartingRecognition = false;
+  startRecognition();
 
 }
 
@@ -1356,7 +1339,7 @@ function updateVoiceUI(){
       "dot green";
 
     text.textContent =
-      "VOICE ON";
+      recognitionRunning ? "NOVA is listening" : "STARTING MICROPHONE...";
 
     if(profile){
       profile.textContent =
@@ -2030,6 +2013,12 @@ function routeVoiceCommand(command,raw){
     return;
   }
 
+
+  // Distinguish the weekday from a request for the full calendar date.
+  if(/\b(?:what(?:s| is)?|which) day(?: of the week)?(?: is it| is today| today)?\b|\bday of the week\b|\bwhat day is it today\b/.test(command)){
+    speak(`Today is ${new Date().toLocaleDateString("en-US",{weekday:"long"})}.`);
+    return;
+  }
 
   if(
     /\bwhat('?s| is) the date\b|\btoday('?s)? date\b/.test(command)
