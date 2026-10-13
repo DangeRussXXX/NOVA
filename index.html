@@ -784,7 +784,7 @@ function novaReadableStreamNext(){
   const height=Math.max(250,home.clientHeight);
   line.style.setProperty('--nova-travel',`${-Math.round(height*.95)}px`);
   lane.appendChild(line);
-  setTimeout(()=>{novaReadableStreamBusy=false;novaReadableStreamNext();},1850);
+  setTimeout(()=>{novaReadableStreamBusy=false;novaReadableStreamNext();},100);
   setTimeout(()=>line.remove(),12500);
 }
 
