@@ -164,6 +164,83 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 @keyframes novaWildJitter{0%,100%{text-indent:0;filter:none}30%{text-indent:10px;filter:hue-rotate(100deg)}70%{text-indent:-8px;filter:hue-rotate(240deg)}}
 @media(prefers-reduced-motion:reduce){body.novaElectricMediaMode #novaReadableVoiceOverlay .novaReadableFloatingLine{animation:novaReadableRise 12s linear forwards!important}body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:none!important}}
 </style>
+<style id="novaMediaSystemStackFix20261013">
+/* Match NOVA SYSTEM: one centered dialog, full-width vertically stacked sections. */
+.novaFloatPanel[data-nova-panel="library"]{
+  top:clamp(24px,5vh,55px)!important;left:50%!important;
+  transform:translateX(-50%)!important;width:min(980px,96vw)!important;
+  height:min(88dvh,820px)!important;max-height:94dvh!important;
+  padding:20px!important;resize:both!important;
+  background:#080d15!important;border:1px solid #2b3e50!important;
+  border-radius:13px!important;overflow:auto!important;
+}
+.novaFloatPanel[data-nova-panel="library"] > #novaMediaLeft{
+  display:block!important;flex:none!important;width:100%!important;
+  max-width:100%!important;height:auto!important;min-height:0!important;
+  overflow:visible!important;margin:0!important;padding:0!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaCenterToolbar{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  width:100%!important;min-height:60px!important;margin:0 0 14px!important;
+  padding:12px 54px 12px 18px!important;background:#0d141e!important;
+  border:1px solid #293d4d!important;border-radius:10px!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaCenterToolbar strong{
+  color:#35dfff!important;font-size:15px!important;letter-spacing:2px!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaUnifiedMediaBody{
+  display:flex!important;flex-direction:column!important;grid-template-columns:none!important;
+  grid-template-rows:none!important;gap:12px!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  padding:0!important;overflow:visible!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaCenterSection{
+  display:block!important;flex:none!important;width:100%!important;height:auto!important;
+  min-height:0!important;max-height:none!important;overflow:visible!important;
+  margin:0!important;border:1px solid #293d4d!important;border-radius:10px!important;
+  background:#080e16!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaCenterSection > summary{
+  display:list-item!important;cursor:pointer!important;padding:17px 18px!important;
+  color:#35dfff!important;background:#09121b!important;
+  font-size:14px!important;font-weight:800!important;letter-spacing:1px!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaCenterSection > .novaMediaBox{
+  display:flex!important;flex-direction:column!important;flex:none!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  max-height:none!important;overflow:visible!important;padding:18px!important;
+  border:0!important;margin:0!important;background:#08121c!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaCenterSection:not([open]) > .novaMediaBox{
+  display:none!important;
+}
+.novaFloatPanel[data-nova-panel="library"] #library,
+.novaFloatPanel[data-nova-panel="library"] #tracks{
+  flex:none!important;min-height:90px!important;height:auto!important;
+  max-height:260px!important;overflow-y:auto!important;
+}
+.novaFloatPanel[data-nova-panel="library"] #playlistNames{
+  flex:none!important;height:auto!important;min-height:42px!important;
+  max-height:160px!important;overflow-y:auto!important;
+}
+.novaFloatPanel[data-nova-panel="library"] .novaFloatClose{
+  position:absolute!important;right:30px!important;top:36px!important;
+  width:30px!important;height:30px!important;
+}
+@media(max-width:760px){
+  .novaFloatPanel[data-nova-panel="library"]{
+    top:12px!important;left:50%!important;width:96vw!important;
+    height:94dvh!important;max-height:94dvh!important;
+    padding:10px!important;resize:none!important;
+  }
+  .novaFloatPanel[data-nova-panel="library"] .novaMediaCenterToolbar{
+    padding:10px 42px 10px 10px!important;
+  }
+  .novaFloatPanel[data-nova-panel="library"] .novaFloatClose{
+    right:19px!important;top:21px!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4292,8 +4369,8 @@ window.addEventListener('load',function(){
    const librarySection=unified.querySelector('.novaMediaBox:not(.novaCombinedPlaylist)');
    const playlistSection=unified.querySelector('.novaCombinedPlaylist');
    const toolbar=document.createElement('div');toolbar.className='novaMediaCenterToolbar';
-   const heading=document.createElement('strong');heading.textContent='⚡ NOVA MEDIA CENTER';
-   const toggle=document.createElement('button');toggle.type='button';toggle.textContent='HIDE ALL PANELS';
+   const heading=document.createElement('strong');heading.textContent='NOVA MEDIA CENTER';
+   const toggle=document.createElement('button');toggle.type='button';toggle.textContent='SHOW ALL PANELS';
    toolbar.append(heading,toggle);unified.before(toolbar);
    const sections=[];
    const savedKey='novaMediaCenterPanelVisibilityV1';
@@ -4301,7 +4378,7 @@ window.addEventListener('load',function(){
    const addSection=(key,label,node)=>{
      if(!node)return;
      const details=document.createElement('details');details.className='novaMediaCenterSection';
-     details.dataset.section=key;details.open=saved[key]!==false;
+     details.dataset.section=key;details.open=saved[key]===true;
      const summary=document.createElement('summary');summary.textContent=label;
      details.append(summary,node);unified.append(details);sections.push(details);
      details.addEventListener('toggle',()=>{
