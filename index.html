@@ -133,6 +133,37 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
  100%{transform:translateY(var(--nova-travel,-450px));opacity:0}
 }
 </style>
+
+<style id="novaMediaCenter20261013">
+/* Restore floating text travel; overlay stays transparent and non-interactive. */
+#novaReadableVoiceOverlay{overflow:hidden!important;pointer-events:none!important}
+#novaReadableVoiceOverlay .novaReadableFloatingLine{
+ animation:novaReadableRise 12s linear forwards!important;
+ will-change:transform,opacity;
+}
+/* One combined Media Center, with persistent show/hide sections. */
+.novaMediaCenterToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid #28576a;border-radius:9px;background:#091b25;color:#69eaff;letter-spacing:1px;margin-bottom:12px}
+.novaMediaCenterToolbar button{background:#112a36;color:#9ceeff;border:1px solid #34768c;border-radius:7px;padding:9px 12px;cursor:pointer}
+.novaUnifiedMediaBody{display:block!important}
+.novaMediaCenterSection{border:1px solid #274553;border-radius:9px;margin:0 0 12px;background:#080f17;overflow:hidden}
+.novaMediaCenterSection>summary{cursor:pointer;user-select:none;padding:13px 15px;font-weight:800;letter-spacing:1.3px;color:#50e5ff;background:#0d202a}
+.novaMediaCenterSection>.novaMediaBox{margin:0!important;border:0!important;border-radius:0!important;width:100%!important}
+.novaMediaCenterSection:not([open])>.novaMediaBox{display:none!important}
+/* Wild, randomized accents while preserving the scrolling trajectory. */
+body.novaElectricMediaMode #novaReadableVoiceOverlay .novaReadableFloatingLine{color:var(--nova-electric,#36d9ff)!important;text-shadow:0 0 8px currentColor,0 0 19px currentColor!important}
+body.novaElectricMediaMode #novaReadableVoiceOverlay .novaMediaFlash{animation:novaReadableRise 12s linear forwards,novaWildFlash .44s steps(2,end) infinite!important;animation-delay:0s,var(--nova-effect-delay,0s)!important}
+body.novaElectricMediaMode #novaReadableVoiceOverlay .novaMediaGlitch{animation:novaReadableRise 12s linear forwards,novaWildGlitch .7s steps(3,end) infinite!important}
+body.novaElectricMediaMode #novaReadableVoiceOverlay .novaMediaRainbow{animation:novaReadableRise 12s linear forwards,novaWildRainbow 1.2s linear infinite!important}
+body.novaElectricMediaMode #novaReadableVoiceOverlay .novaMediaPulse{animation:novaReadableRise 12s linear forwards,novaWildPulse .65s ease-in-out infinite!important}
+body.novaElectricMediaMode #novaReadableVoiceOverlay .novaMediaJitter{animation:novaReadableRise 12s linear forwards,novaWildJitter .3s steps(3,end) infinite!important}
+body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.5s linear infinite!important}
+@keyframes novaWildFlash{0%,46%,100%{visibility:visible}47%,70%{visibility:hidden}}
+@keyframes novaWildGlitch{0%,100%{letter-spacing:normal;filter:none}30%{letter-spacing:3px;filter:hue-rotate(120deg)}65%{letter-spacing:-.5px;filter:hue-rotate(280deg)}}
+@keyframes novaWildRainbow{0%{color:#00e5ff;text-shadow:0 0 9px #00e5ff}25%{color:#ff3cac;text-shadow:0 0 14px #ff3cac}50%{color:#f9f000;text-shadow:0 0 14px #f9f000}75%{color:#39ff88;text-shadow:0 0 14px #39ff88}100%{color:#00e5ff;text-shadow:0 0 9px #00e5ff}}
+@keyframes novaWildPulse{0%,100%{font-size:clamp(11px,1.1vw,14px);letter-spacing:0}50%{font-size:clamp(14px,1.5vw,19px);letter-spacing:2px}}
+@keyframes novaWildJitter{0%,100%{text-indent:0;filter:none}30%{text-indent:10px;filter:hue-rotate(100deg)}70%{text-indent:-8px;filter:hue-rotate(240deg)}}
+@media(prefers-reduced-motion:reduce){body.novaElectricMediaMode #novaReadableVoiceOverlay .novaReadableFloatingLine{animation:novaReadableRise 12s linear forwards!important}body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:none!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -781,6 +812,12 @@ function novaReadableStreamNext(){
   const line=document.createElement('div');
   line.className='novaReadableFloatingLine';
   line.textContent=message;
+  // Keep the regular upward scroll; media mode adds a randomly chosen accent.
+  if(document.body.classList.contains('novaElectricMediaMode')){
+    const effects=['novaMediaFlash','novaMediaGlitch','novaMediaRainbow','novaMediaPulse','novaMediaJitter'];
+    line.classList.add(effects[Math.floor(Math.random()*effects.length)]);
+    line.style.setProperty('--nova-effect-delay',(Math.random()*.55).toFixed(2)+'s');
+  }
   const height=Math.max(250,home.clientHeight);
   line.style.setProperty('--nova-travel',`${-Math.round(height*.95)}px`);
   lane.appendChild(line);
@@ -4246,6 +4283,43 @@ window.addEventListener('load',function(){
    if(librarySection)combined.appendChild(librarySection);
    combined.appendChild(playlistSection);
    left.appendChild(combined);
+ }
+ // NOVA MEDIA CENTER: wrap existing live controls in collapsible sections.
+ // Preserve every original control ID and listener by moving, never cloning, nodes.
+ const unified=left.querySelector('.novaUnifiedMediaBody');
+ if(unified && !unified.dataset.novaSectionsReady){
+   unified.dataset.novaSectionsReady='1';
+   const librarySection=unified.querySelector('.novaMediaBox:not(.novaCombinedPlaylist)');
+   const playlistSection=unified.querySelector('.novaCombinedPlaylist');
+   const toolbar=document.createElement('div');toolbar.className='novaMediaCenterToolbar';
+   const heading=document.createElement('strong');heading.textContent='⚡ NOVA MEDIA CENTER';
+   const toggle=document.createElement('button');toggle.type='button';toggle.textContent='HIDE ALL PANELS';
+   toolbar.append(heading,toggle);unified.before(toolbar);
+   const sections=[];
+   const savedKey='novaMediaCenterPanelVisibilityV1';
+   let saved={};try{saved=JSON.parse(localStorage.getItem(savedKey)||'{}')||{};}catch(_){}
+   const addSection=(key,label,node)=>{
+     if(!node)return;
+     const details=document.createElement('details');details.className='novaMediaCenterSection';
+     details.dataset.section=key;details.open=saved[key]!==false;
+     const summary=document.createElement('summary');summary.textContent=label;
+     details.append(summary,node);unified.append(details);sections.push(details);
+     details.addEventListener('toggle',()=>{
+       saved[key]=details.open;
+       try{localStorage.setItem(savedKey,JSON.stringify(saved));}catch(_){}
+       refreshButton();
+     });
+   };
+   const refreshButton=()=>{toggle.textContent=sections.every(x=>x.open)?'HIDE ALL PANELS':'SHOW ALL PANELS';};
+   addSection('library','MEDIA LIBRARY',librarySection);
+   addSection('playlists','PLAYLISTS & EDITOR',playlistSection);
+   toggle.addEventListener('click',()=>{
+     const open=!sections.every(x=>x.open);
+     sections.forEach(section=>{section.open=open;saved[section.dataset.section]=open;});
+     try{localStorage.setItem(savedKey,JSON.stringify(saved));}catch(_){}
+     refreshButton();
+   });
+   refreshButton();
  }
  makeFloat('library',left,'MEDIA LIBRARY & PLAYLISTS');
  const rightPanels=[...right.querySelectorAll('.novaRightPanel')];
