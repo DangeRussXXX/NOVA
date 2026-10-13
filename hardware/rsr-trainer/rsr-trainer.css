@@ -74,3 +74,100 @@
 #rsrLab #rsrLabPhotoPowerSwitch.is-on::after{content:"ON";color:#fff;text-shadow:0 1px 3px #7e0011,0 0 8px #fff}
 @keyframes rsrPowerGlow{50%{box-shadow:0 0 17px 7px #ff263bf0,0 0 43px 16px #ff263baa,inset 0 0 14px #ffd4bf}}
 @media(prefers-reduced-motion:reduce){#rsrLab #rsrLabPhotoPowerSwitch.is-on{animation:none}}
+
+
+/* ============================================================
+   NOVA SYSTEM ACCORDIONS — RSR TRAINER
+   Preserves photographed trainer, overlays, and floating columns.
+   ============================================================ */
+#rsrLab .rsr-lab__controls {
+  background:#071827;
+  border-color:#196078;
+}
+#rsrLab .rsr-lab__accordion-toolbar {
+  display:flex;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:0 0 12px;
+}
+#rsrLab .rsr-lab__accordion-toolbar button {
+  padding:7px 10px;
+  color:#aef7ff;
+}
+#rsrLab details.rsr-lab__section {
+  display:block;
+  width:100%;
+  margin:0 0 10px;
+  padding:0;
+  border:1px solid #196078;
+  border-radius:7px;
+  overflow:hidden;
+  background:#071d2b;
+}
+#rsrLab details.rsr-lab__section > summary {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:43px;
+  width:100%;
+  padding:12px 14px;
+  background:#082e42;
+  color:#48e6ff;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.03em;
+  line-height:1.4;
+  cursor:pointer;
+  user-select:none;
+  list-style:none;
+}
+#rsrLab details.rsr-lab__section > summary::-webkit-details-marker { display:none; }
+#rsrLab details.rsr-lab__section > summary::before {
+  content:'▶';
+  flex-shrink:0;
+  font-size:11px;
+  transition:transform .15s ease;
+}
+#rsrLab details.rsr-lab__section[open] > summary::before { transform:rotate(90deg); }
+#rsrLab details.rsr-lab__section > summary:hover { background:#0b4058; }
+#rsrLab details.rsr-lab__section[open] > summary {
+  background:#0a3850;
+  border-bottom:1px solid #196078;
+}
+#rsrLab details.rsr-lab__section > .rsr-lab__section-body {
+  display:block;
+  min-width:0;
+  padding:14px;
+  background:#071827;
+}
+#rsrLab details.rsr-lab__section > summary:focus-visible,
+#rsrLab .rsr-lab__accordion-toolbar button:focus-visible {
+  outline:2px solid #f5d66b;
+  outline-offset:2px;
+}
+#rsrLab .rsr-lab__section .rsrTrainerController { width:100%!important; }
+#rsrLab .rsr-lab__footer {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:space-between;
+  padding:12px 2px 2px;
+  color:#9ebbc5;
+  font-size:12px;
+  line-height:1.5;
+}
+@media(max-width:900px) {
+  /* Keep the floating twin's adjustable side-by-side columns. */
+  #rsrLab.nova-float-window .rsr-lab__columns {
+    display:grid!important;
+    grid-template-columns:minmax(0,var(--nova-left,38%)) 9px minmax(0,1fr)!important;
+    overflow:hidden!important;
+  }
+  #rsrLab.nova-float-window .rsr-lab__controls,
+  #rsrLab.nova-float-window .rsr-lab__simulator { overflow:auto!important; }
+}
+@media(max-width:620px) {
+  #rsrLab details.rsr-lab__section > summary { padding:10px; font-size:12px; }
+  #rsrLab details.rsr-lab__section > .rsr-lab__section-body { padding:10px; }
+}

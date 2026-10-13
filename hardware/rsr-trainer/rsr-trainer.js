@@ -1,3 +1,4 @@
+
 /* NOVA RSR Trainer Digital Twin — LED alignment + local pattern previews
    Paste this ENTIRE file into hardware/rsr-trainer/rsr-trainer.js.
    The existing dashboard remains the only sender of hardware commands.
@@ -318,9 +319,25 @@
     originalParent.insertBefore(mountedPanel, anchor);
     mountedPanel = null;
   }
+  // NOVA-style accordion controls; no hardware commands are sent here.
+  function initAccordions() {
+    const root = lab();
+    if (!root || root.dataset.rsrAccordionsReady === 'yes') return;
+    root.dataset.rsrAccordionsReady = 'yes';
+    const sections = () => [...root.querySelectorAll('.rsr-lab__controls > details.rsr-lab__section')];
+    sections().forEach(section => { section.open = false; });
+    $('rsrLabShowAll')?.addEventListener('click', () => {
+      sections().forEach(section => { section.open = true; });
+    });
+    $('rsrLabHideAll')?.addEventListener('click', () => {
+      sections().forEach(section => { section.open = false; });
+    });
+  }
+
   function open() {
     if (!lab()) { console.warn('RSR digital twin HTML not loaded.'); return false; }
     mountOriginalControls();
+    initAccordions();
     lab().hidden = false;
     document.body.classList.add('rsr-lab-open');
     refresh();
@@ -337,6 +354,7 @@
   function init() {
     if (initialized || !lab()) return false;
     initialized = true;
+    initAccordions();
     $('rsrLabClose')?.addEventListener('click', close);
     $('rsrLabViewBoard')?.addEventListener('click', () => mode('board'));
     $('rsrLabViewWiring')?.addEventListener('click', () => mode('wiring'));

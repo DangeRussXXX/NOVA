@@ -12,17 +12,27 @@
   </header>
   <div class="rsr-lab__columns">
     <aside class="rsr-lab__controls" aria-label="RSR trainer controls">
-      <section class="rsr-lab__group">
-        <h3>EXISTING TRAINER CONTROLS</h3>
-        <div id="rsrLabExistingControls" data-rsr-mount="existing-controls">
-          <!-- rsr-trainer.js moves the original controller here; no duplicate commands. -->
+      <div class="rsr-lab__accordion-toolbar" role="group" aria-label="Trainer section controls">
+        <button id="rsrLabShowAll" type="button">SHOW ALL</button>
+        <button id="rsrLabHideAll" type="button">HIDE ALL</button>
+      </div>
+      <details class="rsr-lab__section">
+        <summary>TRAINER CONTROLS &amp; PATTERNS</summary>
+        <div class="rsr-lab__section-body">
+          <div id="rsrLabExistingControls" data-rsr-mount="existing-controls">
+            <!-- Original controller is moved here by rsr-trainer.js; no duplicate hardware commands. -->
+          </div>
         </div>
-      </section>
-      <section class="rsr-lab__group rsr-lab__effects" aria-label="RSR simulation effects">
-        <div class="rsr-lab__effect-actions"><button type="button" id="rsrLabSoundToggle" aria-pressed="false">🔇 SOUND OFF</button></div>
-        <div class="rsr-lab__test-track" aria-label="RUN TEST animation"><span id="rsrLabTestPulse"></span></div>
-        <output id="rsrLabTestResult" role="status">READY</output>
-      </section>
+      </details>
+      <details class="rsr-lab__section rsr-lab__effects">
+        <summary>SIMULATION EFFECTS &amp; SYSTEM TEST</summary>
+        <div class="rsr-lab__section-body">
+          <div class="rsr-lab__effect-actions"><button type="button" id="rsrLabSoundToggle" aria-pressed="false">🔇 SOUND OFF</button></div>
+          <div class="rsr-lab__test-track" aria-label="RUN TEST animation"><span id="rsrLabTestPulse"></span></div>
+          <output id="rsrLabTestResult" role="status">READY</output>
+          <p class="rsr-lab__notice">Test animation and sound are local visual effects, not verified hardware feedback.</p>
+        </div>
+      </details>
     </aside>
     <main class="rsr-lab__simulator" aria-label="RSR trainer simulator">
       <div class="rsr-lab__toolbar" role="group" aria-label="Simulator display mode">
