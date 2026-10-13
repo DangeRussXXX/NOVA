@@ -6,19 +6,13 @@
 
    ============================================================ */
 
-
-
 /* ============================================================
-
-
 
    Local USB / built-in cameras via browser MediaDevices API.
 
    ============================================================ */
 
 let novaCameraPopupWindow = null;
-
-
 
 function novaCameraDocument(){
 
@@ -36,8 +30,6 @@ function novaCameraDocument(){
 
 }
 
-
-
 let desktopCameraStream = null;
 
 let desktopCameraRecorder = null;
@@ -45,8 +37,6 @@ let desktopCameraRecorder = null;
 let desktopCameraRecordedChunks = [];
 
 let desktopCameraPopup = null;
-
-
 
 function setDesktopCameraStatus(online, text){
 
@@ -63,8 +53,6 @@ function setDesktopCameraStatus(online, text){
   if(placeholder){ placeholder.style.display = online ? "none" : "flex"; }
 
 }
-
-
 
 async function refreshDesktopCameraList(){
 
@@ -111,8 +99,6 @@ async function refreshDesktopCameraList(){
   }
 
 }
-
-
 
 async function startDesktopCamera(){
 
@@ -166,13 +152,9 @@ async function startDesktopCamera(){
 
 }
 
-
-
 function stopDesktopCamera(){
 
   const video = novaCameraDocument().getElementById("desktopCameraVideo");
-
-
 
   if(
 
@@ -196,19 +178,13 @@ function stopDesktopCamera(){
 
 }
 
-
-
 async function changeDesktopCamera(){
 
   if(desktopCameraStream) await startDesktopCamera();
 
 }
 
-
-
 function fullscreenDesktopCamera(){
-
-
 
   if(
 
@@ -230,8 +206,6 @@ function fullscreenDesktopCamera(){
 
   }
 
-
-
   desktopCameraPopup=
 
     window.open(
@@ -243,8 +217,6 @@ function fullscreenDesktopCamera(){
       "width=1100,height=700,resizable=yes,scrollbars=no"
 
     );
-
-
 
   if(!desktopCameraPopup){
 
@@ -259,8 +231,6 @@ function fullscreenDesktopCamera(){
     return;
 
   }
-
-
 
   desktopCameraPopup.document.open();
 
@@ -296,8 +266,6 @@ function fullscreenDesktopCamera(){
 
   desktopCameraPopup.document.close();
 
-
-
   const popupVideo=
 
     desktopCameraPopup.document.getElementById(
@@ -306,15 +274,11 @@ function fullscreenDesktopCamera(){
 
     );
 
-
-
   if(popupVideo){
 
     popupVideo.srcObject=
 
       desktopCameraStream;
-
-
 
     popupVideo.play()
 
@@ -322,11 +286,7 @@ function fullscreenDesktopCamera(){
 
   }
 
-
-
   desktopCameraPopup.focus();
-
-
 
   log(
 
@@ -338,11 +298,7 @@ function fullscreenDesktopCamera(){
 
 }
 
-
-
 function toggleDesktopCameraRecording(){
-
-
 
   const button=
 
@@ -351,8 +307,6 @@ function toggleDesktopCameraRecording(){
       "cameraRecordButton"
 
     );
-
-
 
   if(
 
@@ -367,8 +321,6 @@ function toggleDesktopCameraRecording(){
     return;
 
   }
-
-
 
   if(
 
@@ -390,8 +342,6 @@ function toggleDesktopCameraRecording(){
 
   }
 
-
-
   if(typeof MediaRecorder==="undefined"){
 
     log(
@@ -406,15 +356,9 @@ function toggleDesktopCameraRecording(){
 
   }
 
-
-
   desktopCameraRecordedChunks=[];
 
-
-
   let options={};
-
-
 
   if(
 
@@ -446,8 +390,6 @@ function toggleDesktopCameraRecording(){
 
   }
 
-
-
   try{
 
     desktopCameraRecorder=
@@ -473,8 +415,6 @@ function toggleDesktopCameraRecording(){
     return;
 
   }
-
-
 
   desktopCameraRecorder.addEventListener(
 
@@ -502,8 +442,6 @@ function toggleDesktopCameraRecording(){
 
   );
 
-
-
   desktopCameraRecorder.addEventListener(
 
     "stop",
@@ -516,8 +454,6 @@ function toggleDesktopCameraRecording(){
 
         "video/webm";
 
-
-
       const blob=
 
         new Blob(
@@ -528,8 +464,6 @@ function toggleDesktopCameraRecording(){
 
         );
 
-
-
       const url=
 
         URL.createObjectURL(
@@ -537,8 +471,6 @@ function toggleDesktopCameraRecording(){
           blob
 
         );
-
-
 
       const link=
 
@@ -548,15 +480,11 @@ function toggleDesktopCameraRecording(){
 
         );
 
-
-
       link.href=url;
 
       link.download=
 
         `nova-camera-${new Date().toISOString().replace(/[:.]/g,"-")}.webm`;
-
-
 
       novaCameraDocument().body.appendChild(
 
@@ -564,13 +492,9 @@ function toggleDesktopCameraRecording(){
 
       );
 
-
-
       link.click();
 
       link.remove();
-
-
 
       setTimeout(
 
@@ -579,8 +503,6 @@ function toggleDesktopCameraRecording(){
         2000
 
       );
-
-
 
       if(button){
 
@@ -594,8 +516,6 @@ function toggleDesktopCameraRecording(){
 
       }
 
-
-
       log(
 
         "Camera recording saved.",
@@ -608,23 +528,17 @@ function toggleDesktopCameraRecording(){
 
   );
 
-
-
   desktopCameraRecorder.start(
 
     1000
 
   );
 
-
-
   if(button){
 
     button.textContent=
 
       "STOP RECORDING";
-
-
 
     button.classList.add(
 
@@ -633,8 +547,6 @@ function toggleDesktopCameraRecording(){
     );
 
   }
-
-
 
   log(
 
@@ -645,8 +557,6 @@ function toggleDesktopCameraRecording(){
   );
 
 }
-
-
 
 function snapshotDesktopCamera(){
 
@@ -678,8 +588,6 @@ function snapshotDesktopCamera(){
 
 }
 
-
-
 novaCameraDocument().addEventListener("DOMContentLoaded", () => {
 
   const select = novaCameraDocument().getElementById("desktopCameraSelect");
@@ -696,91 +604,87 @@ novaCameraDocument().addEventListener("DOMContentLoaded", () => {
 
 });
 
-
-
 function openNovaCameraScreen(){
-
   const panel=document.getElementById("novaCameraPanelSource");
-
   if(!panel)return;
 
-  const w=window.open("","nova_camera_screen","width=1180,height=820,resizable=yes,scrollbars=yes");
+  // Reuse the camera window instead of moving the panel a second time.
+  if(novaCameraPopupWindow && !novaCameraPopupWindow.closed){
+    novaCameraPopupWindow.focus();
+    return;
+  }
 
-  if(!w){log("NOVA Camera screen was blocked. Allow pop-ups for this page.","warning");return;}
-
+  // Compact, calendar-like opening dimensions. Full screen remains available.
+  const w=window.open("","nova_camera_screen","width=980,height=690,resizable=yes,scrollbars=yes");
+  if(!w){
+    if(typeof log==="function") log("NOVA Camera screen was blocked. Allow pop-ups for this page.","warning");
+    return;
+  }
   novaCameraPopupWindow=w;
-
   w.document.open();
-
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA DESKTOP CAMERA</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CAMERA</button></div><div id="cameraHost"></div></body></html>`);
-
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA DESKTOP CAMERA</title></head><body style="margin:0;background:#070a0f;color:#d9e4ef"><div id="cameraHost"></div></body></html>`);
   w.document.close();
 
   const novaCssLink=w.document.createElement("link");
-
   novaCssLink.rel="stylesheet";
-
   novaCssLink.href=new URL("nova.css",window.location.href).href;
-
   w.document.head.appendChild(novaCssLink);
 
-  // The main NOVA stylesheet intentionally hides this source panel.
-  // In the camera popup it must be visible, overriding display:none!important.
   const cameraPopupStyle=w.document.createElement("style");
   cameraPopupStyle.textContent=`
-    html,body{min-height:100%;}
-    #novaCameraPanelSource{display:block!important;position:relative!important;
-      visibility:visible!important;width:100%!important;max-width:none!important;}
-    #novaCameraPanelSource .panelBody{display:block!important;visibility:visible!important;
-      max-height:none!important;overflow:visible!important;}
-    #novaCameraPanelSource .cameraViewport{min-height:320px;}
-    #novaCameraPanelSource #desktopCameraVideo{display:block!important;
-      width:100%!important;min-height:300px;object-fit:contain;}
+    html,body{height:100%;min-height:0;margin:0;overflow:hidden;}
+    body{box-sizing:border-box;padding:12px;}
+    #cameraHost{height:100%;min-height:0;}
+    #novaCameraPanelSource{display:flex!important;flex-direction:column!important;
+      visibility:visible!important;width:100%!important;max-width:none!important;
+      height:100%!important;min-height:0!important;box-sizing:border-box!important;margin:0!important;}
+    #novaCameraPanelSource .panelHeader{flex:0 0 auto!important;padding:8px 12px!important;}
+    #novaCameraPanelSource .panelBody{display:flex!important;flex-direction:column!important;
+      gap:8px!important;flex:1 1 auto!important;min-height:0!important;
+      max-height:none!important;overflow:hidden!important;padding:10px!important;}
+    #novaCameraPanelSource .cameraControls{display:flex!important;flex-wrap:wrap!important;
+      gap:6px!important;flex:0 0 auto!important;order:0!important;}
+    #novaCameraPanelSource .cameraControls button{flex:1 1 auto!important;
+      min-width:110px!important;width:auto!important;padding:7px 9px!important;}
+    #novaCameraPanelSource .cameraControls button[onclick*="fullscreenDesktopCamera"]{flex:1 1 100%!important;}
+    #novaCameraPanelSource .cameraViewport{flex:1 1 auto!important;min-height:0!important;
+      height:auto!important;max-height:none!important;overflow:hidden!important;order:1!important;
+      display:flex!important;align-items:center!important;justify-content:center!important;}
+    #novaCameraPanelSource #desktopCameraVideo{display:block!important;width:100%!important;
+      height:100%!important;min-height:0!important;max-height:100%!important;object-fit:contain!important;}
+    #novaCameraPanelSource #desktopCameraSelect{flex:0 0 auto!important;order:2!important;}
+    #novaCameraPanelSource .cameraStatusRow{flex:0 0 auto!important;order:3!important;}
+    #novaCameraPanelSource #desktopCameraSnapshot{display:none!important;}
+    @media(max-height:480px){#novaCameraPanelSource .panelBody{gap:4px!important;padding:5px!important;}}
   `;
   w.document.head.appendChild(cameraPopupStyle);
 
-
-  ["startDesktopCamera","stopDesktopCamera","snapshotDesktopCamera","toggleDesktopCameraRecording","fullscreenDesktopCamera","changeDesktopCamera","refreshDesktopCameraList"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
+  ["startDesktopCamera","stopDesktopCamera","snapshotDesktopCamera","toggleDesktopCameraRecording","fullscreenDesktopCamera","changeDesktopCamera","refreshDesktopCameraList"].forEach(name=>{
+    if(typeof window[name]==="function")w[name]=window[name];
+  });
 
   panel.classList.remove("collapsed");
-  panel.style.setProperty("display","block","important");
-
+  panel.style.setProperty("display","flex","important");
   w.document.getElementById("cameraHost").appendChild(w.document.adoptNode(panel));
-  panel.style.setProperty("display","block","important");
   const popupBody=panel.querySelector(".panelBody");
-  if(popupBody){popupBody.classList.remove("collapsed");popupBody.style.setProperty("display","block","important");}
+  if(popupBody){popupBody.classList.remove("collapsed");popupBody.style.setProperty("display","flex","important");}
 
-
-
-  /* Keep camera controls at the top of the camera popup for quick access. */
-
-  const cameraBody=panel.querySelector(".panelBody");
-
+  // Put the controls at the top, above the camera preview.
   const cameraControls=panel.querySelector(".cameraControls");
-
-  if(cameraBody && cameraControls){
-
-    cameraBody.insertBefore(cameraControls,cameraBody.firstChild);
-
-  }
-
-
+  if(popupBody && cameraControls)popupBody.insertBefore(cameraControls,popupBody.firstChild);
 
   w.addEventListener("beforeunload",()=>{
-
     novaCameraPopupWindow=null;
-
     const stack=document.querySelector(".novaPanelStack");
-
-    if(stack){document.adoptNode(panel);panel.style.display="none";stack.appendChild(panel);}
-
+    if(stack){
+      document.adoptNode(panel);
+      panel.style.display="none";
+      panel.style.removeProperty("height");
+      stack.appendChild(panel);
+    }
   },{once:true});
-
   try{w.focus()}catch(e){}
-
 }
-
-
 
 /* Camera defaults expanded when its existing screen is opened. */
 
