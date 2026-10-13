@@ -3900,7 +3900,9 @@ if(document.readyState==="loading"){
     youtubeVideoId=item.id;
     selectedSource="youtube";
     novaSetHubPage("youtube");
-    novaPresentPlayingVideo("youtube");
+    if(document.getElementById("novaHybridVideoStage")?.contains(frame)!==true){
+      novaPresentPlayingVideo("youtube");
+    }
     // Loading a new embed is distinct from sending a play command to a ready embed.
     // autoplay=1 requests playback; browsers may still require a user click.
     const origin=(location.protocol==="https:"||location.protocol==="http:")
@@ -3909,25 +3911,34 @@ if(document.readyState==="loading"){
       "?enablejsapi=1&playsinline=1&autoplay=1"+origin;
     if(typeof log==="function")log("YouTube playlist selected: "+item.url,"system");
   }
+  // Resume the already loaded YouTube iframe without replacing its src.
+  // Reassigning src, even to the same video, restarts playback at zero.
   function playCurrentYouTube(){
+    const frame=document.getElementById("youtubeFrame");
+    const loadedId=frame ? extractYouTubeId(frame.getAttribute("src")||"") : null;
+    if(frame && youtubeVideoId && loadedId===youtubeVideoId){
+      selectedSource="youtube";
+      // Do not move an already-mounted iframe: moving it can reload its document.
+      const stage=document.getElementById("novaHybridVideoStage");
+      if(stage && frame.parentNode!==stage){
+        // Only present the player when necessary (not on each resume).
+        novaPresentPlayingVideo("youtube");
+      }else if(stage){
+        stage.hidden=false;
+        document.body.classList.remove("novaHybridVideoParked");
+        document.body.classList.add("novaHybridVideoActive");
+      }
+      youtubeCommand("playVideo");
+      if(typeof log==="function")log("YouTube resumed without reloading the video.","success");
+      return;
+    }
     const list=items();
     if(!list.length){
-      if(youtubeVideoId){novaPresentPlayingVideo("youtube");youtubeCommand("playVideo");return;}
       if(typeof speak==="function")speak("Your saved YouTube playlist is empty.");
       return;
     }
     const index=list.findIndex(x=>x.id===youtubeVideoId);
-    if(index>=0){
-      savedYouTubeIndex=index;
-      const frame=document.getElementById("youtubeFrame");
-      if(frame&&frame.src.includes(youtubeVideoId)){
-        novaSetHubPage("youtube");
-        novaPresentPlayingVideo("youtube");
-        youtubeCommand("playVideo");
-        return;
-      }
-    }
-    playSaved(savedYouTubeIndex>=0?savedYouTubeIndex:0);
+    playSaved(index>=0?index:(savedYouTubeIndex>=0?savedYouTubeIndex:0));
   }
   const priorRoute=routeVoiceCommand;
   routeVoiceCommand=function(command,raw){
