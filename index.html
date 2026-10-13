@@ -118,8 +118,8 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 #novaReadableVoiceOverlay .novaReadableFloatingLine{
  position:absolute!important;left:5%!important;bottom:12px!important;
  width:90%!important;box-sizing:border-box!important;
- font:600 clamp(14px,1.5vw,18px)/1.5 Consolas,monospace!important;
- color:#73ffa2!important;text-shadow:0 1px 3px #001b09,0 0 5px #087b32!important;
+ font:500 clamp(11px,1.1vw,14px)/1.35 Consolas,monospace!important;
+ color:#79d99a!important;text-shadow:0 1px 2px #001b09,0 0 3px #075b27!important;
  background:none!important;border:0!important;padding:0!important;margin:0!important;
  overflow-wrap:anywhere!important;white-space:normal!important;
  animation:novaReadableRise 12s linear forwards!important;
@@ -784,7 +784,7 @@ function novaReadableStreamNext(){
   const height=Math.max(250,home.clientHeight);
   line.style.setProperty('--nova-travel',`${-Math.round(height*.95)}px`);
   lane.appendChild(line);
-  setTimeout(()=>{novaReadableStreamBusy=false;novaReadableStreamNext();},2600);
+  setTimeout(()=>{novaReadableStreamBusy=false;novaReadableStreamNext();},1850);
   setTimeout(()=>line.remove(),12500);
 }
 
