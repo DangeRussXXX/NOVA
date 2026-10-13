@@ -3191,6 +3191,37 @@ function novaHandleVideoFiles(event){
   if(files.length && videoIndex<0)videoIndex=0;
 }
 
+/* Issue #4: Present existing video players in NOVA's reversible orb/video stage. */
+function novaPresentPlayingVideo(kind){
+  const stage=document.getElementById("novaHybridVideoStage");
+  const home=document.querySelector(".novaUnifiedConsole .novaLeftHome");
+  const back=document.getElementById("novaHybridBackOrb");
+  if(!stage||!home)return;
+  const player=document.getElementById(kind==="youtube"?"youtubeFrame":"videoPlayer");
+  if(!player)return;
+  // Keep original player nodes and IDs; do not create duplicate media streams.
+  if(!player.__novaOriginalParent){
+    player.__novaOriginalParent=player.parentNode;
+    player.__novaOriginalNext=player.nextSibling;
+  }
+  for(const other of Array.from(stage.children)){
+    if(other===player)continue;
+    const parent=other.__novaOriginalParent;
+    if(parent){
+      const next=other.__novaOriginalNext;
+      if(next&&next.parentNode===parent)parent.insertBefore(other,next);
+      else parent.appendChild(other);
+    }
+  }
+  stage.appendChild(player);
+  stage.hidden=false;
+  document.body.classList.remove("novaHybridVideoParked");
+  document.body.classList.add("novaHybridVideoActive");
+  if(back)back.hidden=false;
+  const label=document.getElementById("novaHybridTrackName");
+  if(label)label.textContent=kind==="youtube"?"YOUTUBE VIDEO":"LOCAL VIDEO";
+}
+
 function playVideo(index){
   if(!videoLibrary.length){try{speak("No videos are loaded.");}catch(e){} return;}
   if(typeof index==="number")videoIndex=index;
@@ -3199,6 +3230,7 @@ function playVideo(index){
   const video=document.getElementById("videoPlayer");
   if(!video||!item)return;
   video.src=item.url;
+  novaPresentPlayingVideo("video");
   video.play().catch(()=>{});
   novaRenderVideoList();
   try{log(`Playing video: ${item.file.name}`,"success");}catch(e){}
@@ -3306,6 +3338,7 @@ function novaLoadYouTubeV2(){
  if(location.protocol==="http:"||location.protocol==="https:")url+=`&origin=${encodeURIComponent(location.origin)}`;
  frame.src=url;
  novaSetHubPage("youtube");
+ novaPresentPlayingVideo("youtube");
 }
 loadYouTube=novaLoadYouTubeV2;
 
@@ -3867,6 +3900,7 @@ if(document.readyState==="loading"){
     youtubeVideoId=item.id;
     selectedSource="youtube";
     novaSetHubPage("youtube");
+    novaPresentPlayingVideo("youtube");
     // Loading a new embed is distinct from sending a play command to a ready embed.
     // autoplay=1 requests playback; browsers may still require a user click.
     const origin=(location.protocol==="https:"||location.protocol==="http:")
@@ -3878,7 +3912,7 @@ if(document.readyState==="loading"){
   function playCurrentYouTube(){
     const list=items();
     if(!list.length){
-      if(youtubeVideoId){youtubeCommand("playVideo");return;}
+      if(youtubeVideoId){novaPresentPlayingVideo("youtube");youtubeCommand("playVideo");return;}
       if(typeof speak==="function")speak("Your saved YouTube playlist is empty.");
       return;
     }
@@ -3888,6 +3922,7 @@ if(document.readyState==="loading"){
       const frame=document.getElementById("youtubeFrame");
       if(frame&&frame.src.includes(youtubeVideoId)){
         novaSetHubPage("youtube");
+        novaPresentPlayingVideo("youtube");
         youtubeCommand("playVideo");
         return;
       }
