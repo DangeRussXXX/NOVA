@@ -97,48 +97,49 @@ body.novaHybridVideoParked .novaUnifiedConsole .novaLeftHome{
 }
 body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 </style>
-
-<style id="novaRestoredVoiceOverlayStyles">
-/* Transparent floating stream above NOVA and video. */
-.novaUnifiedConsole .novaLeftHome > #novaVoiceDiagnosticOverlay{
- position:absolute!important;inset:0!important;z-index:1050!important;
- width:100%!important;height:100%!important;max-height:none!important;
- padding:0!important;margin:0!important;overflow:hidden!important;
- pointer-events:none!important;background:transparent!important;border:0!important;
- border-radius:0!important;box-shadow:none!important;
- color:#74ff9c!important;font:clamp(10px,1.05vw,13px)/1.35 Consolas,Monaco,monospace!important;
- text-shadow:0 0 6px rgba(60,255,120,.6)!important;
- -webkit-mask-image:linear-gradient(to top,black 0%,black 46%,transparent 96%)!important;
- mask-image:linear-gradient(to top,black 0%,black 46%,transparent 96%)!important;
-}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLines{
- position:absolute!important;inset:0!important;overflow:hidden!important;
- display:block!important;max-height:none!important;
-}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{
- position:absolute!important;left:12px!important;bottom:0!important;
- max-width:min(65%,560px)!important;overflow-wrap:anywhere!important;
- white-space:normal!important;color:#74ff9c!important;
- animation:novaDiagnosticFloat 10s linear forwards!important;will-change:transform,opacity;
-}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="error"]{color:#ffad9f!important}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="warning"]{color:#ffe09b!important}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="heard"]{color:#c2ffd2!important}
-@keyframes novaDiagnosticFloat{
- 0%{transform:translateY(110%);opacity:0}
- 5%{opacity:1}
- 48%{opacity:1}
- 100%{transform:translateY(calc(-1 * var(--nova-stream-distance, 440px)));opacity:0}
-}
-@media(max-width:650px){#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{left:7px!important;max-width:75%!important;font-size:10px!important}}
-@media(prefers-reduced-motion:reduce){#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{animation-duration:16s!important}}
-</style>
 <style id="novaVoiceBottomPlacement">
 .novaConsoleCommandRow{display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:nowrap!important}
 .novaConsoleCommandRow #voiceButton{order:0!important;flex:0 0 auto!important;width:auto!important;min-width:118px!important;max-width:none!important;margin:0!important;white-space:nowrap!important}
 .novaConsoleCommandRow #commandInput{order:1!important;flex:1 1 auto!important;min-width:0!important;width:auto!important}
 .novaConsoleCommandRow > button:not(#voiceButton){order:2!important;flex:0 0 auto!important;white-space:nowrap!important}
 @media(max-width:520px){.novaConsoleCommandRow{gap:5px!important}.novaConsoleCommandRow #voiceButton{min-width:0!important;padding:8px 6px!important}.novaConsoleCommandRow > button:not(#voiceButton){padding:8px 6px!important}}
+</style>
+
+<style id="novaReadableFloatingStreamFix">
+/* Single transparent overlay, above the orb and video, with no panel chrome. */
+.novaUnifiedConsole .novaLeftHome{isolation:isolate!important}
+#novaHudTicker{display:none!important}
+#novaPersistentTicker{
+  display:block!important;position:absolute!important;
+  inset:0!important;width:100%!important;height:100%!important;
+  overflow:hidden!important;pointer-events:none!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  padding:0!important;margin:0!important;z-index:1000!important;
+  mask-image:none!important;-webkit-mask-image:none!important;
+}
+#novaPersistentTickerTrack,#novaPersistentTicker .novaVerticalSystemLine{display:none!important}
+#novaPersistentTicker .novaReadableFloatingLine{
+  position:absolute!important;left:5%!important;bottom:0!important;
+  width:90%!important;max-width:90%!important;
+  color:#6bff94!important;background:transparent!important;border:0!important;
+  font:600 clamp(13px,1.5vw,18px)/1.35 ui-monospace,Consolas,monospace!important;
+  letter-spacing:0!important;word-break:normal!important;overflow-wrap:anywhere!important;
+  white-space:normal!important;text-align:left!important;
+  text-shadow:0 1px 3px #001b09,0 0 5px rgba(28,255,93,.35)!important;
+  padding:0!important;margin:0!important;
+  opacity:0;animation:novaReadableRise 11s linear forwards!important;
+}
+@keyframes novaReadableRise{
+  0%{transform:translateY(0);opacity:0}
+  5%{opacity:1}
+  40%{transform:translateY(calc(-.4 * var(--nova-rise-distance, 420px)));opacity:1}
+  60%{transform:translateY(calc(-.6 * var(--nova-rise-distance, 420px)));opacity:.65}
+  80%{transform:translateY(calc(-.8 * var(--nova-rise-distance, 420px)));opacity:.18}
+  100%{transform:translateY(calc(-1 * (var(--nova-rise-distance, 420px))));opacity:0}
+}
+/* Use the actual panel height, not a hardcoded number, for the travel distance. */
+#novaPersistentTicker{--nova-rise-distance:calc(100% - 10px)}
+@media(max-width:600px){#novaPersistentTicker .novaReadableFloatingLine{font-size:13px!important;left:4%!important;width:92%!important;max-width:92%!important}}
 </style>
 </head>
 <body>
@@ -271,9 +272,6 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 <div class="novaParticles"></div>
 <div class="novaMusicPulseRing" id="novaMusicPulseRing"></div>
 </div>
-</div>
-<div id="novaVoiceDiagnosticOverlay" role="log" aria-label="NOVA live voice diagnostics" aria-live="off">
- <div class="novaVoiceDiagnosticLines" id="novaVoiceDiagnosticLines"></div>
 </div>
 <div id="novaHybridVideoStage" aria-label="NOVA hybrid video display" hidden></div>
 <div id="novaHybridNowPlaying" aria-live="polite" hidden><span id="novaHybridTrackName"></span><button type="button" id="novaHybridBackOrb">RETURN TO ORB</button></div>
@@ -749,35 +747,6 @@ document.addEventListener("DOMContentLoaded", () => {
    LOGGING
    ============================================================ */
 
-
-/* Floating command stream: messages rise from bottom and fade in the upper half. */
-let novaVoiceStreamLastAt=0;
-function novaVoiceDiagnostic(message,kind="system"){
- const lines=document.getElementById("novaVoiceDiagnosticLines");
- if(!lines)return;
- const clean=String(message??"").replace(/\s+/g," ").trim();
- if(!clean)return;
- const last=lines.lastElementChild;
- if(last&&last.dataset.message===clean&&Date.now()-Number(last.dataset.at)<350)return;
- const line=document.createElement("div");
- line.className="novaVoiceDiagnosticLine";
- line.dataset.kind=kind;
- line.dataset.message=clean;
- line.dataset.at=String(Date.now());
- line.textContent="["+new Date().toLocaleTimeString()+"] "+clean;
- const now=Date.now();
- const gap=Math.min(6,Math.max(0,(now-novaVoiceStreamLastAt)/1000));
- novaVoiceStreamLastAt=now;
- /* Each entry has its own upward path; closely spaced entries are staggered. */
- line.style.setProperty("--nova-stream-distance",Math.max(240,lines.clientHeight+line.offsetHeight+24)+"px");
- lines.appendChild(line);
- line.style.setProperty("--nova-stream-distance",Math.max(240,lines.clientHeight+line.getBoundingClientRect().height+24)+"px");
- line.style.animationDelay="0s";
- line.addEventListener("animationend",()=>line.remove(),{once:true});
- setTimeout(()=>line.remove(),17000);
- while(lines.children.length>35)lines.firstElementChild.remove();
-}
-
 function timestamp(){
 
   return new Date().toLocaleTimeString();
@@ -791,20 +760,32 @@ let novaTickerBusy=false;
 let novaTickerLastQueued="";
 let novaSystemStreamRow=0;
 
+const novaReadableStreamQueue=[];
+let novaReadableStreamBusy=false;
+let novaReadableStreamLast='';
 function novaQueueResponse(message){
-  const clean=String(message||"").replace(/\s+/g," ").trim();
-  if(!clean)return;
-
-  if(clean===novaTickerLastQueued)return;
-
-  novaTickerLastQueued=clean;
-  setTimeout(()=>{
-    if(novaTickerLastQueued===clean){
-      novaTickerLastQueued="";
-    }
-  },70);
-
-  novaLaunchSystemStream(clean);
+  const clean=String(message||'').replace(/\s+/g,' ').trim();
+  if(!clean || clean===novaReadableStreamLast)return;
+  novaReadableStreamLast=clean;
+  setTimeout(()=>{if(novaReadableStreamLast===clean)novaReadableStreamLast='';},150);
+  // Limit the backlog: old status messages should not bury fresh voice commands.
+  if(novaReadableStreamQueue.length>=8)novaReadableStreamQueue.shift();
+  novaReadableStreamQueue.push(clean);
+  novaReadableStreamNext();
+}
+function novaReadableStreamNext(){
+  if(novaReadableStreamBusy || !novaReadableStreamQueue.length)return;
+  const lane=document.getElementById('novaPersistentTicker');
+  if(!lane){novaReadableStreamQueue.length=0;return;}
+  novaReadableStreamBusy=true;
+  const message=novaReadableStreamQueue.shift();
+  const line=document.createElement('div');
+  line.className='novaReadableFloatingLine';
+  line.textContent=message;
+  lane.appendChild(line);
+  // Each message gets its own vertical slot in time, rather than crossing others.
+  setTimeout(()=>{novaReadableStreamBusy=false;novaReadableStreamNext();},2200);
+  setTimeout(()=>line.remove(),11500);
 }
 
 function novaLaunchSystemStream(message){
@@ -901,79 +882,13 @@ let novaPersistentTickerRunning=false;
 let novaPersistentTickerLast="";
 
 function novaPersistentTickerPush(message){
-  const clean=String(message||"").replace(/\s+/g," ").trim();
-  if(!clean)return;
-
-  if(clean===novaPersistentTickerLast)return;
-  novaPersistentTickerLast=clean;
-
-  setTimeout(()=>{
-    if(novaPersistentTickerLast===clean){
-      novaPersistentTickerLast="";
-    }
-  },90);
-
-  const lane=document.getElementById("novaPersistentTicker");
-  if(!lane)return;
-
-  const now=new Date();
-  const stamp=now.toLocaleTimeString(undefined,{
-    hour:"numeric",
-    minute:"2-digit",
-    second:"2-digit"
-  });
-
-  const line=document.createElement("div");
-  line.className="novaVerticalSystemLine";
-  line.textContent=`[${stamp}] ${clean}`;
-
-  lane.appendChild(line);
-
-  requestAnimationFrame(()=>{
-    line.classList.add("novaVerticalSystemLineIn");
-  });
-
-  /*
-    Keep a real running history on screen.
-    Every new event is appended at the bottom.
-    Flex layout automatically pushes all previous events upward.
-  */
-  /*
-    Every event starts at the bottom.
-    Existing lines are pushed upward by the flex layout.
-    Each line then fades naturally as it ages, so when NOVA is idle
-    the last command eventually disappears instead of staying forever.
-  */
-  const lifetime=9000;
-
-  setTimeout(()=>{
-    line.classList.add("novaVerticalSystemLineFade");
-  },lifetime-1800);
-
-  setTimeout(()=>{
-    try{line.remove();}catch(e){}
-  },lifetime);
-
-  /* Safety cap for bursts of rapid commands. */
-  const maxLines=18;
-
-  while(
-    lane.querySelectorAll(".novaVerticalSystemLine").length>maxLines
-  ){
-    const oldest=lane.querySelector(".novaVerticalSystemLine");
-    if(oldest){
-      oldest.remove();
-    }else{
-      break;
-    }
-  }
+  // A single stream owns the visible overlay. Avoid duplicate messages.
 }
 
 /* Legacy compatibility — no horizontal queue is needed now. */
 function novaPersistentTickerNext(){}
 
 function log(message, type="system"){
-  novaVoiceDiagnostic(message,type);
   novaCaptureEvent(message,type);
   novaPersistentTickerPush(message);
 
@@ -1209,7 +1124,6 @@ function initializeVoice(){
   recognition.maxAlternatives = 1;
 
   recognition.onstart = () => {
-    novaVoiceDiagnostic("MICROPHONE LISTENING","system");
     novaSetSystemVisualState("listening",true);
 
     recognitionRunning = true;
@@ -1230,7 +1144,6 @@ function initializeVoice(){
 
 
   recognition.onend = () => {
-    novaVoiceDiagnostic(voiceEnabled ? "RECOGNITION SESSION ENDED / RESTART PENDING" : "MICROPHONE OFF","system");
     novaSetSystemVisualState("listening",false);
 
     recognitionRunning = false;
@@ -1251,7 +1164,6 @@ function initializeVoice(){
 
 
   recognition.onerror = event => {
-    novaVoiceDiagnostic("RECOGNITION ERROR: "+event.error,"error");
     novaSetSystemVisualState("listening",false);
 
     recognitionRunning = false;
@@ -1308,8 +1220,6 @@ recognition.onresult = event => {
       continue;
     }
 
-    // Show the actual recognized words before any routing or command filtering.
-    novaVoiceDiagnostic('HEARD: "'+transcript+'"',"heard");
     // Route only finalized recognition results.
     handleVoiceInput(transcript);
 
@@ -1885,7 +1795,6 @@ function handleVoiceInput(rawText){
   }
 
   // Route the voice command through your existing logic
-  novaVoiceDiagnostic("ROUTING: "+normalized,"system");
   routeVoiceCommand(normalized, text);  
 }
 
