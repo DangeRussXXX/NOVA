@@ -1269,13 +1269,32 @@ function startVoice(){
 
   updateVoiceUI();
 
-  // Begin recognition directly from the button press; no spoken
-  // announcement or artificial startup delay blocks the microphone.
+  log(
+    "Voice control enabled.",
+    "voice"
+  );
+
+  showNovaResponse(
+    "Voice control enabled. Listening for voice input..."
+  );
+
   awaitingUserName = false;
+
+  speak(
+    `Voice control enabled. Listening for voice input...`
+  );
+
   clearTimeout(recognitionCooldownTimer);
-  clearTimeout(resumeRecognitionTimer);
-  restartingRecognition = false;
-  startRecognition();
+  recognitionCooldownTimer =
+    setTimeout(() => {
+      if(
+        voiceEnabled &&
+        !isSpeaking &&
+        !recognitionRunning
+      ){
+        startRecognition();
+      }
+    },1200);
 
 }
 
@@ -1337,7 +1356,7 @@ function updateVoiceUI(){
       "dot green";
 
     text.textContent =
-      recognitionRunning ? "NOVA is listening" : "STARTING MICROPHONE...";
+      "VOICE ON";
 
     if(profile){
       profile.textContent =
@@ -2011,17 +2030,6 @@ function routeVoiceCommand(command,raw){
     return;
   }
 
-
-  // Day-of-week requests are distinct from full calendar-date requests.
-  const dayQuestion = String(command || "")
-    .replace(/^nova[\s,]+/i, "")
-    .trim();
-  if (/\b(?:what|which|tell me|today)\b/.test(dayQuestion)
-      && /\bday\b/.test(dayQuestion)
-      && !/\bdate\b/.test(dayQuestion)) {
-    speak(`Today is ${new Date().toLocaleDateString("en-US", {weekday:"long"})}.`);
-    return;
-  }
 
   if(
     /\bwhat('?s| is) the date\b|\btoday('?s)? date\b/.test(command)
