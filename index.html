@@ -3590,8 +3590,8 @@ function novaDownloadHistory(){
   a.href=url;a.download='NOVA_Command_History_'+new Date().toISOString().replace(/[:.]/g,'-')+'.txt';
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
-function novaClearHistory(){
-  if(!confirm('Clear NOVA command history? This will permanently remove saved log entries, but will not affect playlists or hardware settings.'))return false;
+function novaClearHistory(skipConfirmation=false){
+  if(!skipConfirmation && !confirm('Clear NOVA command history? This will permanently remove saved log entries, but will not affect playlists or hardware settings.'))return false;
   novaFullHistory.length=0;
   try{localStorage.removeItem(NOVA_HISTORY_KEY)}catch(e){}
   const lane=document.querySelector('#novaHudTicker .novaActivityEntries');
@@ -3648,7 +3648,33 @@ function openNovaSystemScreen(){
   toggleAllButton?.addEventListener('click',()=>setAll(!sections.every(section=>section.open)));
   updateToggleAllButton();
   doc.getElementById('novaSystemDownloadHistory')?.addEventListener('click',()=>novaDownloadHistory());
-  doc.getElementById('novaSystemClearHistory')?.addEventListener('click',()=>{if(novaClearHistory())refreshHistory(true)});
+  // Confirm inside the NOVA SYSTEM popup: browser dialogs from the opener
+  // may be suppressed while the popup has focus.
+  const clearHistoryButton=doc.getElementById('novaSystemClearHistory');
+  let clearConfirmTimer=null;
+  clearHistoryButton?.addEventListener('click',()=>{
+    if(clearHistoryButton.dataset.confirmClear!=='yes'){
+      clearHistoryButton.dataset.confirmClear='yes';
+      clearHistoryButton.textContent='⚠ CONFIRM CLEAR HISTORY';
+      clearHistoryButton.title='Click again to permanently delete saved history';
+      clearHistoryButton.setAttribute('aria-label','Confirm clear NOVA history');
+      if(clearConfirmTimer)clearTimeout(clearConfirmTimer);
+      clearConfirmTimer=setTimeout(()=>{
+        if(w.closed)return;
+        clearHistoryButton.dataset.confirmClear='';
+        clearHistoryButton.textContent='✕ CLEAR HISTORY';
+        clearHistoryButton.title='';
+        clearHistoryButton.setAttribute('aria-label','Clear NOVA history');
+      },8000);
+      return;
+    }
+    if(clearConfirmTimer)clearTimeout(clearConfirmTimer);
+    clearHistoryButton.dataset.confirmClear='';
+    clearHistoryButton.textContent='✕ CLEAR HISTORY';
+    clearHistoryButton.title='';
+    clearHistoryButton.setAttribute('aria-label','Clear NOVA history');
+    if(novaClearHistory(true))refreshHistory(true);
+  });
   const esc=value=>novaPopupEscape(value);
   let lastSignature='';
   function refreshHistory(force=false){
