@@ -1,27 +1,471 @@
-/* NOVA Floating Twins v1 — presentation only; hardware controllers untouched. */
-(function(){'use strict';
-const defs=[{id:'rsrLab',title:'RSR TRAINER',header:'.rsr-lab__header',grid:'.rsr-lab__columns',before:'.rsr-lab__simulator',close:'rsrLabClose',left:38,x:6,y:7,w:88,h:84},{id:'amomiiTwin',title:'AMOMII ONE',header:'.am-header',grid:'.am-workspace',before:'.am-simulator',close:'amTwinClose',left:35,x:9,y:10,w:82,h:78}];
-const dock=document.createElement('div');dock.id='novaTwinDock';document.body.appendChild(dock);let z=100100;
-function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
-function save(d,el){try{const r=el.getBoundingClientRect();localStorage.setItem('novaFloating_'+d.id,JSON.stringify({x:r.left,y:r.top,w:r.width,h:r.height,left:parseFloat(el.style.getPropertyValue('--nova-left'))||d.left}))}catch(e){}}
-function front(el){el.style.setProperty('z-index',String(++z),'important')}
-function setup(d){const el=document.getElementById(d.id);if(!el||el.dataset.novaFloatingReady)return;const header=el.querySelector(d.header),grid=el.querySelector(d.grid),before=el.querySelector(d.before);if(!header||!grid||!before)return;
-el.dataset.novaFloatingReady='yes';el.classList.add('nova-float-window');
-let state={x:innerWidth*d.x/100,y:innerHeight*d.y/100,w:innerWidth*d.w/100,h:innerHeight*d.h/100,left:d.left};try{state={...state,...JSON.parse(localStorage.getItem('novaFloating_'+d.id)||'{}')}}catch(e){}
-function setRect(s){el.style.setProperty('--nova-x',Math.round(s.x)+'px');el.style.setProperty('--nova-y',Math.round(s.y)+'px');el.style.setProperty('--nova-w',Math.round(s.w)+'px');el.style.setProperty('--nova-h',Math.round(s.h)+'px')}
-setRect({x:clamp(state.x,0,Math.max(0,innerWidth-160)),y:clamp(state.y,0,Math.max(0,innerHeight-70)),w:clamp(state.w,340,Math.max(340,innerWidth)),h:clamp(state.h,270,Math.max(270,innerHeight))});el.style.setProperty('--nova-left',clamp(state.left,15,80)+'%');
-const actions=document.createElement('div');actions.className='nova-float-actions';const minimize=document.createElement('button'),maximize=document.createElement('button');minimize.type=maximize.type='button';minimize.textContent='—';minimize.title='Minimize '+d.title;minimize.setAttribute('aria-label','Minimize '+d.title);maximize.textContent='□';maximize.title='Maximize or restore';maximize.setAttribute('aria-label','Maximize or restore '+d.title);actions.append(minimize,maximize);const close=el.querySelector('#'+d.close);header.insertBefore(actions,close||null);
-const restore=document.createElement('button');restore.type='button';restore.textContent='↗ '+d.title;restore.hidden=true;restore.onclick=()=>{el.classList.remove('nova-minimized');el.hidden=false;restore.hidden=true;front(el)};dock.appendChild(restore);
-minimize.onclick=()=>{save(d,el);el.classList.add('nova-minimized');restore.hidden=false};
-maximize.onclick=()=>{if(el.classList.contains('nova-maximized')){el.classList.remove('nova-maximized');maximize.textContent='□'}else{save(d,el);el.classList.add('nova-maximized');maximize.textContent='❐'}front(el)};
-const grip=document.createElement('div');grip.className='nova-column-grip';grip.title='Drag to adjust panel widths';grip.setAttribute('role','separator');grip.setAttribute('aria-label','Resize columns');grip.tabIndex=0;grid.insertBefore(grip,before);
-function setSplit(p){el.style.setProperty('--nova-left',clamp(p,15,80)+'%')}
-grip.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();front(el);grip.classList.add('nova-grabbing');grip.setPointerCapture(e.pointerId);const move=ev=>{const r=grid.getBoundingClientRect();setSplit((ev.clientX-r.left)/r.width*100)};const up=()=>{grip.classList.remove('nova-grabbing');grip.removeEventListener('pointermove',move);grip.removeEventListener('pointerup',up);grip.removeEventListener('pointercancel',up);save(d,el)};grip.addEventListener('pointermove',move);grip.addEventListener('pointerup',up);grip.addEventListener('pointercancel',up)});
-grip.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setSplit((parseFloat(el.style.getPropertyValue('--nova-left'))||d.left)+(e.key==='ArrowLeft'?-2:2));save(d,el)}});
-header.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.closest('button,input,select,a')||el.classList.contains('nova-maximized'))return;front(el);e.preventDefault();const r=el.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;header.setPointerCapture(e.pointerId);const move=ev=>{el.style.setProperty('--nova-x',clamp(r.left+ev.clientX-sx,0,Math.max(0,innerWidth-100))+'px');el.style.setProperty('--nova-y',clamp(r.top+ev.clientY-sy,0,Math.max(0,innerHeight-50))+'px')};const up=()=>{header.removeEventListener('pointermove',move);header.removeEventListener('pointerup',up);header.removeEventListener('pointercancel',up);save(d,el)};header.addEventListener('pointermove',move);header.addEventListener('pointerup',up);header.addEventListener('pointercancel',up)});
-el.addEventListener('pointerdown',()=>front(el));
-if(window.ResizeObserver){const observer=new ResizeObserver(()=>{if(!el.hidden&&!el.classList.contains('nova-maximized')&&!el.classList.contains('nova-minimized'))save(d,el)});observer.observe(el)}
-const visibility=new MutationObserver(()=>{if(!el.hidden){el.classList.remove('nova-minimized');restore.hidden=true;front(el)}else{restore.hidden=true}});visibility.observe(el,{attributes:true,attributeFilter:['hidden']});
-}
-function scan(){defs.forEach(setup)}scan();const observer=new MutationObserver(scan);observer.observe(document.body,{childList:true,subtree:false});
+
+/* ============================================================
+   NOVA FLOATING TWINS — V2
+   AMOMII ONE: Vertical accordion interface
+   RSR TRAINER: Existing split interface retained
+
+   Presentation and window management only.
+   Hardware commands are not modified.
+   ============================================================ */
+
+(function () {
+  "use strict";
+
+  const definitions = [
+    {
+      id: "rsrLab",
+      title: "RSR TRAINER",
+      header: ".rsr-lab__header",
+      grid: ".rsr-lab__columns",
+      before: ".rsr-lab__simulator",
+      close: "rsrLabClose",
+      splitColumns: true,
+      left: 38,
+      x: 6,
+      y: 7,
+      w: 88,
+      h: 84
+    },
+    {
+      id: "amomiiTwin",
+      title: "AMOMII ONE",
+      header: ".am-header",
+      grid: ".am-workspace",
+      before: ".am-simulator",
+      close: "amTwinClose",
+      splitColumns: false,
+      left: 35,
+      x: 9,
+      y: 10,
+      w: 82,
+      h: 78
+    }
+  ];
+
+  const dock = document.createElement("div");
+  dock.id = "novaTwinDock";
+  document.body.appendChild(dock);
+
+  let topZIndex = 100100;
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function bringToFront(element) {
+    element.style.setProperty(
+      "z-index",
+      String(++topZIndex),
+      "important"
+    );
+  }
+
+  function saveWindow(definition, element) {
+    try {
+      const rect = element.getBoundingClientRect();
+
+      localStorage.setItem(
+        "novaFloating_" + definition.id,
+        JSON.stringify({
+          x: rect.left,
+          y: rect.top,
+          w: rect.width,
+          h: rect.height,
+          left:
+            parseFloat(
+              element.style.getPropertyValue("--nova-left")
+            ) || definition.left
+        })
+      );
+    } catch (error) {
+      console.warn(
+        "NOVA window position could not be saved:",
+        error
+      );
+    }
+  }
+
+  function setupWindow(definition) {
+    const element = document.getElementById(definition.id);
+
+    if (!element || element.dataset.novaFloatingReady) {
+      return;
+    }
+
+    const header = element.querySelector(definition.header);
+    const grid = element.querySelector(definition.grid);
+    const before = element.querySelector(definition.before);
+
+    if (!header || !grid || !before) {
+      return;
+    }
+
+    element.dataset.novaFloatingReady = "yes";
+    element.classList.add("nova-float-window");
+
+    let state = {
+      x: innerWidth * definition.x / 100,
+      y: innerHeight * definition.y / 100,
+      w: innerWidth * definition.w / 100,
+      h: innerHeight * definition.h / 100,
+      left: definition.left
+    };
+
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem(
+          "novaFloating_" + definition.id
+        ) || "{}"
+      );
+
+      state = {
+        ...state,
+        ...saved
+      };
+    } catch (error) {
+      console.warn(
+        "NOVA window position could not be restored:",
+        error
+      );
+    }
+
+    function setWindowRect(rect) {
+      element.style.setProperty(
+        "--nova-x",
+        Math.round(rect.x) + "px"
+      );
+
+      element.style.setProperty(
+        "--nova-y",
+        Math.round(rect.y) + "px"
+      );
+
+      element.style.setProperty(
+        "--nova-w",
+        Math.round(rect.w) + "px"
+      );
+
+      element.style.setProperty(
+        "--nova-h",
+        Math.round(rect.h) + "px"
+      );
+    }
+
+    setWindowRect({
+      x: clamp(
+        state.x,
+        0,
+        Math.max(0, innerWidth - 160)
+      ),
+      y: clamp(
+        state.y,
+        0,
+        Math.max(0, innerHeight - 70)
+      ),
+      w: clamp(
+        state.w,
+        340,
+        Math.max(340, innerWidth)
+      ),
+      h: clamp(
+        state.h,
+        270,
+        Math.max(270, innerHeight)
+      )
+    });
+
+    element.style.setProperty(
+      "--nova-left",
+      clamp(state.left, 15, 80) + "%"
+    );
+
+    /* ========================================================
+       WINDOW ACTION BUTTONS
+       ======================================================== */
+
+    const actions = document.createElement("div");
+    actions.className = "nova-float-actions";
+
+    const minimize = document.createElement("button");
+    const maximize = document.createElement("button");
+
+    minimize.type = "button";
+    maximize.type = "button";
+
+    minimize.textContent = "—";
+    minimize.title = "Minimize " + definition.title;
+    minimize.setAttribute(
+      "aria-label",
+      "Minimize " + definition.title
+    );
+
+    maximize.textContent = "□";
+    maximize.title = "Maximize or restore";
+    maximize.setAttribute(
+      "aria-label",
+      "Maximize or restore"
+    );
+
+    actions.append(minimize, maximize);
+
+    const close = element.querySelector(
+      "#" + definition.close
+    );
+
+    header.insertBefore(actions, close || null);
+
+    /* ========================================================
+       MINIMIZED WINDOW DOCK
+       ======================================================== */
+
+    const restore = document.createElement("button");
+
+    restore.type = "button";
+    restore.textContent = "↗ " + definition.title;
+    restore.hidden = true;
+
+    restore.onclick = function () {
+      element.classList.remove("nova-minimized");
+      element.hidden = false;
+      restore.hidden = true;
+      bringToFront(element);
+    };
+
+    dock.appendChild(restore);
+
+    minimize.onclick = function () {
+      saveWindow(definition, element);
+      element.classList.add("nova-minimized");
+      restore.hidden = false;
+    };
+
+    maximize.onclick = function () {
+      if (element.classList.contains("nova-maximized")) {
+        element.classList.remove("nova-maximized");
+        maximize.textContent = "□";
+      } else {
+        saveWindow(definition, element);
+        element.classList.add("nova-maximized");
+        maximize.textContent = "❐";
+      }
+
+      bringToFront(element);
+    };
+
+    /* ========================================================
+       COLUMN RESIZER
+       Only used by the existing RSR Trainer interface.
+       AMOMII ONE now has a vertical accordion.
+       ======================================================== */
+
+    if (definition.splitColumns) {
+      const grip = document.createElement("div");
+
+      grip.className = "nova-column-grip";
+      grip.title = "Drag to adjust panel widths";
+      grip.setAttribute("role", "separator");
+      grip.setAttribute(
+        "aria-label",
+        "Resize columns"
+      );
+
+      grip.tabIndex = 0;
+
+      grid.insertBefore(grip, before);
+
+      function setSplit(percent) {
+        element.style.setProperty(
+          "--nova-left",
+          clamp(percent, 15, 80) + "%"
+        );
+      }
+
+      grip.addEventListener("pointerdown", function (event) {
+        if (event.button !== 0) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        bringToFront(element);
+
+        grip.classList.add("nova-grabbing");
+        grip.setPointerCapture(event.pointerId);
+
+        const move = function (moveEvent) {
+          const rect = grid.getBoundingClientRect();
+
+          if (!rect.width) {
+            return;
+          }
+
+          setSplit(
+            (moveEvent.clientX - rect.left) /
+            rect.width * 100
+          );
+        };
+
+        const up = function () {
+          grip.classList.remove("nova-grabbing");
+
+          grip.removeEventListener("pointermove", move);
+          grip.removeEventListener("pointerup", up);
+          grip.removeEventListener("pointercancel", up);
+
+          saveWindow(definition, element);
+        };
+
+        grip.addEventListener("pointermove", move);
+        grip.addEventListener("pointerup", up);
+        grip.addEventListener("pointercancel", up);
+      });
+
+      grip.addEventListener("keydown", function (event) {
+        if (
+          event.key !== "ArrowLeft" &&
+          event.key !== "ArrowRight"
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        const current =
+          parseFloat(
+            element.style.getPropertyValue("--nova-left")
+          ) || definition.left;
+
+        setSplit(
+          current + (
+            event.key === "ArrowLeft" ? -2 : 2
+          )
+        );
+
+        saveWindow(definition, element);
+      });
+    }
+
+    /* ========================================================
+       DRAG WINDOW BY HEADER
+       ======================================================== */
+
+    header.addEventListener(
+      "pointerdown",
+      function (event) {
+        if (
+          event.button !== 0 ||
+          event.target.closest(
+            "button,input,select,a"
+          ) ||
+          element.classList.contains("nova-maximized")
+        ) {
+          return;
+        }
+
+        bringToFront(element);
+        event.preventDefault();
+
+        const rect = element.getBoundingClientRect();
+        const startX = event.clientX;
+        const startY = event.clientY;
+
+        header.setPointerCapture(event.pointerId);
+
+        const move = function (moveEvent) {
+          element.style.setProperty(
+            "--nova-x",
+            clamp(
+              rect.left + moveEvent.clientX - startX,
+              0,
+              Math.max(0, innerWidth - 100)
+            ) + "px"
+          );
+
+          element.style.setProperty(
+            "--nova-y",
+            clamp(
+              rect.top + moveEvent.clientY - startY,
+              0,
+              Math.max(0, innerHeight - 50)
+            ) + "px"
+          );
+        };
+
+        const up = function () {
+          header.removeEventListener("pointermove", move);
+          header.removeEventListener("pointerup", up);
+          header.removeEventListener("pointercancel", up);
+
+          saveWindow(definition, element);
+        };
+
+        header.addEventListener("pointermove", move);
+        header.addEventListener("pointerup", up);
+        header.addEventListener("pointercancel", up);
+      }
+    );
+
+    element.addEventListener(
+      "pointerdown",
+      function () {
+        bringToFront(element);
+      }
+    );
+
+    /* ========================================================
+       RESIZE OBSERVER
+       ======================================================== */
+
+    if (window.ResizeObserver) {
+      const observer = new ResizeObserver(function () {
+        if (
+          !element.hidden &&
+          !element.classList.contains("nova-maximized") &&
+          !element.classList.contains("nova-minimized")
+        ) {
+          saveWindow(definition, element);
+        }
+      });
+
+      observer.observe(element);
+    }
+
+    /* ========================================================
+       WINDOW VISIBILITY
+       ======================================================== */
+
+    const visibility = new MutationObserver(function () {
+      if (!element.hidden) {
+        element.classList.remove("nova-minimized");
+        restore.hidden = true;
+        bringToFront(element);
+      } else {
+        restore.hidden = true;
+      }
+    });
+
+    visibility.observe(element, {
+      attributes: true,
+      attributeFilter: ["hidden"]
+    });
+  }
+
+  /* ==========================================================
+     INITIALIZE EXISTING AND DYNAMIC WINDOWS
+     ========================================================== */
+
+  function scanWindows() {
+    definitions.forEach(setupWindow);
+  }
+
+  scanWindows();
+
+  const observer = new MutationObserver(scanWindows);
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: false
+  });
+
 })();

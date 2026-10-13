@@ -1,19 +1,449 @@
-#amomiiTwin[hidden]{display:none!important}.am-twin{position:fixed;inset:0;z-index:99999;background:rgba(1,10,17,.93);padding:2vh 2vw;box-sizing:border-box;color:#e5faff;font:13px Arial,sans-serif}.am-shell{height:96vh;display:flex;flex-direction:column;border:1px solid #21c8e9;border-radius:10px;overflow:hidden;background:#061c2b}.am-header,.am-tabs,.am-controls,.am-footer{padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #196078}.am-header{justify-content:space-between}.am-header strong{font-size:18px;color:#36e2ff}.am-header span{color:#f5d66b}.am-twin button,.am-twin select,.am-import{background:#063e56;color:#efffff;border:1px solid #27a7d3;border-radius:5px;padding:6px 9px;cursor:pointer;font:inherit}.am-twin button:hover,.am-import:hover{background:#086487}.am-twin .active{background:#09769a}.am-twin label{display:inline-flex;gap:5px;align-items:center}.am-controls{max-height:160px;overflow:auto}.am-stage{flex:1;overflow:auto;min-height:0;display:flex;justify-content:center;align-items:flex-start;padding:10px;background:#020b13}.am-photo{position:relative;width:min(100%,1050px);flex:none}.am-photo img{width:100%;height:auto;display:block;user-select:none}.am-pin-layer{position:absolute;inset:0;pointer-events:none}.am-dot{position:absolute;transform:translate(-50%,-50%);border:1px solid #77ffff;border-radius:50%;width:9px;height:9px;background:#04bfe1;box-shadow:0 0 5px #04bfe1;padding:0;pointer-events:auto}.am-dot.selected{width:15px;height:15px;background:#ffdf23;border:2px solid #fff;box-shadow:0 0 13px #ffd400;z-index:5}.am-dot.estimated{background:#fb8c24;border-color:#ffb673}.am-footer{justify-content:space-between;border-top:1px solid #196078;border-bottom:0}.am-footer>div{display:flex;gap:5px;align-items:center}#amHint{color:#ffd982}#amProgress{color:#75f5c2}@media(max-width:700px){.am-twin{padding:0}.am-shell{height:100vh;border-radius:0}.am-header strong{font-size:14px}.am-controls{max-height:38vh}.am-photo{min-width:640px}}
-/* V2: hardware commands on left, simulator and pin map on right */
-.am-workspace{display:grid;grid-template-columns:minmax(270px,340px) minmax(0,1fr);flex:1;min-height:0;overflow:hidden}
-.am-hardware{padding:15px;overflow-y:auto;border-right:1px solid #196078;background:#071827}
-.am-hardware h2{font-size:15px;margin:0 0 14px;color:#39ddff}
-.am-hardware h3{font-size:13px;margin:20px 0 10px;color:#69d9f0;border-bottom:1px solid #195368;padding-bottom:6px}
-.am-connection{margin:0 0 12px;padding:10px;background:#092c3d;border-radius:6px}
-.am-connection strong{color:#a6ebff}
-.am-button-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.am-button-grid button{min-height:39px;font-weight:bold}
-.am-hw-stats{display:grid;gap:5px}
-.am-hw-stats>div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #154153;padding:6px 0}
-.am-hw-stats strong{text-align:right;color:#c4f7ff}
-.am-hw-note{color:#91acb7;font-size:11px;line-height:1.5;margin-top:20px}
-.am-simulator{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
-.am-sim-heading{padding:9px 12px;background:#082e42;color:#48e6ff;font-weight:bold;letter-spacing:.04em}
-.am-simulator .am-stage{flex:1}
-.am-simulator .am-controls{max-height:170px}
-@media(max-width:850px){.am-workspace{grid-template-columns:1fr;overflow:auto}.am-hardware{border-right:0;border-bottom:1px solid #196078;max-height:none;overflow:visible}.am-simulator{min-height:540px;overflow:visible}.am-simulator .am-stage{min-height:300px}}
+
+/* ============================================================
+   NOVA — AMOMII ONE
+   Vertical Accordion Interface
+   ============================================================ */
+
+#amomiiTwin[hidden] {
+  display: none !important;
+}
+
+.am-twin {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  padding: 2vh 2vw;
+  box-sizing: border-box;
+  background: rgba(1, 10, 17, 0.93);
+  color: #e5faff;
+  font: 13px Arial, sans-serif;
+}
+
+.am-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 96vh;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #21c8e9;
+  border-radius: 10px;
+  background: #061c2b;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.am-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 12px 15px;
+  border-bottom: 1px solid #196078;
+  background: #08283b;
+}
+
+.am-header strong {
+  font-size: 18px;
+  color: #36e2ff;
+}
+
+.am-header span {
+  color: #f5d66b;
+}
+
+/* ============================================================
+   BUTTONS AND INPUTS
+   ============================================================ */
+
+.am-twin button,
+.am-twin select,
+.am-import {
+  padding: 7px 10px;
+  border: 1px solid #27a7d3;
+  border-radius: 5px;
+  background: #063e56;
+  color: #efffff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.am-twin button:hover,
+.am-import:hover {
+  background: #086487;
+}
+
+.am-twin button:focus-visible,
+.am-twin select:focus-visible,
+.am-twin summary:focus-visible {
+  outline: 2px solid #f5d66b;
+  outline-offset: 2px;
+}
+
+.am-twin .active {
+  background: #09769a;
+}
+
+.am-twin label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ============================================================
+   SHOW / HIDE ALL
+   ============================================================ */
+
+.am-accordion-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-bottom: 1px solid #196078;
+  background: #061c2b;
+}
+
+.am-accordion-toolbar button {
+  font-weight: bold;
+  color: #aef7ff;
+}
+
+/* ============================================================
+   SINGLE VERTICAL WORKSPACE
+   ============================================================ */
+
+#amomiiTwin .am-workspace,
+#amomiiTwin .am-vertical-workspace {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  gap: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 12px !important;
+  background: #061824;
+}
+
+#amomiiTwin .am-hardware,
+#amomiiTwin .am-simulator {
+  display: block !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  box-sizing: border-box;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+/* ============================================================
+   COLLAPSIBLE PANELS
+   ============================================================ */
+
+#amomiiTwin .am-section {
+  display: block;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid #196078;
+  border-radius: 7px;
+  background: #071d2b;
+}
+
+#amomiiTwin .am-section > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+  padding: 13px 15px;
+  background: #082e42;
+  color: #48e6ff;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+
+#amomiiTwin .am-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+#amomiiTwin .am-section > summary::before {
+  content: "▶";
+  display: inline-block;
+  font-size: 11px;
+  color: #48e6ff;
+  transition: transform 0.15s ease;
+}
+
+#amomiiTwin .am-section[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+#amomiiTwin .am-section > summary:hover {
+  background: #0b4058;
+}
+
+#amomiiTwin .am-section[open] > summary {
+  border-bottom: 1px solid #196078;
+  background: #0a3850;
+}
+
+#amomiiTwin .am-section-body {
+  display: block;
+  padding: 15px;
+  box-sizing: border-box;
+  background: #071827;
+}
+
+/* ============================================================
+   HARDWARE CONTROLS
+   ============================================================ */
+
+.am-connection {
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid #195368;
+  border-radius: 6px;
+  background: #092c3d;
+}
+
+.am-connection strong {
+  color: #a6ebff;
+}
+
+.am-button-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(135px, 1fr)
+  );
+  gap: 9px;
+}
+
+.am-button-grid button {
+  min-height: 39px;
+  font-weight: bold;
+}
+
+.am-hw-stats {
+  display: grid;
+  gap: 5px;
+}
+
+.am-hw-stats > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #154153;
+}
+
+.am-hw-stats strong {
+  color: #c4f7ff;
+  text-align: right;
+}
+
+.am-hw-note {
+  margin: 5px 0 15px;
+  padding: 0 5px;
+  color: #91acb7;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   PIN MAPPER CONTROLS
+   ============================================================ */
+
+#amomiiTwin .am-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 0 15px;
+  border: 0;
+  box-sizing: border-box;
+}
+
+#amomiiTwin .am-controls label {
+  flex-wrap: wrap;
+}
+
+#amHint {
+  color: #ffd982;
+}
+
+#amProgress {
+  color: #75f5c2;
+}
+
+/* ============================================================
+   BOARD IMAGE AND PIN MARKERS
+   ============================================================ */
+
+#amomiiTwin .am-stage {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #154153;
+  border-radius: 6px;
+  background: #020b13;
+}
+
+.am-photo {
+  position: relative;
+  flex: none;
+  width: min(100%, 1050px);
+}
+
+.am-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.am-pin-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.am-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 1px solid #77ffff;
+  border-radius: 50%;
+  background: #04bfe1;
+  box-shadow: 0 0 5px #04bfe1;
+  pointer-events: auto;
+}
+
+.am-dot.selected {
+  z-index: 5;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #fff;
+  background: #ffdf23;
+  box-shadow: 0 0 13px #ffd400;
+}
+
+.am-dot.estimated {
+  border-color: #ffb673;
+  background: #fb8c24;
+}
+
+/* ============================================================
+   PIN POSITION CONTROLS
+   ============================================================ */
+
+#amomiiTwin .am-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 0 0;
+  border-top: 1px solid #196078;
+}
+
+#amomiiTwin .am-footer > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* ============================================================
+   LEGACY TAB STYLING
+   Retained for compatibility with other existing selectors.
+   ============================================================ */
+
+.am-tabs {
+  display: none;
+}
+
+.am-sim-heading {
+  display: none;
+}
+
+/* ============================================================
+   RESPONSIVE LAYOUT
+   ============================================================ */
+
+@media (max-width: 850px) {
+  #amomiiTwin .am-workspace {
+    padding: 8px !important;
+  }
+
+  #amomiiTwin .am-section-body {
+    padding: 10px;
+  }
+
+  #amomiiTwin .am-stage {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 700px) {
+  .am-twin {
+    padding: 0;
+  }
+
+  .am-shell {
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .am-header strong {
+    font-size: 14px;
+  }
+
+  #amomiiTwin .am-section > summary {
+    padding: 12px;
+    font-size: 12px;
+  }
+
+  .am-photo {
+    min-width: 0;
+  }
+
+  .am-button-grid {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(115px, 1fr)
+    );
+  }
+}
