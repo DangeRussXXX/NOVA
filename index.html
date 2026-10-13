@@ -3612,7 +3612,7 @@ function openNovaSystemScreen(){
   const historyTools=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px"><button class="close" type="button" id="novaSystemDownloadHistory">⬇ DOWNLOAD HISTORY</button><button class="close" type="button" id="novaSystemClearHistory">✕ CLEAR HISTORY</button></div>`;
   const liveHistory=`<div class="note">Events update automatically while this screen is open.</div><div id="novaSystemLiveRows" style="max-height:300px;overflow:auto;overflow-wrap:anywhere"></div>`;
   const savedHistory=`${historyTools}<div class="note" id="novaSystemHistoryCount"></div><div id="novaSystemHistoryRows" style="max-height:440px;overflow:auto;overflow-wrap:anywhere"></div>`;
-  const controls=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button type="button" class="close" id="novaSystemShowAll">SHOW ALL PANELS</button><button type="button" class="close" id="novaSystemHideAll">HIDE ALL PANELS</button></div>`;
+  const controls=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button type="button" class="close" id="novaSystemToggleAll" aria-label="Hide all panels">HIDE ALL PANELS</button></div>`;
   const body=controls+
     panel('live','NOVA LIVE ACTIVITY',liveHistory)+
     panel('history','NOVA HISTORY',savedHistory)+
@@ -3627,14 +3627,26 @@ function openNovaSystemScreen(){
   const preferenceKey='novaSystemPanelVisibilityV1';
   let prefs={};try{prefs=JSON.parse(localStorage.getItem(preferenceKey)||'{}')||{}}catch(e){}
   const save=()=>{try{localStorage.setItem(preferenceKey,JSON.stringify(prefs))}catch(e){}};
+  const toggleAllButton=doc.getElementById('novaSystemToggleAll');
+  const updateToggleAllButton=()=>{
+    if(!toggleAllButton)return;
+    const allOpen=sections.every(section=>section.open);
+    const label=allOpen?'HIDE ALL PANELS':'SHOW ALL PANELS';
+    toggleAllButton.textContent=label;
+    toggleAllButton.setAttribute('aria-label',label);
+  };
   sections.forEach(section=>{
     const key=section.dataset.novaSection;
     if(typeof prefs[key]==='boolean')section.open=prefs[key];
-    section.addEventListener('toggle',()=>{prefs[key]=section.open;save()});
+    section.addEventListener('toggle',()=>{prefs[key]=section.open;save();updateToggleAllButton()});
   });
-  const setAll=visible=>{sections.forEach(section=>{section.open=visible;prefs[section.dataset.novaSection]=visible});save()};
-  doc.getElementById('novaSystemShowAll')?.addEventListener('click',()=>setAll(true));
-  doc.getElementById('novaSystemHideAll')?.addEventListener('click',()=>setAll(false));
+  const setAll=visible=>{
+    sections.forEach(section=>{section.open=visible;prefs[section.dataset.novaSection]=visible});
+    save();
+    updateToggleAllButton();
+  };
+  toggleAllButton?.addEventListener('click',()=>setAll(!sections.every(section=>section.open)));
+  updateToggleAllButton();
   doc.getElementById('novaSystemDownloadHistory')?.addEventListener('click',()=>novaDownloadHistory());
   doc.getElementById('novaSystemClearHistory')?.addEventListener('click',()=>{if(novaClearHistory())refreshHistory(true)});
   const esc=value=>novaPopupEscape(value);
