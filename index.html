@@ -99,26 +99,39 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 </style>
 
 <style id="novaRestoredVoiceOverlayStyles">
-/* NOVA live diagnostic terminal: above orb and video, inside NOVA's left panel. */
+/* Transparent floating stream above NOVA and video. */
 .novaUnifiedConsole .novaLeftHome > #novaVoiceDiagnosticOverlay{
- position:absolute!important;left:12px!important;top:12px!important;
- z-index:1050!important;box-sizing:border-box!important;
- width:min(40%,390px)!important;max-height:min(45%,290px)!important;
- padding:9px 10px!important;overflow:hidden!important;pointer-events:none!important;
- background:rgba(1,12,7,.70)!important;border:1px solid rgba(55,255,119,.34)!important;
- border-radius:7px!important;box-shadow:0 0 16px rgba(0,0,0,.40)!important;
- color:#6dff94!important;font:11px/1.45 Consolas,Monaco,monospace!important;
- text-shadow:0 0 5px rgba(40,255,100,.24)!important;
+ position:absolute!important;inset:0!important;z-index:1050!important;
+ width:100%!important;height:100%!important;max-height:none!important;
+ padding:0!important;margin:0!important;overflow:hidden!important;
+ pointer-events:none!important;background:transparent!important;border:0!important;
+ border-radius:0!important;box-shadow:none!important;
+ color:#74ff9c!important;font:clamp(10px,1.05vw,13px)/1.35 Consolas,Monaco,monospace!important;
+ text-shadow:0 0 6px rgba(60,255,120,.6)!important;
+ -webkit-mask-image:linear-gradient(to top,black 0%,black 46%,transparent 96%)!important;
+ mask-image:linear-gradient(to top,black 0%,black 46%,transparent 96%)!important;
 }
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticTitle{font-weight:700;letter-spacing:.09em;border-bottom:1px solid rgba(55,255,119,.3);padding-bottom:5px;margin-bottom:5px}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLines{display:flex;flex-direction:column;gap:3px;overflow:hidden;max-height:215px}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{overflow-wrap:anywhere;animation:novaDiagnosticAppear .18s ease-out both}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="error"]{color:#ff9e8f!important}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="warning"]{color:#ffd879!important}
-#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="heard"]{color:#c4ffd0!important}
-@keyframes novaDiagnosticAppear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:650px){.novaUnifiedConsole .novaLeftHome > #novaVoiceDiagnosticOverlay{left:6px!important;top:6px!important;width:min(57%,290px)!important;padding:6px!important;font-size:9px!important;max-height:45%!important}}
-@media(prefers-reduced-motion:reduce){#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{animation:none}}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLines{
+ position:absolute!important;inset:0!important;overflow:hidden!important;
+ display:block!important;max-height:none!important;
+}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{
+ position:absolute!important;left:12px!important;bottom:0!important;
+ max-width:min(65%,560px)!important;overflow-wrap:anywhere!important;
+ white-space:normal!important;color:#74ff9c!important;
+ animation:novaDiagnosticFloat 10s linear forwards!important;will-change:transform,opacity;
+}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="error"]{color:#ffad9f!important}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="warning"]{color:#ffe09b!important}
+#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine[data-kind="heard"]{color:#c2ffd2!important}
+@keyframes novaDiagnosticFloat{
+ 0%{transform:translateY(110%);opacity:0}
+ 5%{opacity:1}
+ 48%{opacity:1}
+ 100%{transform:translateY(calc(-1 * var(--nova-stream-distance, 440px)));opacity:0}
+}
+@media(max-width:650px){#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{left:7px!important;max-width:75%!important;font-size:10px!important}}
+@media(prefers-reduced-motion:reduce){#novaVoiceDiagnosticOverlay .novaVoiceDiagnosticLine{animation-duration:16s!important}}
 </style>
 <style id="novaVoiceBottomPlacement">
 .novaConsoleCommandRow{display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:nowrap!important}
@@ -260,8 +273,7 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 </div>
 </div>
 <div id="novaVoiceDiagnosticOverlay" role="log" aria-label="NOVA live voice diagnostics" aria-live="off">
- <div class="novaVoiceDiagnosticTitle">&gt; NOVA / LIVE COMMAND FEED</div>
- <div class="novaVoiceDiagnosticLines" id="novaVoiceDiagnosticLines"><div class="novaVoiceDiagnosticLine">[READY] VOICE MONITOR ONLINE</div></div>
+ <div class="novaVoiceDiagnosticLines" id="novaVoiceDiagnosticLines"></div>
 </div>
 <div id="novaHybridVideoStage" aria-label="NOVA hybrid video display" hidden></div>
 <div id="novaHybridNowPlaying" aria-live="polite" hidden><span id="novaHybridTrackName"></span><button type="button" id="novaHybridBackOrb">RETURN TO ORB</button></div>
@@ -738,7 +750,8 @@ document.addEventListener("DOMContentLoaded", () => {
    ============================================================ */
 
 
-/* Restored integrated live voice diagnostics; does not change command routing. */
+/* Floating command stream: messages rise from bottom and fade in the upper half. */
+let novaVoiceStreamLastAt=0;
 function novaVoiceDiagnostic(message,kind="system"){
  const lines=document.getElementById("novaVoiceDiagnosticLines");
  if(!lines)return;
@@ -752,8 +765,17 @@ function novaVoiceDiagnostic(message,kind="system"){
  line.dataset.message=clean;
  line.dataset.at=String(Date.now());
  line.textContent="["+new Date().toLocaleTimeString()+"] "+clean;
+ const now=Date.now();
+ const gap=Math.min(6,Math.max(0,(now-novaVoiceStreamLastAt)/1000));
+ novaVoiceStreamLastAt=now;
+ /* Each entry has its own upward path; closely spaced entries are staggered. */
+ line.style.setProperty("--nova-stream-distance",Math.max(240,lines.clientHeight+line.offsetHeight+24)+"px");
  lines.appendChild(line);
- while(lines.children.length>12)lines.firstElementChild.remove();
+ line.style.setProperty("--nova-stream-distance",Math.max(240,lines.clientHeight+line.getBoundingClientRect().height+24)+"px");
+ line.style.animationDelay="0s";
+ line.addEventListener("animationend",()=>line.remove(),{once:true});
+ setTimeout(()=>line.remove(),17000);
+ while(lines.children.length>35)lines.firstElementChild.remove();
 }
 
 function timestamp(){
