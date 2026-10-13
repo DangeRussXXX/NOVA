@@ -106,40 +106,32 @@ body.novaHybridVideoParked #novaHybridBackOrb{display:none!important}
 </style>
 
 <style id="novaReadableFloatingStreamFix">
-/* Single transparent overlay, above the orb and video, with no panel chrome. */
-.novaUnifiedConsole .novaLeftHome{isolation:isolate!important}
-#novaHudTicker{display:none!important}
-#novaPersistentTicker{
-  display:block!important;position:absolute!important;
-  inset:0!important;width:100%!important;height:100%!important;
-  overflow:hidden!important;pointer-events:none!important;
-  background:transparent!important;border:0!important;box-shadow:none!important;
-  padding:0!important;margin:0!important;z-index:1000!important;
-  mask-image:none!important;-webkit-mask-image:none!important;
+/* Dedicated visible layer independent of NOVA's legacy hidden tickers. */
+.novaUnifiedConsole .novaLeftHome{position:relative!important;isolation:isolate!important}
+#novaHudTicker,#novaPersistentTicker{display:none!important}
+#novaReadableVoiceOverlay{
+ position:absolute!important;inset:0!important;display:block!important;
+ z-index:2147483000!important;pointer-events:none!important;overflow:hidden!important;
+ background:none!important;border:0!important;box-shadow:none!important;
+ visibility:visible!important;opacity:1!important;
 }
-#novaPersistentTickerTrack,#novaPersistentTicker .novaVerticalSystemLine{display:none!important}
-#novaPersistentTicker .novaReadableFloatingLine{
-  position:absolute!important;left:5%!important;bottom:0!important;
-  width:90%!important;max-width:90%!important;
-  color:#6bff94!important;background:transparent!important;border:0!important;
-  font:600 clamp(13px,1.5vw,18px)/1.35 ui-monospace,Consolas,monospace!important;
-  letter-spacing:0!important;word-break:normal!important;overflow-wrap:anywhere!important;
-  white-space:normal!important;text-align:left!important;
-  text-shadow:0 1px 3px #001b09,0 0 5px rgba(28,255,93,.35)!important;
-  padding:0!important;margin:0!important;
-  opacity:0;animation:novaReadableRise 11s linear forwards!important;
+#novaReadableVoiceOverlay .novaReadableFloatingLine{
+ position:absolute!important;left:5%!important;bottom:12px!important;
+ width:90%!important;box-sizing:border-box!important;
+ font:600 clamp(14px,1.5vw,18px)/1.5 Consolas,monospace!important;
+ color:#73ffa2!important;text-shadow:0 1px 3px #001b09,0 0 5px #087b32!important;
+ background:none!important;border:0!important;padding:0!important;margin:0!important;
+ overflow-wrap:anywhere!important;white-space:normal!important;
+ animation:novaReadableRise 12s linear forwards!important;
 }
 @keyframes novaReadableRise{
-  0%{transform:translateY(0);opacity:0}
-  5%{opacity:1}
-  40%{transform:translateY(calc(-.4 * var(--nova-rise-distance, 420px)));opacity:1}
-  60%{transform:translateY(calc(-.6 * var(--nova-rise-distance, 420px)));opacity:.65}
-  80%{transform:translateY(calc(-.8 * var(--nova-rise-distance, 420px)));opacity:.18}
-  100%{transform:translateY(calc(-1 * (var(--nova-rise-distance, 420px))));opacity:0}
+ 0%{transform:translateY(0);opacity:0}
+ 5%{opacity:1}
+ 42%{opacity:1}
+ 55%{opacity:.72}
+ 75%{opacity:.25}
+ 100%{transform:translateY(var(--nova-travel,-450px));opacity:0}
 }
-/* Use the actual panel height, not a hardcoded number, for the travel distance. */
-#novaPersistentTicker{--nova-rise-distance:calc(100% - 10px)}
-@media(max-width:600px){#novaPersistentTicker .novaReadableFloatingLine{font-size:13px!important;left:4%!important;width:92%!important;max-width:92%!important}}
 </style>
 </head>
 <body>
@@ -775,17 +767,25 @@ function novaQueueResponse(message){
 }
 function novaReadableStreamNext(){
   if(novaReadableStreamBusy || !novaReadableStreamQueue.length)return;
-  const lane=document.getElementById('novaPersistentTicker');
-  if(!lane){novaReadableStreamQueue.length=0;return;}
+  const home=document.querySelector('.novaUnifiedConsole .novaLeftHome');
+  if(!home){novaReadableStreamQueue.length=0;return;}
+  let lane=document.getElementById('novaReadableVoiceOverlay');
+  if(!lane){
+    lane=document.createElement('div');
+    lane.id='novaReadableVoiceOverlay';
+    lane.setAttribute('aria-live','off');
+    home.appendChild(lane);
+  }
   novaReadableStreamBusy=true;
   const message=novaReadableStreamQueue.shift();
   const line=document.createElement('div');
   line.className='novaReadableFloatingLine';
   line.textContent=message;
+  const height=Math.max(250,home.clientHeight);
+  line.style.setProperty('--nova-travel',`${-Math.round(height*.95)}px`);
   lane.appendChild(line);
-  // Each message gets its own vertical slot in time, rather than crossing others.
-  setTimeout(()=>{novaReadableStreamBusy=false;novaReadableStreamNext();},2200);
-  setTimeout(()=>line.remove(),11500);
+  setTimeout(()=>{novaReadableStreamBusy=false;novaReadableStreamNext();},2600);
+  setTimeout(()=>line.remove(),12500);
 }
 
 function novaLaunchSystemStream(message){
