@@ -1,30 +1,349 @@
 
-/* RSR schematic integration — additive only, no hardware/voice/media modifications. */
-(()=>{'use strict';
- const WINDOW_ID='novaRsrSchematicsWindow', BUTTON_ID='novaRsrSchematicButton';
- let z=120000;
- const css=(el,styles)=>Object.assign(el.style,styles);
- const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
- function open(){const panel=ensureWindow();panel.hidden=false;panel.style.zIndex=String(++z);}
- function ensureWindow(){let win=document.getElementById(WINDOW_ID);if(win)return win;
-  win=document.createElement('section');win.id=WINDOW_ID;win.setAttribute('aria-label','RSR Schematic Reference');
-  win.innerHTML='<div class="nova-rsr-schem-header"><strong>◈ RSR TRAINER · SCHEMATICS</strong><div class="nova-rsr-schem-actions"><button type="button" data-action="min" title="Minimize">—</button><button type="button" data-action="max" title="Maximize">□</button><button type="button" data-action="close" title="Close">×</button></div></div><iframe title="RSR schematic images and zoom controls" loading="lazy" src="hardware/rsr-schematics/index.html"></iframe><div class="nova-rsr-schem-resize" title="Resize schematic window"></div>';
-  document.body.appendChild(win);win.hidden=true;
-  const header=win.querySelector('.nova-rsr-schem-header');let drag=null, resize=null, saved=null;
-  header.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.closest('button')||win.classList.contains('nova-rsr-schem-max'))return;const r=win.getBoundingClientRect();drag={x:e.clientX,y:e.clientY,left:r.left,top:r.top};header.setPointerCapture(e.pointerId)});
-  header.addEventListener('pointermove',e=>{if(!drag)return;win.style.left=clamp(drag.left+e.clientX-drag.x,0,Math.max(0,innerWidth-100))+'px';win.style.top=clamp(drag.top+e.clientY-drag.y,0,Math.max(0,innerHeight-50))+'px'});
-  for(const name of ['pointerup','pointercancel'])header.addEventListener(name,()=>drag=null);
-  win.querySelector('.nova-rsr-schem-resize').addEventListener('pointerdown',function(e){if(e.button!==0)return;e.preventDefault();const r=win.getBoundingClientRect();resize={x:e.clientX,y:e.clientY,w:r.width,h:r.height};this.setPointerCapture(e.pointerId)});
-  const grip=win.querySelector('.nova-rsr-schem-resize');grip.addEventListener('pointermove',e=>{if(!resize)return;win.style.width=clamp(resize.w+e.clientX-resize.x,420,innerWidth)+'px';win.style.height=clamp(resize.h+e.clientY-resize.y,320,innerHeight)+'px'});
-  for(const name of ['pointerup','pointercancel'])grip.addEventListener(name,()=>resize=null);
-  win.querySelector('[data-action="close"]').onclick=()=>{win.hidden=true};
-  win.querySelector('[data-action="min"]').onclick=()=>{win.hidden=true;const b=document.getElementById(BUTTON_ID);if(b)b.textContent='↗ SCHEMATICS'};
-  win.querySelector('[data-action="max"]').onclick=()=>{const b=win.querySelector('[data-action="max"]');if(win.classList.contains('nova-rsr-schem-max')){win.classList.remove('nova-rsr-schem-max');if(saved)css(win,saved);b.textContent='□'}else{saved={left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height};win.classList.add('nova-rsr-schem-max');b.textContent='❐'}};
-  win.addEventListener('pointerdown',()=>win.style.zIndex=String(++z));return win;
- }
- function attach(){const lab=document.getElementById('rsrLab');const header=lab&&lab.querySelector('.rsr-lab__header');if(!header||document.getElementById(BUTTON_ID))return;
- const b=document.createElement('button');b.id=BUTTON_ID;b.type='button';b.className='nova-rsr-schem-launch';b.textContent='▤ SCHEMATICS';b.title='Open RSR schematic reference in a separate floating window';b.onclick=()=>{b.textContent='▤ SCHEMATICS';open()};header.appendChild(b);
- }
- attach();new MutationObserver(attach).observe(document.body,{childList:true,subtree:true});
- window.novaOpenRSRSchematics=open;
+/* ============================================================
+   NOVA — RSR TRAINER ONE SCHEMATICS
+   Floating Schematic Viewer
+   Matches AMOMII ONE's schematic window controls and layout.
+   Does not send hardware commands.
+   ============================================================ */
+
+(function () {
+  "use strict";
+
+  const WINDOW_ID = "novaRsrSchematicsWindow";
+  const BUTTON_ID = "novaRsrSchematicButton";
+
+  const VIEWER_URL =
+    "hardware/rsr-schematics/index.html";
+
+  let schematicWindow = null;
+  let highestZ = 10000;
+
+  let dragState = null;
+  let resizeState = null;
+
+  function bringToFront() {
+    if (!schematicWindow) return;
+
+    highestZ = Math.max(
+      highestZ + 1,
+      ...Array.from(
+        document.querySelectorAll(
+          "#novaRsrSchematicsWindow, #novaAmomiiSchematicsWindow"
+        )
+      ).map((element) => {
+        return Number.parseInt(
+          getComputedStyle(element).zIndex,
+          10
+        ) || 0;
+      })
+    );
+
+    schematicWindow.style.zIndex = String(highestZ);
+  }
+
+  function createWindow() {
+    if (schematicWindow) return schematicWindow;
+
+    schematicWindow = document.createElement("section");
+
+    schematicWindow.id = WINDOW_ID;
+    schematicWindow.className = "nova-rsr-schematic-window";
+    schematicWindow.hidden = true;
+
+    schematicWindow.setAttribute(
+      "aria-label",
+      "RSR TRAINER ONE Schematics"
+    );
+
+    schematicWindow.innerHTML = `
+      <div class="nova-rsr-schematic-header">
+        <div class="nova-rsr-schematic-title">
+          <span>⚡ RSR TRAINER ONE — SCHEMATICS</span>
+          <small>PAD-234A · SCHEMATIC REFERENCE</small>
+        </div>
+
+        <div class="nova-rsr-schematic-actions">
+          <button type="button"
+                  data-rsr-schematic-action="minimize"
+                  title="Minimize">—</button>
+
+          <button type="button"
+                  data-rsr-schematic-action="maximize"
+                  title="Maximize">□</button>
+
+          <button type="button"
+                  data-rsr-schematic-action="close"
+                  title="Close">✕</button>
+        </div>
+      </div>
+
+      <div class="nova-rsr-schematic-content">
+        <iframe
+          title="RSR TRAINER ONE Circuit Schematics"
+          src="${VIEWER_URL}"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <div class="nova-rsr-schematic-resizer"
+           title="Resize window"></div>
+    `;
+
+    document.body.appendChild(schematicWindow);
+
+    const header = schematicWindow.querySelector(
+      ".nova-rsr-schematic-header"
+    );
+
+    const resizer = schematicWindow.querySelector(
+      ".nova-rsr-schematic-resizer"
+    );
+
+    header.addEventListener("pointerdown", startDrag);
+    resizer.addEventListener("pointerdown", startResize);
+
+    schematicWindow.addEventListener(
+      "pointerdown",
+      bringToFront
+    );
+
+    schematicWindow
+      .querySelectorAll("[data-rsr-schematic-action]")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const action = button.dataset.rsrSchematicAction;
+
+          if (action === "close") closeWindow();
+          if (action === "minimize") minimizeWindow();
+          if (action === "maximize") maximizeWindow();
+        });
+      });
+
+    return schematicWindow;
+  }
+
+  function openWindow() {
+    const win = createWindow();
+
+    win.hidden = false;
+    win.classList.remove("is-minimized");
+
+    bringToFront();
+  }
+
+  function closeWindow() {
+    if (!schematicWindow) return;
+
+    schematicWindow.hidden = true;
+    schematicWindow.classList.remove("is-minimized");
+  }
+
+  function minimizeWindow() {
+    if (!schematicWindow) return;
+
+    schematicWindow.classList.toggle("is-minimized");
+    bringToFront();
+  }
+
+  function maximizeWindow() {
+    if (!schematicWindow) return;
+
+    const maximized =
+      schematicWindow.classList.toggle("is-maximized");
+
+    if (maximized) {
+      schematicWindow.classList.remove("is-minimized");
+    }
+
+    bringToFront();
+  }
+
+  function startDrag(event) {
+    if (event.button !== 0) return;
+
+    if (event.target.closest("button")) return;
+
+    if (
+      schematicWindow.classList.contains("is-maximized")
+    ) {
+      return;
+    }
+
+    const rect = schematicWindow.getBoundingClientRect();
+
+    dragState = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      left: rect.left,
+      top: rect.top
+    };
+
+    schematicWindow.style.left = `${rect.left}px`;
+    schematicWindow.style.top = `${rect.top}px`;
+    schematicWindow.style.right = "auto";
+    schematicWindow.style.bottom = "auto";
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    bringToFront();
+  }
+
+  function startResize(event) {
+    if (event.button !== 0) return;
+
+    if (
+      schematicWindow.classList.contains("is-maximized") ||
+      schematicWindow.classList.contains("is-minimized")
+    ) {
+      return;
+    }
+
+    const rect = schematicWindow.getBoundingClientRect();
+
+    resizeState = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      width: rect.width,
+      height: rect.height
+    };
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    bringToFront();
+
+    event.preventDefault();
+  }
+
+  function handlePointerMove(event) {
+    if (
+      dragState &&
+      dragState.pointerId === event.pointerId
+    ) {
+      const dx = event.clientX - dragState.startX;
+      const dy = event.clientY - dragState.startY;
+
+      const width = schematicWindow.offsetWidth;
+      const height = schematicWindow.offsetHeight;
+
+      const left = Math.max(
+        0,
+        Math.min(
+          window.innerWidth - Math.min(width, 100),
+          dragState.left + dx
+        )
+      );
+
+      const top = Math.max(
+        0,
+        Math.min(
+          window.innerHeight - Math.min(height, 45),
+          dragState.top + dy
+        )
+      );
+
+      schematicWindow.style.left = `${left}px`;
+      schematicWindow.style.top = `${top}px`;
+    }
+
+    if (
+      resizeState &&
+      resizeState.pointerId === event.pointerId
+    ) {
+      const dx = event.clientX - resizeState.startX;
+      const dy = event.clientY - resizeState.startY;
+
+      schematicWindow.style.width =
+        `${Math.max(420, resizeState.width + dx)}px`;
+
+      schematicWindow.style.height =
+        `${Math.max(280, resizeState.height + dy)}px`;
+    }
+  }
+
+  function handlePointerUp(event) {
+    if (
+      dragState &&
+      dragState.pointerId === event.pointerId
+    ) {
+      dragState = null;
+    }
+
+    if (
+      resizeState &&
+      resizeState.pointerId === event.pointerId
+    ) {
+      resizeState = null;
+    }
+  }
+
+  function attachButton() {
+    const lab = document.getElementById("rsrLab");
+    const header = lab && lab.querySelector(".rsr-lab__header");
+
+    if (!header) return;
+
+    let button = document.getElementById(BUTTON_ID);
+
+    if (!button) {
+      button = document.createElement("button");
+      button.id = BUTTON_ID;
+      button.type = "button";
+      button.className = "nova-rsr-schem-launch";
+      button.textContent = "▤ SCHEMATICS";
+      button.title = "Open RSR schematic reference";
+      header.appendChild(button);
+    }
+
+    if (button.dataset.rsrSchematicReady) return;
+
+    button.dataset.rsrSchematicReady = "true";
+
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openWindow();
+    });
+  }
+
+  function initialize() {
+    attachButton();
+
+    const observer = new MutationObserver(() => {
+      attachButton();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  document.addEventListener(
+    "pointermove",
+    handlePointerMove
+  );
+
+  document.addEventListener(
+    "pointerup",
+    handlePointerUp
+  );
+
+  document.addEventListener(
+    "pointercancel",
+    handlePointerUp
+  );
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initialize
+    );
+  } else {
+    initialize();
+  }
+
+  window.novaOpenRSRSchematics = openWindow;
+
 })();

@@ -1,33 +1,36 @@
 
 /* ============================================================
-   NOVA — RSR SCHEMATICS FLOATING WINDOW
-   Standalone presentation layer.
-   Does NOT modify hardware, voice, relay, or floating twins.
+   NOVA — RSR TRAINER ONE SCHEMATICS
+   Floating Window Styles
    ============================================================ */
 
 #novaRsrSchematicsWindow {
   position: fixed;
-  left: 12vw;
-  top: 10vh;
-  width: 76vw;
-  height: 78vh;
+  top: 12vh;
+  left: 15vw;
+
+  width: min(1100px, 85vw);
+  height: min(740px, 78vh);
+
   min-width: 420px;
-  min-height: 320px;
-  z-index: 120000;
+  min-height: 280px;
 
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 
-  background: #061824;
-  color: #c8f6ff;
-  border: 2px solid #24cbe9;
+  background: #08111e;
+  color: #e7f5ff;
+
+  border: 1px solid rgba(0, 210, 255, 0.45);
   border-radius: 12px;
 
   box-shadow:
-    0 20px 65px rgba(0,0,0,.85),
-    0 0 24px rgba(36,203,233,.18);
+    0 0 0 1px rgba(0, 210, 255, 0.08),
+    0 20px 70px rgba(0, 0, 0, 0.75),
+    0 0 30px rgba(0, 180, 255, 0.12);
 
+  overflow: hidden;
+  z-index: 10000;
   box-sizing: border-box;
 }
 
@@ -39,99 +42,132 @@
    HEADER
    ============================================================ */
 
-#novaRsrSchematicsWindow .nova-rsr-schem-header {
+.nova-rsr-schematic-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 
+  flex: 0 0 auto;
   min-height: 48px;
+
   padding: 8px 12px;
 
   background: linear-gradient(
-    90deg,
-    #092e42,
-    #061824
+    180deg,
+    #172d44 0%,
+    #0c1b2d 100%
   );
 
-  border-bottom: 1px solid #24cbe9;
+  border-bottom: 1px solid rgba(0, 210, 255, 0.3);
 
-  cursor: grab;
+  cursor: move;
   user-select: none;
   touch-action: none;
-  flex-shrink: 0;
 }
 
-#novaRsrSchematicsWindow .nova-rsr-schem-header:active {
-  cursor: grabbing;
+.nova-rsr-schematic-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  min-width: 0;
+  pointer-events: none;
 }
 
-#novaRsrSchematicsWindow .nova-rsr-schem-header strong {
+.nova-rsr-schematic-title span {
   font-size: 14px;
   font-weight: 800;
+  letter-spacing: 0.7px;
+  color: #eafaff;
+}
+
+.nova-rsr-schematic-title small {
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 1px;
-  color: #8cefff;
+  color: #64c9ed;
 }
 
 /* ============================================================
    WINDOW BUTTONS
    ============================================================ */
 
-#novaRsrSchematicsWindow .nova-rsr-schem-actions {
+.nova-rsr-schematic-actions {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-shrink: 0;
+
+  flex: 0 0 auto;
 }
 
-#novaRsrSchematicsWindow .nova-rsr-schem-actions button {
-  min-width: 34px;
+.nova-rsr-schematic-actions button {
+  width: 34px;
   height: 30px;
-  padding: 4px 8px;
 
-  color: #b7f6ff;
-  background: #103449;
-  border: 1px solid #287e9b;
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  background: #11283d;
+  color: #e5f7ff;
+
+  border: 1px solid rgba(115, 200, 235, 0.35);
   border-radius: 6px;
 
+  font: inherit;
   font-size: 16px;
   font-weight: 700;
+
   cursor: pointer;
+  touch-action: manipulation;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
-#novaRsrSchematicsWindow .nova-rsr-schem-actions button:hover {
-  color: #061824;
-  background: #67eaff;
-  border-color: #67eaff;
+.nova-rsr-schematic-actions button:hover {
+  background: #204864;
+  border-color: #65dfff;
 }
 
-#novaRsrSchematicsWindow
-.nova-rsr-schem-actions button[data-action="close"]:hover {
-  color: white;
-  background: #ba293b;
-  border-color: #ff6070;
+.nova-rsr-schematic-actions
+button[data-rsr-schematic-action="close"]:hover {
+  background: #7a2030;
+  border-color: #ff6a80;
 }
 
 /* ============================================================
-   SCHEMATIC VIEWER CONTENT
+   VIEWER CONTENT
    ============================================================ */
 
-#novaRsrSchematicsWindow iframe {
+.nova-rsr-schematic-content {
+  position: relative;
+  flex: 1 1 auto;
+
+  min-height: 0;
+  overflow: hidden;
+
+  background: #050b14;
+}
+
+.nova-rsr-schematic-content iframe {
   display: block;
+
   width: 100%;
   height: 100%;
-  min-height: 0;
-  flex: 1;
 
-  background: #07131e;
-  border: none;
+  border: 0;
+  background: #050b14;
 }
 
 /* ============================================================
    RESIZE HANDLE
    ============================================================ */
 
-#novaRsrSchematicsWindow .nova-rsr-schem-resize {
+.nova-rsr-schematic-resizer {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -139,106 +175,114 @@
   width: 24px;
   height: 24px;
 
+  z-index: 5;
   cursor: nwse-resize;
   touch-action: none;
-  z-index: 10;
 
   background:
     linear-gradient(
       135deg,
-      transparent 55%,
-      #24cbe9 56%,
-      #24cbe9 62%,
-      transparent 63%
+      transparent 48%,
+      rgba(100, 210, 245, 0.6) 49%,
+      rgba(100, 210, 245, 0.6) 53%,
+      transparent 54%
     );
-}
 
-#novaRsrSchematicsWindow .nova-rsr-schem-resize:hover {
-  background-color: rgba(36,203,233,.18);
-}
-
-/* ============================================================
-   MAXIMIZED WINDOW
-   ============================================================ */
-
-#novaRsrSchematicsWindow.nova-rsr-schem-max {
-  left: 4px !important;
-  top: 4px !important;
-
-  width: calc(100vw - 8px) !important;
-  height: calc(100dvh - 8px) !important;
-
-  border-radius: 6px;
+  background-size: 9px 9px;
+  background-position: bottom right;
+  background-repeat: repeat;
 }
 
 /* ============================================================
-   SCHEMATICS LAUNCH BUTTON
+   MINIMIZED STATE
    ============================================================ */
 
-#rsrLab .nova-rsr-schem-launch {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+#novaRsrSchematicsWindow.is-minimized {
+  height: 48px !important;
+  min-height: 48px;
+}
 
-  padding: 7px 12px;
-  min-height: 32px;
+#novaRsrSchematicsWindow.is-minimized
+.nova-rsr-schematic-content,
+#novaRsrSchematicsWindow.is-minimized
+.nova-rsr-schematic-resizer {
+  display: none;
+}
 
-  background: #103c51;
-  color: #a8f3ff;
-  border: 1px solid #24cbe9;
-  border-radius: 7px;
+/* ============================================================
+   MAXIMIZED STATE
+   ============================================================ */
 
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .5px;
+#novaRsrSchematicsWindow.is-maximized {
+  top: 8px !important;
+  left: 8px !important;
+  right: 8px !important;
+  bottom: 8px !important;
 
-  white-space: nowrap;
+  width: calc(100vw - 16px) !important;
+  height: calc(100vh - 16px) !important;
+
+  min-width: 0;
+  min-height: 0;
+
+  border-radius: 8px;
+}
+
+#novaRsrSchematicsWindow.is-maximized
+.nova-rsr-schematic-resizer {
+  display: none;
+}
+
+/* ============================================================
+   RSR SCHEMATICS LAUNCH BUTTON
+   ============================================================ */
+
+#rsrTwin #amSchematicOpen {
+  color: #a8eeff;
+  border-color: rgba(0, 210, 255, 0.45);
   cursor: pointer;
-  flex-shrink: 0;
 }
 
-#rsrLab .nova-rsr-schem-launch:hover {
-  background: #24cbe9;
-  color: #031720;
-  box-shadow: 0 0 12px rgba(36,203,233,.45);
-}
-
-#rsrLab .nova-rsr-schem-launch:active {
-  transform: scale(.97);
+#rsrTwin #amSchematicOpen:hover {
+  background: rgba(0, 210, 255, 0.16);
+  color: #ffffff;
 }
 
 /* ============================================================
-   SMALL SCREENS
+   SMALL SCREEN SUPPORT
    ============================================================ */
 
-@media (max-width: 620px) {
-
+@media (max-width: 650px) {
   #novaRsrSchematicsWindow {
-    left: 2vw;
-    top: 6vh;
-    width: 96vw;
-    height: 85vh;
-    min-width: 280px;
+    top: 7vh;
+    left: 3vw;
+
+    width: 94vw;
+    height: 82vh;
+
+    min-width: 0;
     min-height: 240px;
   }
 
-  #novaRsrSchematicsWindow .nova-rsr-schem-header {
-    padding: 6px 8px;
+  .nova-rsr-schematic-header {
     gap: 6px;
+    padding: 7px 9px;
   }
 
-  #novaRsrSchematicsWindow .nova-rsr-schem-header strong {
-    font-size: 11px;
-    letter-spacing: 0;
+  .nova-rsr-schematic-title span {
+    font-size: 12px;
   }
 
-  #novaRsrSchematicsWindow .nova-rsr-schem-actions button {
-    min-width: 28px;
-    padding: 3px 5px;
+  .nova-rsr-schematic-title small {
+    font-size: 9px;
   }
 
-  #rsrLab .nova-rsr-schem-launch {
-    padding: 5px 7px;
-    font-size: 10px;
+  .nova-rsr-schematic-actions {
+    gap: 4px;
+  }
+
+  .nova-rsr-schematic-actions button {
+    width: 29px;
+    height: 28px;
   }
 }
