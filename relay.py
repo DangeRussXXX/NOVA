@@ -25,7 +25,8 @@ HEADERS = {
 PATTERNS = [
     r"(?:HELP|STATUS|TEST|TOGGLE)",
     r"(?:TRAINER )?(?:STOP|STATUS|TEST)",
-    r"TRAINER PATTERN [A-Z0-9_-]{1,32}",
+    r"TRAINER PATTERN (?:KNIGHT(?: RIDER)?|CHASE|REVERSE(?: CHASE)?|CENTER OUT|OUTSIDE IN|ALTERNATE|FILL|WAVE|POLICE|STROBE|[1-5])",
+    r"TRAINER PATTERN SPEED (?:[0-9]{2,4})",
     r"TRAINER ALL (?:ON|OFF)",
     r"(?:LED|ARDUINO LED) (?:ON|OFF)",
     r"TRAINER LED [0-7] (?:ON|OFF)",
@@ -64,6 +65,9 @@ def is_approved(cmd):
     if "FLASH" in parts:
         n, ms = map(int, parts[-2:])
         return 1 <= n <= 100 and 20 <= ms <= 5000
+
+    if parts[:3] == ["TRAINER", "PATTERN", "SPEED"]:
+        return 40 <= int(parts[-1]) <= 2000
 
     if parts[0] in ("SPEED", "PULSE"):
         return 20 <= int(parts[-1]) <= 5000
@@ -144,7 +148,7 @@ def main():
                         send_response(session, line)
 
             except requests.HTTPError as error:
-                print(">>> HTTP ERROR:", error)
+                print(">>> HTTP ERROR:", error, "body:", repr(error.response.text[:300]) if error.response is not None else "(no response)")
 
                 if (
                     error.response is not None

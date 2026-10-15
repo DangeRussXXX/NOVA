@@ -124,7 +124,8 @@ PATTERNS = [
     r"speed [0-9]{1,5}",
     r"pulse [0-9]{1,5}",
     r"(?:trainer|both|morse|trainer morse|both morse)? ?sos",
-    r"trainer pattern [a-z0-9_-]{1,32}",
+    r"TRAINER PATTERN (?:KNIGHT(?: RIDER)?|CHASE|REVERSE(?: CHASE)?|CENTER OUT|OUTSIDE IN|ALTERNATE|FILL|WAVE|POLICE|STROBE|[1-5])",
+    r"TRAINER PATTERN SPEED (?:[0-9]{2,4})",
     r"(?:trainer )?(?:stop|status|test)",
     r"(?:stop|status|test|help|toggle)",
     r"trainer led [0-7] toggle",
@@ -155,6 +156,9 @@ def approved(cmd):
     if "flash" in parts:
         n, ms = map(int, parts[-2:])
         return 1 <= n <= 100 and 20 <= ms <= 5000
+
+    if parts[:3] == ["trainer", "pattern", "speed"]:
+        return 40 <= int(parts[-1]) <= 2000
 
     if parts[0] in ("speed", "pulse"):
         return 20 <= int(parts[-1]) <= 5000

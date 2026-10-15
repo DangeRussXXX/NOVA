@@ -66,22 +66,12 @@ function connectSerial() {
 
 
 
-function toggleBoardLed(){
-
-
-
+async function toggleBoardLed(){
   const nextState = !boardLedOn;
-
-
-
-  setBoardLedUI(nextState);
-
-
-
-  sendCloudCommand(nextState ? "led on" : "led off");
-
-
-
+  if (await sendCloudCommand(nextState ? "led on" : "led off")) {
+    setBoardLedUI(nextState);
+    log("LED request queued; physical state is not yet confirmed.", "system");
+  }
 }
 
 
@@ -134,30 +124,13 @@ const trainerLedStates = Array(8).fill(false);
 
 
 
-function toggleTrainerLed(ledNumber){
-
-
-
+async function toggleTrainerLed(ledNumber){
   if(!Number.isInteger(ledNumber) || ledNumber < 0 || ledNumber > 7) return;
-
-
-
-
-
-
-
   const nextState = !trainerLedStates[ledNumber];
-
-
-
-  setTrainerLedUI(ledNumber, nextState);
-
-
-
-  sendCloudCommand(`trainer led ${ledNumber} ${nextState ? "on" : "off"}`);
-
-
-
+  if (await sendCloudCommand(`trainer led ${ledNumber} ${nextState ? "on" : "off"}`)) {
+    setTrainerLedUI(ledNumber, nextState);
+    log("Trainer LED request queued; physical state is not yet confirmed.", "system");
+  }
 }
 
 
@@ -816,11 +789,9 @@ function setTrainerPatternButton(name){
 
 
 
-function startTrainerPatternUI(commandName, displayName){
+async function startTrainerPatternUI(commandName, displayName){
+  if (!(await sendCloudCommand(`trainer pattern ${commandName}`))) return;
 
-
-
-  sendCloudCommand(`trainer pattern ${commandName}`);
 
 
 
@@ -828,11 +799,11 @@ function startTrainerPatternUI(commandName, displayName){
 
 
 
-  document.getElementById("rsrPatternState").textContent = "RUNNING";
+  document.getElementById("rsrPatternState").textContent = "REQUEST QUEUED";
 
 
 
-  document.getElementById("rsrStatus").textContent = "RUNNING";
+  document.getElementById("rsrStatus").textContent = "REQUEST QUEUED";
 
 
 
