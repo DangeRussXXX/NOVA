@@ -2553,11 +2553,28 @@ document.getElementById("commandInput").addEventListener("keydown", function(eve
 
 
 
+// NOVA Health v1.2: record only actual device-specific replies, never queued commands.
+window.NovaHardwareHealth = window.NovaHardwareHealth || {boardRx:0, trainerRx:0, boardTest:null, trainerTest:null};
+function novaRecordHardwareReply(text){
+  const h=window.NovaHardwareHealth;
+  const line=String(text||'').trim();
+  const now=Date.now();
+  // The trainer has its own response vocabulary; do not infer trainer health
+  // from a generic Arduino/COM9 reply.
+  if (/^(?:RSR\s+(?:TRAINER\s+)?TEST\s*:|TRAINER\s+(?:PATTERN|PATTERN STATE|PATTERN SPEED|STOPPED|LED|STATUS)|TRAINER\s*:|RSR\s+SWITCH\s+)/i.test(line)) {
+    h.trainerRx=now;
+    if (/^RSR\s+TRAINER\s+TEST\s*:\s*(PASS|FAIL)/i.test(line)) h.trainerTest=RegExp.$1.toUpperCase();
+  } else if (/^(?:Serial|Both LEDs|LED|Timing|Memory|Commands|System)\s*:\s*(?:OK|PASS|FAIL|ERROR|TESTING)\b/i.test(line) || /^(?:Both flash complete|Both LEDs|Flash complete|LED (?:ON|OFF|ENABLED|DISABLED)|SYSTEM TEST)/i.test(line)) {
+    h.boardRx=now;
+  }
+}
+
 function processSerialLine(line){
   const parts = String(line || '').split(/\r?\n/);
   for (const part of parts) {
     const text = part.trim();
     if (!text) continue;
+    novaRecordHardwareReply(text);
     showNovaResponse(text);
     log(text);
     parseSystemTestLine(text);
@@ -3225,6 +3242,13 @@ function finalizeSystemTest(){
 
 
   systemTestState.active = false;
+   if (window.NovaHardwareHealth) {
+     const keys=['serial','led','timing','memory','commands','system'];
+     if (keys.some(key=>systemTestState[key]==='OK'||systemTestState[key]==='FAIL')) {
+       window.NovaHardwareHealth.boardRx=Date.now();
+       window.NovaHardwareHealth.boardTest=keys.every(key=>systemTestState[key]==='OK')?'PASS':'FAIL';
+     }
+   }
   ['Serial','Led','Timing','Memory','Commands','System'].forEach(label => {
     const key = label.toLowerCase();
     if (systemTestState[key] === null || systemTestState[key] === 'TESTING') {

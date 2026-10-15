@@ -3817,12 +3817,21 @@ function openNovaSystemScreen(){
       setHealth('novaHealthCloud','ONLINE','Render status endpoint responding');
       const relay=data.relay||{};
       setHealth('novaHealthRelay',relay.online?'ONLINE':'OFFLINE',relay.online?`Heartbeat ${relay.age_seconds}s ago`:'No recent relay heartbeat');
-      const recent=age(relay.last_serial_rx);
       const portDetail=!relay.online?'COM9: Unknown (relay offline)':relay.serial_open?'COM9: Connected':'COM9: Unavailable';
-      const boardDetail=recent!==null?`Last board response: ${recent}s ago`:'Board response: Not recorded';
-      const boardState=!relay.online?'UNKNOWN':!relay.serial_open?'OFFLINE':recent!==null&&recent<60?'ACTIVITY':'UNKNOWN';
-      setHealth('novaHealthBoard',boardState,`${portDetail} · ${boardDetail}`);
-      setHealth('novaHealthTrainer','UNKNOWN','Requires trainer-specific response');
+      // Browser-side observations are tied to actual parsed serial responses.
+      // A connected COM port or successful command queue does not prove device health.
+      const observed=window.NovaHardwareHealth||{};
+      const secondsSince=stamp=>stamp?Math.max(0,Math.floor((Date.now()-stamp)/1000)):null;
+      const boardAge=secondsSince(observed.boardRx);
+      const trainerAge=secondsSince(observed.trainerRx);
+      const boardFresh=relay.online&&relay.serial_open&&boardAge!==null&&boardAge<60;
+      const trainerFresh=relay.online&&relay.serial_open&&trainerAge!==null&&trainerAge<60;
+      const boardEvidence=boardFresh?`Verified board reply ${boardAge}s ago${observed.boardTest?' · Last test: '+observed.boardTest:''}`:
+        (boardAge!==null?`Last verified board reply ${boardAge}s ago (stale)`:'No board-specific reply received in this session');
+      setHealth('novaHealthBoard',!relay.online?'UNKNOWN':!relay.serial_open?'OFFLINE':boardFresh?'ONLINE':'UNKNOWN',`${portDetail} · ${boardEvidence}`);
+      const trainerEvidence=trainerFresh?`Trainer reply ${trainerAge}s ago${observed.trainerTest?' · Last test: '+observed.trainerTest:''}`:
+        (trainerAge!==null?`Last trainer reply ${trainerAge}s ago (stale)`:'No trainer-specific reply received in this session');
+      setHealth('novaHealthTrainer',!relay.online?'UNKNOWN':!relay.serial_open?'OFFLINE':trainerFresh?'ONLINE':'UNKNOWN',trainerEvidence);
       setHealth('novaHealthCommands','ONLINE',`${data.commands_pending||0} queued · ${data.responses_pending||0} responses pending`);
       doc.getElementById('novaHealthFooter').textContent='Last checked: '+new Date().toLocaleTimeString()+(relay.last_error?' · Relay error: '+relay.last_error:'');
     }catch(error){
