@@ -911,7 +911,7 @@ function parseTrainerSystemLine(line){
 
 
 
-  if(/^Trainer:\s\*ONLINE\s\*$/i.test(line)){
+  if(/^Trainer:\s*ONLINE\s*$/i.test(line)){
 
 
 
@@ -927,7 +927,7 @@ function parseTrainerSystemLine(line){
 
 
 
-  match = String(line).match(/^TRAINER PATTERN:\s\*(.+)$/i);
+  match = String(line).match(/^TRAINER PATTERN:\s*(.+)$/i);
 
 
 
@@ -955,7 +955,7 @@ function parseTrainerSystemLine(line){
 
 
 
-  match = String(line).match(/^TRAINER PATTERN STATE:\s\*(RUNNING|STOPPED)$/i);
+  match = String(line).match(/^TRAINER PATTERN STATE:\s*(RUNNING|STOPPED)$/i);
 
 
 
@@ -983,7 +983,7 @@ function parseTrainerSystemLine(line){
 
 
 
-  match = String(line).match(/^TRAINER PATTERN SPEED:\s\*(.+)$/i);
+  match = String(line).match(/^TRAINER PATTERN SPEED:\s*(.+)$/i);
 
 
 
@@ -1003,7 +1003,7 @@ function parseTrainerSystemLine(line){
 
 
 
-  if(/^RSR TRAINER TEST:\s\*PASS$/i.test(line)){
+  if(/^RSR TRAINER TEST:\s*PASS$/i.test(line)){
 
 
 
@@ -1027,7 +1027,7 @@ function parseTrainerSystemLine(line){
 
 
 
-  if(/^RSR TRAINER TEST:\s\*FAIL$/i.test(line)){
+  if(/^RSR TRAINER TEST:\s*FAIL$/i.test(line)){
 
 
 
