@@ -2393,7 +2393,7 @@ async function pollCloudResponses(){
     const response = await NovaSecurity.request('/response', {method:'GET'});
     if(!response.ok) { if(response.status===401 || response.status===403) NovaSecurity.expire(); return; }
     const text = (await response.text()).trim();
-    if(text) processSerialLine(text);
+    if(text) text.split(/\r?\n/).map(part => part.trim()).filter(Boolean).forEach(processSerialLine);
   } catch(error) { console.warn('NOVA response polling:', error.message); }
 }
 setInterval(pollCloudResponses, 1000);
@@ -2554,101 +2554,20 @@ document.getElementById("commandInput").addEventListener("keydown", function(eve
 
 
 function processSerialLine(line){
-
-
-
-
-
-
-
-  showNovaResponse(line);
-
-
-
-  log(line);
-
-
-
-
-
-
-
-  parseSystemTestLine(line);
-
-
-
-  parseBoardStatus(line);
-
-
-
-  parseLedState(line);
-
-
-
-  parseTrainerLedState(line);
-
-
-
-  parseRSRSwitchState(line);
-
-
-
-  parseTrainerSystemLine(line);
-
-
-
-
-
-
-
-  if(
-
-
-
-    /^flash complete\.?$/i.test(line)
-
-
-
-  ){
-
-
-
-
-
-
-
-    log(
-
-
-
-      "System test LED flash complete.",
-
-
-
-      "success"
-
-
-
-    );
-
-
-
-
-
-
-
+  const parts = String(line || '').split(/\r?\n/);
+  for (const part of parts) {
+    const text = part.trim();
+    if (!text) continue;
+    showNovaResponse(text);
+    log(text);
+    parseSystemTestLine(text);
+    parseBoardStatus(text);
+    parseLedState(text);
+    parseTrainerLedState(text);
+    parseRSRSwitchState(text);
+    parseTrainerSystemLine(text);
+    if (/^flash complete\.?$/i.test(text)) log('System test LED flash complete.', 'success');
   }
-
-
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -3001,7 +2920,11 @@ function parseLedState(line){
 
 
 
+let novaSystemTestTimer = null;
+const NOVA_SYSTEM_TEST_TIMEOUT_MS = 20000;
+
 function resetSystemTest(){
+  if (novaSystemTestTimer !== null) { clearTimeout(novaSystemTestTimer); novaSystemTestTimer = null; }
 
 
 
@@ -3202,209 +3125,33 @@ function resetSystemTest(){
 
 
 function runSystemTest(){
-
-
-
-
-
-
-
   resetSystemTest();
-
-
-
-
-
-
-
   systemTestState.active = true;
-
-
-
-
-
-
-
-  [
-
-
-
-    "Serial",
-
-
-
-    "Led",
-
-
-
-    "Timing",
-
-
-
-    "Memory",
-
-
-
-    "Commands",
-
-
-
-    "System"
-
-
-
-  ].forEach(key => {
-
-
-
-
-
-
-
-    const el =
-
-
-
-      document.getElementById(
-
-
-
-        `test${key}`
-
-
-
-      );
-
-
-
-
-
-
-
-    if(el){
-
-
-
-
-
-
-
-      el.textContent = "TESTING";
-
-
-
-      el.className =
-
-
-
-        "testValue testing";
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
+  ['Serial','Led','Timing','Memory','Commands','System'].forEach(key => {
+    const el = document.getElementById(`test${key}`);
+    if (el) { el.textContent = 'TESTING'; el.className = 'testValue testing'; }
   });
-
-
-
-
-
-
-
-  document.getElementById(
-
-
-
-    "testResult"
-
-
-
-  ).textContent =
-
-
-
-    "RUNNING";
-
-
-
-
-
-
-
-  document.getElementById(
-
-
-
-    "statusSystem"
-
-
-
-  ).textContent =
-
-
-
-    "TESTING";
-
-
-
-
-
-
-
-  log(
-
-
-
-    "Starting system test...",
-
-
-
-    "system"
-
-
-
-  );
-
-
-
-
-
-
-
-  sendCloudCommand("test");
-
-
-
-
-
-
-
-  speak(
-
-
-
-    "Starting system test."
-
-
-
-  );
-
-
-
-
-
-
-
+  const result = document.getElementById('testResult');
+  if (result) { result.textContent = 'RUNNING'; result.className = 'testResult testing'; }
+  const status = document.getElementById('statusSystem');
+  if (status) status.textContent = 'TESTING';
+  log('Starting system test...', 'system');
+  novaSystemTestTimer = setTimeout(() => {
+    if (systemTestState.active) {
+      log('System test timed out waiting for complete device responses.', 'warning');
+      finalizeSystemTest();
+    }
+  }, NOVA_SYSTEM_TEST_TIMEOUT_MS);
+  Promise.resolve(sendCloudCommand('test')).then(sent => {
+    if (!sent && systemTestState.active) {
+      log('System test command was not accepted by the cloud server.', 'error');
+      finalizeSystemTest();
+    }
+  }).catch(error => {
+    log('System test send error: ' + error.message, 'error');
+    if (systemTestState.active) finalizeSystemTest();
+  });
+  if (typeof speak === 'function') speak('Starting system test.');
 }
 
 
@@ -3418,301 +3165,27 @@ function runSystemTest(){
 
 
 function parseSystemTestLine(line){
-
-
-
-
-
-
-
-  if(!systemTestState.active){
-
-
-
+  if (!systemTestState || !systemTestState.active) return;
+  const text = String(line || '').trim();
+  // The firmware may say "Both LEDs: OK" rather than "LED: OK".
+  const match = text.match(/^(Serial|LED|Both LEDs|Timing|Memory|Commands|System)\s*:\s*(OK|PASS|FAIL|ERROR|TESTING)\s*\.?$/i);
+  if (match) {
+    const key = /led/i.test(match[1]) ? 'led' : match[1].toLowerCase();
+    const value = /^(OK|PASS)$/i.test(match[2]) ? 'OK' : /^(FAIL|ERROR)$/i.test(match[2]) ? 'FAIL' : 'TESTING';
+    systemTestState[key] = value;
+    const id = {serial:'testSerial',led:'testLed',timing:'testTiming',memory:'testMemory',commands:'testCommands',system:'testSystem'}[key];
+    const el = document.getElementById(id);
+    if (el) { el.textContent = value; el.className = 'testValue ' + (value === 'OK' ? 'ok' : value === 'FAIL' ? 'fail' : 'testing'); }
+    const checks = ['serial','led','timing','memory','commands','system'];
+    if (checks.every(name => systemTestState[name] === 'OK' || systemTestState[name] === 'FAIL')) finalizeSystemTest();
     return;
-
-
-
   }
-
-
-
-
-
-
-
-  const testMatch =
-
-
-
-    line.match(
-
-
-
-      /^\s\*(Serial|LED|Timing|Memory|Commands|System):\s\*(OK|FAIL|TESTING)\s\*$/i
-
-
-
-    );
-
-
-
-
-
-
-
-  if(testMatch){
-
-
-
-
-
-
-
-    const label =
-
-
-
-      testMatch[1].toLowerCase();
-
-
-
-
-
-
-
-    const value =
-
-
-
-      testMatch[2].toUpperCase();
-
-
-
-
-
-
-
-    const map = {
-
-
-
-      serial:"serial",
-
-
-
-      led:"led",
-
-
-
-      timing:"timing",
-
-
-
-      memory:"memory",
-
-
-
-      commands:"commands",
-
-
-
-      system:"system"
-
-
-
-    };
-
-
-
-
-
-
-
-    const key =
-
-
-
-      map[label];
-
-
-
-
-
-
-
-    if(key){
-
-
-
-
-
-
-
-      systemTestState[key] =
-
-
-
-        value;
-
-
-
-
-
-
-
-      const idMap = {
-
-
-
-        serial:"testSerial",
-
-
-
-        led:"testLed",
-
-
-
-        timing:"testTiming",
-
-
-
-        memory:"testMemory",
-
-
-
-        commands:"testCommands",
-
-
-
-        system:"testSystem"
-
-
-
-      };
-
-
-
-
-
-
-
-      const el =
-
-
-
-        document.getElementById(
-
-
-
-          idMap[key]
-
-
-
-        );
-
-
-
-
-
-
-
-      el.textContent =
-
-
-
-        value;
-
-
-
-
-
-
-
-      el.className =
-
-
-
-        `testValue ${
-
-
-
-          value === "OK"
-
-
-
-            ? "ok"
-
-
-
-            : value === "FAIL"
-
-
-
-              ? "fail"
-
-
-
-              : "testing"
-
-
-
-        }`;
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-  }
-
-
-
-
-
-
-
-  if(
-
-
-
-    /^\s\*=+\s\*$/.test(line)
-
-
-
-  ){
-
-
-
-
-
-
-
+  // Do not treat the opening ===== banner as completion.
+  // A closing separator may finish an incomplete test, but only after
+  // at least one diagnostic has been received.
+  if (/^=+\s*$/.test(text) && ['serial','led','timing','memory','commands','system'].some(name => systemTestState[name] === 'OK' || systemTestState[name] === 'FAIL')) {
     finalizeSystemTest();
-
-
-
-
-
-
-
   }
-
-
-
-
-
-
-
 }
 
 
@@ -3726,6 +3199,8 @@ function parseSystemTestLine(line){
 
 
 function finalizeSystemTest(){
+  if (novaSystemTestTimer !== null) { clearTimeout(novaSystemTestTimer); novaSystemTestTimer = null; }
+
 
 
 
@@ -3750,6 +3225,13 @@ function finalizeSystemTest(){
 
 
   systemTestState.active = false;
+  ['Serial','Led','Timing','Memory','Commands','System'].forEach(label => {
+    const key = label.toLowerCase();
+    if (systemTestState[key] === null || systemTestState[key] === 'TESTING') {
+      const el = document.getElementById(`test${label}`);
+      if (el) { el.textContent = 'NO RESPONSE'; el.className = 'testValue fail'; }
+    }
+  });
 
 
 
