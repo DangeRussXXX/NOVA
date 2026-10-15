@@ -110,6 +110,10 @@ def main():
         print("Authenticated command polling enabled.")
         last_heartbeat = 0.0
         last_error = ""
+        # Staggered non-disruptive status probes; no LEDs or patterns are changed.
+        next_board_probe = time.monotonic() + 8.0
+        next_trainer_probe = time.monotonic() + 23.0
+        probe_interval = 30.0
 
         while True:
             if time.monotonic() - last_heartbeat >= 5:
@@ -147,6 +151,19 @@ def main():
                             ">>> REJECTED UNAPPROVED COMMAND:",
                             repr(cmd[:120]),
                         )
+
+                # Send a probe only when the command queue had no user command
+                # this iteration. Do not interrupt a command already being sent.
+                now = time.monotonic()
+                if not cmd and ser.is_open:
+                    if now >= next_board_probe:
+                        ser.write(b"status\n")
+                        print(">>> NOVA HEALTH PROBE: status")
+                        next_board_probe = now + probe_interval
+                    elif now >= next_trainer_probe:
+                        ser.write(b"trainer status\n")
+                        print(">>> NOVA HEALTH PROBE: trainer status")
+                        next_trainer_probe = now + probe_interval
 
                 while ser.in_waiting > 0:
                     raw = ser.readline()

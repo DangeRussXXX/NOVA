@@ -2564,6 +2564,8 @@ function novaRecordHardwareReply(text){
   if (/^(?:RSR\s+(?:TRAINER\s+)?TEST\s*:|TRAINER\s+(?:PATTERN|PATTERN STATE|PATTERN SPEED|STOPPED|LED|STATUS)|TRAINER\s*:|RSR\s+SWITCH\s+)/i.test(line)) {
     h.trainerRx=now;
     if (/^RSR\s+TRAINER\s+TEST\s*:\s*(PASS|FAIL)/i.test(line)) h.trainerTest=RegExp.$1.toUpperCase();
+  } else if (/^(?:Board\s*:\s*AMOMII ONE|Connection\s*:\s*USB|Arduino LED\s*:|Arduino Blink\s*:|Arduino Speed\s*:|SYSTEM STATUS)/i.test(line)) {
+    h.boardRx=now;
   } else if (/^(?:Serial|Both LEDs|LED|Timing|Memory|Commands|System)\s*:\s*(?:OK|PASS|FAIL|ERROR|TESTING)\b/i.test(line) || /^(?:Both flash complete|Both LEDs|Flash complete|LED (?:ON|OFF|ENABLED|DISABLED)|SYSTEM TEST)/i.test(line)) {
     h.boardRx=now;
   }
