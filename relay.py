@@ -10,6 +10,7 @@ import requests
 
 COMMAND_URL = "https://amomii-server.onrender.com/command"
 RESPONSE_URL = "https://amomii-server.onrender.com/response"
+HEARTBEAT_URL = "https://amomii-server.onrender.com/relay/heartbeat"
 
 RELAY_TOKEN = os.environ.get("NOVA_RELAY_TOKEN", "").strip()
 
@@ -107,8 +108,22 @@ def main():
     ) as ser:
         print("NOVA relay connected.")
         print("Authenticated command polling enabled.")
+        last_heartbeat = 0.0
+        last_error = ""
 
         while True:
+            if time.monotonic() - last_heartbeat >= 5:
+                try:
+                    heartbeat = session.post(
+                        HEARTBEAT_URL,
+                        json={"serial_open": ser.is_open, "port": "COM9", "error": last_error},
+                        timeout=5,
+                    )
+                    heartbeat.raise_for_status()
+                    last_error = ""
+                except requests.RequestException as error:
+                    print(">>> HEALTH HEARTBEAT ERROR:", error)
+                last_heartbeat = time.monotonic()
             try:
                 result = session.get(
                     COMMAND_URL,
@@ -148,6 +163,7 @@ def main():
                         send_response(session, line)
 
             except requests.HTTPError as error:
+                last_error = str(error)[:160]
                 print(">>> HTTP ERROR:", error, "body:", repr(error.response.text[:300]) if error.response is not None else "(no response)")
 
                 if (
@@ -163,6 +179,7 @@ def main():
                 requests.RequestException,
                 serial.SerialException,
             ) as error:
+                last_error = str(error)[:160]
                 print(">>> RELAY ERROR:", repr(error))
 
             time.sleep(0.2)

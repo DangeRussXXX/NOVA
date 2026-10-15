@@ -46,15 +46,11 @@ function connectSerial() {
 
 
 
-  log("Connected to NOVA Cloud Relay.", "success");
+  log("Cloud relay selected. Open NOVA SYSTEM > SYSTEM HEALTH for verified connection status.", "system");
 
 
 
-  updateConnectionUI(true);
-
-
-
-  speak("NOVA Cloud Relay is connected.");
+  updateConnectionUI(false);
 
 
 

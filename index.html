@@ -3700,7 +3700,18 @@ function openNovaSystemScreen(){
   const liveHistory=`<div class="note">Events update automatically while this screen is open.</div><div id="novaSystemLiveRows" style="max-height:300px;overflow:auto;overflow-wrap:anywhere"></div>`;
   const savedHistory=`${historyTools}<div class="note" id="novaSystemHistoryCount"></div><div id="novaSystemHistoryRows" style="max-height:440px;overflow:auto;overflow-wrap:anywhere"></div>`;
   const controls=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button type="button" class="close" id="novaSystemToggleAll" aria-label="Hide all panels">HIDE ALL PANELS</button></div>`;
+  const health=`<div class="novaHealthIntro">Live diagnostics from Render and the local relay. Hardware state requires actual device reports.</div>
+    <div class="novaHealthGrid">
+      <div class="novaHealthItem" id="novaHealthCloud">CLOUD SERVER <strong>CHECKING</strong><small>Render API</small></div>
+      <div class="novaHealthItem" id="novaHealthRelay">LOCAL RELAY <strong>UNKNOWN</strong><small>Waiting for heartbeat</small></div>
+      <div class="novaHealthItem" id="novaHealthSerial">ARDUINO / COM9 <strong>UNKNOWN</strong><small>Serial connection</small></div>
+      <div class="novaHealthItem" id="novaHealthBoard">AMOMII ONE <strong>UNKNOWN</strong><small>Last hardware response</small></div>
+      <div class="novaHealthItem" id="novaHealthTrainer">RSR TRAINER <strong>UNKNOWN</strong><small>Last hardware response</small></div>
+      <div class="novaHealthItem" id="novaHealthCommands">COMMAND QUEUE <strong>UNKNOWN</strong><small>Waiting for server</small></div>
+    </div><div class="novaHealthFooter" id="novaHealthFooter">Awaiting first check…</div>
+    <button type="button" class="close" id="novaHealthRefresh">REFRESH HEALTH</button>`;
   const body=controls+
+    panel('health','NOVA SYSTEM HEALTH',health)+
     panel('live','NOVA LIVE ACTIVITY',liveHistory)+
     panel('history','NOVA HISTORY',savedHistory)+
     panel('help','NOVA HELP',help)+
@@ -3710,6 +3721,9 @@ function openNovaSystemScreen(){
   const w=openNovaInfoScreen('NOVA SYSTEM',body);
   if(!w || w.closed)return;
   const doc=w.document;
+  const healthStyle=doc.createElement('style');
+  healthStyle.textContent=`.novaHealthIntro,.novaHealthFooter{font-size:12px;color:#91a9b8;margin:10px 0 14px}.novaHealthGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}.novaHealthItem{background:#101923;border:1px solid #2b3c4c;border-radius:8px;padding:13px;color:#8da7b8;font-size:11px;letter-spacing:1px}.novaHealthItem strong{display:block;margin:8px 0;color:#ffd84d;font-size:16px}.novaHealthItem small{display:block;color:#788899;letter-spacing:0}.novaHealthItem[data-state="online"] strong,.novaHealthItem[data-state="activity"] strong{color:#39ff88}.novaHealthItem[data-state="offline"] strong{color:#ff5570}.novaHealthItem[data-state="unknown"] strong{color:#ffd84d}@media(max-width:650px){.novaHealthGrid{grid-template-columns:1fr}}`;
+  doc.head.appendChild(healthStyle);
   const sections=Array.from(doc.querySelectorAll('.novaSystemSection'));
   const preferenceKey='novaSystemPanelVisibilityV1';
   let prefs={};try{prefs=JSON.parse(localStorage.getItem(preferenceKey)||'{}')||{}}catch(e){}
@@ -3724,7 +3738,8 @@ function openNovaSystemScreen(){
   };
   sections.forEach(section=>{
     const key=section.dataset.novaSection;
-    if(typeof prefs[key]==='boolean')section.open=prefs[key];
+    if(key==='health')section.open=true;
+    else if(typeof prefs[key]==='boolean')section.open=prefs[key];
     section.addEventListener('toggle',()=>{prefs[key]=section.open;save();updateToggleAllButton()});
   });
   const setAll=visible=>{
@@ -3779,6 +3794,46 @@ function openNovaSystemScreen(){
     const count=doc.getElementById('novaSystemHistoryCount');
     if(count)count.textContent=entries.length+' SAVED EVENTS';
   }
+  // The health panel is deliberately independent of older history/status widgets.
+  let healthInFlight=false;
+  const setHealth=(id,state,detail)=>{
+    const el=doc.getElementById(id);if(!el)return;
+    const strong=el.querySelector('strong'),small=el.querySelector('small');
+    strong.textContent=state;small.textContent=detail;
+    el.dataset.state=state.toLowerCase();
+  };
+  const age=ts=>ts ? Math.max(0,Math.round(Date.now()/1000-Number(ts))) : null;
+  async function refreshHealth(){
+    if(w.closed||healthInFlight)return;
+    healthInFlight=true;
+    try{
+      if(!window.NovaSecurity||!NovaSecurity.isOwner()){
+        ['novaHealthCloud','novaHealthRelay','novaHealthSerial','novaHealthBoard','novaHealthTrainer','novaHealthCommands'].forEach(id=>setHealth(id,'UNKNOWN','Owner sign-in required'));
+        doc.getElementById('novaHealthFooter').textContent='Sign in to NOVA to access private diagnostics.';
+        return;
+      }
+      const response=await NovaSecurity.request('/status',{method:'GET'});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      const data=await response.json();
+      setHealth('novaHealthCloud','ONLINE','Render status endpoint responding');
+      const relay=data.relay||{};
+      setHealth('novaHealthRelay',relay.online?'ONLINE':'OFFLINE',relay.online?`Heartbeat ${relay.age_seconds}s ago`:'No recent relay heartbeat');
+      setHealth('novaHealthSerial',relay.online?(relay.serial_open?'ONLINE':'OFFLINE'):'UNKNOWN',relay.online?(relay.serial_open?'COM9 open':'Serial port unavailable'):'Relay is offline');
+      const recent=age(relay.last_serial_rx);
+      setHealth('novaHealthBoard',recent!==null&&recent<60?'ACTIVITY':'UNKNOWN',recent!==null?`Last Arduino response ${recent}s ago`:'No device response recorded');
+      setHealth('novaHealthTrainer','UNKNOWN','Requires trainer-specific response');
+      setHealth('novaHealthCommands','ONLINE',`${data.commands_pending||0} queued · ${data.responses_pending||0} responses pending`);
+      doc.getElementById('novaHealthFooter').textContent='Last checked: '+new Date().toLocaleTimeString()+(relay.last_error?' · Relay error: '+relay.last_error:'');
+    }catch(error){
+      setHealth('novaHealthCloud','OFFLINE','Status request failed');
+      ['novaHealthRelay','novaHealthSerial','novaHealthBoard','novaHealthTrainer','novaHealthCommands'].forEach(id=>setHealth(id,'UNKNOWN','Cannot verify without cloud status'));
+      doc.getElementById('novaHealthFooter').textContent='Health check failed: '+error.message;
+    }finally{healthInFlight=false}
+  }
+  doc.getElementById('novaHealthRefresh')?.addEventListener('click',refreshHealth);
+  refreshHealth();
+  const healthTimer=setInterval(()=>{if(w.closed){clearInterval(healthTimer);return}refreshHealth()},5000);
+  w.addEventListener('pagehide',()=>clearInterval(healthTimer),{once:true});
   refreshHistory(true);
   // Keep popup synced to the existing persistent NOVA event history.
   const timer=setInterval(()=>{if(w.closed){clearInterval(timer);return}refreshHistory()},1000);

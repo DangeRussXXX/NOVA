@@ -42,6 +42,11 @@ CORS(
 command_queue = deque(maxlen=200)
 response_queue = deque(maxlen=500)
 queue_lock = threading.Lock()
+# Volatile health telemetry; a server restart resets these observations.
+relay_health = {"last_seen": 0.0, "serial_open": False, "port": None,
+                "last_serial_rx": 0.0, "last_command_sent": 0.0,
+                "last_error": "", "last_command": ""}
+
 
 
 def bearer():
@@ -202,11 +207,11 @@ def post_command():
 @require(relay_auth)
 def get_command():
     with queue_lock:
-        return (
-            command_queue.popleft()["command"]
-            if command_queue
-            else ""
-        )
+        cmd = command_queue.popleft()["command"] if command_queue else ""
+        if cmd:
+            relay_health["last_command_sent"] = time.time()
+            relay_health["last_command"] = cmd
+        return cmd
 
 
 @app.post("/response")
@@ -231,6 +236,7 @@ def post_response():
             "response": msg,
             "timestamp": time.time(),
         })
+        relay_health["last_serial_rx"] = time.time()
 
     return jsonify({"ok": True})
 
@@ -246,13 +252,41 @@ def get_response():
         )
 
 
+@app.post("/relay/heartbeat")
+@require(relay_auth)
+def relay_heartbeat():
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"ok": False, "error": "Invalid heartbeat"}), 400
+    with queue_lock:
+        relay_health["last_seen"] = time.time()
+        relay_health["serial_open"] = payload.get("serial_open") is True
+        relay_health["port"] = "COM9" if payload.get("port") == "COM9" else None
+        relay_health["last_error"] = str(payload.get("error", ""))[:160]
+    return jsonify({"ok": True})
+
+
 @app.get("/status")
 @require(google_owner)
 def status():
+    now = time.time()
     with queue_lock:
+        last_seen = relay_health["last_seen"]
+        relay_online = bool(last_seen and now - last_seen < 15)
         return jsonify({
+            "ok": True,
+            "server_time": now,
             "commands_pending": len(command_queue),
             "responses_pending": len(response_queue),
+            "relay": {
+                "online": relay_online,
+                "age_seconds": round(now - last_seen, 1) if last_seen else None,
+                "serial_open": bool(relay_online and relay_health["serial_open"]),
+                "port": relay_health["port"] if relay_online else None,
+                "last_error": relay_health["last_error"] if relay_online else "",
+                "last_serial_rx": relay_health["last_serial_rx"],
+                "last_command_sent": relay_health["last_command_sent"],
+            },
             "vehicle_interface": True,
         })
 
