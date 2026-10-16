@@ -242,23 +242,28 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 }
 </style>
 
-<style id="novaMediaCompact20261016">
-.novaFloatPanel[data-nova-panel="library"].novaMediaCompact{
- width:min(430px,94vw)!important;
- height:min(490px,75dvh)!important;
- max-height:90dvh!important;
- top:clamp(15px,7vh,70px)!important;
- padding:12px!important;
+<style id="novaWholeDashboardCompact20261016">
+/* Shrink the original live dashboard; do not duplicate its media elements. */
+body.novaDashboardCompact{min-height:100dvh!important;overflow:auto!important}
+body.novaDashboardCompact > .app{
+ position:fixed!important;left:var(--nova-compact-x,24px)!important;top:var(--nova-compact-y,24px)!important;
+ width:min(1400px,calc(94vw / .62))!important;height:min(850px,calc(84dvh / .62))!important;
+ max-width:none!important;max-height:none!important;min-height:0!important;
+ overflow:auto!important;resize:both!important;
+ transform:scale(.62)!important;transform-origin:top left!important;
+ z-index:2147480000!important;background:#060d16!important;
+ border:2px solid #26cde9!important;border-radius:15px!important;
+ box-shadow:0 12px 55px rgba(0,0,0,.8),0 0 18px rgba(0,229,255,.24)!important;
 }
-.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterToolbar{
- min-height:48px!important;padding:8px 42px 8px 10px!important;gap:6px!important;
+body.novaDashboardCompact > .app > header{cursor:move}
+body.novaDashboardCompact > .app > header button,
+body.novaDashboardCompact > .app > header input{cursor:pointer}
+/* The Media Center is a separate floating panel in NOVA's architecture. Keep it accessible. */
+body.novaDashboardCompact .novaFloatPanel:not([hidden]){
+ z-index:2147481000!important;
 }
-.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterToolbar strong{font-size:12px!important;letter-spacing:1px!important}
-.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterToolbar button{padding:6px 8px!important;font-size:11px!important}
-.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterSection>summary{padding:11px 12px!important;font-size:12px!important}
-.novaFloatPanel[data-nova-panel="library"] .novaMediaCompactButton{white-space:nowrap}
-@media(max-width:760px){
- .novaFloatPanel[data-nova-panel="library"].novaMediaCompact{width:94vw!important;height:min(490px,75dvh)!important;resize:none!important}
+@media(max-width:700px){
+ body.novaDashboardCompact > .app{left:8px!important;top:8px!important;width:calc(96vw / .62)!important;height:calc(88dvh / .62)!important;resize:none!important}
 }
 </style>
 </head>
@@ -4457,18 +4462,7 @@ window.addEventListener('load',function(){
    const toolbar=document.createElement('div');toolbar.className='novaMediaCenterToolbar';
    const heading=document.createElement('strong');heading.textContent='NOVA MEDIA CENTER';
    const toggle=document.createElement('button');toggle.type='button';toggle.textContent='SHOW ALL PANELS';
-   const compact=document.createElement('button');
-   compact.type='button';compact.className='novaMediaCompactButton';
-   compact.textContent='COMPACT MODE';
-   compact.title='Switch the same Media Center between compact and full size';
-   compact.addEventListener('click',()=>{
-     const shell=panels.library || left.closest('.novaFloatPanel');
-     if(!shell)return;
-     const compactOn=shell.classList.toggle('novaMediaCompact');
-     compact.textContent=compactOn?'FULL MODE':'COMPACT MODE';
-     compact.setAttribute('aria-pressed',String(compactOn));
-   });
-   toolbar.append(heading,toggle,compact);unified.before(toolbar);
+   toolbar.append(heading,toggle);unified.before(toolbar);
    const sections=[];
    const savedKey='novaMediaCenterPanelVisibilityV1';
    let saved={};try{saved=JSON.parse(localStorage.getItem(savedKey)||'{}')||{};}catch(_){}
@@ -4539,6 +4533,37 @@ window.addEventListener('load',function(){
  mediaModeButton.setAttribute('aria-pressed','false');
  mediaModeButton.addEventListener('click',toggleMediaMode);
  header.appendChild(mediaModeButton);
+ // Whole-dashboard compact mode, next to MEDIA and MEDIA MODE in the top button row.
+ const compactModeButton=document.createElement('button');
+ compactModeButton.type='button';compactModeButton.className='control novaGroupButton novaDashboardCompactButton';
+ compactModeButton.dataset.group='media';compactModeButton.textContent='▣ COMPACT MODE';
+ compactModeButton.title='Shrink or restore the entire NOVA dashboard';
+ compactModeButton.setAttribute('aria-pressed','false');
+ compactModeButton.addEventListener('click',()=>{
+   const enabled=document.body.classList.toggle('novaDashboardCompact');
+   compactModeButton.textContent=enabled?'▣ FULL MODE':'▣ COMPACT MODE';
+   compactModeButton.setAttribute('aria-pressed',String(enabled));
+   if(!enabled){document.body.style.removeProperty('--nova-compact-x');document.body.style.removeProperty('--nova-compact-y');}
+ });
+ header.appendChild(compactModeButton);
+ // Drag by the existing dashboard header; do not interfere with its buttons.
+ const dashboard=document.querySelector('body > .app');
+ const dashboardHeader=dashboard?.querySelector(':scope > header');
+ if(dashboardHeader){
+   let drag=null;
+   dashboardHeader.addEventListener('pointerdown',e=>{
+     if(!document.body.classList.contains('novaDashboardCompact')||e.target.closest('button,input,select,a,textarea'))return;
+     drag={x:e.clientX,y:e.clientY,left:parseFloat(getComputedStyle(dashboard).left)||24,top:parseFloat(getComputedStyle(dashboard).top)||24,id:e.pointerId};
+     dashboardHeader.setPointerCapture?.(e.pointerId);
+   });
+   dashboardHeader.addEventListener('pointermove',e=>{
+     if(!drag||e.pointerId!==drag.id)return;
+     document.body.style.setProperty('--nova-compact-x',Math.max(0,drag.left+e.clientX-drag.x)+'px');
+     document.body.style.setProperty('--nova-compact-y',Math.max(0,drag.top+e.clientY-drag.y)+'px');
+   });
+   ['pointerup','pointercancel','lostpointercapture'].forEach(type=>dashboardHeader.addEventListener(type,()=>{drag=null;}));
+ }
+
 }, {once:true});
 </script>
 
