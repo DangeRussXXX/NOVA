@@ -1692,13 +1692,13 @@ function openNovaCalendarScreen(){
   if(!w){log("NOVA Calendar screen was blocked. Allow pop-ups for this page.","warning");return;}
   novaCalendarPopupWindow=w;
   w.document.open();
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA CALENDAR</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CALENDAR</button></div><div id="calendarHost"></div><div id="calendarModalHost"></div></body></html>`);
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA MAIL & CALENDAR</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CALENDAR</button></div><div id="calendarHost"></div><div id="calendarModalHost"></div></body></html>`);
   w.document.close();
   const novaCssLink=w.document.createElement("link");
   novaCssLink.rel="stylesheet";
   novaCssLink.href=new URL("nova.css",window.location.href).href;
   w.document.head.appendChild(novaCssLink);
-  ["novaOutlookConnect","novaOutlookRefresh","novaOutlookDisconnect","calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
+  ["novaMailShow","novaMailRefresh","novaMailReply","novaMailSaveDraft","novaMailSend","novaOutlookConnect","novaOutlookRefresh","novaOutlookDisconnect","calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
   panel.style.display="block";
   w.document.getElementById("calendarHost").appendChild(w.document.adoptNode(panel));
   if(modal)w.document.getElementById("calendarModalHost").appendChild(w.document.adoptNode(modal));

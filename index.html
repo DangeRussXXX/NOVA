@@ -242,7 +242,21 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 }
 </style>
 
-</head>
+<style id="novaMailCalendarStyle">
+.novaMailTabs,.novaMailToolbar,.novaMailActions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 15px}
+.novaMailToolbar label{display:flex;align-items:center;gap:9px}
+#novaMailContent{padding:12px 4px}
+#novaMailContent[hidden],#novaMailReader[hidden],#novaMailComposer[hidden],#novaCalendarContent[hidden]{display:none!important}
+.novaMailList{display:flex;flex-direction:column;gap:8px}
+.novaMailItem{display:block;width:100%;text-align:left;background:#0b1b29;color:#d6edf7;border:1px solid #2a5264;border-radius:8px;padding:12px;cursor:pointer}
+.novaMailItem strong{display:block;color:#49dfff;margin:4px 0}
+.novaMailItem small{color:#9ab8c8}
+#novaMailReader,#novaMailComposer{border:1px solid #2a5264;border-radius:9px;padding:16px;margin-top:14px;background:#091723}
+#novaMailReaderBody{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;max-height:360px;overflow:auto}
+#novaMailComposer label{display:block;margin:10px 0;color:#9bdde9}
+#novaMailComposer input,#novaMailComposer textarea,#novaMailAccount{box-sizing:border-box;width:100%;background:#09131c;color:#e2f6ff;border:1px solid #356477;border-radius:6px;padding:10px}
+#novaMailAccount{width:auto}
+</style></head>
 <body>
 <div class="app">
 <header>
@@ -254,7 +268,7 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
     <button class="control" onclick="openNovaSystemScreen()">NOVA SYSTEM</button>
     <!-- NOVA HISTORY is now part of NOVA SYSTEM; retained hidden for legacy activity hooks. -->
     <button class="control" type="button" id="novaHistoryNavButton" aria-controls="novaHudTicker" aria-expanded="false" hidden style="display:none!important">NOVA HISTORY</button>
-    <button class="control" onclick="openNovaCalendarScreen()">NOVA CALENDAR</button>
+    <button class="control" onclick="openNovaCalendarScreen()">NOVA MAIL &amp; CALENDAR</button>
     <button class="control" type="button" onclick="openNovaCameraScreen()">DESKTOP CAMERA</button>
   </div>
 </div>
@@ -421,8 +435,16 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 
 
 <div class="panel mediaPanel startExpandedPanel" id="novaCalendarPanelSource" style="display:none">
-<div class="panelHeader">NOVA CALENDAR</div>
+<div class="panelHeader">NOVA MAIL &amp; CALENDAR</div>
 <div class="panelBody">
+<div class="novaMailTabs" role="group" aria-label="Mail and calendar views">
+<button type="button" class="control primary" id="novaMailTabCalendar" onclick="novaMailShow('calendar')">CALENDAR</button>
+<button type="button" class="control" id="novaMailTabInbox" onclick="novaMailShow('inbox')">INBOX</button>
+<button type="button" class="control" id="novaMailTabCompose" onclick="novaMailShow('compose')">COMPOSE</button>
+<button type="button" class="control" id="novaMailTabSent" onclick="novaMailShow('sent')">SENT</button>
+<button type="button" class="control" id="novaMailTabDrafts" onclick="novaMailShow('drafts')">DRAFTS</button>
+</div>
+<div id="novaCalendarContent">
 <div class="calendarAccountBar">
 <div class="calendarAccountStatus">
 <span class="dot yellow" id="calendarAccountDot"></span>
@@ -456,6 +478,26 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 <div class="mediaControls">
 <button class="control primary" onclick="voiceAddEvent()">ADD EVENT BY VOICE</button>
 <button class="control" onclick="speakTodaysEvents()">READ TODAY</button>
+</div>
+</div>
+<div id="novaMailContent" hidden>
+ <div class="novaMailToolbar">
+ <label>OUTLOOK ACCOUNT <select id="novaMailAccount"><option value="personal">PERSONAL</option><option value="school">SCHOOL</option></select></label>
+ <button class="control" type="button" onclick="novaMailRefresh()">REFRESH MAIL</button>
+ <span id="novaMailStatus" role="status">Connect your Outlook account in Calendar first.</span>
+ </div>
+ <div id="novaMailList" class="novaMailList"></div>
+ <div id="novaMailReader" hidden><h3 id="novaMailReaderSubject"></h3><p id="novaMailReaderMeta"></p><pre id="novaMailReaderBody"></pre>
+ <button type="button" class="control" onclick="novaMailReply()">REPLY</button>
+ </div>
+ <div id="novaMailComposer" hidden>
+ <label>TO <input id="novaMailTo" type="email" placeholder="recipient@example.com"></label>
+ <label>SUBJECT <input id="novaMailSubject" type="text" placeholder="Subject"></label>
+ <label>MESSAGE <textarea id="novaMailBody" rows="9" placeholder="Write your email..."></textarea></label>
+ <div class="novaMailActions">
+ <button type="button" class="control" onclick="novaMailSaveDraft()">SAVE DRAFT</button>
+ <button type="button" class="control primary" onclick="novaMailSend()">REVIEW &amp; SEND</button>
+ </div></div>
 </div>
 </div>
 </div>
@@ -4178,6 +4220,7 @@ if(document.readyState==="loading"){
 <script src="hardware/amomii-one/amomii-one.js?v=1.0.0"></script>
 <script src="modules/nova-browser.js"></script>
 <script src="modules/nova-calendar.js?v=outlook1"></script>
+<script src="modules/nova-mail.js?v=1"></script>
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js"></script>
 <script src="modules/nova-lyrics-ticker.js?v=2"></script>
