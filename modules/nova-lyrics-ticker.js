@@ -4,13 +4,12 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const original = $('now');
-  if (!original || $('novaLyricsTickerText')) return;
-  const display = document.createElement('span');
-  display.id = 'novaLyricsTickerText';
+  if (!original || original.dataset.novaLyricsReady) return;
+  original.dataset.novaLyricsReady = '1';
+  // Reuse the existing animated ticker instead of inserting a competing element.
+  const display = original;
+  display.id = 'now';
   display.setAttribute('aria-live', 'off');
-  original.insertAdjacentElement('afterend', display);
-  original.style.display = 'none';
-  display.textContent = original.textContent || 'NOVA READY';
   let sourceKey = '', artist = '', song = '', lines = [], started = 0, mediaType = '', token = 0;
   let youtubeSeconds = 0, youtubePlaying = false, lastYoutubeEvent = 0;
   const normalize = s => String(s || '').replace(/\.[a-z0-9]{2,5}$/i, '').replace(/[_]+/g, ' ').trim();

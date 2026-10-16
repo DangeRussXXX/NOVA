@@ -241,6 +241,26 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
   }
 }
 </style>
+
+<style id="novaMediaCompact20261016">
+.novaFloatPanel[data-nova-panel="library"].novaMediaCompact{
+ width:min(430px,94vw)!important;
+ height:min(490px,75dvh)!important;
+ max-height:90dvh!important;
+ top:clamp(15px,7vh,70px)!important;
+ padding:12px!important;
+}
+.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterToolbar{
+ min-height:48px!important;padding:8px 42px 8px 10px!important;gap:6px!important;
+}
+.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterToolbar strong{font-size:12px!important;letter-spacing:1px!important}
+.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterToolbar button{padding:6px 8px!important;font-size:11px!important}
+.novaFloatPanel[data-nova-panel="library"].novaMediaCompact .novaMediaCenterSection>summary{padding:11px 12px!important;font-size:12px!important}
+.novaFloatPanel[data-nova-panel="library"] .novaMediaCompactButton{white-space:nowrap}
+@media(max-width:760px){
+ .novaFloatPanel[data-nova-panel="library"].novaMediaCompact{width:94vw!important;height:min(490px,75dvh)!important;resize:none!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -269,7 +289,7 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 <div class="panel card novaUnifiedConsole">
 <div class="novaLeftHome">
 <div id="novaPermanentMedia" aria-label="NOVA permanent media workspace">
-  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">NOVA READY</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
+  <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">WELCOME TO NOVA!</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
   <div class="novaMediaSide" id="novaMediaLeft">
     <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><button id="addMusic" type="button">+ MUSIC</button><button id="addVideos" type="button">+ VIDEO</button><button id="addFolder" type="button">+ FOLDER</button></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
   </div>
@@ -4176,7 +4196,7 @@ if(document.readyState==="loading"){
 <script src="modules/nova-calendar.js"></script>
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js"></script>
-<script src="modules/nova-lyrics-ticker.js?v=1"></script>
+<script src="modules/nova-lyrics-ticker.js?v=2"></script>
 <script src="modules/nova-universal.js?v=1.9.18"></script>
 <script src="intelligence/nova-intelligence.js"></script>
 <script>
@@ -4437,7 +4457,18 @@ window.addEventListener('load',function(){
    const toolbar=document.createElement('div');toolbar.className='novaMediaCenterToolbar';
    const heading=document.createElement('strong');heading.textContent='NOVA MEDIA CENTER';
    const toggle=document.createElement('button');toggle.type='button';toggle.textContent='SHOW ALL PANELS';
-   toolbar.append(heading,toggle);unified.before(toolbar);
+   const compact=document.createElement('button');
+   compact.type='button';compact.className='novaMediaCompactButton';
+   compact.textContent='COMPACT MODE';
+   compact.title='Switch the same Media Center between compact and full size';
+   compact.addEventListener('click',()=>{
+     const shell=panels.library || left.closest('.novaFloatPanel');
+     if(!shell)return;
+     const compactOn=shell.classList.toggle('novaMediaCompact');
+     compact.textContent=compactOn?'FULL MODE':'COMPACT MODE';
+     compact.setAttribute('aria-pressed',String(compactOn));
+   });
+   toolbar.append(heading,toggle,compact);unified.before(toolbar);
    const sections=[];
    const savedKey='novaMediaCenterPanelVisibilityV1';
    let saved={};try{saved=JSON.parse(localStorage.getItem(savedKey)||'{}')||{};}catch(_){}
