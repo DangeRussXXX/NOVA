@@ -1708,7 +1708,11 @@ function openNovaCalendarScreen(){
   novaCssLink.rel="stylesheet";
   novaCssLink.href=new URL("nova.css",window.location.href).href;
   w.document.head.appendChild(novaCssLink);
-  ["novaMailForward","novaMailShow","novaMailRefresh","novaMailReply","novaMailSaveDraft","novaMailSend","novaOutlookConnect","novaOutlookRefresh","novaOutlookDisconnect","calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
+  const mailVoiceStyle=w.document.createElement("style");
+  mailVoiceStyle.textContent=".novaVoiceMailBar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 12px}.novaVoiceMailBar input{flex:1 1 230px;min-width:180px;background:#081824;color:#e1f7ff;border:1px solid #346174;border-radius:6px;padding:10px}#novaVoiceMailStatus{flex:1 1 100%;font-size:12px;color:#80d7e9}";
+  w.document.head.appendChild(mailVoiceStyle);
+  w.document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="novaVoiceMailInput"){e.preventDefault();window.novaVoiceMailExecute();}});
+  ["novaVoiceMailListen","novaVoiceMailExecute","novaMailForward","novaMailShow","novaMailRefresh","novaMailReply","novaMailSaveDraft","novaMailSend","novaOutlookConnect","novaOutlookRefresh","novaOutlookDisconnect","calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
   panel.style.display="block";
   w.document.getElementById("calendarHost").appendChild(w.document.adoptNode(panel));
   if(modal)w.document.getElementById("calendarModalHost").appendChild(w.document.adoptNode(modal));

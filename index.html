@@ -256,6 +256,10 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 #novaMailComposer label{display:block;margin:10px 0;color:#9bdde9}
 #novaMailComposer input,#novaMailComposer textarea,#novaMailAccount{box-sizing:border-box;width:100%;background:#09131c;color:#e2f6ff;border:1px solid #356477;border-radius:6px;padding:10px}
 #novaMailAccount{width:auto}
+</style><style id="novaVoiceMailStyles">
+.novaVoiceMailBar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.novaVoiceMailBar input{flex:1 1 230px;min-width:180px;background:#081824;color:#e1f7ff;border:1px solid #346174;border-radius:6px;padding:10px}
+#novaVoiceMailStatus{flex:1 1 100%;font-size:12px;color:#80d7e9}
 </style></head>
 <body>
 <div class="app">
@@ -437,6 +441,12 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 <div class="panel mediaPanel startExpandedPanel" id="novaCalendarPanelSource" style="display:none">
 <div class="panelHeader">NOVA MAIL &amp; CALENDAR</div>
 <div class="panelBody">
+<div class="novaVoiceMailBar" aria-label="NOVA mail and calendar voice commands">
+ <button type="button" class="control" id="novaVoiceMailButton" onclick="novaVoiceMailListen()">🎙 TALK TO NOVA MAIL</button>
+ <input id="novaVoiceMailInput" type="text" placeholder="Example: show inbox or draft email to name@example.com" aria-label="NOVA mail command">
+ <button type="button" class="control" onclick="novaVoiceMailExecute()">RUN COMMAND</button>
+ <span id="novaVoiceMailStatus" role="status" aria-live="polite">Voice and text commands ready.</span>
+</div>
 <div class="novaMailTabs" role="group" aria-label="Mail and calendar views">
 <button type="button" class="control primary" id="novaMailTabCalendar" onclick="novaMailShow('calendar')">CALENDAR</button>
 <button type="button" class="control" id="novaMailTabInbox" onclick="novaMailShow('inbox')">INBOX</button>
@@ -4227,6 +4237,7 @@ if(document.readyState==="loading"){
 <script src="modules/nova-browser.js"></script>
 <script src="modules/nova-calendar.js?v=outlook-mail-edit3"></script>
 <script src="modules/nova-mail.js?v=2"></script>
+<script src="modules/nova-mail-voice.js?v=1"></script>
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js"></script>
 <script src="modules/nova-lyrics-ticker.js?v=2"></script>
