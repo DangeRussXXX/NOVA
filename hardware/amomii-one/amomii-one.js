@@ -68,7 +68,12 @@
   }
 
   function resetPanels() {
-    setAllPanels(false);
+    getPanels().forEach(function (panel) { panel.open = false; });
+    const board = $("amBoardControls");
+    const simulator = $("amBoardSimulator");
+    if (board) board.open = true;
+    if (simulator) simulator.open = true;
+    schedulePinMapRender();
   }
 
   function initializeAccordion() {
@@ -134,8 +139,9 @@
     const hardwareConnection = $("amHwConnection");
 
     if (connectionStatus && hardwareConnection) {
-      hardwareConnection.textContent =
-        connectionStatus.textContent;
+      const directText = connectionStatus.textContent.trim();
+      hardwareConnection.textContent = /connected/i.test(directText) && !/disconnected|offline/i.test(directText)
+        ? directText : "NOT CONNECTED";
     }
 
     const connectionButton = $("connectionButton");
@@ -143,7 +149,7 @@
 
     if (connectionButton && hardwareButton) {
       hardwareButton.textContent =
-        connectionButton.textContent;
+        /disconnect/i.test(connectionButton.textContent) ? "DISCONNECT USB" : "CONNECT USB";
     }
 
     const boardLed = $("boardLedButton");
@@ -329,8 +335,6 @@
       }
 
       root.hidden = false;
-
-      resetPanels();
 
       renderPinMap();
       syncHardware();

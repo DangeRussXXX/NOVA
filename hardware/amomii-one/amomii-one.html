@@ -1,3 +1,12 @@
+<style id="amomiiBoardControls20261017">
+#amomiiTwin .am-panel-controls{display:flex;flex-direction:column;gap:10px;padding:10px;margin-bottom:12px;border:1px solid #285a6d;border-radius:7px;background:#082331;color:#42dcfa}
+#amomiiTwin .am-panel-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#amomiiTwin .am-panel-actions button{min-width:0}
+#amomiiTwin .am-advanced-connection{margin-top:14px;padding:10px;border:1px solid #285a6d;border-radius:6px}
+#amomiiTwin .am-advanced-connection summary{cursor:pointer;color:#8cd8eb;font-size:12px}
+#amomiiTwin .am-advanced-connection button{margin-top:10px}
+#amomiiTwin .am-advanced-connection p,#amomiiTwin .am-relay-note{font-size:12px;line-height:1.45;color:#9dbdca;margin-top:7px}
+</style>
 
 <section id="amomiiTwin" class="am-twin" hidden
   aria-label="AMOMII ONE" role="dialog" aria-modal="true">
@@ -10,48 +19,38 @@
       <button type="button" id="amTwinClose">✕ CLOSE</button>
     </header>
 
-    <div class="am-accordion-toolbar">
-      <button type="button" id="amShowPanels"
-        onclick="document.querySelectorAll('#amomiiTwin .am-section').forEach(x => x.open = true)">
-        SHOW ALL PANELS
-      </button>
-      <button type="button" id="amHidePanels"
-        onclick="document.querySelectorAll('#amomiiTwin .am-section').forEach(x => x.open = false)">
-        HIDE ALL PANELS
-      </button>
-    </div>
-
     <div class="am-workspace am-vertical-workspace">
 
       <aside class="am-hardware" aria-label="AMOMII ONE controls">
 
-        <details class="am-section">
-          <summary>BOARD CONNECTION</summary>
-          <div class="am-section-body">
-            <div class="am-connection">
-              CONNECTION:
-              <strong id="amHwConnection">OFFLINE</strong>
-            </div>
-
-            <div class="am-button-grid">
-              <button type="button" data-am-action="toggleConnection"
-                id="amHwConnect">CONNECT</button>
-              <button type="button" data-am-action="toggleBoardLed"
-                id="amHwLed">LED</button>
-              <button type="button" data-am-action="stopBoard">STOP</button>
-            </div>
+        <div class="am-accordion-toolbar am-panel-controls" aria-label="Panel visibility controls">
+          <strong>PANELS</strong>
+          <div class="am-panel-actions">
+            <button type="button" id="amShowPanels">SHOW ALL</button>
+            <button type="button" id="amHidePanels">HIDE ALL</button>
           </div>
-        </details>
+        </div>
 
-        <details class="am-section">
-          <summary>BOARD COMMANDS &amp; PATTERNS</summary>
+        <details class="am-section" id="amBoardControls" open>
+          <summary>BOARD CONTROLS</summary>
           <div class="am-section-body">
+            <div class="am-connection" aria-live="polite">
+              <div>DIRECT USB: <strong id="amHwConnection">NOT CONNECTED</strong></div>
+              <div class="am-relay-note">Cloud/relay commands can work without a direct USB browser connection.</div>
+            </div>
             <div class="am-button-grid">
+              <button type="button" data-am-action="toggleBoardLed" id="amHwLed">LED</button>
+              <button type="button" data-am-action="stopBoard">STOP</button>
               <button type="button" data-am-command="help">HELP</button>
               <button type="button" data-am-command="blink 5">BLINK 5</button>
               <button type="button" data-am-command="sos">SOS</button>
               <button type="button" data-am-command="status">STATUS</button>
             </div>
+            <details class="am-advanced-connection">
+              <summary>ADVANCED · DIRECT USB CONNECTION</summary>
+              <button type="button" data-am-action="toggleConnection" id="amHwConnect">CONNECT USB</button>
+              <p>Only needed when connecting directly through your browser's Web Serial interface.</p>
+            </details>
           </div>
         </details>
 
@@ -110,7 +109,7 @@
 
       <main class="am-simulator" aria-label="AMOMII ONE simulator">
 
-        <details class="am-section">
+        <details class="am-section" id="amBoardSimulator" open>
           <summary>BOARD SIMULATION &amp; PIN MAP</summary>
           <div class="am-section-body">
 
