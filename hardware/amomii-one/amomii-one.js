@@ -192,14 +192,43 @@
       }
     );
 
-    root.querySelectorAll("[data-am-pattern]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        const pattern = button.dataset.amPattern;
-        const label = button.dataset.amPatternLabel || pattern;
-        if (typeof window.startTrainerPatternUI === "function") {
-          window.startTrainerPatternUI(pattern, label, button);
-        } else {
-          alert("NOVA RSR pattern controls are unavailable. Check that the RSR controller is loaded.");
+    // Commands below match the existing CommandCenter.ino firmware:
+    // speed 20-5000, blink 1-1000, flash COUNT SPEED.
+    function ledNumber(id, min, max) {
+      const input = $(id);
+      const value = input ? Number(input.value) : NaN;
+      if (!Number.isInteger(value) || value < min || value > max) {
+        throw new Error((input && input.closest('label') ? input.closest('label').textContent.trim() : id) +
+          ' must be a whole number from ' + min + ' to ' + max + '.');
+      }
+      return value;
+    }
+
+    root.querySelectorAll('[data-am-led-command]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        const feedback = $('amLedSettingsFeedback');
+        try {
+          const action = button.dataset.amLedCommand;
+          let command = '';
+          if (action === 'speed') {
+            command = 'speed ' + ledNumber('amBlinkSpeed', 20, 5000);
+          } else if (action === 'blink') {
+            // Firmware's SPEED command sets the blink rate globally;
+            // send it before starting the selected built-in LED blink.
+            const speed = ledNumber('amBlinkSpeed', 20, 5000);
+            const count = ledNumber('amBlinkCount', 1, 1000);
+            if (typeof window.sendCloudCommand !== 'function') throw new Error('Cloud command handler unavailable.');
+            window.sendCloudCommand('speed ' + speed);
+            command = 'blink ' + count;
+          } else if (action === 'flash') {
+            command = 'flash ' + ledNumber('amFlashCount', 1, 1000) +
+              ' ' + ledNumber('amFlashSpeed', 20, 5000);
+          } else return;
+          if (typeof window.sendCloudCommand !== 'function') throw new Error('Cloud command handler unavailable.');
+          window.sendCloudCommand(command);
+          if (feedback) feedback.textContent = 'Sent: ' + command + ' (hardware response not yet verified)';
+        } catch (error) {
+          if (feedback) feedback.textContent = error.message;
         }
       });
     });
