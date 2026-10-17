@@ -25,8 +25,9 @@ async function graph(path,method="GET",body=null){
   let details="";try{const j=await response.json();details=j.error?.message||"";}catch(e){}
   throw new Error("Microsoft Graph "+response.status+(details?": "+details:""));
  }
- if(response.status===204)return null;
- return response.json();
+ if(response.status===202 || response.status===204 || response.status===205)return null;
+ const raw=await response.text();
+ return raw.trim()?JSON.parse(raw):null;
 }
 function report(error){console.error("NOVA Mail",error);status(error.message||String(error));}
 function show(next){
