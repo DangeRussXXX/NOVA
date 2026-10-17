@@ -149,7 +149,7 @@
 
     if (connectionButton && hardwareButton) {
       hardwareButton.textContent =
-        /disconnect/i.test(connectionButton.textContent) ? "DISCONNECT USB" : "CONNECT USB";
+        /disconnect/i.test(connectionButton.textContent) ? "DISCONNECT" : "CONNECT";
     }
 
     const boardLed = $("boardLedButton");
@@ -191,6 +191,18 @@
         });
       }
     );
+
+    root.querySelectorAll("[data-am-pattern]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        const pattern = button.dataset.amPattern;
+        const label = button.dataset.amPatternLabel || pattern;
+        if (typeof window.startTrainerPatternUI === "function") {
+          window.startTrainerPatternUI(pattern, label, button);
+        } else {
+          alert("NOVA RSR pattern controls are unavailable. Check that the RSR controller is loaded.");
+        }
+      });
+    });
 
     root.querySelectorAll("[data-am-command]").forEach(
       function (button) {

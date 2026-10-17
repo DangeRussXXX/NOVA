@@ -2,10 +2,10 @@
 #amomiiTwin .am-panel-controls{display:flex;flex-direction:column;gap:10px;padding:10px;margin-bottom:12px;border:1px solid #285a6d;border-radius:7px;background:#082331;color:#42dcfa}
 #amomiiTwin .am-panel-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #amomiiTwin .am-panel-actions button{min-width:0}
-#amomiiTwin .am-advanced-connection{margin-top:14px;padding:10px;border:1px solid #285a6d;border-radius:6px}
-#amomiiTwin .am-advanced-connection summary{cursor:pointer;color:#8cd8eb;font-size:12px}
-#amomiiTwin .am-advanced-connection button{margin-top:10px}
-#amomiiTwin .am-advanced-connection p,#amomiiTwin .am-relay-note{font-size:12px;line-height:1.45;color:#9dbdca;margin-top:7px}
+#amomiiTwin .am-pattern-group{margin-top:16px;border-top:1px solid #285a6d;padding-top:12px}
+#amomiiTwin .am-pattern-heading,#amomiiTwin .am-diagnostics-subtitle{font-size:12px;font-weight:700;letter-spacing:.8px;color:#6eeaff;margin:10px 0}
+
+#amomiiTwin .am-relay-note{font-size:12px;line-height:1.45;color:#9dbdca;margin-top:7px}
 </style>
 
 <section id="amomiiTwin" class="am-twin" hidden
@@ -39,54 +39,56 @@
               <div class="am-relay-note">Cloud/relay commands can work without a direct USB browser connection.</div>
             </div>
             <div class="am-button-grid">
+              <button type="button" data-am-action="toggleConnection" id="amHwConnect">CONNECT</button>
               <button type="button" data-am-action="toggleBoardLed" id="amHwLed">LED</button>
               <button type="button" data-am-action="stopBoard">STOP</button>
               <button type="button" data-am-command="help">HELP</button>
               <button type="button" data-am-command="blink 5">BLINK 5</button>
               <button type="button" data-am-command="sos">SOS</button>
               <button type="button" data-am-command="status">STATUS</button>
+              <button type="button" data-am-action="runSystemTest">RUN SYSTEM TEST</button>
             </div>
-            <details class="am-advanced-connection">
-              <summary>ADVANCED · DIRECT USB CONNECTION</summary>
-              <button type="button" data-am-action="toggleConnection" id="amHwConnect">CONNECT USB</button>
-              <p>Only needed when connecting directly through your browser's Web Serial interface.</p>
-            </details>
+            <div class="am-pattern-group" aria-label="RSR light patterns">
+              <div class="am-pattern-heading">LIGHT PATTERNS</div>
+              <div class="am-button-grid">
+                <button type="button" data-am-pattern="knight" data-am-pattern-label="KNIGHT RIDER">KNIGHT RIDER</button>
+                <button type="button" data-am-pattern="chase" data-am-pattern-label="CHASE">CHASE</button>
+                <button type="button" data-am-pattern="reverse" data-am-pattern-label="REVERSE CHASE">REVERSE CHASE</button>
+                <button type="button" data-am-pattern="center out" data-am-pattern-label="CENTER OUT">CENTER OUT</button>
+                <button type="button" data-am-pattern="outside in" data-am-pattern-label="OUTSIDE IN">OUTSIDE IN</button>
+                <button type="button" data-am-pattern="alternate" data-am-pattern-label="ALTERNATE">ALTERNATE</button>
+                <button type="button" data-am-pattern="fill" data-am-pattern-label="FILL">FILL</button>
+                <button type="button" data-am-pattern="wave" data-am-pattern-label="WAVE">WAVE</button>
+                <button type="button" data-am-pattern="police" data-am-pattern-label="POLICE">POLICE</button>
+                <button type="button" data-am-pattern="strobe" data-am-pattern-label="STROBE">STROBE</button>
+                <button type="button" data-am-action="stopTrainerSystem">STOP PATTERNS</button>
+              </div>
+            </div>
           </div>
         </details>
 
-        <details class="am-section">
-          <summary>BOARD STATUS &amp; DIAGNOSTICS</summary>
+        <details class="am-section" id="amBoardDiagnostics">
+          <summary>BOARD STATUS &amp; SYSTEM TEST</summary>
           <div class="am-section-body">
             <div class="am-hw-stats">
               <div>Board <strong>AMOMII ONE</strong></div>
-              <div>Connection <strong data-am-source="statusConnection">OFFLINE</strong></div>
-              <div>System <strong data-am-source="statusSystem">READY</strong></div>
-              <div>LED <strong data-am-source="statusLed">UNKNOWN</strong></div>
+              <div>Direct connection <strong data-am-source="statusConnection">OFFLINE</strong></div>
+              <div>System status <strong data-am-source="statusSystem">READY</strong></div>
+              <div>LED state <strong data-am-source="statusLed">UNKNOWN</strong></div>
               <div>Blinking <strong data-am-source="statusBlinking">NO</strong></div>
               <div>Blink speed <strong data-am-source="statusBlinkSpeed">—</strong></div>
-              <div>Commands <strong data-am-source="statusCommands">0</strong></div>
+              <div>Command count <strong data-am-source="statusCommands">0</strong></div>
               <div>Uptime <strong data-am-source="uptime">00:00:00</strong></div>
             </div>
-          </div>
-        </details>
-
-        <details class="am-section">
-          <summary>SYSTEM TEST</summary>
-          <div class="am-section-body">
-            <div class="am-button-grid">
-              <button type="button" data-am-action="runSystemTest">
-                RUN SYSTEM TEST
-              </button>
-            </div>
-
+            <div class="am-diagnostics-subtitle">SYSTEM TEST RESULTS</div>
             <div class="am-hw-stats">
-              <div>Serial <strong data-am-source="testSerial">—</strong></div>
-              <div>LED <strong data-am-source="testLed">—</strong></div>
-              <div>Timing <strong data-am-source="testTiming">—</strong></div>
-              <div>Memory <strong data-am-source="testMemory">—</strong></div>
-              <div>Commands <strong data-am-source="testCommands">—</strong></div>
-              <div>System <strong data-am-source="testSystem">—</strong></div>
-              <div>Result <strong data-am-source="testResult">NOT RUN</strong></div>
+              <div>Serial test <strong data-am-source="testSerial">—</strong></div>
+              <div>LED test <strong data-am-source="testLed">—</strong></div>
+              <div>Timing test <strong data-am-source="testTiming">—</strong></div>
+              <div>Memory test <strong data-am-source="testMemory">—</strong></div>
+              <div>Commands test <strong data-am-source="testCommands">—</strong></div>
+              <div>System test <strong data-am-source="testSystem">—</strong></div>
+              <div>Overall result <strong data-am-source="testResult">NOT RUN</strong></div>
             </div>
           </div>
         </details>
