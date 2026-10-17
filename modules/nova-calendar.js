@@ -870,11 +870,7 @@ function openCalendarEditor(eventId=null){
         )
       : null;
 
-  if(event && event.novaOutlook){
-    const details = `${event.title}\n${event.date} ${event.time || 'All day'}\n${event.calendar}\n${event.notes || ''}`;
-    alert('Outlook event (read-only in NOVA):\n\n' + details);
-    return;
-  }
+
   novaCalendarDocument().getElementById(
     "calendarEditorTitle"
   ).textContent =
@@ -934,6 +930,7 @@ function openCalendarEditor(eventId=null){
       ? ""
       : "none";
 
+  novaCalendarUpdateDestination(event);
   modal.classList.add(
     "open"
   );
@@ -972,7 +969,7 @@ function calendarModalBackdrop(event){
 }
 
 
-function saveCalendarEventFromEditor(){
+async function saveCalendarEventFromEditor(){
 
   const id =
     novaCalendarDocument().getElementById(
@@ -1013,6 +1010,16 @@ function saveCalendarEventFromEditor(){
     return;
   }
 
+  const destination=novaCalendarDocument().getElementById('calendarEventCalendar').value;
+  const existingOutlook=id ? novaOutlookEvents.find(e=>String(e.id)===String(id)) : null;
+  if(existingOutlook || (destination!=='local' && !id)){
+    try{
+      await novaOutlookSaveEvent({id,title,date,time,endTime,notes,destination,existingOutlook});
+      closeCalendarEditor();
+      await novaOutlookRefresh();
+    }catch(error){novaOutlookError(error);alert('Outlook save failed: '+(error.message||error));}
+    return;
+  }
   if(id){
 
     const event =
@@ -1066,7 +1073,7 @@ function saveCalendarEventFromEditor(){
 }
 
 
-function deleteCalendarEventFromEditor(){
+async function deleteCalendarEventFromEditor(){
 
   const id =
     novaCalendarDocument().getElementById(
@@ -1077,12 +1084,7 @@ function deleteCalendarEventFromEditor(){
     return;
   }
 
-  const event =
-    calendarEvents.find(
-      item =>
-        String(item.id) ===
-        String(id)
-    );
+  const event = calendarEvents.concat(novaOutlookEvents).find(item=>String(item.id)===String(id));
 
   if(
     !confirm(
@@ -1092,6 +1094,14 @@ function deleteCalendarEventFromEditor(){
     return;
   }
 
+  if(event && event.novaOutlook){
+    try{
+      await novaOutlookDeleteEvent(event);
+      closeCalendarEditor();
+      await novaOutlookRefresh();
+    }catch(error){novaOutlookError(error);alert('Outlook delete failed: '+(error.message||error));}
+    return;
+  }
   calendarEvents =
     calendarEvents.filter(
       item =>
@@ -1692,14 +1702,12 @@ function openNovaCalendarScreen(){
   if(!w){log("NOVA Calendar screen was blocked. Allow pop-ups for this page.","warning");return;}
   novaCalendarPopupWindow=w;
   w.document.open();
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA MAIL & CALENDAR</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE MAIL & CALENDAR</button></div><div id="calendarHost"></div><div id="calendarModalHost"></div></body></html>`);
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>NOVA CALENDAR</title></head><body style="margin:0;padding:16px;background:#070a0f;color:#d9e4ef"><div style="text-align:right;margin-bottom:10px"><button onclick="window.close()">CLOSE CALENDAR</button></div><div id="calendarHost"></div><div id="calendarModalHost"></div></body></html>`);
   w.document.close();
   const novaCssLink=w.document.createElement("link");
   novaCssLink.rel="stylesheet";
   novaCssLink.href=new URL("nova.css",window.location.href).href;
   w.document.head.appendChild(novaCssLink);
-  const mailStyles=document.getElementById("novaMailCalendarStyle");
-  if(mailStyles)w.document.head.appendChild(mailStyles.cloneNode(true));
   ["novaMailShow","novaMailRefresh","novaMailReply","novaMailSaveDraft","novaMailSend","novaOutlookConnect","novaOutlookRefresh","novaOutlookDisconnect","calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
   panel.style.display="block";
   w.document.getElementById("calendarHost").appendChild(w.document.adoptNode(panel));
@@ -1762,7 +1770,7 @@ async function novaOutlookConnect(kind){
   if(kind!=='personal' && kind!=='school')return;
   try{
     const client=await novaMsalGet();
-    const scopes=['User.Read','Calendars.Read'];
+    const scopes=['User.Read','Calendars.ReadWrite'];
     const result=await client.loginPopup({scopes,prompt:'select_account',authority:'https://login.microsoftonline.com/common'});
     const account=result.account;
     if(!account) throw new Error('No account returned');
@@ -1776,7 +1784,7 @@ async function novaOutlookConnect(kind){
 }
 async function novaOutlookToken(account){
   const client=await novaMsalGet();
-  const request={account,scopes:['User.Read','Calendars.Read']};
+  const request={account,scopes:['User.Read','Calendars.ReadWrite']};
   try{return (await client.acquireTokenSilent(request)).accessToken;}
   catch(error){return (await client.acquireTokenPopup(request)).accessToken;}
 }
@@ -1792,9 +1800,9 @@ function novaOutlookMap(event,kind){
     date:startDate.slice(0,10),
     time:isAllDay?'':startDate.slice(11,16),
     endTime:isAllDay?'':endDate.slice(11,16),
-    notes:(event.location && event.location.displayName)||'',
+    notes:event.bodyPreview||'',
     calendar:kind==='personal'?'OUTLOOK PERSONAL':'OUTLOOK SCHOOL',
-    novaOutlook:true
+    novaOutlook:true, outlookId:event.id, outlookKind:kind, allDay:isAllDay, location:(event.location&&event.location.displayName)||''
   };
 }
 async function novaOutlookFetch(kind,account){
@@ -1802,7 +1810,7 @@ async function novaOutlookFetch(kind,account){
   const center=new Date(calendarDate);
   const start=new Date(center.getFullYear(),center.getMonth()-2,1);
   const end=new Date(center.getFullYear(),center.getMonth()+4,1);
-  const params=new URLSearchParams({startDateTime:start.toISOString(),endDateTime:end.toISOString(),$top:'250', $select:'id,subject,start,end,isAllDay,location'});
+  const params=new URLSearchParams({startDateTime:start.toISOString(),endDateTime:end.toISOString(),$top:'250', $select:'id,subject,start,end,isAllDay,location,bodyPreview'});
   let url='https://graph.microsoft.com/v1.0/me/calendarView?'+params;
   const found=[];
   let pages=0;
@@ -1840,4 +1848,61 @@ async function novaOutlookDisconnect(){
   novaOutlookNotify('LOCAL CALENDAR • OUTLOOK DISCONNECTED');
   // Remove cached accounts locally without triggering a page-navigation logout.
   for(const account of accounts){try{await client.clearCache({account});}catch(e){}}
+}
+
+
+/* NOVA Outlook two-way editing: delegated Graph permissions; no app secret. */
+function novaCalendarUpdateDestination(event){
+  const select=novaCalendarDocument().getElementById('calendarEventCalendar');
+  if(!select)return;
+  const current=event&&event.novaOutlook?event.outlookKind:'local';
+  select.innerHTML='';
+  [['local','NOVA LOCAL'],['personal','PERSONAL OUTLOOK'],['school','SCHOOL OUTLOOK']].forEach(([value,label])=>{
+    const option=novaCalendarDocument().createElement('option');
+    option.value=value;option.textContent=label;
+    if(value!=='local'&&!novaOutlookAccounts[value])option.disabled=true;
+    select.appendChild(option);
+  });
+  select.value=current;
+  // Existing events stay in their original calendar to avoid accidental cross-account moves.
+  select.disabled=!!event;
+}
+function novaOutlookPayload(event){
+  const {title,date,time,endTime,notes}=event;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw new Error('Invalid event date');
+  const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';
+  const allDay=!time;
+  const nextDay=new Date(date+'T12:00:00');nextDay.setDate(nextDay.getDate()+1);
+  const nextDate=dateKey(nextDay);
+  const start=allDay?date+'T00:00:00':date+'T'+time+':00';
+  let end=allDay?nextDate+'T00:00:00':date+'T'+(endTime||time)+':00';
+  if(!allDay && end<=start){const d=new Date(date+'T'+time+':00');d.setHours(d.getHours()+1);end=dateKey(d)+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':00';}
+  return {subject:title,isAllDay:allDay,start:{dateTime:start,timeZone:zone},end:{dateTime:end,timeZone:zone},body:{contentType:'text',content:notes||''}};
+}
+async function novaOutlookGraph(kind,method,path,body){
+  const account=novaOutlookAccounts[kind];
+  if(!account)throw new Error('Connect '+kind+' Outlook first');
+  const token=await novaOutlookToken(account);
+  const response=await fetch('https://graph.microsoft.com/v1.0/me/'+path,{
+    method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:body?JSON.stringify(body):undefined
+  });
+  if(!response.ok){let details=await response.text();throw new Error('Microsoft Graph '+response.status+': '+details.slice(0,350));}
+  if(response.status===204||response.status===202)return null;
+  const raw=await response.text();return raw?JSON.parse(raw):null;
+}
+async function novaOutlookSaveEvent({title,date,time,endTime,notes,destination,existingOutlook}){
+  const kind=existingOutlook?existingOutlook.outlookKind:destination;
+  const payload=novaOutlookPayload({title,date,time,endTime,notes});
+  if(existingOutlook){
+    await novaOutlookGraph(kind,'PATCH','events/'+encodeURIComponent(existingOutlook.outlookId),payload);
+    novaOutlookNotify('OUTLOOK EVENT UPDATED');
+  }else{
+    await novaOutlookGraph(kind,'POST','events',payload);
+    novaOutlookNotify('OUTLOOK EVENT CREATED');
+  }
+}
+async function novaOutlookDeleteEvent(event){
+  await novaOutlookGraph(event.outlookKind,'DELETE','events/'+encodeURIComponent(event.outlookId));
+  novaOutlookNotify('OUTLOOK EVENT DELETED');
 }
