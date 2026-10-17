@@ -2046,6 +2046,29 @@ function routeVoiceCommand(command,raw){
     return;
   }
 
+  /* NOVA Mail & Calendar — shared TALK TO NOVA command bridge. */
+  const mailVoiceCommand=browserVoiceText.toLowerCase().trim();
+  let mailTarget=null;
+  if(/^(?:open|show|check|read|refresh|sync)(?: my)? (?:inbox|emails?|mail)$/.test(mailVoiceCommand) || /^(?:check|show) (?:my )?new emails?$/.test(mailVoiceCommand))mailTarget="inbox";
+  else if(/^(?:open|show)(?: my)? (?:sent|sent mail|sent messages)$/.test(mailVoiceCommand))mailTarget="sent";
+  else if(/^(?:open|show)(?: my)? drafts?$/.test(mailVoiceCommand))mailTarget="drafts";
+  else if(/^(?:compose|write|draft|create)(?: an?| a)? (?:email|mail|message)$/.test(mailVoiceCommand))mailTarget="compose";
+  else if(/^(?:open|show)(?: my)? calendar$/.test(mailVoiceCommand))mailTarget="calendar";
+  else if(/^(?:what(?:'s| is) on my calendar today|show (?:my )?schedule today|show (?:my )?events today)$/.test(mailVoiceCommand))mailTarget="calendar";
+  if(mailTarget){
+    if(typeof openNovaCalendarScreen==="function")openNovaCalendarScreen();
+    if(typeof window.novaMailShow==="function")window.novaMailShow(mailTarget);
+    if(mailTarget==="calendar" && /today|schedule/.test(mailVoiceCommand) && typeof calendarToday==="function")calendarToday();
+    speak(mailTarget==="compose" ? "Opening a new email draft. Review it before sending." : "Opening your "+mailTarget+".");
+    return;
+  }
+  if(/^(?:read (?:my )?latest email|reply to (?:this|the) email|send (?:this|the) email|delete (?:this|the) email)$/.test(mailVoiceCommand)){
+    if(typeof openNovaCalendarScreen==="function")openNovaCalendarScreen();
+    if(typeof window.novaMailShow==="function")window.novaMailShow("inbox");
+    speak("Please select the message in NOVA Mail. Sending and deleting require your confirmation.");
+    return;
+  }
+
   /* IDENTITY */
 
   if(
@@ -4237,7 +4260,7 @@ if(document.readyState==="loading"){
 <script src="modules/nova-browser.js"></script>
 <script src="modules/nova-calendar.js?v=outlook-mail-edit3"></script>
 <script src="modules/nova-mail.js?v=2"></script>
-<script src="modules/nova-mail-voice.js?v=1"></script>
+<script src="modules/nova-mail-voice.js?v=2"></script>
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js"></script>
 <script src="modules/nova-lyrics-ticker.js?v=2"></script>
