@@ -488,7 +488,12 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
  </div>
  <div id="novaMailList" class="novaMailList"></div>
  <div id="novaMailReader" hidden><h3 id="novaMailReaderSubject"></h3><p id="novaMailReaderMeta"></p><pre id="novaMailReaderBody"></pre>
+ <div class="novaMailActions">
  <button type="button" class="control" onclick="novaMailReply()">REPLY</button>
+ <button type="button" class="control" onclick="novaMailForward()">FORWARD</button>
+ <button type="button" class="control" onclick="novaMailArchive()">ARCHIVE</button>
+ <button type="button" class="control" onclick="novaMailDelete()">DELETE</button>
+ </div>
  </div>
  <div id="novaMailComposer" hidden>
  <label>TO <input id="novaMailTo" type="email" placeholder="recipient@example.com"></label>
@@ -496,6 +501,7 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
  <label>MESSAGE <textarea id="novaMailBody" rows="9" placeholder="Write your email..."></textarea></label>
  <div class="novaMailActions">
  <button type="button" class="control" onclick="novaMailSaveDraft()">SAVE DRAFT</button>
+ <button type="button" class="control" id="novaMailDiscardDraft" onclick="novaMailDiscardDraft()" hidden>DISCARD DRAFT</button>
  <button type="button" class="control primary" onclick="novaMailSend()">REVIEW &amp; SEND</button>
  </div></div>
 </div>

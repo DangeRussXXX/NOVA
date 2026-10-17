@@ -1708,7 +1708,7 @@ function openNovaCalendarScreen(){
   novaCssLink.rel="stylesheet";
   novaCssLink.href=new URL("nova.css",window.location.href).href;
   w.document.head.appendChild(novaCssLink);
-  ["novaMailShow","novaMailRefresh","novaMailReply","novaMailSaveDraft","novaMailSend","novaOutlookConnect","novaOutlookRefresh","novaOutlookDisconnect","calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
+  ["novaMailForward","novaMailShow","novaMailRefresh","novaMailReply","novaMailSaveDraft","novaMailSend","novaOutlookConnect","novaOutlookRefresh","novaOutlookDisconnect","calendarOutlookInfo","calendarToday","openCalendarEditor","refreshCalendar","setCalendarView","changeCalendarPeriod","voiceAddEvent","speakTodaysEvents","calendarModalBackdrop","deleteCalendarEventFromEditor","closeCalendarEditor","saveCalendarEventFromEditor"].forEach(name=>{if(typeof window[name]==="function")w[name]=window[name];});
   panel.style.display="block";
   w.document.getElementById("calendarHost").appendChild(w.document.adoptNode(panel));
   if(modal)w.document.getElementById("calendarModalHost").appendChild(w.document.adoptNode(modal));
