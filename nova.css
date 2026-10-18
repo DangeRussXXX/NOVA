@@ -5572,3 +5572,99 @@ body:not(.novaHybridVideoActive) #novaHybridBackOrb {
 #novaHybridBackOrb[hidden] {
     display: none !important;
 }
+
+/* ============================================================
+   NOVA UNIVERSAL ACCENT SYNC — 2026-10-18
+   All three mode groups share one visual accent. Semantic
+   status colors (success/error/warning) remain independent.
+   Works in the main dashboard and native Chrome pop-outs.
+   ============================================================ */
+body[data-nova-theme]{
+  --nova-ui-accent:var(--nova-electric,#00e5ff);
+  --nova-ui-rgb:var(--nova-electric-rgb,0,229,255);
+  --cyan:var(--nova-ui-accent);
+}
+body[data-nova-theme="hardware"]{
+  --nova-ui-accent:var(--nova-electric,#f9f000);
+  --nova-ui-rgb:var(--nova-electric-rgb,249,240,0);
+}
+body[data-nova-theme="media"]{
+  --nova-ui-accent:var(--nova-electric,#ff3cac);
+  --nova-ui-rgb:var(--nova-electric-rgb,255,60,172);
+}
+/* Accent the interactive UI; don't recolor semantic health indicators,
+   physical board imagery, or the mode-selection buttons themselves. */
+body[data-nova-theme] :is(
+  .panelHeader,.genericCollapseHeader,.leftCollapseHeader,
+  .am-header,.rsr-lab__header,
+  .am-panel summary,.rsr-lab__section summary,
+  .am-panel-header,.rsr-lab__section-header,
+  .novaUniversalPanelsToggle,
+  .novaFloatPanel .panelHeader,
+  .novaFloatPanel .novaMediaBox h2
+){
+  color:var(--nova-ui-accent)!important;
+}
+body[data-nova-theme] :is(
+  button.control:not(.novaGroupButton):not(.danger):not(.good):not(.warn),
+  .novaUniversalPanelsToggle,
+  .am-panel button:not([disabled]),
+  .rsr-lab__controls button:not([disabled]),
+  .rsr-lab__toolbar button:not([disabled]),
+  .am-toolbar button:not([disabled]),
+  .am-simulator button:not([disabled])
+){
+  border-color:rgba(var(--nova-ui-rgb),.55)!important;
+  color:var(--nova-ui-accent)!important;
+}
+body[data-nova-theme] :is(
+  .am-header,.rsr-lab__header,
+  .am-panel,.rsr-lab__section,
+  .rsr-lab__controls,.am-hardware,
+  .am-simulator,.rsr-lab__simulator
+){
+  border-color:rgba(var(--nova-ui-rgb),.38)!important;
+}
+body[data-nova-theme] :is(
+  .am-panel summary,.rsr-lab__section summary,
+  .am-panel-header,.rsr-lab__section-header
+){
+  background:rgba(var(--nova-ui-rgb),.09)!important;
+}
+body[data-nova-theme] :is(
+  .novaUniversalPanelsToggle,
+  .am-panel button:not([disabled]),
+  .rsr-lab__controls button:not([disabled]),
+  .rsr-lab__toolbar button:not([disabled])
+):hover{
+  box-shadow:0 0 12px rgba(var(--nova-ui-rgb),.32)!important;
+}
+body[data-nova-theme] :is(
+  .tab.active,.mediaTabs .active,
+  .novaMediaBox h2,.novaRightPanel .panelHeader,
+  .novaMediaCenterToolbar,
+  .mediaControls button:hover,
+  .mediaItem.selected,
+  .fileButton
+){
+  color:var(--nova-ui-accent)!important;
+  border-color:rgba(var(--nova-ui-rgb),.6)!important;
+}
+body[data-nova-theme] :is(
+  .novaFloatPanel,.novaMediaBox,
+  .novaRightPanel,.novaMediaEntry,
+  .musicDropZone
+){
+  border-color:rgba(var(--nova-ui-rgb),.4)!important;
+}
+body[data-nova-theme] :is(
+  input:not([type=checkbox]):not([type=radio]),
+  select,textarea
+):focus-visible{
+  outline-color:var(--nova-ui-accent);
+  border-color:var(--nova-ui-accent)!important;
+}
+/* Preserve mode-button identities: cyan SYSTEM, yellow HARDWARE, pink MEDIA. */
+body[data-nova-theme] .novaGroupButton[data-group="nova"]{color:#00e5ff!important;border-color:#00e5ff88!important}
+body[data-nova-theme] .novaGroupButton[data-group="hardware"]{color:#f9f000!important;border-color:#f9f00088!important}
+body[data-nova-theme] .novaGroupButton[data-group="media"]{color:#ff3cac!important;border-color:#ff3cac88!important}
