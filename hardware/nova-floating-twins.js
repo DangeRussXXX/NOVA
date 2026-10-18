@@ -29,15 +29,22 @@ function makeWindow(key,title){
  #novaNativeHost > .nova-float-window,#novaNativeHost > .novaFloatPanel{position:relative!important;inset:auto!important;left:auto!important;top:auto!important;transform:none!important;display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;resize:none!important;overflow:auto!important;border-radius:0!important;box-shadow:none!important}
  #novaNativeHost > #rsrLab,#novaNativeHost > #amomiiTwin{position:relative!important;inset:auto!important;left:auto!important;top:auto!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;border:0!important;border-radius:0!important}
  #novaNativeHost > #amomiiTwin > .am-shell{height:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important}
- #novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{flex:1 1 auto!important;min-height:0!important;display:grid!important;grid-template-columns:minmax(0,var(--nova-left,35%)) 9px minmax(0,1fr)!important}
- #novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(0,var(--nova-left,38%)) 9px minmax(0,1fr)!important}
+ #novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{flex:1 1 auto!important;min-height:0!important;display:grid!important;grid-template-columns:minmax(270px,35%) minmax(0,1fr)!important}
+ #novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(270px,38%) minmax(0,1fr)!important}
  #novaNativeHost #amomiiTwin .am-hardware,#novaNativeHost #amomiiTwin .am-simulator,#novaNativeHost #rsrLab .rsr-lab__controls,#novaNativeHost #rsrLab .rsr-lab__simulator{min-width:0!important;min-height:0!important;overflow:auto!important}
+ #novaNativeHost .nova-column-grip{display:none!important}
  #novaNativeHost .nova-float-actions,#novaNativeHost .nova-window-buttons,#novaNativeHost .nova-window-resize,#novaNativeHost .novaFloatClose,#novaNativeHost #amTwinClose,#novaNativeHost #rsrLabClose{display:none!important}
  #novaNativeHost .am-header,#novaNativeHost .rsr-lab__header{cursor:default!important}
+ #novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{width:100%!important;max-width:none!important;box-sizing:border-box!important;overflow:hidden!important}
+ #novaNativeHost #amomiiTwin .am-simulator,#novaNativeHost #rsrLab .rsr-lab__simulator{display:block!important;width:auto!important;max-width:none!important;min-width:0!important;overflow:auto!important}
+ #novaNativeHost #amomiiTwin .am-hardware,#novaNativeHost #rsrLab .rsr-lab__controls{width:auto!important;max-width:none!important;min-width:0!important;overflow:auto!important}
+ #novaNativeHost #rsrLab .rsr-lab__accordion-toolbar{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:8px!important}
+ #novaNativeHost #rsrLab .nova-native-schematics{margin-left:0!important;position:static!important;transform:none!important;max-width:100%!important}
+ #novaNativeHost #rsrLab .nova-native-schematics button{max-width:100%!important}
  #novaNativeHost .novaFloatPanel[data-nova-panel="library"]{position:relative!important;left:auto!important;top:auto!important;transform:none!important;width:100%!important;height:100%!important;max-height:none!important;overflow:auto!important}
  #novaNativeHost .novaFloatPanel[data-nova-panel="library"] .novaMediaCenterToolbar{padding-right:18px!important}
  #novaNativeHost .novaFloatPanel .novaRightPanel{display:flex!important;width:100%!important;min-height:0!important}
- @media(max-width:700px){#novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(0,1fr)!important;overflow:auto!important}#novaNativeHost .nova-column-grip{display:none!important}}
+ @media(max-width:650px){#novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(0,1fr)!important;overflow:auto!important;align-content:start!important}#novaNativeHost #amomiiTwin .am-simulator,#novaNativeHost #rsrLab .rsr-lab__simulator{min-height:340px!important}#novaNativeHost .nova-column-grip{display:none!important}}
  `;w.document.head.appendChild(style);
  const rec={win:w,key,items:[],closing:false};records.set(key,rec);
  const cleanup=()=>{if(rec.closing)return;rec.closing=true;for(const item of rec.items.slice().reverse()){try{const anchor=item.next&&item.next.parentNode===item.parent?item.next:null;item.parent.insertBefore(item.node,anchor);item.node.hidden=true;}catch(err){console.warn('NOVA popup restore',err);}}rec.items=[];records.delete(key);if(key==='rsr'){try{window.novaRSRLab?.close?.();}catch(_){}}};
@@ -45,7 +52,27 @@ function makeWindow(key,title){
  const check=setInterval(()=>{if(w.closed){clearInterval(check);cleanup();}},1000);
  w.focus();return rec;
 }
-function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);node.hidden=false;rec.win.focus();return true;}
+function positionRSRSchematics(rec){
+ if(rec.key!=='rsr')return;
+ const doc=rec.win.document;
+ const place=()=>{
+  const lab=doc.getElementById('rsrLab');
+  const toolbar=lab?.querySelector('.rsr-lab__accordion-toolbar');
+  const header=lab?.querySelector('.rsr-lab__header');
+  if(!toolbar||!header)return;
+  const controls=[...header.querySelectorAll('button,a')].filter(el=>/SCHEMATICS/i.test(el.textContent||el.getAttribute('title')||''));
+  for(const control of controls){
+   const wrapper=control.closest('.rsr-schematic-header-action,.rsr-schematics-header,.rsr-schematic-button')||control;
+   wrapper.classList.add('nova-native-schematics');
+   toolbar.appendChild(wrapper);
+  }
+ };
+ place();
+ // Other schematic modules can add their header button after RSR finishes opening.
+ const lab=doc.getElementById('rsrLab');
+ if(lab){const observer=new MutationObserver(()=>place());observer.observe(lab,{childList:true,subtree:true});rec.win.addEventListener('pagehide',()=>observer.disconnect(),{once:true});}
+}
+function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);node.hidden=false;positionRSRSchematics(rec);rec.win.focus();return true;}
 function openPanel(key,title,selector){const rec=makeWindow(key,title);if(!rec)return false;const node=originalQuery(selector)||document.querySelector(selector);if(!node)return false;return move(rec,node);}
 window.novaNativeWindow={openPanel,makeWindow,move,records};
 // Hardware: open the Chrome window directly from the click, before async fetch.

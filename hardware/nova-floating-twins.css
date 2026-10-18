@@ -412,3 +412,16 @@
 
 /* Native popup migration: no in-dashboard fake window controls. */
 .nova-float-actions,.nova-window-buttons,.nova-window-resize,#novaTwinDock{display:none!important}
+
+/* Native Chrome windows: no leftover draggable splitter or artificial window sizing. */
+body.novaNativePopup #novaNativeHost #amomiiTwin .am-workspace,
+body.novaNativePopup #novaNativeHost #rsrLab .rsr-lab__columns{
+ grid-template-columns:minmax(270px,35%) minmax(0,1fr)!important;
+ width:100%!important; min-width:0!important; overflow:hidden!important;
+}
+body.novaNativePopup #novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(270px,38%) minmax(0,1fr)!important}
+body.novaNativePopup #novaNativeHost .nova-column-grip{display:none!important}
+@media(max-width:650px){
+ body.novaNativePopup #novaNativeHost #amomiiTwin .am-workspace,
+ body.novaNativePopup #novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(0,1fr)!important;overflow:auto!important}
+}
