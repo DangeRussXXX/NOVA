@@ -129,6 +129,7 @@ PATTERNS = [
     r"speed [0-9]{1,5}",
     r"pulse [0-9]{1,5}",
     r"(?:trainer|both|morse|trainer morse|both morse)? ?sos",
+    r"morse [A-Z0-9 ]{1,80}",
     r"TRAINER PATTERN (?:KNIGHT(?: RIDER)?|CHASE|REVERSE(?: CHASE)?|CENTER OUT|OUTSIDE IN|ALTERNATE|FILL|WAVE|POLICE|STROBE|[1-5])",
     r"TRAINER PATTERN SPEED (?:[0-9]{2,4})",
     r"(?:trainer )?(?:stop|status|test)",
@@ -152,6 +153,14 @@ def approved(cmd):
 
     if not any(pattern.fullmatch(cmd) for pattern in REGEX):
         return False
+
+    # Morse messages are restricted to letters, digits and spaces.
+    # This is a text command, never a free-form serial instruction.
+    if cmd.lower().startswith("morse "):
+        message = cmd[6:]
+        return (1 <= len(message) <= 80
+                and message == message.strip()
+                and re.fullmatch(r"[A-Za-z0-9 ]+", message) is not None)
 
     parts = cmd.lower().split()
 
