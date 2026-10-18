@@ -63,7 +63,14 @@ function makeWindow(key,title){
  const saveGeometry=()=>{try{localStorage.setItem('novaNativeGeometry_'+key,JSON.stringify({width:w.outerWidth,height:w.outerHeight,left:w.screenX,top:w.screenY}));}catch(_){}};
  w.addEventListener('pagehide',saveGeometry);w.addEventListener('beforeunload',saveGeometry);
  // Copy active mode and CSS variables into already-open Chrome windows.
- const syncTheme=()=>{if(w.closed)return;w.document.body.dataset.novaTheme=document.body.dataset.novaTheme||'nova';w.document.body.className='novaNativePopup '+[...document.body.classList].filter(c=>c.startsWith('novaElectric')).join(' ');w.document.body.style.cssText=document.body.style.cssText;w.document.body.style.margin='0';w.document.body.style.backgroundColor='#070d16';w.document.documentElement.style.cssText=document.documentElement.style.cssText;};
+ const syncTheme=()=>{if(w.closed)return;w.document.body.dataset.novaTheme=document.body.dataset.novaTheme||'nova';w.document.body.className='novaNativePopup '+[...document.body.classList].filter(c=>c.startsWith('novaElectric')).join(' ');w.document.body.style.cssText=document.body.style.cssText;w.document.body.style.margin='0';w.document.body.style.backgroundColor='#070d16';w.document.documentElement.style.cssText=document.documentElement.style.cssText;
+  // Mirror computed accent so popup stylesheets can always resolve the active mode.
+  const sourceStyle=getComputedStyle(document.body);
+  for(const prop of ['--nova-electric','--nova-electric-rgb']){
+   const val=sourceStyle.getPropertyValue(prop).trim();
+   if(val)w.document.body.style.setProperty(prop,val);
+  }
+ };
  syncTheme();const themeObserver=new MutationObserver(syncTheme);themeObserver.observe(document.body,{attributes:true,attributeFilter:['class','style','data-nova-theme']});themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['class','style']});
  w.addEventListener('pagehide',()=>themeObserver.disconnect(),{once:true});
  const cleanup=()=>{if(rec.closing)return;rec.closing=true;for(const item of rec.items.slice().reverse()){try{const anchor=item.next&&item.next.parentNode===item.parent?item.next:null;item.parent.insertBefore(item.node,anchor);item.node.hidden=true;}catch(err){console.warn('NOVA popup restore',err);}}rec.items=[];records.delete(key);if(key==='rsr'){try{window.novaRSRLab?.close?.();}catch(_){}}};
@@ -112,6 +119,7 @@ window.novaNativeWindow={openPanel,makeWindow,move,records};
 // Hardware: open the Chrome window directly from the click, before async fetch.
 function onHardwareClick(event){const b=event.target.closest('button');if(!b)return;const label=(b.textContent||'').trim().toUpperCase();if(label!=='AMOMII'&&label!=='RSR TRAINER')return;if(!b.classList.contains('novaGroupButton'))return;
  const am=label==='AMOMII';const key=am?'amomii':'rsr';const rec=makeWindow(key,am?'NOVA — AMOMII ONE':'NOVA — RSR TRAINER');if(!rec)return;
+ document.body.dataset.novaTheme='hardware';
  event.preventDefault();event.stopImmediatePropagation();
  const fn=am?window.novaOpenAMOMII:window.novaOpenRSR;
  Promise.resolve().then(()=>typeof fn==='function'?fn():null).then(()=>{
@@ -126,6 +134,7 @@ function onPanelClick(event){const b=event.target.closest('button.novaGroupButto
  const specs={'NOVA BROWSER':['browser','NOVA — BROWSER'],'PORTABLE TRAINER':['portable','NOVA — PORTABLE TRAINER'],'MEDIA':['library','NOVA — MEDIA CENTER']};const spec=specs[label];if(!spec)return;
  const [key,title]=spec;const selector='.novaFloatPanel[data-nova-panel="'+key+'"]';
  const node=originalQuery(selector)||document.querySelector(selector);if(!node)return;
+ document.body.dataset.novaTheme=key==='library'?'media':'nova';
  event.preventDefault();event.stopImmediatePropagation();const rec=makeWindow(key,title);if(rec){move(rec,node);b.setAttribute('aria-pressed','true');}
 }
 document.addEventListener('click',onHardwareClick,true);
