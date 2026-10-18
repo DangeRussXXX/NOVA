@@ -226,14 +226,18 @@
     }
     fields.forEach(function (id) { if ($(id)) $(id).addEventListener('change', saveLedSettings); });
 
-    function ledMonitor(id, value) { if ($(id)) $(id).textContent = value; }
-    function deviceFeedback(message) {
-      ledMonitor('amLedDeviceResponse', message);
-      if (/\b(error|invalid|unknown command)\b/i.test(message)) ledMonitor('amLedDelivery', 'DEVICE REPORTED ERROR');
-      else ledMonitor('amLedDelivery', 'DEVICE RESPONSE RECEIVED');
-      if (/\b(complete|stopped)\b/i.test(message)) ledMonitor('amLedMode', 'COMPLETE / IDLE');
+    // Use NOVA's existing green scrolling command list as the sole LED monitor.
+    // The main dashboard owns animation, scrolling and fade-out.
+    function ledLog(message, type) {
+      if (typeof window.log === 'function') window.log('AMOMII ONE: ' + message, type || 'system');
+      else console.info('[AMOMII ONE]', message);
     }
-    // This hook observes replies already processed by NOVA. It does not invent acknowledgements.
+    function deviceFeedback(message) {
+      // The existing serial handler already logs received hardware responses.
+      // Don't duplicate them in the green command stream.
+      if (/\b(error|invalid|unknown command)\b/i.test(message))
+        console.warn('[AMOMII ONE] Arduino reported:', message);
+    }
     if (typeof window.processSerialLine === 'function' && !window.processSerialLine.__amomiiObserved) {
       const original = window.processSerialLine;
       const observed = function (line) {
@@ -265,20 +269,15 @@
 
     async function sendLedCommand(command, mode, settings) {
       if (typeof window.sendCloudCommand !== 'function') throw new Error('NOVA cloud command handler unavailable.');
-      ledMonitor('amLedLastCommand', command);
-      ledMonitor('amLedMode', mode + ' (REQUESTED)');
-      ledMonitor('amLedCurrentSettings', settings);
-      ledMonitor('amLedDelivery', 'SENDING...');
-      ledMonitor('amLedDeviceResponse', 'WAITING FOR DEVICE REPLY');
+      ledLog('REQUESTED ' + mode + ' — ' + settings);
       const sent = await window.sendCloudCommand(command);
-      ledMonitor('amLedDelivery', sent ? 'CLOUD ACCEPTED — DEVICE NOT YET VERIFIED' : 'CLOUD SEND FAILED');
-      if (!sent) ledMonitor('amLedMode', 'NOT VERIFIED');
+      ledLog(sent ? 'CLOUD ACCEPTED — ' + command + ' (awaiting device confirmation)' :
+        'CLOUD SEND FAILED — ' + command, sent ? 'system' : 'error');
       return sent;
     }
 
     root.querySelectorAll('[data-am-led-command]').forEach(function (button) {
       button.addEventListener('click', async function () {
-        const feedback = $('amLedSettingsFeedback');
         button.disabled = true;
         try {
           saveLedSettings();
@@ -305,18 +304,14 @@
           } else return;
           const sent = await sendLedCommand(command, mode, settings);
           if (sent && action === 'morse') publishMorseTicker(settings);
-          if (feedback) feedback.textContent = sent ? 'Cloud accepted: ' + command + '. Waiting for hardware confirmation.' : 'Could not send: ' + command;
         } catch (error) {
-          if (feedback) feedback.textContent = error.message;
-          ledMonitor('amLedDelivery', 'ERROR: ' + error.message);
+          ledLog('ERROR — ' + error.message, 'error');
         } finally { button.disabled = false; }
       });
     });
     const stopButtons = root.querySelectorAll('[data-am-action="stopBoard"]');
     stopButtons.forEach(function (button) { button.addEventListener('click', function () {
-      ledMonitor('amLedMode', 'STOP REQUESTED');
-      ledMonitor('amLedLastCommand', 'stop');
-      ledMonitor('amLedDelivery', 'STOP REQUESTED — NOT YET VERIFIED');
+      ledLog('STOP REQUESTED — awaiting device confirmation');
     }); });
 
     root.querySelectorAll("[data-am-command]").forEach(
