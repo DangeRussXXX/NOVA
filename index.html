@@ -873,21 +873,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "system"
   );
 
-  log(
-    `Assistant: ${assistantName}`,
-    "system"
-  );
-
-  log(
-    `User: ${userName}`,
-    "system"
-  );
-
-  log(
-    `Device: ${BOARD_NAME}`,
-    "system"
-  );
-
   if(!("serial" in navigator)){
     log(
       "Web Serial is not available in this browser.",
@@ -1064,7 +1049,11 @@ function novaPersistentTickerPush(message){
 /* Legacy compatibility — no horizontal queue is needed now. */
 function novaPersistentTickerNext(){}
 
+let novaLastLoggedEvent={message:null,type:null,time:0};
 function log(message, type="system"){
+  const now=Date.now();
+  if(novaLastLoggedEvent.message===String(message) && novaLastLoggedEvent.type===type && now-novaLastLoggedEvent.time<900)return;
+  novaLastLoggedEvent={message:String(message),type,time:now};
   novaCaptureEvent(message,type);
   novaPersistentTickerPush(message);
 
@@ -3789,7 +3778,9 @@ function openNovaSystemScreen(){
     <div class="novaHealthGrid">
       <div class="novaHealthItem" id="novaHealthCloud">CLOUD SERVER <strong>CHECKING</strong><small>Render API</small></div>
       <div class="novaHealthItem" id="novaHealthRelay">LOCAL RELAY <strong>UNKNOWN</strong><small>Waiting for heartbeat</small></div>
-      <div class="novaHealthItem" id="novaHealthBoard">AMOMII ONE / ARDUINO <strong>UNKNOWN</strong><small>COM9: Not verified · Board response: Not verified</small></div>
+      <div class="novaHealthItem" id="novaHealthSerial">SERIAL CONNECTION <strong>UNKNOWN</strong><small>Awaiting relay telemetry</small></div>
+      <div class="novaHealthItem" id="novaHealthBrowserUSB">DIRECT BROWSER USB <strong>UNKNOWN</strong><small>Checking this browser session</small></div>
+      <div class="novaHealthItem" id="novaHealthBoard">AMOMII ONE / ARDUINO <strong>UNKNOWN</strong><small>Awaiting board-specific reply</small></div>
       <div class="novaHealthItem" id="novaHealthTrainer">RSR TRAINER <strong>UNKNOWN</strong><small>Last hardware response</small></div>
       <div class="novaHealthItem" id="novaHealthCommands">COMMAND QUEUE <strong>UNKNOWN</strong><small>Waiting for server</small></div>
     </div><div class="novaHealthFooter" id="novaHealthFooter">Awaiting first check…</div>
@@ -3822,8 +3813,7 @@ function openNovaSystemScreen(){
   };
   sections.forEach(section=>{
     const key=section.dataset.novaSection;
-    if(key==='health')section.open=true;
-    else if(typeof prefs[key]==='boolean')section.open=prefs[key];
+    if(typeof prefs[key]==='boolean')section.open=prefs[key];
     section.addEventListener('toggle',()=>{prefs[key]=section.open;save();updateToggleAllButton()});
   });
   const setAll=visible=>{
@@ -3886,13 +3876,12 @@ function openNovaSystemScreen(){
     strong.textContent=state;small.textContent=detail;
     el.dataset.state=state.toLowerCase();
   };
-  const age=ts=>ts ? Math.max(0,Math.round(Date.now()/1000-Number(ts))) : null;
   async function refreshHealth(){
     if(w.closed||healthInFlight)return;
     healthInFlight=true;
     try{
       if(!window.NovaSecurity||!NovaSecurity.isOwner()){
-        ['novaHealthCloud','novaHealthRelay','novaHealthBoard','novaHealthTrainer','novaHealthCommands'].forEach(id=>setHealth(id,'UNKNOWN','Owner sign-in required'));
+        ['novaHealthCloud','novaHealthRelay','novaHealthSerial','novaHealthBrowserUSB','novaHealthBoard','novaHealthTrainer','novaHealthCommands'].forEach(id=>setHealth(id,'UNKNOWN','Owner sign-in required'));
         doc.getElementById('novaHealthFooter').textContent='Sign in to NOVA to access private diagnostics.';
         return;
       }
@@ -3902,7 +3891,15 @@ function openNovaSystemScreen(){
       setHealth('novaHealthCloud','ONLINE','Render status endpoint responding');
       const relay=data.relay||{};
       setHealth('novaHealthRelay',relay.online?'ONLINE':'OFFLINE',relay.online?`Heartbeat ${relay.age_seconds}s ago`:'No recent relay heartbeat');
-      const portDetail=!relay.online?'COM9: Unknown (relay offline)':relay.serial_open?'COM9: Connected':'COM9: Unavailable';
+      const serialName=String(relay.serial_port||relay.port||'COM9');
+      const portDetail=!relay.online?'Relay offline — serial state unknown':
+        relay.serial_open?`${serialName}: OPEN (device response not implied)`:`${serialName}: NOT OPEN`;
+      setHealth('novaHealthSerial',!relay.online?'UNKNOWN':relay.serial_open?'OPEN':'OFFLINE',portDetail);
+      // Web Serial and the Python relay are separate connections. Do not open a port to check it.
+      const directPortOpen=!!(port && (port.readable || port.writable));
+      setHealth('novaHealthBrowserUSB',directPortOpen?'OPEN':'NOT CONNECTED',
+        !('serial' in navigator)?'Web Serial unsupported in this browser':
+        directPortOpen?'Browser has an open serial port':'No direct Web Serial session; cloud/relay can still work');
       // Browser-side observations are tied to actual parsed serial responses.
       // A connected COM port or successful command queue does not prove device health.
       const observed=window.NovaHardwareHealth||{};
@@ -3913,15 +3910,15 @@ function openNovaSystemScreen(){
       const trainerFresh=relay.online&&relay.serial_open&&trainerAge!==null&&trainerAge<60;
       const boardEvidence=boardFresh?`Verified board reply ${boardAge}s ago${observed.boardTest?' · Last test: '+observed.boardTest:''}`:
         (boardAge!==null?`Last verified board reply ${boardAge}s ago (stale)`:'No board-specific reply received in this session');
-      setHealth('novaHealthBoard',!relay.online?'UNKNOWN':!relay.serial_open?'OFFLINE':boardFresh?'ONLINE':'UNKNOWN',`${portDetail} · ${boardEvidence}`);
+      setHealth('novaHealthBoard',!relay.online?'UNKNOWN':!relay.serial_open?'OFFLINE':boardFresh?'ONLINE':'UNKNOWN',boardEvidence);
       const trainerEvidence=trainerFresh?`Trainer reply ${trainerAge}s ago${observed.trainerTest?' · Last test: '+observed.trainerTest:''}`:
         (trainerAge!==null?`Last trainer reply ${trainerAge}s ago (stale)`:'No trainer-specific reply received in this session');
       setHealth('novaHealthTrainer',!relay.online?'UNKNOWN':!relay.serial_open?'OFFLINE':trainerFresh?'ONLINE':'UNKNOWN',trainerEvidence);
-      setHealth('novaHealthCommands','ONLINE',`${data.commands_pending||0} queued · ${data.responses_pending||0} responses pending`);
+      setHealth('novaHealthCommands','ONLINE',`${data.commands_pending ?? 'Unknown'} queued · ${data.responses_pending ?? 'Unknown'} responses pending`);
       doc.getElementById('novaHealthFooter').textContent='Last checked: '+new Date().toLocaleTimeString()+(relay.last_error?' · Relay error: '+relay.last_error:'');
     }catch(error){
       setHealth('novaHealthCloud','OFFLINE','Status request failed');
-      ['novaHealthRelay','novaHealthBoard','novaHealthTrainer','novaHealthCommands'].forEach(id=>setHealth(id,'UNKNOWN','Cannot verify without cloud status'));
+      ['novaHealthRelay','novaHealthSerial','novaHealthBrowserUSB','novaHealthBoard','novaHealthTrainer','novaHealthCommands'].forEach(id=>setHealth(id,'UNKNOWN','Cannot verify without cloud status'));
       doc.getElementById('novaHealthFooter').textContent='Health check failed: '+error.message;
     }finally{healthInFlight=false}
   }
