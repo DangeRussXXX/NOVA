@@ -3671,7 +3671,7 @@ body.novaMediaLoaded .novaUnifiedConsole #novaIntegratedMediaControls,
  #novaHybridVideoStage{width:min(100%, calc((100dvh - 185px) * 16 / 9)) !important;max-height:calc(100dvh - 185px) !important;}
 }
 
-</style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span><button class="close" onclick="window.close()">CLOSE</button></div><div class="body">${body}</div></div>
+</style></head><body><div class="screen"><div class="head"><span>${novaPopupEscape(title)}</span></div><div class="body">${body}</div></div>
 
 
 
@@ -3773,7 +3773,6 @@ function openNovaSystemScreen(){
   const historyTools=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px"><button class="close" type="button" id="novaSystemDownloadHistory">⬇ DOWNLOAD HISTORY</button><button class="close" type="button" id="novaSystemClearHistory">✕ CLEAR HISTORY</button></div>`;
   const liveHistory=`<div class="note">Events update automatically while this screen is open.</div><div id="novaSystemLiveRows" style="max-height:300px;overflow:auto;overflow-wrap:anywhere"></div>`;
   const savedHistory=`${historyTools}<div class="note" id="novaSystemHistoryCount"></div><div id="novaSystemHistoryRows" style="max-height:440px;overflow:auto;overflow-wrap:anywhere"></div>`;
-  const controls=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button type="button" class="close" id="novaSystemToggleAll" aria-label="Hide all panels">HIDE ALL PANELS</button></div>`;
   const health=`<div class="novaHealthIntro">Live diagnostics from Render and the local relay. Hardware state requires actual device reports.</div>
     <div class="novaHealthGrid">
       <div class="novaHealthItem" id="novaHealthCloud">CLOUD SERVER <strong>CHECKING</strong><small>Render API</small></div>
@@ -3785,7 +3784,7 @@ function openNovaSystemScreen(){
       <div class="novaHealthItem" id="novaHealthCommands">COMMAND QUEUE <strong>UNKNOWN</strong><small>Waiting for server</small></div>
     </div><div class="novaHealthFooter" id="novaHealthFooter">Awaiting first check…</div>
     <button type="button" class="close" id="novaHealthRefresh">REFRESH HEALTH</button>`;
-  const body=controls+
+  const body=
     panel('health','NOVA SYSTEM HEALTH',health)+
     panel('live','NOVA LIVE ACTIVITY',liveHistory)+
     panel('history','NOVA HISTORY',savedHistory)+
@@ -3796,6 +3795,25 @@ function openNovaSystemScreen(){
   const w=openNovaInfoScreen('NOVA SYSTEM',body);
   if(!w || w.closed)return;
   const doc=w.document;
+  // NOVA SYSTEM uses the native browser window controls. Keep one panel toggle
+  // in the header rather than a separate toolbar and a duplicate CLOSE button.
+  const popupHeader=doc.querySelector('.screen > .head');
+  if(popupHeader){
+    const duplicateClose=popupHeader.querySelector('button[onclick="window.close()"]');
+    duplicateClose?.remove();
+    const headerControls=doc.createElement('div');
+    headerControls.className='novaSystemHeaderControls';
+    const headerToggle=doc.createElement('button');
+    headerToggle.type='button';
+    headerToggle.className='close';
+    headerToggle.id='novaSystemToggleAll';
+    headerToggle.textContent='SHOW ALL PANELS';
+    headerControls.appendChild(headerToggle);
+    popupHeader.appendChild(headerControls);
+    const headerStyle=doc.createElement('style');
+    headerStyle.textContent='.novaSystemHeaderControls{display:flex;align-items:center;gap:8px;margin-left:auto}.novaSystemHeaderControls button{white-space:nowrap;font-size:12px;letter-spacing:0}.screen>.head{gap:12px;flex-wrap:wrap}@media(max-width:420px){.novaSystemHeaderControls{margin-left:0}}';
+    doc.head.appendChild(headerStyle);
+  }
   const healthStyle=doc.createElement('style');
   healthStyle.textContent=`.novaHealthIntro,.novaHealthFooter{font-size:12px;color:#91a9b8;margin:10px 0 14px}.novaHealthGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}.novaHealthItem{background:#101923;border:1px solid #2b3c4c;border-radius:8px;padding:13px;color:#8da7b8;font-size:11px;letter-spacing:1px}.novaHealthItem strong{display:block;margin:8px 0;color:#ffd84d;font-size:16px}.novaHealthItem small{display:block;color:#788899;letter-spacing:0}.novaHealthItem[data-state="online"] strong,.novaHealthItem[data-state="activity"] strong{color:#39ff88}.novaHealthItem[data-state="offline"] strong{color:#ff5570}.novaHealthItem[data-state="unknown"] strong{color:#ffd84d}@media(max-width:650px){.novaHealthGrid{grid-template-columns:1fr}}`;
   doc.head.appendChild(healthStyle);
@@ -4860,9 +4878,9 @@ window.addEventListener('load',function(){
 })();
 </script>
 <link rel="stylesheet" href="hardware/nova-rsr-schematics.css?v=1">
-<link rel="stylesheet" href="hardware/nova-floating-twins.css?v=1">
+<link rel="stylesheet" href="hardware/nova-floating-twins.css?v=6">
 <link rel="stylesheet" href="hardware/amomii-one/amomii-schematics.css?v=1">
-<script src="hardware/nova-floating-twins.js?v=4"></script>
+<script src="hardware/nova-floating-twins.js?v=6"></script>
 <script src="hardware/nova-rsr-schematics.js?v=2"></script>
 <script src="hardware/amomii-one/amomii-schematics.js?v=1"></script>
 </body>

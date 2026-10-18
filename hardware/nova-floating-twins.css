@@ -409,3 +409,6 @@
   margin: 0 !important;
   order: 1 !important;
 }
+
+/* Native popup migration: no in-dashboard fake window controls. */
+.nova-float-actions,.nova-window-buttons,.nova-window-resize,#novaTwinDock{display:none!important}
