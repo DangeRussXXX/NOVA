@@ -113,7 +113,43 @@ function positionRSRSchematics(rec){
  }
 }
 
-function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);node.hidden=false;standardizeHardware(rec);rec.win.focus();return true;}
+// Inline onclick attributes execute in the adopted node's NEW window realm.
+// Bridge only the RSR command functions back to the dashboard realm, where
+// the cloud relay, command state, and existing hardware controllers live.
+function bridgeRSRCommands(rec,node){
+ if(rec.key!=='rsr'||!node)return;
+ const popup=rec.win;
+ const names=new Set();
+ for(const el of [node,...node.querySelectorAll('[onclick]')]){
+  const code=el.getAttribute('onclick')||'';
+  const matches=code.matchAll(/(?:^|[^\w$.])([A-Za-z_$][\w$]*)\s*\(/g);
+  for(const match of matches)names.add(match[1]);
+ }
+ // Include commands in controls mounted after initial adoption.
+ const known=['toggleTrainerLed','toggleTrainerAll','trainerBlink','trainerSOS',
+  'trainerMorse','startTrainerPatternUI','stopTrainerSystem',
+  'requestTrainerStatus','runTrainerTest'];
+ for(const name of known)names.add(name);
+ for(const name of names){
+  if(name==='eval'||name==='Function'||name==='setTimeout'||name==='setInterval')continue;
+  if(typeof window[name]!=='function')continue;
+  // Keep native popup APIs intact; only proxy app-specific functions.
+  if(typeof popup[name]==='function' && !known.includes(name))continue;
+  popup[name]=function(...args){
+   if(window.closed) return;
+   const command=window[name];
+   if(typeof command!=='function'){
+    console.warn('[NOVA] RSR command unavailable:',name);
+    return;
+   }
+   return command.apply(window,args);
+  };
+ }
+ // Useful for diagnostic console tests, not required by the buttons.
+ popup.novaRSRCommandBridgeReady=true;
+}
+
+function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);node.hidden=false;bridgeRSRCommands(rec,node);standardizeHardware(rec);rec.win.focus();return true;}
 function openPanel(key,title,selector){const rec=makeWindow(key,title);if(!rec)return false;const node=originalQuery(selector)||document.querySelector(selector);if(!node)return false;return move(rec,node);}
 window.novaNativeWindow={openPanel,makeWindow,move,records};
 // Hardware: open the Chrome window directly from the click, before async fetch.
