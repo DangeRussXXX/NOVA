@@ -13,7 +13,12 @@ document.querySelector=function(selector){const result=originalQuery(selector);i
 document.querySelectorAll=function(selector){const original=originalQueryAll(selector);if(original.length)return original;for(const rec of records.values())if(rec.win&&!rec.win.closed){try{const found=rec.win.document.querySelectorAll(selector);if(found.length)return found;}catch(_){}}return original;};
 function makeWindow(key,title){
  const old=records.get(key);if(old?.win&&!old.win.closed){old.win.focus();return old;}
- const w=window.open('','nova_native_'+key,'width=1080,height=780,resizable=yes,scrollbars=yes');
+ let geometry={};try{geometry=JSON.parse(localStorage.getItem('novaNativeGeometry_'+key)||'{}');}catch(_){}
+ const clamp=(v,min,max)=>Math.max(min,Math.min(max,Number(v)||min));
+ const width=clamp(geometry.width,720,screen.availWidth||1920),height=clamp(geometry.height,520,screen.availHeight||1080);
+ const left=clamp(geometry.left,0,Math.max(0,(screen.availWidth||1920)-width));
+ const top=clamp(geometry.top,0,Math.max(0,(screen.availHeight||1080)-height));
+ const w=window.open('','nova_native_'+key,`width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
  if(!w){console.warn('[NOVA] Chrome blocked '+title+' window. Allow pop-ups for NOVA.');return null;}
  w.document.open();w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+title.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</title></head><body class="novaNativePopup" style="margin:0;background:#070d16;color:#d9edf8"><main id="novaNativeHost"></main></body></html>');w.document.close();
  // Reuse the exact active dashboard styles, including inline layout updates.
@@ -44,35 +49,64 @@ function makeWindow(key,title){
  #novaNativeHost .novaFloatPanel[data-nova-panel="library"]{position:relative!important;left:auto!important;top:auto!important;transform:none!important;width:100%!important;height:100%!important;max-height:none!important;overflow:auto!important}
  #novaNativeHost .novaFloatPanel[data-nova-panel="library"] .novaMediaCenterToolbar{padding-right:18px!important}
  #novaNativeHost .novaFloatPanel .novaRightPanel{display:flex!important;width:100%!important;min-height:0!important}
+ #novaNativeHost .novaUniversalPanelsToggle{margin-left:auto!important;flex-shrink:0!important;padding:9px 12px!important;border:1px solid var(--nova-electric,#23506a)!important;border-radius:7px!important;background:transparent!important;color:inherit!important;font:600 12px inherit!important;cursor:pointer!important}
+ #novaNativeHost .am-header,#novaNativeHost .rsr-lab__header{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:10px!important;padding:12px 16px!important}
+ #novaNativeHost #rsrLab .rsr-lab__controls>.rsr-lab__accordion-toolbar,#novaNativeHost #amomiiTwin .am-panel-controls{display:none!important}
+ #novaNativeHost #rsrSchematicSection{margin-top:9px!important}
+ #novaNativeHost #rsrSchematicLaunchHost button{width:100%!important;min-height:38px!important}
+ #novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(290px,37%) minmax(0,1fr)!important}
+ #novaNativeHost #amomiiTwin .am-hardware,#novaNativeHost #rsrLab .rsr-lab__controls{scrollbar-width:thin!important}
+ @media(max-width:780px){#novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(0,1fr)!important;overflow:auto!important;align-content:start!important}#novaNativeHost #amomiiTwin .am-simulator,#novaNativeHost #rsrLab .rsr-lab__simulator{min-height:400px!important}}
  @media(max-width:650px){#novaNativeHost #amomiiTwin .am-workspace,#novaNativeHost #rsrLab .rsr-lab__columns{grid-template-columns:minmax(0,1fr)!important;overflow:auto!important;align-content:start!important}#novaNativeHost #amomiiTwin .am-simulator,#novaNativeHost #rsrLab .rsr-lab__simulator{min-height:340px!important}#novaNativeHost .nova-column-grip{display:none!important}}
  `;w.document.head.appendChild(style);
  const rec={win:w,key,items:[],closing:false};records.set(key,rec);
+ const saveGeometry=()=>{try{localStorage.setItem('novaNativeGeometry_'+key,JSON.stringify({width:w.outerWidth,height:w.outerHeight,left:w.screenX,top:w.screenY}));}catch(_){}};
+ w.addEventListener('pagehide',saveGeometry);w.addEventListener('beforeunload',saveGeometry);
+ // Copy active mode and CSS variables into already-open Chrome windows.
+ const syncTheme=()=>{if(w.closed)return;w.document.body.dataset.novaTheme=document.body.dataset.novaTheme||'nova';w.document.body.className='novaNativePopup '+[...document.body.classList].filter(c=>c.startsWith('novaElectric')).join(' ');w.document.body.style.cssText=document.body.style.cssText;w.document.body.style.margin='0';w.document.body.style.backgroundColor='#070d16';w.document.documentElement.style.cssText=document.documentElement.style.cssText;};
+ syncTheme();const themeObserver=new MutationObserver(syncTheme);themeObserver.observe(document.body,{attributes:true,attributeFilter:['class','style','data-nova-theme']});themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['class','style']});
+ w.addEventListener('pagehide',()=>themeObserver.disconnect(),{once:true});
  const cleanup=()=>{if(rec.closing)return;rec.closing=true;for(const item of rec.items.slice().reverse()){try{const anchor=item.next&&item.next.parentNode===item.parent?item.next:null;item.parent.insertBefore(item.node,anchor);item.node.hidden=true;}catch(err){console.warn('NOVA popup restore',err);}}rec.items=[];records.delete(key);if(key==='rsr'){try{window.novaRSRLab?.close?.();}catch(_){}}};
  w.addEventListener('pagehide',cleanup);w.addEventListener('beforeunload',cleanup);
  const check=setInterval(()=>{if(w.closed){clearInterval(check);cleanup();}},1000);
  w.focus();return rec;
 }
+function standardizeHardware(rec){
+ if(rec.key!=='rsr'&&rec.key!=='amomii')return;
+ const doc=rec.win.document;
+ const root=doc.getElementById(rec.key==='rsr'?'rsrLab':'amomiiTwin');if(!root)return;
+ const header=root.querySelector(rec.key==='rsr'?'.rsr-lab__header':'.am-header');if(!header)return;
+ const oldControls=root.querySelectorAll('#rsrLabShowAll,#rsrLabHideAll,#amShowPanels,#amHidePanels');oldControls.forEach(b=>b.style.display='none');
+ let toggle=header.querySelector('.novaUniversalPanelsToggle');
+ const sections=()=>[...root.querySelectorAll('details.rsr-lab__section,details.am-section')];
+ const storageKey='novaNativePanels_'+rec.key;
+ if(!toggle){
+  toggle=doc.createElement('button');toggle.type='button';toggle.className='novaUniversalPanelsToggle';header.appendChild(toggle);
+  let stored=null;try{stored=JSON.parse(localStorage.getItem(storageKey)||'null');}catch(_){}
+  if(Array.isArray(stored))sections().forEach((section,i)=>{if(i<stored.length)section.open=!!stored[i];});
+  const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(sections().map(s=>s.open)));}catch(_){}};
+  const update=()=>{toggle.textContent=sections().length&&sections().every(s=>s.open)?'HIDE ALL PANELS':'SHOW ALL PANELS';};
+  toggle.addEventListener('click',()=>{const open=!sections().every(s=>s.open);sections().forEach(s=>s.open=open);save();update();});
+  sections().forEach(s=>s.addEventListener('toggle',()=>{save();update();}));update();
+ }
+ if(rec.key==='rsr'){
+  positionRSRSchematics(rec);
+  if(!rec.schematicObserver){rec.schematicObserver=new MutationObserver(()=>positionRSRSchematics(rec));rec.schematicObserver.observe(root,{childList:true,subtree:true});rec.win.addEventListener('pagehide',()=>rec.schematicObserver.disconnect(),{once:true});}
+ }
+}
 function positionRSRSchematics(rec){
  if(rec.key!=='rsr')return;
- const doc=rec.win.document;
- const place=()=>{
-  const lab=doc.getElementById('rsrLab');
-  const toolbar=lab?.querySelector('.rsr-lab__accordion-toolbar');
-  const header=lab?.querySelector('.rsr-lab__header');
-  if(!toolbar||!header)return;
-  const controls=[...header.querySelectorAll('button,a')].filter(el=>/SCHEMATICS/i.test(el.textContent||el.getAttribute('title')||''));
-  for(const control of controls){
-   const wrapper=control.closest('.rsr-schematic-header-action,.rsr-schematics-header,.rsr-schematic-button')||control;
-   wrapper.classList.add('nova-native-schematics');
-   toolbar.appendChild(wrapper);
-  }
- };
- place();
- // Other schematic modules can add their header button after RSR finishes opening.
- const lab=doc.getElementById('rsrLab');
- if(lab){const observer=new MutationObserver(()=>place());observer.observe(lab,{childList:true,subtree:true});rec.win.addEventListener('pagehide',()=>observer.disconnect(),{once:true});}
+ const doc=rec.win.document,lab=doc.getElementById('rsrLab');if(!lab)return;
+ const controls=lab.querySelector('.rsr-lab__controls');if(!controls)return;
+ let section=controls.querySelector('#rsrSchematicSection');
+ if(!section){section=doc.createElement('details');section.id='rsrSchematicSection';section.className='rsr-lab__section';section.innerHTML='<summary>SCHEMATICS</summary><div class="rsr-lab__section-body"><div id="rsrSchematicLaunchHost"></div></div>';controls.appendChild(section);}
+ const launch=lab.querySelector('#novaRSRSchematicButton,.nova-rsr-schem-launch')||[...lab.querySelectorAll('.rsr-lab__header button')].find(b=>/SCHEMATICS/i.test(b.textContent));
+ if(launch&&launch.parentElement?.id!=='rsrSchematicLaunchHost'){
+  launch.textContent='📐 OPEN SCHEMATICS';section.querySelector('#rsrSchematicLaunchHost').appendChild(launch);
+ }
 }
-function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);node.hidden=false;positionRSRSchematics(rec);rec.win.focus();return true;}
+
+function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);node.hidden=false;standardizeHardware(rec);rec.win.focus();return true;}
 function openPanel(key,title,selector){const rec=makeWindow(key,title);if(!rec)return false;const node=originalQuery(selector)||document.querySelector(selector);if(!node)return false;return move(rec,node);}
 window.novaNativeWindow={openPanel,makeWindow,move,records};
 // Hardware: open the Chrome window directly from the click, before async fetch.
