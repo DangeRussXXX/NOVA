@@ -145,6 +145,41 @@ function bridgeRSRCommands(rec,node){
    return command.apply(window,args);
   };
  }
+ // Rebind the ORIGINAL controller buttons after cross-document adoption.
+ // Inline onclick attributes can retain an inert handler realm when DOM nodes
+ // are adopted into another Chrome window. Explicit listeners avoid that issue.
+ // Keep the attribute text so RSR's existing visual-preview listener can read it.
+ const commands={
+  toggleTrainerLed:button=>{const n=Number((button.getAttribute('onclick')||'').match(/toggleTrainerLed\(\s*([0-7])/)?.[1]);return window.toggleTrainerLed(n);},
+  toggleTrainerAll:()=>window.toggleTrainerAll(),
+  trainerBlink:()=>window.trainerBlink(),
+  trainerSOS:()=>window.trainerSOS(),
+  trainerMorse:()=>window.trainerMorse(),
+  startTrainerPatternUI:button=>{
+   const code=button.getAttribute('onclick')||'';
+   const args=code.match(/startTrainerPatternUI\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/);
+   if(!args)return;
+   return window.startTrainerPatternUI(args[1],args[2],button);
+  },
+  stopTrainerSystem:()=>window.stopTrainerSystem(),
+  requestTrainerStatus:()=>window.requestTrainerStatus(),
+  runTrainerTest:()=>window.runTrainerTest()
+ };
+ node.querySelectorAll('.rsrTrainerController button[onclick]').forEach(button=>{
+  if(button.dataset.novaNativeCommandBound==='yes')return;
+  const source=button.getAttribute('onclick')||'';
+  const name=source.match(/^\s*([A-Za-z_$][\w$]*)\s*\(/)?.[1];
+  if(!name||!Object.prototype.hasOwnProperty.call(commands,name))return;
+  // Setting the handler property to null disables the old inline callback;
+  // its attribute stays intact for RSR's visualization/preview code.
+  button.onclick=null;
+  button.addEventListener('click',event=>{
+   if(event.defaultPrevented)return;
+   try{Promise.resolve(commands[name](button)).catch(err=>console.error('[NOVA] RSR command failed:',name,err));}
+   catch(err){console.error('[NOVA] RSR command failed:',name,err);}
+  });
+  button.dataset.novaNativeCommandBound='yes';
+ });
  // Useful for diagnostic console tests, not required by the buttons.
  popup.novaRSRCommandBridgeReady=true;
 }
