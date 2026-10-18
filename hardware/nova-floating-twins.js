@@ -240,16 +240,15 @@
 
     actions.append(minimize, maximize);
 
-    const close = el.querySelector(
-      '#' + def.close
-    );
+    const close = el.querySelector('#' + def.close);
 
-    header.insertBefore(
-      actions,
-      close && close.parentElement === header
-        ? close
-        : null
-    );
+    // Keep all three window buttons together as one right-aligned unit.
+    // Moving the existing CLOSE element preserves its original event handlers.
+    const windowButtons = document.createElement('div');
+    windowButtons.className = 'nova-window-buttons';
+    windowButtons.appendChild(actions);
+    if (close) windowButtons.appendChild(close);
+    header.appendChild(windowButtons);
 
     // MINIMIZE DOCK
 
