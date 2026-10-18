@@ -252,7 +252,7 @@
     // temporarily in the welcome marquee, without replacing media playback state.
     let morseMarqueeRestoreTimer = null;
     function publishMorseTicker(message) {
-      const display = '⚡ AMOMII ONE MORSE: ' + message;
+      const display = message;
       if (typeof window.log === 'function') {
         window.log(display, 'system');
       } else if (typeof window.novaQueueResponse === 'function') {
