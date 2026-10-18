@@ -12,6 +12,14 @@
   display.setAttribute('aria-live', 'off');
   let sourceKey = '', artist = '', song = '', lines = [], started = 0, mediaType = '', token = 0;
   let youtubeSeconds = 0, youtubePlaying = false, lastYoutubeEvent = 0;
+  let morseText = '', morseUntil = 0;
+  window.addEventListener('nova:morse-ticker', event => {
+    const text = String(event.detail?.text || '').trim();
+    if (!text) return;
+    morseText = text;
+    morseUntil = Date.now() + Math.min(30000, Math.max(1000, Number(event.detail?.durationMs) || 15000));
+    display.textContent = morseText;
+  });
   const normalize = s => String(s || '').replace(/\.[a-z0-9]{2,5}$/i, '').replace(/[_]+/g, ' ').trim();
   function parseTitle(raw) {
     let s = normalize(raw).replace(/\s*\((?:official\s+)?(?:music\s+)?video\)\s*/ig, ' ').replace(/\s*\[(?:official\s+)?(?:music\s+)?video\]\s*/ig, ' ').trim();
@@ -73,6 +81,8 @@
     return 0;
   }
   function render() {
+    if (morseText && Date.now() < morseUntil) { display.textContent = morseText; return; }
+    if (morseText) { morseText = ''; morseUntil = 0; }
     checkSource();
     if (!sourceKey) return;
     const heading = '♫ NOW PLAYING • ' + (artist ? artist + ' — ' : '') + (song || 'UNKNOWN TITLE');

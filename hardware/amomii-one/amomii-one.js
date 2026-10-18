@@ -248,25 +248,19 @@
       window.processSerialLine = observed;
     }
 
-    // Show the Morse message in NOVA's existing scrolling text stream and
-    // temporarily in the welcome marquee, without replacing media playback state.
-    let morseMarqueeRestoreTimer = null;
+    // Publish Morse without writing directly to the media ticker DOM.
+    // The ticker owns its own display and applies a timed Morse override.
     function publishMorseTicker(message) {
-      const display = message;
+      const display = String(message || '').trim();
+      if (!display) return;
       if (typeof window.log === 'function') {
         window.log(display, 'system');
       } else if (typeof window.novaQueueResponse === 'function') {
         window.novaQueueResponse(display);
       }
-      const now = document.getElementById('now');
-      if (!now) return;
-      if (morseMarqueeRestoreTimer) clearTimeout(morseMarqueeRestoreTimer);
-      const previous = now.textContent;
-      now.textContent = display;
-      morseMarqueeRestoreTimer = setTimeout(function () {
-        if (now.textContent === display) now.textContent = previous;
-        morseMarqueeRestoreTimer = null;
-      }, 15000);
+      window.dispatchEvent(new CustomEvent('nova:morse-ticker', {
+        detail: { text: display, durationMs: 15000 }
+      }));
     }
 
     async function sendLedCommand(command, mode, settings) {
