@@ -248,6 +248,27 @@
       window.processSerialLine = observed;
     }
 
+    // Show the Morse message in NOVA's existing scrolling text stream and
+    // temporarily in the welcome marquee, without replacing media playback state.
+    let morseMarqueeRestoreTimer = null;
+    function publishMorseTicker(message) {
+      const display = '⚡ AMOMII ONE MORSE: ' + message;
+      if (typeof window.log === 'function') {
+        window.log(display, 'system');
+      } else if (typeof window.novaQueueResponse === 'function') {
+        window.novaQueueResponse(display);
+      }
+      const now = document.getElementById('now');
+      if (!now) return;
+      if (morseMarqueeRestoreTimer) clearTimeout(morseMarqueeRestoreTimer);
+      const previous = now.textContent;
+      now.textContent = display;
+      morseMarqueeRestoreTimer = setTimeout(function () {
+        if (now.textContent === display) now.textContent = previous;
+        morseMarqueeRestoreTimer = null;
+      }, 15000);
+    }
+
     async function sendLedCommand(command, mode, settings) {
       if (typeof window.sendCloudCommand !== 'function') throw new Error('NOVA cloud command handler unavailable.');
       ledMonitor('amLedLastCommand', command);
@@ -286,8 +307,10 @@
             const message = ($('amMorseText')?.value || '').trim().toUpperCase().replace(/\s+/g, ' ');
             if (!message || !/^[A-Z0-9 ]{1,80}$/.test(message)) throw new Error('Morse text must be 1–80 letters, digits or spaces.');
             command = 'morse ' + message; mode = 'MORSE'; settings = message;
+
           } else return;
           const sent = await sendLedCommand(command, mode, settings);
+          if (sent && action === 'morse') publishMorseTicker(settings);
           if (feedback) feedback.textContent = sent ? 'Cloud accepted: ' + command + '. Waiting for hardware confirmation.' : 'Could not send: ' + command;
         } catch (error) {
           if (feedback) feedback.textContent = error.message;

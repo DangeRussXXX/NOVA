@@ -1,20 +1,27 @@
-<style id="amomiiBoardControls20261017">
-#amomiiTwin .am-panel-controls{display:flex;flex-direction:column;gap:10px;padding:10px;margin-bottom:12px;border:1px solid #285a6d;border-radius:7px;background:#082331;color:#42dcfa}
-#amomiiTwin .am-panel-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+<style id="amomiiBoardControls20261018">
+#amomiiTwin .am-header{position:relative!important;display:flex!important;align-items:center!important;gap:6px!important;padding:10px 14px!important;min-height:52px!important}
+#amomiiTwin .am-header>strong{margin-right:auto!important}
+#amomiiTwin .am-header>.nova-float-actions{position:absolute!important;right:91px!important;top:50%!important;transform:translateY(-50%)!important;left:auto!important;margin:0!important;display:flex!important;gap:5px!important;order:initial!important}
+#amomiiTwin .am-header>#amTwinClose{margin-left:auto!important;order:initial!important;flex-shrink:0!important}
+#amomiiTwin .am-panel-controls{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:8px;padding:7px 10px;margin:0 0 4px;border:0;background:transparent;color:#6eeaff}
+#amomiiTwin .am-panel-actions{display:flex;gap:5px}
 #amomiiTwin .am-panel-actions button{min-width:0}
-#amomiiTwin .am-pattern-group{margin-top:16px;border-top:1px solid #285a6d;padding-top:12px}
-#amomiiTwin .am-pattern-heading,#amomiiTwin .am-diagnostics-subtitle{font-size:12px;font-weight:700;letter-spacing:.8px;color:#6eeaff;margin:10px 0}
-
-#amomiiTwin .am-relay-note{font-size:12px;line-height:1.45;color:#9dbdca;margin-top:7px}
-#amomiiTwin .am-header{justify-content:flex-start!important}
-#amomiiTwin .am-header>.nova-float-actions{margin-left:auto!important;order:5!important}
-#amomiiTwin .am-header>#amTwinClose{order:6!important;margin-left:3px!important}
-#amomiiTwin .am-morse-label{display:block;margin:12px 0 8px;color:#70dffa;font-weight:700;font-size:12px}
-#amomiiTwin #amMorseText{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:9px;background:#061b28;color:#fff;border:1px solid #2387a6;border-radius:5px}
+#amomiiTwin .am-hardware{min-width:0}
+#amomiiTwin .am-pattern-group{margin-top:14px;padding-top:12px;border-top:1px solid #285a6d}
+#amomiiTwin .am-pattern-heading,#amomiiTwin .am-diagnostics-subtitle{font-size:12px;font-weight:700;letter-spacing:.8px;color:#6eeaff;margin:0 0 12px}
+#amomiiTwin .am-relay-note{font-size:12px;line-height:1.5;color:#a7c5d3;margin:8px 0 12px}
+#amomiiTwin .am-led-settings{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:12px 0 14px!important}
+#amomiiTwin .am-led-settings label{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;min-width:0!important;font-size:12px!important;font-weight:700!important;color:#8fe8f7!important}
+#amomiiTwin .am-led-settings input{display:block!important;width:100%!important;box-sizing:border-box!important;min-width:0!important;padding:9px!important;background:#e8f1f5!important;color:#092334!important;border:1px solid #3a8098!important;border-radius:4px!important;font-size:14px!important}
+#amomiiTwin .am-led-command-grid{margin-top:10px!important}
+#amomiiTwin .am-morse-block{margin-top:16px;padding:12px;border:1px solid #285a6d;border-radius:7px;background:#08202e}
+#amomiiTwin .am-morse-label{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;margin:0 0 10px!important;color:#70dffa;font-weight:700;font-size:12px}
+#amomiiTwin #amMorseText{display:block;width:100%;box-sizing:border-box;margin:0;padding:11px;background:#e8f1f5;color:#082331;border:1px solid #2387a6;border-radius:5px;font-size:14px}
+#amomiiTwin .am-morse-send{width:100%!important;min-height:37px!important}
 #amomiiTwin .am-led-monitor{border:1px solid #285a6d;border-radius:7px;padding:12px;margin:14px 0;background:#071b27;font-size:12px}
-#amomiiTwin .am-led-monitor>div:not(.am-pattern-heading){display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #193c4a}
+#amomiiTwin .am-led-monitor>div:not(.am-pattern-heading){display:grid;grid-template-columns:minmax(100px,36%) minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid #193c4a;align-items:start}
 #amomiiTwin .am-led-monitor strong{text-align:right;overflow-wrap:anywhere;color:#80eaff}
-@media(max-width:640px){#amomiiTwin .am-header strong{font-size:14px}#amomiiTwin .am-led-settings{grid-template-columns:1fr!important}}
+@media(max-width:640px){#amomiiTwin .am-header strong{font-size:14px}#amomiiTwin .am-led-settings{grid-template-columns:1fr!important}#amomiiTwin .am-header>.nova-float-actions{right:85px!important}}
 </style>
 
 <section id="amomiiTwin" class="am-twin" hidden
@@ -52,7 +59,6 @@
               <button type="button" data-am-action="toggleBoardLed" id="amHwLed">LED</button>
               <button type="button" data-am-action="stopBoard">STOP</button>
               <button type="button" data-am-command="help">HELP</button>
-              <button type="button" data-am-led-command="flash">FLASH</button>
               <button type="button" data-am-command="sos">SOS</button>
               <button type="button" data-am-command="status">STATUS</button>
               <button type="button" data-am-action="runSystemTest">RUN SYSTEM TEST</button>
@@ -74,15 +80,19 @@
                   <input id="amFlashSpeed" type="number" min="20" max="5000" step="10" value="100" style="width:100%;box-sizing:border-box;" />
                 </label>
               </div>
-              <div class="am-button-grid">
+              <div class="am-button-grid am-led-command-grid">
                 <button type="button" data-am-led-command="speed">SET BLINK SPEED</button>
-                <button type="button" data-am-led-command="blink">BLINK SELECTED AMOUNT</button>
-                <button type="button" data-am-led-command="morse">SEND MORSE</button>
+                <button type="button" data-am-led-command="blink">BLINK</button>
+                <button type="button" data-am-led-command="flash">FLASH</button>
                 <button type="button" data-am-action="stopBoard">STOP LED</button>
               </div>
-              <label class="am-morse-label" for="amMorseText">MORSE CODE MESSAGE
-                <input id="amMorseText" type="text" maxlength="80" placeholder="Enter letters and numbers (e.g. HELLO NOVA)" autocomplete="off" />
-              </label>
+              <div class="am-morse-block">
+                <div class="am-pattern-heading">MORSE CODE</div>
+                <label class="am-morse-label" for="amMorseText">MESSAGE
+                  <input id="amMorseText" type="text" maxlength="80" placeholder="Enter a message, e.g. HELLO NOVA" autocomplete="off" />
+                </label>
+                <button type="button" class="am-morse-send" data-am-led-command="morse">SEND MORSE</button>
+              </div>
               <div class="am-led-monitor" aria-label="Built-in LED monitor">
                 <div class="am-pattern-heading">LED COMMAND MONITOR</div>
                 <div>MODE <strong id="amLedMode">IDLE / NOT VERIFIED</strong></div>
