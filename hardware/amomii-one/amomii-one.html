@@ -6,6 +6,15 @@
 #amomiiTwin .am-pattern-heading,#amomiiTwin .am-diagnostics-subtitle{font-size:12px;font-weight:700;letter-spacing:.8px;color:#6eeaff;margin:10px 0}
 
 #amomiiTwin .am-relay-note{font-size:12px;line-height:1.45;color:#9dbdca;margin-top:7px}
+#amomiiTwin .am-header{justify-content:flex-start!important}
+#amomiiTwin .am-header>.nova-float-actions{margin-left:auto!important;order:5!important}
+#amomiiTwin .am-header>#amTwinClose{order:6!important;margin-left:3px!important}
+#amomiiTwin .am-morse-label{display:block;margin:12px 0 8px;color:#70dffa;font-weight:700;font-size:12px}
+#amomiiTwin #amMorseText{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:9px;background:#061b28;color:#fff;border:1px solid #2387a6;border-radius:5px}
+#amomiiTwin .am-led-monitor{border:1px solid #285a6d;border-radius:7px;padding:12px;margin:14px 0;background:#071b27;font-size:12px}
+#amomiiTwin .am-led-monitor>div:not(.am-pattern-heading){display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #193c4a}
+#amomiiTwin .am-led-monitor strong{text-align:right;overflow-wrap:anywhere;color:#80eaff}
+@media(max-width:640px){#amomiiTwin .am-header strong{font-size:14px}#amomiiTwin .am-led-settings{grid-template-columns:1fr!important}}
 </style>
 
 <section id="amomiiTwin" class="am-twin" hidden
@@ -15,7 +24,7 @@
 
     <header class="am-header">
       <strong>⚡ AMOMII ONE</strong>
-      <span id="amTwinStatus">VISUAL MAPPER · NO HARDWARE OUTPUT</span>
+      
       <button type="button" id="amTwinClose">✕ CLOSE</button>
     </header>
 
@@ -43,7 +52,7 @@
               <button type="button" data-am-action="toggleBoardLed" id="amHwLed">LED</button>
               <button type="button" data-am-action="stopBoard">STOP</button>
               <button type="button" data-am-command="help">HELP</button>
-              <button type="button" data-am-command="blink 5">BLINK 5</button>
+              <button type="button" data-am-led-command="flash">FLASH</button>
               <button type="button" data-am-command="sos">SOS</button>
               <button type="button" data-am-command="status">STATUS</button>
               <button type="button" data-am-action="runSystemTest">RUN SYSTEM TEST</button>
@@ -68,8 +77,19 @@
               <div class="am-button-grid">
                 <button type="button" data-am-led-command="speed">SET BLINK SPEED</button>
                 <button type="button" data-am-led-command="blink">BLINK SELECTED AMOUNT</button>
-                <button type="button" data-am-led-command="flash">FLASH SELECTED SETTINGS</button>
+                <button type="button" data-am-led-command="morse">SEND MORSE</button>
                 <button type="button" data-am-action="stopBoard">STOP LED</button>
+              </div>
+              <label class="am-morse-label" for="amMorseText">MORSE CODE MESSAGE
+                <input id="amMorseText" type="text" maxlength="80" placeholder="Enter letters and numbers (e.g. HELLO NOVA)" autocomplete="off" />
+              </label>
+              <div class="am-led-monitor" aria-label="Built-in LED monitor">
+                <div class="am-pattern-heading">LED COMMAND MONITOR</div>
+                <div>MODE <strong id="amLedMode">IDLE / NOT VERIFIED</strong></div>
+                <div>SETTINGS <strong id="amLedCurrentSettings">—</strong></div>
+                <div>LAST COMMAND <strong id="amLedLastCommand">NONE</strong></div>
+                <div>DELIVERY <strong id="amLedDelivery">NO COMMAND SENT</strong></div>
+                <div>LAST DEVICE RESPONSE <strong id="amLedDeviceResponse">NOT RECEIVED</strong></div>
               </div>
               <p id="amLedSettingsFeedback" class="am-relay-note" role="status" aria-live="polite">Ready. The settings are sent only when you press a button.</p>
             </div>
@@ -81,7 +101,8 @@
           <div class="am-section-body">
             <div class="am-hw-stats">
               <div>Board <strong>AMOMII ONE</strong></div>
-              <div>Direct connection <strong data-am-source="statusConnection">OFFLINE</strong></div>
+              <div>Browser USB <strong id="amUsbDiagnostics">NOT CONNECTED</strong></div>
+              <div>Cloud relay <strong id="amCloudDiagnostics">NOT VERIFIED</strong></div>
               <div>System status <strong data-am-source="statusSystem">READY</strong></div>
               <div>LED state <strong data-am-source="statusLed">UNKNOWN</strong></div>
               <div>Blinking <strong data-am-source="statusBlinking">NO</strong></div>
@@ -112,9 +133,8 @@
         </details>
 
         <p class="am-hw-note">
-          Uses NOVA's existing hardware commands.
-          Connection status is reported by NOVA,
-          not independently verified here.
+          Commands are sent through NOVA. Cloud acceptance is not proof of Arduino execution;
+          the monitor labels hardware replies separately.
         </p>
       </aside>
 
