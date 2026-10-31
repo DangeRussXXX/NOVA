@@ -3034,9 +3034,8 @@ function initializeNovaIntegratedLibrary(){
     close.addEventListener("click",closeNovaIntegratedMediaLibrary);
   }
 
-  // Use the same file inputs and change handlers as the permanent Media Library.
-  // The picker must open synchronously within the user's click event.
-  // Integrated picker controls are native labels, not synthetic file-input clicks.
+  // ADD MUSIC and ADD FOLDER use native label-for file inputs.
+
 
   if(audio){
     ["play","pause","ended","loadedmetadata"]
@@ -3273,7 +3272,7 @@ function initializeNovaFullMediaHub(){
   if(videoButton)videoButton.addEventListener("click",()=>novaOpenMediaPage("video"));
   if(youtubeButton)youtubeButton.addEventListener("click",()=>novaOpenMediaPage("youtube"));
   if(mediaButton)mediaButton.addEventListener("click",()=>novaOpenMediaPage("music"));
-  if(addVideos)addVideos.addEventListener("click",()=>videoFiles&&videoFiles.click());
+  // ADD VIDEOS uses a native label-for file input.
   if(videoFiles)videoFiles.addEventListener("change",novaHandleVideoFiles);
   if(videoVolume&&video){
     video.volume=Number(videoVolume.value||.8);
