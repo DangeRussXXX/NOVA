@@ -37,13 +37,50 @@
     });
   }
   function updatePlaylists(removedKeys) {
-    const playlists = JSON.parse(localStorage.getItem(PLAYLIST_KEY) || '[]');
-    if (!Array.isArray(playlists)) return;
-    for (const playlist of playlists) {
-      if (Array.isArray(playlist.items))
-        playlist.items = playlist.items.filter(item => !removedKeys.has(item.key));
+    try {
+      const playlists = JSON.parse(localStorage.getItem(PLAYLIST_KEY) || '[]');
+      if (!Array.isArray(playlists)) return;
+      for (const playlist of playlists) {
+        if (Array.isArray(playlist.items))
+          playlist.items = playlist.items.filter(item => !removedKeys.has(item.key));
+      }
+      localStorage.setItem(PLAYLIST_KEY, JSON.stringify(playlists));
+    } catch (error) { console.warn('NOVA playlist reference update failed:', error); }
+  }
+  function refreshMedia() {
+    try { if (typeof renderMusicList === 'function') renderMusicList(); } catch (e) { console.warn(e); }
+    try { if (typeof renderVideoList === 'function') renderVideoList(); } catch (e) { console.warn(e); }
+    try { if (typeof novaRenderVideoList === 'function') novaRenderVideoList(); } catch (e) { console.warn(e); }
+    try { if (typeof novaRenderYtSaved === 'function') novaRenderYtSaved(); } catch (e) { console.warn(e); }
+    try { if (typeof renderNovaIntegratedMediaLibrary === 'function') renderNovaIntegratedMediaLibrary(); } catch (e) { console.warn(e); }
+    try { if (typeof saveCurrentPlaylistOrder === 'function') saveCurrentPlaylistOrder(); } catch (e) { console.warn(e); }
+    window.dispatchEvent(new Event('nova:library-updated'));
+  }
+  function removeMemoryItem(item) {
+    if (item.type === 'music') {
+      const library = music();
+      const index = library.findIndex(x => fileKey(x.file) === item.key.slice(6));
+      if (index >= 0) {
+        if (typeof musicIndex !== 'undefined' && musicIndex === index) stopPlayer('audioPlayer');
+        try { URL.revokeObjectURL(library[index].url); } catch (_) {}
+        library.splice(index, 1);
+        if (typeof musicIndex !== 'undefined') musicIndex = musicIndex === index ? -1 : musicIndex > index ? musicIndex - 1 : musicIndex;
+      }
+    } else if (item.type === 'video') {
+      const library = videos();
+      const index = library.findIndex(x => fileKey(x.file) === item.key.slice(6));
+      if (index >= 0) {
+        if (typeof videoIndex !== 'undefined' && videoIndex === index) stopPlayer('videoPlayer');
+        try { URL.revokeObjectURL(library[index].url); } catch (_) {}
+        library.splice(index, 1);
+        if (typeof videoIndex !== 'undefined') videoIndex = videoIndex === index ? -1 : videoIndex > index ? videoIndex - 1 : videoIndex;
+      }
+    } else {
+      const saved = youtube();
+      const index = saved.findIndex(x => String(x.id) === item.key.slice(8));
+      if (index >= 0) saved.splice(index, 1);
+      if (typeof novaSaveYt === 'function') novaSaveYt();
     }
-    localStorage.setItem(PLAYLIST_KEY, JSON.stringify(playlists));
   }
   function stopPlayer(id) {
     const player = $(id);
@@ -51,53 +88,38 @@
     try { player.pause(); player.removeAttribute('src'); player.load(); } catch (_) {}
   }
   async function removeOne(item) {
-    if (!confirm(`Remove "${item.name}" from NOVA's media library?\n\nThis removes the browser-stored copy and playlist references. Your original computer file will NOT be deleted.`)) return;
+    if (!confirm(`Remove "${item.name}" from NOVA's media library?\n\nOriginal files on your computer will NOT be deleted.`)) return;
     try {
       if (item.type === 'music') await transact('novaPersistentPlaylistDB', 2, 'tracks', 'delete', item.key.slice(6));
       if (item.type === 'video') await transact('novaVideoPlaylistV2', 1, 'videos', 'delete', item.key.slice(6));
-      if (item.type === 'youtube') {
-        const saved = youtube();
-        const index = saved.findIndex(x => x.id === item.key.slice(8));
-        if (index !== -1) saved.splice(index, 1);
-        if (typeof novaSaveYt === 'function') novaSaveYt();
-      }
+      removeMemoryItem(item);
       updatePlaylists(new Set([item.key]));
-      // Refresh private in-memory media state from persistent storage.
-      location.reload();
+      refreshMedia();
     } catch (error) {
       console.error('NOVA: could not remove library item', error);
-      alert('NOVA could not finish removing this item. Check the browser console.');
+      alert('NOVA could not remove this item. Check the browser console.');
     }
   }
   async function removeAll(button) {
     const all = items();
     if (!all.length) { alert('NOVA media library is already empty.'); return; }
-    const message = `REMOVE ALL ${all.length} ITEMS FROM NOVA MEDIA LIBRARY?\n\n`+
-      `${all.filter(x=>x.type==='music').length} songs, `+
-      `${all.filter(x=>x.type==='video').length} videos, `+
-      `${all.filter(x=>x.type==='youtube').length} YouTube entries.\n\n`+
-      'This clears NOVA browser-stored media copies and removes them from playlists. '+
-      'Original files on your computer are NOT deleted.\n\nThis cannot be undone inside NOVA.';
-    if (!confirm(message)) return;
+    if (!confirm(`REMOVE ALL ${all.length} ITEMS FROM NOVA MEDIA LIBRARY?\n\nThis removes browser-stored media and playlist references. Original files on your computer will NOT be deleted.`)) return;
     button.disabled = true;
     button.textContent = 'REMOVING...';
     try {
-      // Remove stored file copies first. If either operation fails, stop and report it.
       await transact('novaPersistentPlaylistDB', 2, 'tracks', 'clear');
       await transact('novaVideoPlaylistV2', 1, 'videos', 'clear');
-      stopPlayer('audioPlayer');
-      stopPlayer('videoPlayer');
-      const saved = youtube();
-      if (Array.isArray(saved)) saved.splice(0, saved.length);
-      if (typeof novaSaveYt === 'function') novaSaveYt();
+      stopPlayer('audioPlayer'); stopPlayer('videoPlayer');
+      for (const item of all) removeMemoryItem(item);
       try { localStorage.setItem('novaPersistentPlaylistOrderV1', '[]'); } catch (_) {}
       updatePlaylists(new Set(all.map(x => x.key)));
-      location.reload();
+      refreshMedia();
     } catch (error) {
       console.error('NOVA: bulk library removal failed', error);
-      alert('NOVA could not finish clearing the library. Some items may have been removed. Check the browser console before retrying.');
-      button.disabled = false;
+      alert('NOVA could not finish clearing the library. Check the browser console.');
+    } finally {
       button.textContent = 'REMOVE ALL FROM LIBRARY';
+      button.disabled = items().length === 0;
     }
   }
   function init() {
@@ -121,30 +143,44 @@
       list.before(button);
     }
     button.addEventListener('click', () => removeAll(button));
+    let updating = false;
     const update = () => {
-      const all = items();
-      const count = type => all.filter(x => x.type === type).length;
-      bar.textContent = `SHOWING ${list.querySelectorAll('.entry').length} / ${all.length} MEDIA  •  ${count('music')} SONGS  •  ${count('video')} VIDEOS  •  ${count('youtube')} YOUTUBE`;
-      button.disabled = all.length === 0;
-      const query = ($('search')?.value || '').trim().toLowerCase();
-      const filter = $('filter')?.value || 'all';
-      const visible = all.filter(x => (filter === 'all' || x.type === filter) && x.name.toLowerCase().includes(query));
-      list.querySelectorAll('.entry').forEach((row, index) => {
-        const item = visible[index];
-        if (!item || row.querySelector('.novaRemoveLibrary')) return;
-        const add = row.querySelector('button');
-        if (add) { add.textContent = '+ PLAYLIST'; add.title = 'Add to selected playlist'; }
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'novaRemoveLibrary';
-        remove.dataset.novaRemove = item.key;
-        remove.textContent = 'REMOVE FROM LIBRARY';
-        remove.title = 'Remove browser copy; original computer file remains';
-        remove.addEventListener('click', () => removeOne(item));
-        row.append(remove);
-      });
+      if (updating) return;
+      updating = true;
+      try {
+        const all = items();
+        const count = type => all.filter(x => x.type === type).length;
+        const rows = Array.from(list.querySelectorAll('.entry'));
+        bar.textContent = `SHOWING ${rows.length} / ${all.length} MEDIA  •  ${count('music')} SONGS  •  ${count('video')} VIDEOS  •  ${count('youtube')} YOUTUBE`;
+        button.disabled = all.length === 0;
+        const query = ($('search')?.value || '').trim().toLowerCase();
+        const filter = $('filter')?.value || 'all';
+        const visible = all.filter(x => (filter === 'all' || x.type === filter) && x.name.toLowerCase().includes(query));
+        const assigned = new Set();
+        rows.forEach((row, index) => {
+          // Match by the filename actually displayed, not the unfiltered array index.
+          const display = (row.textContent || '').replace(/\s*\+ PLAYLIST.*$/is, '').trim().toLowerCase();
+          let item = visible.find(x => !assigned.has(x.key) && (display.includes(x.name.toLowerCase()) || x.name.toLowerCase().includes(display)));
+          if (!item && visible.length === rows.length) item = visible[index];
+          if (!item) return;
+          assigned.add(item.key);
+          const add = row.querySelector('button:not(.novaRemoveLibrary)');
+          if (add) { add.textContent = '+ PLAYLIST'; add.title = 'Add to selected playlist'; }
+          let remove = row.querySelector('.novaRemoveLibrary');
+          if (!remove) {
+            remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'novaRemoveLibrary';
+            remove.textContent = 'REMOVE FROM LIBRARY';
+            remove.title = 'Remove browser copy; original computer file remains';
+            row.append(remove);
+          }
+          remove.dataset.novaRemove = item.key;
+          remove.onclick = () => removeOne(item);
+        });
+      } finally { updating = false; }
     };
-    new MutationObserver(update).observe(list, {childList:true});
+    new MutationObserver(() => queueMicrotask(update)).observe(list, {childList:true});
     $('search')?.addEventListener('input', () => queueMicrotask(update));
     $('filter')?.addEventListener('change', () => queueMicrotask(update));
     update();
