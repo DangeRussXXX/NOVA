@@ -87,8 +87,43 @@
     if (!player) return;
     try { player.pause(); player.removeAttribute('src'); player.load(); } catch (_) {}
   }
+  // In-page confirmation avoids browser dialogs suppressed in background tabs.
+  function askNova(message, dangerLabel = 'REMOVE') {
+    return new Promise(resolve => {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:20px';
+      const panel = document.createElement('div');
+      panel.setAttribute('role','dialog');
+      panel.setAttribute('aria-modal','true');
+      panel.setAttribute('aria-label','Confirm media removal');
+      panel.style.cssText = 'background:#091923;border:2px solid #ff3cac;border-radius:12px;padding:24px;max-width:520px;width:100%;color:#eafaff;box-shadow:0 12px 50px #000;font:16px Arial,sans-serif';
+      const heading = document.createElement('h3');
+      heading.textContent = 'NOVA MEDIA LIBRARY';
+      heading.style.cssText = 'color:#ff3cac;margin:0 0 16px';
+      const body = document.createElement('p');
+      body.textContent = message;
+      body.style.cssText = 'white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere';
+      const actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;justify-content:flex-end;gap:12px;margin-top:20px';
+      const cancel = document.createElement('button');
+      cancel.type = 'button'; cancel.textContent = 'CANCEL';
+      const accept = document.createElement('button');
+      accept.type = 'button'; accept.textContent = dangerLabel;
+      for (const b of [cancel,accept]) b.style.cssText = 'cursor:pointer;padding:12px 18px;border-radius:6px;border:1px solid #42dfff;background:#0d2b39;color:#eafaff;font-weight:bold';
+      accept.style.borderColor = '#ff3cac'; accept.style.color = '#ff69b4';
+      let finished = false;
+      const finish = answer => { if (finished) return; finished = true; document.removeEventListener('keydown', onKey); overlay.remove(); resolve(answer); };
+      const onKey = e => { if (e.key === 'Escape') finish(false); };
+      cancel.addEventListener('click', () => finish(false));
+      accept.addEventListener('click', () => finish(true));
+      overlay.addEventListener('click', e => { if (e.target === overlay) finish(false); });
+      document.addEventListener('keydown', onKey);
+      actions.append(cancel, accept); panel.append(heading, body, actions); overlay.append(panel);
+      document.body.append(overlay); cancel.focus();
+    });
+  }
   async function removeOne(item) {
-    if (!confirm(`Remove "${item.name}" from NOVA's media library?\n\nOriginal files on your computer will NOT be deleted.`)) return;
+    if (!await askNova(`Remove "${item.name}" from NOVA's media library?\n\nOriginal files on your computer will NOT be deleted.`)) return;
     try {
       if (item.type === 'music') await transact('novaPersistentPlaylistDB', 2, 'tracks', 'delete', item.key.slice(6));
       if (item.type === 'video') await transact('novaVideoPlaylistV2', 1, 'videos', 'delete', item.key.slice(6));
@@ -103,7 +138,7 @@
   async function removeAll(button) {
     const all = items();
     if (!all.length) { alert('NOVA media library is already empty.'); return; }
-    if (!confirm(`REMOVE ALL ${all.length} ITEMS FROM NOVA MEDIA LIBRARY?\n\nThis removes browser-stored media and playlist references. Original files on your computer will NOT be deleted.`)) return;
+    if (!await askNova(`REMOVE ALL ${all.length} ITEMS FROM NOVA MEDIA LIBRARY?\n\nThis removes browser-stored media and playlist references. Original files on your computer will NOT be deleted.`, 'REMOVE ALL')) return;
     button.disabled = true;
     button.textContent = 'REMOVING...';
     try {
