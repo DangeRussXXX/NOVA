@@ -1,0 +1,11 @@
+NOVA Media Repair update 6 / Universal 1.9.20
+
+This package is a complete project snapshot (without .git internals).
+
+Updated: index.html; modules/nova-media.js; modules/nova-universal.js; modules/nova-library-management.js.
+The index.html references the updated script versions to distinguish them from cached deployments.
+
+Deployment: replace the existing project files in the GitHub repository, commit and push to the published main branch. A successful Pages build only proves a deployment completed, not that the desired files were included.
+
+No user media or browser IndexedDB contents are included in this ZIP.
+Validation: static JavaScript syntax checks and ZIP integrity checks; live browser behavior has not been verified.

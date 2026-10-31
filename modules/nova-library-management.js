@@ -87,6 +87,7 @@
       if(item.type==='music') await transact('novaPersistentPlaylistDB',2,'tracks','delete',item.key.slice(6));
       if(item.type==='video') await transact('novaVideoPlaylistV2',1,'videos','delete',item.key.slice(6));
       removeInMemory(item); updatePlaylists(new Set([item.key]));
+      window.dispatchEvent(new Event("nova:library-updated"));
       location.reload();
     } catch(error) {
       console.error('NOVA library remove failed:',error);
@@ -107,6 +108,7 @@
       localStorage.setItem('novaPersistentPlaylistOrderV1','[]');
       localStorage.setItem('novaYouTubePlaylistV2','[]');
       updatePlaylists(new Set(all.map(x=>x.key)));
+      window.dispatchEvent(new Event("nova:library-updated"));
       location.reload();
     } catch(error) {
       console.error('NOVA remove all failed:',error);

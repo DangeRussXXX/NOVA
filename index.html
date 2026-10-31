@@ -266,7 +266,13 @@ label#addMusic,label#addVideos,label#addFolder,label.novaMediaLibraryAction {dis
 .novaMediaRow > label[role="button"] {padding:9px 12px;background:#1e3948;color:#e6f5fa;border:1px solid #55717f;border-radius:6px;font:inherit}
 label.novaMediaLibraryAction {padding:10px 16px;background:#1d3745;color:#e8f7fc;border:1px solid #587c89;border-radius:6px;font:inherit}
 label[role="button"]:focus-visible {outline:2px solid #68e8a9;outline-offset:3px}
-</style></head>
+</style><style>
+/* NOVA media picker controls: preserve native, user-activated label behavior. */
+#addMusic, #addVideos, #addFolder, #novaMediaAddMusic, #novaMediaAddFolder {
+  cursor:pointer; pointer-events:auto; position:relative; z-index:2;
+}
+</style>
+</head>
 <body>
 <div class="app">
 <header>
@@ -4283,9 +4289,9 @@ if(document.readyState==="loading"){
 <script src="modules/nova-mail.js?v=2"></script>
 <script src="modules/nova-mail-voice.js?v=2"></script>
 <script src="modules/nova-camera.js"></script>
-<script src="modules/nova-media.js?v=5"></script>
+<script src="modules/nova-media.js?v=6"></script>
 <script src="modules/nova-lyrics-ticker.js?v=2"></script>
-<script src="modules/nova-universal.js?v=1.9.19"></script>
+<script src="modules/nova-universal.js?v=1.9.20"></script>
 <script src="intelligence/nova-intelligence.js"></script>
 <script>
 /* Layout-only bridge: preserve media module's scoped initialization and its live event handlers. */
@@ -4817,7 +4823,7 @@ window.addEventListener('load',function(){
 })();
 
 </script>
-<script src="modules/nova-library-management.js?v=5"></script>
+<script src="modules/nova-library-management.js?v=6"></script>
 
 <script id="novaReversibleVideoOrbNavigation">
 /* Reversible presentation switch: do not remove, reload or pause video. */
