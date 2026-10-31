@@ -3036,18 +3036,7 @@ function initializeNovaIntegratedLibrary(){
 
   // Use the same file inputs and change handlers as the permanent Media Library.
   // The picker must open synchronously within the user's click event.
-  if(addMusic){
-    addMusic.addEventListener("click",()=>{
-      const input=document.getElementById("novaPermanentMusicFiles");
-      if(input){ input.value=""; input.click(); }
-    });
-  }
-  if(addFolder){
-    addFolder.addEventListener("click",()=>{
-      const input=document.getElementById("novaPermanentFolderFiles");
-      if(input){ input.value=""; input.click(); }
-    });
-  }
+  // Integrated picker controls are native labels, not synthetic file-input clicks.
 
   if(audio){
     ["play","pause","ended","loadedmetadata"]

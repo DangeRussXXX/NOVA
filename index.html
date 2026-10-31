@@ -260,6 +260,12 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 .novaVoiceMailBar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
 .novaVoiceMailBar input{flex:1 1 230px;min-width:180px;background:#081824;color:#e1f7ff;border:1px solid #346174;border-radius:6px;padding:10px}
 #novaVoiceMailStatus{flex:1 1 100%;font-size:12px;color:#80d7e9}
+</style><style>
+/* Native file-picker labels preserve browser user activation. */
+label#addMusic,label#addVideos,label#addFolder,label.novaMediaLibraryAction {display:inline-flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-sizing:border-box}
+.novaMediaRow > label[role="button"] {padding:9px 12px;background:#1e3948;color:#e6f5fa;border:1px solid #55717f;border-radius:6px;font:inherit}
+label.novaMediaLibraryAction {padding:10px 16px;background:#1d3745;color:#e8f7fc;border:1px solid #587c89;border-radius:6px;font:inherit}
+label[role="button"]:focus-visible {outline:2px solid #68e8a9;outline-offset:3px}
 </style></head>
 <body>
 <div class="app">
@@ -290,7 +296,7 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
 <div id="novaPermanentMedia" aria-label="NOVA permanent media workspace">
   <div class="novaMediaNow" id="novaMediaNowCard"><strong>NOVA • NOW PLAYING</strong><span id="now">WELCOME TO NOVA!</span><div id="novaMediaVideoControls" aria-label="Video display controls"></div><section class="novaTopPlayback" aria-label="Universal media playback"><div class="novaMediaRow"><button id="prev" type="button">◀◀</button><button id="toggle" type="button">▶ PLAY / PAUSE</button><button id="stop" type="button">■ STOP</button><button id="next" type="button">▶▶</button></div><div class="novaMediaRow"><label for="volume">VOLUME</label><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div><input id="seek" type="range" min="0" max="100" value="0" aria-label="Playback progress"></section></div>
   <div class="novaMediaSide" id="novaMediaLeft">
-    <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><button id="addMusic" type="button">+ MUSIC</button><button id="addVideos" type="button">+ VIDEO</button><button id="addFolder" type="button">+ FOLDER</button></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
+    <section class="novaMediaBox"><h2>MEDIA LIBRARY</h2><input id="search" type="text" placeholder="Search songs, videos, YouTube..."><div class="novaMediaRow"><select id="filter" class="grow"><option value="all">ALL MEDIA</option><option value="music">MUSIC</option><option value="video">VIDEO</option><option value="youtube">YOUTUBE</option></select><button id="refresh" type="button">REFRESH</button></div><div class="novaMediaRow"><label id="addMusic" for="novaPermanentMusicFiles" role="button" tabindex="0">+ MUSIC</label><label id="addVideos" for="novaPermanentVideoFiles" role="button" tabindex="0">+ VIDEO</label><label id="addFolder" for="novaPermanentFolderFiles" role="button" tabindex="0">+ FOLDER</label></div><div class="novaMediaRow"><input id="ytLink" class="grow" type="text" placeholder="YouTube URL"><button id="addYt" type="button">+ YOUTUBE</button></div><div id="library" class="novaMediaList"></div></section>
   </div>
   <div class="novaMediaSide" id="novaMediaRight">
     <section class="novaMediaBox novaCombinedPlaylist"><h2>PLAYLISTS</h2><div class="novaMediaRow"><input id="newName" class="grow" type="text" placeholder="New playlist name"><button id="create" type="button">+ CREATE</button></div><div id="playlistNames" class="novaMediaList novaPlaylistChoices" aria-label="Select playlist"></div><div class="novaPlaylistDivider"></div><h3>EDIT SELECTED PLAYLIST</h3><div class="novaMediaRow"><input id="rename" class="grow" type="text" placeholder="Playlist name"><button id="renameBtn" type="button">RENAME</button></div><div class="novaMediaRow"><span id="count" class="muted"></span><button id="clear" type="button">CLEAR</button><button id="deleteBtn" type="button">DELETE LIST</button></div><div id="tracks" class="novaMediaList novaPlaylistTracks"></div><p class="muted">▲ ▼ reorder · REMOVE keeps your original files</p></section>
@@ -306,8 +312,8 @@ body.novaElectricMediaMode .novaWelcomeMarquee #now{animation:novaWildRainbow 1.
             <div class="novaMediaLibraryEyebrow">NOVA MEDIA SYSTEM</div>
             <div class="novaMediaLibraryTitle">MEDIA LIBRARY</div>
           </div>
-          <button type="button" class="novaMediaLibraryAction" id="novaMediaAddMusic">ADD MUSIC</button>
-          <button type="button" class="novaMediaLibraryAction" id="novaMediaAddFolder">ADD FOLDER</button>
+          <label class="novaMediaLibraryAction" id="novaMediaAddMusic" for="novaPermanentMusicFiles" role="button" tabindex="0">ADD MUSIC</label>
+          <label class="novaMediaLibraryAction" id="novaMediaAddFolder" for="novaPermanentFolderFiles" role="button" tabindex="0">ADD FOLDER</label>
           <button type="button" class="novaMediaLibraryAction" id="novaMediaLibraryClose" title="Close">×</button>
         </div>
         <div class="novaHubTabs">
@@ -4279,7 +4285,7 @@ if(document.readyState==="loading"){
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js?v=5"></script>
 <script src="modules/nova-lyrics-ticker.js?v=2"></script>
-<script src="modules/nova-universal.js?v=1.9.18"></script>
+<script src="modules/nova-universal.js?v=1.9.19"></script>
 <script src="intelligence/nova-intelligence.js"></script>
 <script>
 /* Layout-only bridge: preserve media module's scoped initialization and its live event handlers. */

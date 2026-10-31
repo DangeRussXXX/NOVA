@@ -1359,14 +1359,8 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
 
  $("search").oninput=renderLibrary;$("filter").onchange=renderLibrary;$("refresh").onclick=renderAll;
+ // File chooser controls are native HTML labels; no synthetic click handlers.
 
-
-
-
-
-
-
- $("addMusic").onclick=()=>$('novaPermanentMusicFiles').click();$("addVideos").onclick=()=>$('novaPermanentVideoFiles').click();$("addFolder").onclick=()=>$('novaPermanentFolderFiles').click();
 
 
 
