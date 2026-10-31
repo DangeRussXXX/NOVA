@@ -153,18 +153,6 @@
     $('search')?.addEventListener('input',()=>queueMicrotask(refresh));
     $('filter')?.addEventListener('change',()=>queueMicrotask(refresh));
     $('refresh')?.addEventListener('click',()=>queueMicrotask(refresh));
-    // Integrated library used a different file input; bind its visible controls
-    // directly to the same working inputs used by NOVA's permanent library.
-    const picker=(buttonId,inputId)=>{
-      const button=$(buttonId),input=$(inputId);
-      if(!button||!input)return;
-      button.addEventListener('click',e=>{
-        e.preventDefault();e.stopImmediatePropagation();
-        input.value='';input.click();
-      },true);
-    };
-    picker('novaMediaAddMusic','novaPermanentMusicFiles');
-    picker('novaMediaAddFolder','novaPermanentFolderFiles');
     refresh();
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();

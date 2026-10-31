@@ -3034,24 +3034,18 @@ function initializeNovaIntegratedLibrary(){
     close.addEventListener("click",closeNovaIntegratedMediaLibrary);
   }
 
+  // Use the same file inputs and change handlers as the permanent Media Library.
+  // The picker must open synchronously within the user's click event.
   if(addMusic){
     addMusic.addEventListener("click",()=>{
-      novaClickFirstExistingInput([
-        "musicFileInput",
-        "musicFiles",
-        "audioFileInput",
-        "mediaFileInput"
-      ]);
+      const input=document.getElementById("novaPermanentMusicFiles");
+      if(input){ input.value=""; input.click(); }
     });
   }
-
   if(addFolder){
     addFolder.addEventListener("click",()=>{
-      novaClickFirstExistingInput([
-        "musicFolderInput",
-        "musicFolder",
-        "audioFolderInput"
-      ]);
+      const input=document.getElementById("novaPermanentFolderFiles");
+      if(input){ input.value=""; input.click(); }
     });
   }
 
