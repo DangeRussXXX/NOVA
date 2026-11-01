@@ -5700,3 +5700,43 @@ body[data-nova-theme] #novaNativeHost .novaFloatPanel :is(button,.panelHeader,.n
  color:var(--nova-electric)!important;
  border-color:rgba(var(--nova-electric-rgb),.55)!important;
 }
+
+/* NOVA Media Library: consistent native file-label and YouTube action buttons. */
+#novaPermanentMedia #addMusic,
+#novaPermanentMedia #addVideos,
+#novaPermanentMedia #addFolder,
+#novaPermanentMedia #addYt,
+.novaFloatPanel #addMusic,
+.novaFloatPanel #addVideos,
+.novaFloatPanel #addFolder,
+.novaFloatPanel #addYt {
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 36px !important;
+  padding: 7px 12px !important;
+  border: 1px solid #d62c92 !important;
+  border-radius: 7px !important;
+  background: #0b1725 !important;
+  color: #ff42ae !important;
+  font: inherit !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: background-color .15s ease, border-color .15s ease !important;
+}
+#novaPermanentMedia :is(#addMusic,#addVideos,#addFolder,#addYt):hover,
+.novaFloatPanel :is(#addMusic,#addVideos,#addFolder,#addYt):hover {
+  background: #23132b !important;
+  border-color: #ff5bb9 !important;
+}
+#novaPermanentMedia :is(#addMusic,#addVideos,#addFolder,#addYt):focus-visible,
+.novaFloatPanel :is(#addMusic,#addVideos,#addFolder,#addYt):focus-visible {
+  outline: 2px solid #ff80c9 !important;
+  outline-offset: 2px !important;
+}
