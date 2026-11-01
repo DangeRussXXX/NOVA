@@ -184,7 +184,22 @@ function bridgeRSRCommands(rec,node){
  popup.novaRSRCommandBridgeReady=true;
 }
 
-function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);node.hidden=false;bridgeRSRCommands(rec,node);standardizeHardware(rec);rec.win.focus();return true;}
+// The media library is adopted into an about:blank Chrome window. Its native
+// <label for="..."> controls only work when the matching file inputs belong to
+// THAT SAME DOCUMENT. Keep the original inputs and onchange handlers intact;
+// adopt the actual inputs alongside the live library, then return them on close.
+function adoptMediaInputs(rec){
+ if(rec.key!=='library')return;
+ const host=rec.win.document.getElementById('novaNativeHost');
+ if(!host)return;
+ for(const id of ['novaPermanentMusicFiles','novaPermanentVideoFiles','novaPermanentFolderFiles']){
+  const input=originalGet(id);
+  if(!input||input.ownerDocument===rec.win.document)continue;
+  rec.items.push({node:input,parent:input.parentNode,next:input.nextSibling});
+  host.appendChild(input);
+ }
+}
+function move(rec,node){if(!rec||!node)return false;if(node.ownerDocument===rec.win.document){rec.win.focus();return true;}rec.items.push({node,parent:node.parentNode,next:node.nextSibling});rec.win.document.getElementById('novaNativeHost').appendChild(node);adoptMediaInputs(rec);node.hidden=false;bridgeRSRCommands(rec,node);standardizeHardware(rec);rec.win.focus();return true;}
 function openPanel(key,title,selector){const rec=makeWindow(key,title);if(!rec)return false;const node=originalQuery(selector)||document.querySelector(selector);if(!node)return false;return move(rec,node);}
 window.novaNativeWindow={openPanel,makeWindow,move,records};
 // Hardware: open the Chrome window directly from the click, before async fetch.
