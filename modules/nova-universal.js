@@ -856,7 +856,7 @@ function initializePermanentMedia(){
 
 
 
-   try{ytFrame.contentWindow?.postMessage(JSON.stringify({event:"command",func:command,args:[]}),"*")}catch(e){}
+   novaYouTubeCommand(command);
 
 
 
@@ -970,6 +970,29 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
  let novaYtPlayer=null;
  let novaYtGeneration=0;
  let novaYtEndHandled=false;
+ let novaYtSyncTimer=null;
+ function novaSyncYouTubeControls(){
+   if(activeType!=="youtube" || !novaYtPlayer || typeof novaYtPlayer.getCurrentTime!=="function")return;
+   try{
+     const duration=Number(novaYtPlayer.getDuration());
+     const current=Number(novaYtPlayer.getCurrentTime());
+     const seek=$("seek");
+     if(seek && duration>0 && Number.isFinite(current) && !seek.matches(':active')){
+       seek.disabled=false;
+       seek.value=String(Math.max(0,Math.min(100,current/duration*100)));
+     }
+   }catch(e){}
+ }
+ function novaStopYouTubeSync(){if(novaYtSyncTimer!==null){clearInterval(novaYtSyncTimer);novaYtSyncTimer=null;}}
+ function novaYouTubeCommand(command,args=[]){
+   if(novaYtPlayer && typeof novaYtPlayer[command]==='function'){
+     try{novaYtPlayer[command](...args);return true;}catch(e){console.warn('NOVA YouTube API command failed',command,e);}
+   }
+   if(ytFrame?.contentWindow){
+     try{ytFrame.contentWindow.postMessage(JSON.stringify({event:'command',func:command,args}),'https://www.youtube.com');return true;}catch(e){}
+   }
+   return false;
+ }
  function novaLoadYouTubeApi(){
    if(window.YT && typeof window.YT.Player==="function")return Promise.resolve(window.YT);
    if(novaYtApiPromise)return novaYtApiPromise;
@@ -993,6 +1016,13 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
      if(generation!==novaYtGeneration || frame!==ytFrame || !frame.isConnected)return;
      novaYtPlayer=new YT.Player(frame,{
        events:{
+         onReady:event=>{
+           if(generation!==novaYtGeneration || frame!==ytFrame)return;
+           try{event.target.setVolume(Math.round(Number($("volume")?.value ?? 0.8)*100));}catch(e){}
+           const seek=$("seek");if(seek)seek.disabled=false;
+           novaStopYouTubeSync();novaYtSyncTimer=setInterval(novaSyncYouTubeControls,300);
+           novaSyncYouTubeControls();
+         },
          onStateChange:event=>{
            if(generation!==novaYtGeneration || activeType!=="youtube" || frame!==ytFrame)return;
            if(event.data===YT.PlayerState.PLAYING){youtubePaused=false;novaYtEndHandled=false;}
@@ -1007,7 +1037,7 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
    }).catch(error=>console.warn("NOVA YouTube autoplay listener unavailable:",error));
  }
 
- function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable. Restore or re-add the file.");renderTracks();return;}novaYtGeneration++;novaYtEndHandled=false;novaYtPlayer=null;stopEngines();youtubePaused=false;activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1";if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;novaWatchYouTubeEnd(frame,novaYtGeneration);$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=false;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>{notify("Playback was blocked. Press PLAY to start.");emitMediaState("paused",{title:item.name});});}notify("NOW PLAYING: "+item.name);
+ function playAt(i){const p=selected(),item=p?.items[i];if(!item)return;const source=resolve(item);if(!source){notify("Media file unavailable. Restore or re-add the file.");renderTracks();return;}novaYtGeneration++;novaYtEndHandled=false;novaStopYouTubeSync();novaYtPlayer=null;stopEngines();youtubePaused=false;activeIndex=i;activeType=item.type;let stage=$("novaNativeAudioStage");if(!stage){stage=document.createElement("div");stage.id="novaNativeAudioStage";stage.hidden=true;host.append(stage);}stage.replaceChildren();if(hybridStage)hybridStage.replaceChildren();activeMedia=null;ytFrame=null;hybridVideoVisible=true;hybridMode(item.type,item.name);if(backButton)backButton.textContent="RETURN TO ORB";if(item.type==="youtube"){const id=source.id||item.key.slice(8);const frame=document.createElement("iframe");frame.allow="autoplay; encrypted-media; picture-in-picture";frame.allowFullscreen=true;frame.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?enablejsapi=1&autoplay=1&playsinline=1&origin="+encodeURIComponent(location.origin);if(hybridStage){hybridStage.append(frame);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(frame);ytFrame=frame;novaWatchYouTubeEnd(frame,novaYtGeneration);$("seek").disabled=true;}else{const media=document.createElement(item.type==="video"?"video":"audio");media.controls=item.type==="video";media.autoplay=false;media.src=source.url;media.volume=Number($("volume").value);media.addEventListener("ended",()=>next());media.addEventListener("timeupdate",()=>{if(Number.isFinite(media.duration)&&media.duration>0)$("seek").value=String(100*media.currentTime/media.duration)});if(item.type==="video"&&hybridStage){hybridStage.append(media);stage.textContent="VIDEO PLAYING ON NOVA DASHBOARD";}else stage.append(media);activeMedia=media;$("seek").disabled=false;media.play().catch(()=>{notify("Playback was blocked. Press PLAY to start.");emitMediaState("paused",{title:item.name});});}notify("NOW PLAYING: "+item.name);
 
 
 
@@ -1282,7 +1312,7 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
 
 
- $("stop").onclick=()=>{stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");emitMediaState('stopped');};
+ $("stop").onclick=()=>{novaStopYouTubeSync();stopEngines();if(activeMedia){try{activeMedia.currentTime=0}catch(e){}}activeMedia=null;activeType="";youtubePaused=false;hybridReset();activeIndex=-1;notify("STOPPED");emitMediaState('stopped');};
 
 
 
@@ -1306,7 +1336,7 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
 
 
-    if(ytFrame)try{ytFrame.contentWindow?.postMessage(JSON.stringify({event:'command',func:'setVolume',args:[Math.round(value*100)]}),'*');}catch(e){}
+    if(ytFrame)novaYouTubeCommand('setVolume',[Math.round(value*100)]);
 
 
 
@@ -1318,7 +1348,12 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
 
 
 
- $("seek").oninput=()=>{if(activeMedia&&Number.isFinite(activeMedia.duration)&&activeMedia.duration>0)activeMedia.currentTime=activeMedia.duration*Number($("seek").value)/100;};
+ $("seek").oninput=()=>{
+   const percentage=Number($("seek").value)/100;
+   if(activeType==='youtube' && novaYtPlayer){
+     try{const duration=Number(novaYtPlayer.getDuration());if(duration>0)novaYouTubeCommand('seekTo',[duration*percentage,true]);}catch(e){}
+   }else if(activeMedia&&Number.isFinite(activeMedia.duration)&&activeMedia.duration>0){activeMedia.currentTime=activeMedia.duration*percentage;}
+ };
 
 
 
