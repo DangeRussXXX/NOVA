@@ -4284,7 +4284,7 @@ if(document.readyState==="loading"){
 <script src="modules/nova-camera.js"></script>
 <script src="modules/nova-media.js?v=8"></script>
 <script src="modules/nova-lyrics-ticker.js?v=2"></script>
-<script src="modules/nova-universal.js?v=1.9.23"></script>
+<script src="modules/nova-universal.js?v=1.9.24"></script>
 <script src="intelligence/nova-intelligence.js"></script>
 <script>
 /* Layout-only bridge: preserve media module's scoped initialization and its live event handlers. */
@@ -4453,9 +4453,19 @@ window.addEventListener('load',function(){
      const clock=document.createElement('span');clock.className='novaSeekClock';clock.textContent='0:00';seek.before(clock);
      const duration=document.createElement('span');duration.className='novaSeekClock';duration.textContent='--:--';seek.after(duration);
      const fmt=n=>{if(!Number.isFinite(n))return '--:--';return Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0');};
+     let youtubeClock=null;
+     window.addEventListener('nova:playback-clock',event=>{
+       const detail=event.detail||{};
+       if(detail.type==='youtube' && Number.isFinite(detail.currentTime) && Number.isFinite(detail.duration) && detail.duration>0){
+         youtubeClock={currentTime:detail.currentTime,duration:detail.duration,updatedAt:Date.now()};
+         clock.textContent=fmt(detail.currentTime);
+         duration.textContent=fmt(detail.duration);
+       }
+     });
      setInterval(()=>{
        const playing=host.querySelector('#novaNativeAudioStage audio, #novaNativeAudioStage video')||document.querySelector('#novaHybridVideoStage video');
        if(playing&&Number.isFinite(playing.duration)){clock.textContent=fmt(playing.currentTime);duration.textContent=fmt(playing.duration);}
+       else if(youtubeClock && Date.now()-youtubeClock.updatedAt<2000){clock.textContent=fmt(youtubeClock.currentTime);duration.textContent=fmt(youtubeClock.duration);}
        else{clock.textContent='0:00';duration.textContent='--:--';}
        // Playback button is owned by nova-universal.js; do not overwrite its symbol here.
      },650);

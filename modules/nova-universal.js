@@ -976,6 +976,9 @@ const notify=s=>{if(!/^NOW PLAYING:/i.test(s)){const el=$("now");if(el&&s!=="STO
    try{
      const duration=Number(novaYtPlayer.getDuration());
      const current=Number(novaYtPlayer.getCurrentTime());
+     if(duration>0 && Number.isFinite(current)){
+       window.dispatchEvent(new CustomEvent('nova:playback-clock', {detail:{type:'youtube',currentTime:Math.max(0,current),duration}}));
+     }
      const seek=$("seek");
      if(seek && duration>0 && Number.isFinite(current) && !seek.matches(':active')){
        seek.disabled=false;
